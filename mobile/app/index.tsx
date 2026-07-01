@@ -1,0 +1,42 @@
+import { useEffect, useState } from "react";
+import { View, Text } from "react-native";
+import { Redirect } from "expo-router";
+import { useAuthStore } from "../src/store/authStore";
+import { hasSeenIntro } from "../src/store/onboardingStorage";
+
+export default function Index() {
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  const [introChecked, setIntroChecked] = useState(false);
+  const [introSeen, setIntroSeen] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setIntroChecked(true);
+      return;
+    }
+    hasSeenIntro().then((seen) => {
+      setIntroSeen(seen);
+      setIntroChecked(true);
+    });
+  }, [isAuthenticated]);
+
+  if (isLoading || (isAuthenticated && !introChecked)) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
+  }
+
+  if (!introSeen) {
+    return <Redirect href="/(onboarding)/intro" />;
+  }
+
+  return <Redirect href="/(tabs)" />;
+}

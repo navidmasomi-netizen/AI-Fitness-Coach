@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Difficulty {
+  beginner
+  intermediate
+  advanced
+}
+
+enum Complexity {
+  compound
+  isolation
+}
+
+enum Goal {
+  hypertrophy
+  strength
+  fat_loss
+  recomposition
+}
+
+enum SplitFamily {
+  full_body
+  upper_lower
+  ppl
+  strength_split
+}
+
+enum RecoveryQuality {
+  low
+  medium
+  high
+}
+
+enum Sex {
+  male
+  female
+}
+
+enum Equipment {
+  barbell
+  dumbbell
+  machine
+  cable
+  bodyweight
+  pull_up_bar
+}
+
+enum MovementPattern {
+  squat
+  hinge
+  lunge
+  single_leg
+  horizontal_press
+  vertical_press
+  horizontal_pull
+  vertical_pull
+  elbow_flexion
+  elbow_extension
+  trunk_flexion
+  anti_extension
+}
+
+enum RecommendationType {
+  increase
+  maintain
+  deload
+}
+
+model User {
+  id        Int              @id @default(autoincrement())
+  email     String           @unique
+  name      String?
+  password  String?
+  createdAt DateTime         @default(now())
+  profile   UserProfile?
+  sessions  WorkoutSession[]
+  program   UserProgram?
+  progressionRecommendations ProgressionRecommendation[]
+}
+
+model UserProfile {
+  id                     Int               @id @default(autoincrement())
+  userId                 Int               @unique
+  user                   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal                   Goal?
+  trainingLevel          Difficulty?
+  age                    Int?
+  sex                    Sex?
+  weightKg               Float?
+  heightCm               Float?
+  trainingDaysPerWeek    Int?
+  equipmentAccess        String?
+  sessionDurationMinutes Int?
+  recoveryQuality        RecoveryQuality?
+  injuryFlags            String[]
+  onboarded              Boolean           @default(false)
+  updatedAt              DateTime          @updatedAt
+}
+
+model Exercise {
+  id                     Int                   @id @default(autoincrement())
+  nameFa                 String
+  nameEn                 String?
+  description            String?
+  icon                   String?
+  primaryMuscles         String[]
+  secondaryMuscles       String[]
+  movementPattern        MovementPattern?
+  equipment              Equipment?
+  difficulty             Difficulty?
+  complexity             Complexity?
+  suitableGoals          Goal[]
+  contraindications      String[]
+  jointStressFlags       String[]
+  substitutionNames      String[]
+  defaultRepRangeLow     Int?
+  defaultRepRangeHigh    Int?
+  defaultRestSecondsLow  Int?
+  defaultRestSecondsHigh Int?
+  progressionType        String?
+  programDayUsage        ProgramDayExercise[]
+  setLogs                SetLog[]
+  progressionRecommendations ProgressionRecommendation[]
+  createdAt              DateTime              @default(now())
+}
+
+model Program {
+  id          Int           @id @default(autoincrement())
+  name        String
+  splitFamily SplitFamily
+  goal        Goal
+  isStatic    Boolean       @default(true)
+  days        ProgramDay[]
+  userProgram UserProgram[]
+  createdAt   DateTime      @default(now())
+}
+
+model ProgramDay {
+  id        Int                  @id @default(autoincrement())
+  programId Int
+  program   Program              @relation(fields: [programId], references: [id], onDelete: Cascade)
+  dayIndex  Int
+  name      String
+  exercises ProgramDayExercise[]
+}
+
+model ProgramDayExercise {
+  id              Int        @id @default(autoincrement())
+  programDayId    Int
+  programDay      ProgramDay @relation(fields: [programDayId], references: [id], onDelete: Cascade)
+  exerciseId      Int
+  exercise        Exercise   @relation(fields: [exerciseId], references: [id])
+  order           Int
+  sets            Int
+  repRangeLow     Int
+  repRangeHigh    Int
+  restSeconds     Int
+  intensity       String?
+  progressionType String?
+}
+
+model UserProgram {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId       Int
+  program         Program  @relation(fields: [programId], references: [id])
+  currentDayIndex Int      @default(0)
+  activatedAt     DateTime @default(now())
+}
+
+model WorkoutSession {
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId    Int?
+  programDayId Int?
+  startedAt    DateTime  @default(now())
+  completedAt  DateTime?
+  status       String    @default("active")
+  notes        String?
+  setLogs      SetLog[]
+  progressionRecommendations ProgressionRecommendation[]
+}
+
+model SetLog {
+  id         Int            @id @default(autoincrement())
+  sessionId  Int
+  session    WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exerciseId Int
+  exercise   Exercise       @relation(fields: [exerciseId], references: [id])
+  setNumber  Int
+  weightKg   Float?
+  reps       Int
+  loggedAt   DateTime       @default(now())
+}
+
+model ProgressionRecommendation {
+  id                    Int                @id @default(autoincrement())
+  userId                Int
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId            Int
+  exercise              Exercise           @relation(fields: [exerciseId], references: [id])
+  sourceSessionId       Int
+  sourceSession         WorkoutSession     @relation(fields: [sourceSessionId], references: [id], onDelete: Cascade)
+  recommendationType    RecommendationType
+  previousWeightKg      Float?
+  recommendedWeightKg   Float?
+  previousTargetLow     Int?
+  previousTargetHigh    Int?
+  recommendedTargetLow  Int?
+  recommendedTargetHigh Int?
+  progressionType       String?
+  consecutiveFailures   Int                @default(0)
+  reason                String
+  status                String             @default("active")
+  createdAt             DateTime           @default(now())
+}
