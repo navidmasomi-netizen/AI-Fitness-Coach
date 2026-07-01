@@ -12,19 +12,37 @@ export default function Index() {
   const [introSeen, setIntroSeen] = useState(false);
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!isAuthenticated) {
       setIntroChecked(true);
       return;
     }
+
+    let cancelled = false;
+
+    setIntroChecked(false);
+
     hasSeenIntro().then((seen) => {
+      if (cancelled) return;
       setIntroSeen(seen);
       setIntroChecked(true);
     });
-  }, [isAuthenticated]);
 
-  if (isLoading || (isAuthenticated && !introChecked)) {
+    return () => {
+      cancelled = true;
+    };
+  }, [isLoading, isAuthenticated]);
+
+  if (isLoading || !introChecked) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Text>Loading...</Text>
       </View>
     );
