@@ -46,6 +46,54 @@ const requiredFields = [
   "units",
 ];
 
+function validateProfileBounds(body) {
+  if (Object.prototype.hasOwnProperty.call(body, "age")) {
+    if (!Number.isInteger(body.age) || body.age < 13 || body.age > 100) {
+      return "age must be an integer between 13 and 100";
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "trainingDaysPerWeek")) {
+    if (
+      !Number.isInteger(body.trainingDaysPerWeek) ||
+      body.trainingDaysPerWeek < 1 ||
+      body.trainingDaysPerWeek > 7
+    ) {
+      return "trainingDaysPerWeek must be an integer between 1 and 7";
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "sessionDurationMin")) {
+    if (
+      !Number.isInteger(body.sessionDurationMin) ||
+      body.sessionDurationMin < 10 ||
+      body.sessionDurationMin > 240
+    ) {
+      return "sessionDurationMin must be an integer between 10 and 240";
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "heightCm")) {
+    if (typeof body.heightCm !== "number" || body.heightCm < 100 || body.heightCm > 250) {
+      return "heightCm must be a number between 100 and 250";
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "weightKg")) {
+    if (typeof body.weightKg !== "number" || body.weightKg < 20 || body.weightKg > 400) {
+      return "weightKg must be a number between 20 and 400";
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "mealFrequency")) {
+    if (!Number.isInteger(body.mealFrequency) || body.mealFrequency < 1 || body.mealFrequency > 10) {
+      return "mealFrequency must be an integer between 1 and 10";
+    }
+  }
+
+  return null;
+}
+
 function buildPatchData(body) {
   const data = {};
   for (const field of editableFields) {
@@ -108,6 +156,10 @@ export const getMyProfile = async (req, res) => {
 
 export const patchMyProfile = async (req, res) => {
   const userId = req.userId;
+  const validationError = validateProfileBounds(req.body);
+  if (validationError) {
+    return res.status(400).json({ success: false, message: validationError });
+  }
   const patchData = buildPatchData(req.body);
 
   try {
