@@ -31,17 +31,6 @@ enum SplitFamily {
   strength_split
 }
 
-enum RecoveryQuality {
-  low
-  medium
-  high
-}
-
-enum Sex {
-  male
-  female
-}
-
 enum Equipment {
   barbell
   dumbbell
@@ -85,22 +74,38 @@ model User {
 }
 
 model UserProfile {
-  id                     Int               @id @default(autoincrement())
-  userId                 Int               @unique
-  user                   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  goal                   Goal?
-  trainingLevel          Difficulty?
-  age                    Int?
-  sex                    Sex?
-  weightKg               Float?
-  heightCm               Float?
-  trainingDaysPerWeek    Int?
-  equipmentAccess        String?
-  sessionDurationMinutes Int?
-  recoveryQuality        RecoveryQuality?
-  injuryFlags            String[]
-  onboarded              Boolean           @default(false)
-  updatedAt              DateTime          @updatedAt
+  id                    Int       @id @default(autoincrement())
+  userId                Int       @unique
+  user                  User      @relation(fields: [userId], references: [id])
+
+  goal                  String
+  trainingLevel         String
+  trainingDaysPerWeek   Int
+  sessionDurationMin    Int
+  equipmentAccess       String[]
+  age                   Int
+  sex                   String
+  heightCm              Float
+  weightKg              Float
+  occupationType        String
+  recoveryQuality       String
+  nutritionHabits       String
+  mealFrequency         Int
+  supplementUse         String[]
+  cardioPreference      String
+  injuryFlags           String[]
+  injuryNotes           String?
+
+  preferredLanguage     String
+  timezone              String
+  units                 String
+
+  wizardCompleted       Boolean   @default(false)
+  wizardCompletedAt     DateTime?
+  lastCompletedStep     Int       @default(0)
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model Exercise {
