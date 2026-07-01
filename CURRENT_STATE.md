@@ -54,3 +54,13 @@ AI-Fitness-Coach/
 ├── CLAUDE.md
 ├── CURRENT_STATE.md
 └── .gitignore
+```
+
+## First-Time Clarity Layer — Complete
+
+- New users are auto-routed to Intro after registration.
+- Intro-seen state persists correctly across app restart and logout/login. Current implementation uses SecureStore.
+- Manual re-entry via Home "How this works" link works independently of first-run state.
+- Verified end-to-end on physical device via Expo Go.
+
+Resolved issue: root navigation guard (`app/index.tsx`) had a stale-state race condition causing Intro to incorrectly reappear after restart; resolved.
