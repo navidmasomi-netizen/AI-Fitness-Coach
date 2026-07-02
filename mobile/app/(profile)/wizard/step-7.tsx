@@ -3,29 +3,29 @@ import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-const GOAL_OPTIONS = ["hypertrophy", "strength", "fat_loss", "recomposition"];
+const SEX_OPTIONS = ["male", "female"];
 
-export default function WizardStepOneScreen() {
+export default function WizardStepSevenScreen() {
   const router = useRouter();
-  const goal = useWizardDraftStore((s) => s.goal);
-  const setGoal = useWizardDraftStore((s) => s.setGoal);
+  const sex = useWizardDraftStore((s) => s.sex);
+  const setSex = useWizardDraftStore((s) => s.setSex);
 
   return (
     <WizardStepScreen
-      currentStep={1}
+      currentStep={7}
       totalSteps={11}
-      title="What is your primary goal?"
-      canGoBack={false}
-      isNextEnabled={goal !== null}
-      onNext={() => router.push("/(profile)/wizard/step-2")}
+      title="What is your sex?"
+      canGoBack
+      isNextEnabled={sex !== null}
+      onNext={() => router.push("/(profile)/wizard/step-8")}
     >
       <View style={{ gap: 10 }}>
-        {GOAL_OPTIONS.map((option) => {
-          const isSelected = goal === option;
+        {SEX_OPTIONS.map((option) => {
+          const isSelected = sex === option;
           return (
             <Pressable
               key={option}
-              onPress={() => setGoal(option)}
+              onPress={() => setSex(option)}
               style={{
                 padding: 16,
                 borderRadius: 10,

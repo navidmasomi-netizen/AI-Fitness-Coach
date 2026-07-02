@@ -13,7 +13,7 @@ export default function WizardStepFourScreen() {
   return (
     <WizardStepScreen
       currentStep={4}
-      totalSteps={5}
+      totalSteps={11}
       title="How long should each session be?"
       canGoBack
       isNextEnabled={sessionDurationMin !== null}

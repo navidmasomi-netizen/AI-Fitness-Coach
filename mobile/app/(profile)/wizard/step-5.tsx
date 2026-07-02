@@ -22,11 +22,11 @@ export default function WizardStepFiveScreen() {
   return (
     <WizardStepScreen
       currentStep={5}
-      totalSteps={5}
+      totalSteps={11}
       title="What equipment do you have access to?"
       canGoBack
       isNextEnabled={equipmentAccess.length > 0}
-      onNext={() => router.push("/(profile)/wizard/complete")}
+      onNext={() => router.push("/(profile)/wizard/step-6")}
     >
       <View style={{ gap: 10 }}>
         {EQUIPMENT_OPTIONS.map((option) => {

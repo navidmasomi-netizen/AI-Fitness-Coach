@@ -3,29 +3,29 @@ import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-const GOAL_OPTIONS = ["hypertrophy", "strength", "fat_loss", "recomposition"];
+const OCCUPATION_TYPE_OPTIONS = ["desk_job", "active_job", "mixed", "student", "unemployed"];
 
-export default function WizardStepOneScreen() {
+export default function WizardStepTenScreen() {
   const router = useRouter();
-  const goal = useWizardDraftStore((s) => s.goal);
-  const setGoal = useWizardDraftStore((s) => s.setGoal);
+  const occupationType = useWizardDraftStore((s) => s.occupationType);
+  const setOccupationType = useWizardDraftStore((s) => s.setOccupationType);
 
   return (
     <WizardStepScreen
-      currentStep={1}
+      currentStep={10}
       totalSteps={11}
-      title="What is your primary goal?"
-      canGoBack={false}
-      isNextEnabled={goal !== null}
-      onNext={() => router.push("/(profile)/wizard/step-2")}
+      title="What best describes your occupation?"
+      canGoBack
+      isNextEnabled={occupationType !== null}
+      onNext={() => router.push("/(profile)/wizard/step-11")}
     >
       <View style={{ gap: 10 }}>
-        {GOAL_OPTIONS.map((option) => {
-          const isSelected = goal === option;
+        {OCCUPATION_TYPE_OPTIONS.map((option) => {
+          const isSelected = occupationType === option;
           return (
             <Pressable
               key={option}
-              onPress={() => setGoal(option)}
+              onPress={() => setOccupationType(option)}
               style={{
                 padding: 16,
                 borderRadius: 10,

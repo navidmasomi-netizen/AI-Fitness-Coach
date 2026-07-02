@@ -13,7 +13,7 @@ export default function WizardStepTwoScreen() {
   return (
     <WizardStepScreen
       currentStep={2}
-      totalSteps={5}
+      totalSteps={11}
       title="What is your training level?"
       canGoBack
       isNextEnabled={trainingLevel !== null}
