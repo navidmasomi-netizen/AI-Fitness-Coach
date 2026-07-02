@@ -94,7 +94,7 @@ export default function Index() {
   }
 
   if (!wizardCompleted) {
-    return <Redirect href="/(profile)/wizard-placeholder" />;
+    return <Redirect href="/(profile)/wizard/step-1" />;
   }
 
   return <Redirect href="/(tabs)" />;
