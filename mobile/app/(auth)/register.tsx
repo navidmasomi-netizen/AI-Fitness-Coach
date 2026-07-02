@@ -16,7 +16,7 @@ export default function RegisterScreen() {
     setSubmitting(true);
     try {
       await register({ email, name, password });
-      router.replace("/(tabs)");
+      router.replace("/");
     } catch (err) {
       console.log("register failed", err);
     } finally {

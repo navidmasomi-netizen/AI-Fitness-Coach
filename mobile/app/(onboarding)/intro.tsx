@@ -22,7 +22,7 @@ export default function IntroScreen() {
 
   const onContinue = async () => {
     await markIntroSeen();
-    router.replace("/(tabs)");
+    router.replace("/");
   };
 
   return (
