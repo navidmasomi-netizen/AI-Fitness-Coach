@@ -132,10 +132,13 @@ function buildProfileCreateData(userId, patchData) {
   };
 }
 
-function isMissingRequiredValue(value) {
+function isMissingRequiredValue(field, value) {
   if (value === null || value === undefined) return true;
   if (typeof value === "string") return value.trim() === "";
-  if (Array.isArray(value)) return value.length === 0;
+  if (Array.isArray(value)) {
+    if (field === "injuryFlags") return false;
+    return value.length === 0;
+  }
   if (typeof value === "number") return value <= 0;
   return false;
 }
@@ -199,7 +202,7 @@ export const completeMyProfile = async (req, res) => {
     }
 
     for (const field of requiredFields) {
-      if (isMissingRequiredValue(profile[field])) {
+      if (isMissingRequiredValue(field, profile[field])) {
         return res.status(400).json({ success: false, message: "Profile is incomplete" });
       }
     }
