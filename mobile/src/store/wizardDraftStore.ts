@@ -12,6 +12,12 @@ interface WizardDraftState {
   weightKg: number | null;
   occupationType: string | null;
   recoveryQuality: string | null;
+  nutritionHabits: string | null;
+  mealFrequency: number | null;
+  cardioPreference: string | null;
+  supplementUse: string[];
+  injuryFlags: string[];
+  injuryNotes: string | null;
   setGoal: (goal: string) => void;
   setTrainingLevel: (trainingLevel: string) => void;
   setTrainingDaysPerWeek: (trainingDaysPerWeek: number) => void;
@@ -23,6 +29,12 @@ interface WizardDraftState {
   setWeightKg: (weightKg: number | null) => void;
   setOccupationType: (occupationType: string) => void;
   setRecoveryQuality: (recoveryQuality: string) => void;
+  setNutritionHabits: (nutritionHabits: string) => void;
+  setMealFrequency: (mealFrequency: number | null) => void;
+  setCardioPreference: (cardioPreference: string) => void;
+  setSupplementUse: (supplementUse: string[]) => void;
+  setInjuryFlags: (injuryFlags: string[]) => void;
+  setInjuryNotes: (injuryNotes: string | null) => void;
 }
 
 export const useWizardDraftStore = create<WizardDraftState>()((set) => ({
@@ -37,6 +49,12 @@ export const useWizardDraftStore = create<WizardDraftState>()((set) => ({
   weightKg: null,
   occupationType: null,
   recoveryQuality: null,
+  nutritionHabits: null,
+  mealFrequency: null,
+  cardioPreference: null,
+  supplementUse: [],
+  injuryFlags: [],
+  injuryNotes: null,
   setGoal: (goal) => set({ goal }),
   setTrainingLevel: (trainingLevel) => set({ trainingLevel }),
   setTrainingDaysPerWeek: (trainingDaysPerWeek) => set({ trainingDaysPerWeek }),
@@ -48,4 +66,10 @@ export const useWizardDraftStore = create<WizardDraftState>()((set) => ({
   setWeightKg: (weightKg) => set({ weightKg }),
   setOccupationType: (occupationType) => set({ occupationType }),
   setRecoveryQuality: (recoveryQuality) => set({ recoveryQuality }),
+  setNutritionHabits: (nutritionHabits) => set({ nutritionHabits }),
+  setMealFrequency: (mealFrequency) => set({ mealFrequency }),
+  setCardioPreference: (cardioPreference) => set({ cardioPreference }),
+  setSupplementUse: (supplementUse) => set({ supplementUse }),
+  setInjuryFlags: (injuryFlags) => set({ injuryFlags }),
+  setInjuryNotes: (injuryNotes) => set({ injuryNotes }),
 }));

@@ -13,7 +13,7 @@ export default function WizardStepOneScreen() {
   return (
     <WizardStepScreen
       currentStep={1}
-      totalSteps={11}
+      totalSteps={18}
       title="What is your primary goal?"
       canGoBack={false}
       isNextEnabled={goal !== null}

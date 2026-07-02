@@ -17,7 +17,7 @@ export default function WizardStepEightScreen() {
   return (
     <WizardStepScreen
       currentStep={8}
-      totalSteps={11}
+      totalSteps={18}
       title="What is your height in cm?"
       canGoBack
       isNextEnabled={isHeightValid}

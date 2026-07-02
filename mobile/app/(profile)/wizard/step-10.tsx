@@ -13,7 +13,7 @@ export default function WizardStepTenScreen() {
   return (
     <WizardStepScreen
       currentStep={10}
-      totalSteps={11}
+      totalSteps={18}
       title="What best describes your occupation?"
       canGoBack
       isNextEnabled={occupationType !== null}

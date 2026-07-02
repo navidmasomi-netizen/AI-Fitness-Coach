@@ -13,7 +13,7 @@ export default function WizardStepSevenScreen() {
   return (
     <WizardStepScreen
       currentStep={7}
-      totalSteps={11}
+      totalSteps={18}
       title="What is your sex?"
       canGoBack
       isNextEnabled={sex !== null}

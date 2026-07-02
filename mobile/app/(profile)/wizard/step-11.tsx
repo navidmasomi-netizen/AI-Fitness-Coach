@@ -13,11 +13,11 @@ export default function WizardStepElevenScreen() {
   return (
     <WizardStepScreen
       currentStep={11}
-      totalSteps={11}
+      totalSteps={18}
       title="How would you rate your recovery quality?"
       canGoBack
       isNextEnabled={recoveryQuality !== null}
-      onNext={() => router.push("/(profile)/wizard/complete")}
+      onNext={() => router.push("/(profile)/wizard/step-12")}
     >
       <View style={{ gap: 10 }}>
         {RECOVERY_QUALITY_OPTIONS.map((option) => {

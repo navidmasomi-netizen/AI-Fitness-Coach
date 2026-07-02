@@ -13,7 +13,7 @@ export default function WizardStepThreeScreen() {
   return (
     <WizardStepScreen
       currentStep={3}
-      totalSteps={11}
+      totalSteps={18}
       title="How many days per week do you train?"
       canGoBack
       isNextEnabled={trainingDaysPerWeek !== null}

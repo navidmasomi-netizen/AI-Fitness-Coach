@@ -3,38 +3,29 @@ import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-const EQUIPMENT_OPTIONS = ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"];
+const NUTRITION_HABITS_OPTIONS = ["strict", "moderate", "flexible", "unstructured"];
 
-export default function WizardStepFiveScreen() {
+export default function WizardStepTwelveScreen() {
   const router = useRouter();
-  const equipmentAccess = useWizardDraftStore((s) => s.equipmentAccess);
-  const setEquipmentAccess = useWizardDraftStore((s) => s.setEquipmentAccess);
-
-  const toggleEquipment = (option: string) => {
-    if (equipmentAccess.includes(option)) {
-      setEquipmentAccess(equipmentAccess.filter((item) => item !== option));
-      return;
-    }
-
-    setEquipmentAccess([...equipmentAccess, option]);
-  };
+  const nutritionHabits = useWizardDraftStore((s) => s.nutritionHabits);
+  const setNutritionHabits = useWizardDraftStore((s) => s.setNutritionHabits);
 
   return (
     <WizardStepScreen
-      currentStep={5}
+      currentStep={12}
       totalSteps={18}
-      title="What equipment do you have access to?"
+      title="How would you describe your nutrition habits?"
       canGoBack
-      isNextEnabled={equipmentAccess.length > 0}
-      onNext={() => router.push("/(profile)/wizard/step-6")}
+      isNextEnabled={nutritionHabits !== null}
+      onNext={() => router.push("/(profile)/wizard/step-13")}
     >
       <View style={{ gap: 10 }}>
-        {EQUIPMENT_OPTIONS.map((option) => {
-          const isSelected = equipmentAccess.includes(option);
+        {NUTRITION_HABITS_OPTIONS.map((option) => {
+          const isSelected = nutritionHabits === option;
           return (
             <Pressable
               key={option}
-              onPress={() => toggleEquipment(option)}
+              onPress={() => setNutritionHabits(option)}
               style={{
                 padding: 16,
                 borderRadius: 10,

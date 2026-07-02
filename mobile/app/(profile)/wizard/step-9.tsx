@@ -17,7 +17,7 @@ export default function WizardStepNineScreen() {
   return (
     <WizardStepScreen
       currentStep={9}
-      totalSteps={11}
+      totalSteps={18}
       title="What is your weight in kg?"
       canGoBack
       isNextEnabled={isWeightValid}

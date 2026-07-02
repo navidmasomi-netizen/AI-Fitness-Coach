@@ -3,29 +3,29 @@ import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-const TRAINING_LEVEL_OPTIONS = ["beginner", "intermediate", "advanced"];
+const MEAL_FREQUENCY_OPTIONS = [1, 2, 3, 4, 5, 6];
 
-export default function WizardStepTwoScreen() {
+export default function WizardStepThirteenScreen() {
   const router = useRouter();
-  const trainingLevel = useWizardDraftStore((s) => s.trainingLevel);
-  const setTrainingLevel = useWizardDraftStore((s) => s.setTrainingLevel);
+  const mealFrequency = useWizardDraftStore((s) => s.mealFrequency);
+  const setMealFrequency = useWizardDraftStore((s) => s.setMealFrequency);
 
   return (
     <WizardStepScreen
-      currentStep={2}
+      currentStep={13}
       totalSteps={18}
-      title="What is your training level?"
+      title="How many meals do you usually eat per day?"
       canGoBack
-      isNextEnabled={trainingLevel !== null}
-      onNext={() => router.push("/(profile)/wizard/step-3")}
+      isNextEnabled={mealFrequency !== null}
+      onNext={() => router.push("/(profile)/wizard/step-14")}
     >
       <View style={{ gap: 10 }}>
-        {TRAINING_LEVEL_OPTIONS.map((option) => {
-          const isSelected = trainingLevel === option;
+        {MEAL_FREQUENCY_OPTIONS.map((option) => {
+          const isSelected = mealFrequency === option;
           return (
             <Pressable
               key={option}
-              onPress={() => setTrainingLevel(option)}
+              onPress={() => setMealFrequency(option)}
               style={{
                 padding: 16,
                 borderRadius: 10,
@@ -34,7 +34,9 @@ export default function WizardStepTwoScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>
+                {option} meal{option > 1 ? "s" : ""}
+              </Text>
             </Pressable>
           );
         })}

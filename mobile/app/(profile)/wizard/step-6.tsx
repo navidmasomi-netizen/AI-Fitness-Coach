@@ -17,7 +17,7 @@ export default function WizardStepSixScreen() {
   return (
     <WizardStepScreen
       currentStep={6}
-      totalSteps={11}
+      totalSteps={18}
       title="How old are you?"
       canGoBack
       isNextEnabled={isAgeValid}
