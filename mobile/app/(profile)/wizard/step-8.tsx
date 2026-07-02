@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
@@ -27,28 +27,32 @@ export default function WizardStepEightScreen() {
         router.push("/(profile)/wizard/step-9");
       }}
     >
-      <View>
-        <TextInput
-          value={heightInput}
-          onChangeText={(value) => {
-            setHeightInput(value);
-            const nextValue = Number(value);
-            if (value.length === 0) {
-              setHeightCm(null);
-            } else if (!Number.isNaN(nextValue) && nextValue >= 100 && nextValue <= 250) {
-              setHeightCm(nextValue);
-            }
-          }}
-          keyboardType="numeric"
-          placeholder="Height in cm"
-          style={{ borderWidth: 1, width: "100%", padding: 8 }}
-        />
-        {showError && (
-          <Text style={{ color: "red", fontSize: 12, marginTop: 8 }}>
-            Height must be between 100 and 250 cm.
-          </Text>
-        )}
-      </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View>
+          <TextInput
+            value={heightInput}
+            onChangeText={(value) => {
+              setHeightInput(value);
+              const nextValue = Number(value);
+              if (value.length === 0) {
+                setHeightCm(null);
+              } else if (!Number.isNaN(nextValue) && nextValue >= 100 && nextValue <= 250) {
+                setHeightCm(nextValue);
+              }
+            }}
+            onSubmitEditing={Keyboard.dismiss}
+            keyboardType="numeric"
+            returnKeyType="done"
+            placeholder="Height in cm"
+            style={{ borderWidth: 1, width: "100%", padding: 8 }}
+          />
+          {showError && (
+            <Text style={{ color: "red", fontSize: 12, marginTop: 8 }}>
+              Height must be between 100 and 250 cm.
+            </Text>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
     </WizardStepScreen>
   );
 }

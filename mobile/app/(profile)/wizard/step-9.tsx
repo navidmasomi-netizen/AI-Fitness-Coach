@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
@@ -27,28 +27,32 @@ export default function WizardStepNineScreen() {
         router.push("/(profile)/wizard/step-10");
       }}
     >
-      <View>
-        <TextInput
-          value={weightInput}
-          onChangeText={(value) => {
-            setWeightInput(value);
-            const nextValue = Number(value);
-            if (value.length === 0) {
-              setWeightKg(null);
-            } else if (!Number.isNaN(nextValue) && nextValue >= 20 && nextValue <= 400) {
-              setWeightKg(nextValue);
-            }
-          }}
-          keyboardType="numeric"
-          placeholder="Weight in kg"
-          style={{ borderWidth: 1, width: "100%", padding: 8 }}
-        />
-        {showError && (
-          <Text style={{ color: "red", fontSize: 12, marginTop: 8 }}>
-            Weight must be between 20 and 400 kg.
-          </Text>
-        )}
-      </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View>
+          <TextInput
+            value={weightInput}
+            onChangeText={(value) => {
+              setWeightInput(value);
+              const nextValue = Number(value);
+              if (value.length === 0) {
+                setWeightKg(null);
+              } else if (!Number.isNaN(nextValue) && nextValue >= 20 && nextValue <= 400) {
+                setWeightKg(nextValue);
+              }
+            }}
+            onSubmitEditing={Keyboard.dismiss}
+            keyboardType="numeric"
+            returnKeyType="done"
+            placeholder="Weight in kg"
+            style={{ borderWidth: 1, width: "100%", padding: 8 }}
+          />
+          {showError && (
+            <Text style={{ color: "red", fontSize: 12, marginTop: 8 }}>
+              Weight must be between 20 and 400 kg.
+            </Text>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
     </WizardStepScreen>
   );
 }
