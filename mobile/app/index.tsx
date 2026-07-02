@@ -60,7 +60,7 @@ export default function Index() {
         setWizardCompleted(!!profile?.wizardCompleted);
         setProfileChecked(true);
       })
-      .catch((err) => {
+      .catch(() => {
         if (cancelled) return;
         setWizardCompleted(false);
         setProfileChecked(true);
