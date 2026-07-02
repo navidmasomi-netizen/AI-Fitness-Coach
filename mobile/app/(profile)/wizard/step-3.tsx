@@ -1,20 +1,46 @@
-import { Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
+
+const TRAINING_DAY_OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
 export default function WizardStepThreeScreen() {
   const router = useRouter();
+  const trainingDaysPerWeek = useWizardDraftStore((s) => s.trainingDaysPerWeek);
+  const setTrainingDaysPerWeek = useWizardDraftStore((s) => s.setTrainingDaysPerWeek);
 
   return (
     <WizardStepScreen
       currentStep={3}
-      totalSteps={3}
-      title="Fitness Profile Wizard"
+      totalSteps={5}
+      title="How many days per week do you train?"
       canGoBack
-      isNextEnabled
-      onNext={() => router.push("/(profile)/wizard/complete")}
+      isNextEnabled={trainingDaysPerWeek !== null}
+      onNext={() => router.push("/(profile)/wizard/step-4")}
     >
-      <Text style={{ fontSize: 16, color: "#555" }}>Step 3 placeholder content</Text>
+      <View style={{ gap: 10 }}>
+        {TRAINING_DAY_OPTIONS.map((option) => {
+          const isSelected = trainingDaysPerWeek === option;
+          return (
+            <Pressable
+              key={option}
+              onPress={() => setTrainingDaysPerWeek(option)}
+              style={{
+                padding: 16,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: isSelected ? "#2196f3" : "#ddd",
+                backgroundColor: isSelected ? "#e3f2fd" : "#fff",
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>
+                {option} day{option > 1 ? "s" : ""}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </WizardStepScreen>
   );
 }

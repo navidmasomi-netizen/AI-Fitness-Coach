@@ -3,29 +3,38 @@ import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-const TRAINING_LEVEL_OPTIONS = ["beginner", "intermediate", "advanced"];
+const EQUIPMENT_OPTIONS = ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"];
 
-export default function WizardStepTwoScreen() {
+export default function WizardStepFiveScreen() {
   const router = useRouter();
-  const trainingLevel = useWizardDraftStore((s) => s.trainingLevel);
-  const setTrainingLevel = useWizardDraftStore((s) => s.setTrainingLevel);
+  const equipmentAccess = useWizardDraftStore((s) => s.equipmentAccess);
+  const setEquipmentAccess = useWizardDraftStore((s) => s.setEquipmentAccess);
+
+  const toggleEquipment = (option: string) => {
+    if (equipmentAccess.includes(option)) {
+      setEquipmentAccess(equipmentAccess.filter((item) => item !== option));
+      return;
+    }
+
+    setEquipmentAccess([...equipmentAccess, option]);
+  };
 
   return (
     <WizardStepScreen
-      currentStep={2}
+      currentStep={5}
       totalSteps={5}
-      title="What is your training level?"
+      title="What equipment do you have access to?"
       canGoBack
-      isNextEnabled={trainingLevel !== null}
-      onNext={() => router.push("/(profile)/wizard/step-3")}
+      isNextEnabled={equipmentAccess.length > 0}
+      onNext={() => router.push("/(profile)/wizard/complete")}
     >
       <View style={{ gap: 10 }}>
-        {TRAINING_LEVEL_OPTIONS.map((option) => {
-          const isSelected = trainingLevel === option;
+        {EQUIPMENT_OPTIONS.map((option) => {
+          const isSelected = equipmentAccess.includes(option);
           return (
             <Pressable
               key={option}
-              onPress={() => setTrainingLevel(option)}
+              onPress={() => toggleEquipment(option)}
               style={{
                 padding: 16,
                 borderRadius: 10,

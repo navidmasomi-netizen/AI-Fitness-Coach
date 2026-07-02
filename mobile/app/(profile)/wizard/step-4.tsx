@@ -3,29 +3,29 @@ import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-const TRAINING_LEVEL_OPTIONS = ["beginner", "intermediate", "advanced"];
+const SESSION_DURATION_OPTIONS = [30, 45, 60, 75, 90];
 
-export default function WizardStepTwoScreen() {
+export default function WizardStepFourScreen() {
   const router = useRouter();
-  const trainingLevel = useWizardDraftStore((s) => s.trainingLevel);
-  const setTrainingLevel = useWizardDraftStore((s) => s.setTrainingLevel);
+  const sessionDurationMin = useWizardDraftStore((s) => s.sessionDurationMin);
+  const setSessionDurationMin = useWizardDraftStore((s) => s.setSessionDurationMin);
 
   return (
     <WizardStepScreen
-      currentStep={2}
+      currentStep={4}
       totalSteps={5}
-      title="What is your training level?"
+      title="How long should each session be?"
       canGoBack
-      isNextEnabled={trainingLevel !== null}
-      onNext={() => router.push("/(profile)/wizard/step-3")}
+      isNextEnabled={sessionDurationMin !== null}
+      onNext={() => router.push("/(profile)/wizard/step-5")}
     >
       <View style={{ gap: 10 }}>
-        {TRAINING_LEVEL_OPTIONS.map((option) => {
-          const isSelected = trainingLevel === option;
+        {SESSION_DURATION_OPTIONS.map((option) => {
+          const isSelected = sessionDurationMin === option;
           return (
             <Pressable
               key={option}
-              onPress={() => setTrainingLevel(option)}
+              onPress={() => setSessionDurationMin(option)}
               style={{
                 padding: 16,
                 borderRadius: 10,
@@ -34,7 +34,9 @@ export default function WizardStepTwoScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>
+                {option} minutes
+              </Text>
             </Pressable>
           );
         })}
