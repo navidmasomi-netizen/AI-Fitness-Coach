@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { SEX_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const SEX_OPTIONS = ["male", "female"];
@@ -8,12 +9,14 @@ const SEX_OPTIONS = ["male", "female"];
 export default function WizardStepSevenScreen() {
   const router = useRouter();
   const sex = useWizardDraftStore((s) => s.sex);
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setSex = useWizardDraftStore((s) => s.setSex);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   return (
     <WizardStepScreen
       currentStep={7}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="What is your sex?"
       canGoBack
       isNextEnabled={sex !== null}
@@ -34,7 +37,7 @@ export default function WizardStepSevenScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{SEX_LABELS[option]}</Text>
             </Pressable>
           );
         })}

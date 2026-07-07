@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { GOAL_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const GOAL_OPTIONS = ["hypertrophy", "strength", "fat_loss", "recomposition"];
@@ -8,12 +9,14 @@ const GOAL_OPTIONS = ["hypertrophy", "strength", "fat_loss", "recomposition"];
 export default function WizardStepOneScreen() {
   const router = useRouter();
   const goal = useWizardDraftStore((s) => s.goal);
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setGoal = useWizardDraftStore((s) => s.setGoal);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   return (
     <WizardStepScreen
       currentStep={1}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="What is your primary goal?"
       canGoBack={false}
       isNextEnabled={goal !== null}
@@ -34,7 +37,7 @@ export default function WizardStepOneScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{GOAL_LABELS[option]}</Text>
             </Pressable>
           );
         })}

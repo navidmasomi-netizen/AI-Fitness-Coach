@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { OCCUPATION_TYPE_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const OCCUPATION_TYPE_OPTIONS = ["desk_job", "active_job", "mixed", "student", "unemployed"];
@@ -8,12 +9,14 @@ const OCCUPATION_TYPE_OPTIONS = ["desk_job", "active_job", "mixed", "student", "
 export default function WizardStepTenScreen() {
   const router = useRouter();
   const occupationType = useWizardDraftStore((s) => s.occupationType);
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setOccupationType = useWizardDraftStore((s) => s.setOccupationType);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   return (
     <WizardStepScreen
       currentStep={10}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="What best describes your occupation?"
       canGoBack
       isNextEnabled={occupationType !== null}
@@ -34,7 +37,7 @@ export default function WizardStepTenScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{OCCUPATION_TYPE_LABELS[option]}</Text>
             </Pressable>
           );
         })}

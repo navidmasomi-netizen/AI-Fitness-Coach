@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { NUTRITION_HABITS_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const NUTRITION_HABITS_OPTIONS = ["strict", "moderate", "flexible", "unstructured"];
@@ -8,12 +9,14 @@ const NUTRITION_HABITS_OPTIONS = ["strict", "moderate", "flexible", "unstructure
 export default function WizardStepTwelveScreen() {
   const router = useRouter();
   const nutritionHabits = useWizardDraftStore((s) => s.nutritionHabits);
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setNutritionHabits = useWizardDraftStore((s) => s.setNutritionHabits);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   return (
     <WizardStepScreen
       currentStep={12}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="How would you describe your nutrition habits?"
       canGoBack
       isNextEnabled={nutritionHabits !== null}
@@ -34,7 +37,7 @@ export default function WizardStepTwelveScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{NUTRITION_HABITS_LABELS[option]}</Text>
             </Pressable>
           );
         })}

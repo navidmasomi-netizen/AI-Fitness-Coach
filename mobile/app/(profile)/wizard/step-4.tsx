@@ -1,19 +1,22 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const SESSION_DURATION_OPTIONS = [30, 45, 60, 75, 90];
 
 export default function WizardStepFourScreen() {
   const router = useRouter();
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const sessionDurationMin = useWizardDraftStore((s) => s.sessionDurationMin);
   const setSessionDurationMin = useWizardDraftStore((s) => s.setSessionDurationMin);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   return (
     <WizardStepScreen
       currentStep={4}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="How long should each session be?"
       canGoBack
       isNextEnabled={sessionDurationMin !== null}

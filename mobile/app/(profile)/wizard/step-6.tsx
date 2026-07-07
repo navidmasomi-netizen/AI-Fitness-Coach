@@ -2,13 +2,16 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 export default function WizardStepSixScreen() {
   const router = useRouter();
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const age = useWizardDraftStore((s) => s.age);
   const setAge = useWizardDraftStore((s) => s.setAge);
   const [ageInput, setAgeInput] = useState(age !== null ? String(age) : "");
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   const parsedAge = Number(ageInput);
   const isAgeValid = Number.isInteger(parsedAge) && parsedAge >= 13 && parsedAge <= 100;
@@ -17,7 +20,7 @@ export default function WizardStepSixScreen() {
   return (
     <WizardStepScreen
       currentStep={6}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="How old are you?"
       canGoBack
       isNextEnabled={isAgeValid}

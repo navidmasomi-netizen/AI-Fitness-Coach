@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { CARDIO_PREFERENCE_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const CARDIO_PREFERENCE_OPTIONS = ["none", "low_intensity", "hiit", "mixed"];
@@ -8,12 +9,14 @@ const CARDIO_PREFERENCE_OPTIONS = ["none", "low_intensity", "hiit", "mixed"];
 export default function WizardStepFourteenScreen() {
   const router = useRouter();
   const cardioPreference = useWizardDraftStore((s) => s.cardioPreference);
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setCardioPreference = useWizardDraftStore((s) => s.setCardioPreference);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   return (
     <WizardStepScreen
       currentStep={14}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="What is your cardio preference?"
       canGoBack
       isNextEnabled={cardioPreference !== null}
@@ -34,7 +37,7 @@ export default function WizardStepFourteenScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{CARDIO_PREFERENCE_LABELS[option]}</Text>
             </Pressable>
           );
         })}

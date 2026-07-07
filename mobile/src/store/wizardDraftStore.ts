@@ -16,6 +16,7 @@ interface WizardDraftState {
   mealFrequency: number | null;
   cardioPreference: string | null;
   supplementUse: string[];
+  supplementOther: string | null;
   injuryFlags: string[];
   injuryNotes: string | null;
   setGoal: (goal: string) => void;
@@ -33,6 +34,7 @@ interface WizardDraftState {
   setMealFrequency: (mealFrequency: number | null) => void;
   setCardioPreference: (cardioPreference: string) => void;
   setSupplementUse: (supplementUse: string[]) => void;
+  setSupplementOther: (supplementOther: string | null) => void;
   setInjuryFlags: (injuryFlags: string[]) => void;
   setInjuryNotes: (injuryNotes: string | null) => void;
 }
@@ -53,6 +55,7 @@ export const useWizardDraftStore = create<WizardDraftState>()((set) => ({
   mealFrequency: null,
   cardioPreference: null,
   supplementUse: [],
+  supplementOther: null,
   injuryFlags: [],
   injuryNotes: null,
   setGoal: (goal) => set({ goal }),
@@ -70,6 +73,7 @@ export const useWizardDraftStore = create<WizardDraftState>()((set) => ({
   setMealFrequency: (mealFrequency) => set({ mealFrequency }),
   setCardioPreference: (cardioPreference) => set({ cardioPreference }),
   setSupplementUse: (supplementUse) => set({ supplementUse }),
+  setSupplementOther: (supplementOther) => set({ supplementOther }),
   setInjuryFlags: (injuryFlags) => set({ injuryFlags }),
   setInjuryNotes: (injuryNotes) => set({ injuryNotes }),
 }));

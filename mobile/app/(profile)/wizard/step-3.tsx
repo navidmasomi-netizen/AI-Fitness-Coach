@@ -1,19 +1,22 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const TRAINING_DAY_OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
 export default function WizardStepThreeScreen() {
   const router = useRouter();
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const trainingDaysPerWeek = useWizardDraftStore((s) => s.trainingDaysPerWeek);
   const setTrainingDaysPerWeek = useWizardDraftStore((s) => s.setTrainingDaysPerWeek);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   return (
     <WizardStepScreen
       currentStep={3}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="How many days per week do you train?"
       canGoBack
       isNextEnabled={trainingDaysPerWeek !== null}

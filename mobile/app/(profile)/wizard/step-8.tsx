@@ -2,13 +2,16 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 export default function WizardStepEightScreen() {
   const router = useRouter();
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const heightCm = useWizardDraftStore((s) => s.heightCm);
   const setHeightCm = useWizardDraftStore((s) => s.setHeightCm);
   const [heightInput, setHeightInput] = useState(heightCm !== null ? String(heightCm) : "");
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   const parsedHeight = Number(heightInput);
   const isHeightValid = !Number.isNaN(parsedHeight) && parsedHeight >= 100 && parsedHeight <= 250;
@@ -17,7 +20,7 @@ export default function WizardStepEightScreen() {
   return (
     <WizardStepScreen
       currentStep={8}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="What is your height in cm?"
       canGoBack
       isNextEnabled={isHeightValid}

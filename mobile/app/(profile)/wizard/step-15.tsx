@@ -1,14 +1,28 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { SUPPLEMENT_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-const SUPPLEMENT_OPTIONS = ["protein", "creatine", "multivitamin", "omega3", "pre_workout", "none"];
+const SUPPLEMENT_OPTIONS = [
+  "none",
+  "protein",
+  "creatine",
+  "omega3",
+  "multivitamin",
+  "vitamin_d",
+  "magnesium",
+  "fish_oil",
+  "electrolytes",
+  "pre_workout",
+  "other",
+];
 
 export default function WizardStepFifteenScreen() {
   const router = useRouter();
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setSupplementUse = useWizardDraftStore((s) => s.setSupplementUse);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   const toggleSupplement = (option: string) => {
     if (option === "none") {
@@ -28,11 +42,15 @@ export default function WizardStepFifteenScreen() {
   return (
     <WizardStepScreen
       currentStep={15}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="Which supplements do you use?"
       canGoBack
       isNextEnabled={supplementUse.length > 0}
-      onNext={() => router.push("/(profile)/wizard/step-16")}
+      onNext={() =>
+        router.push(
+          supplementUse.includes("other") ? "/(profile)/wizard/step-15b" : "/(profile)/wizard/step-16"
+        )
+      }
     >
       <View style={{ gap: 10 }}>
         {SUPPLEMENT_OPTIONS.map((option) => {
@@ -49,7 +67,9 @@ export default function WizardStepFifteenScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>
+                {SUPPLEMENT_LABELS[option]}
+              </Text>
             </Pressable>
           );
         })}

@@ -1,14 +1,18 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { INJURY_FLAG_LABELS, getWizardStepNumber, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const INJURY_FLAG_OPTIONS = ["knee", "shoulder", "lower_back", "wrist", "none"];
 
 export default function WizardStepSixteenScreen() {
   const router = useRouter();
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const injuryFlags = useWizardDraftStore((s) => s.injuryFlags);
   const setInjuryFlags = useWizardDraftStore((s) => s.setInjuryFlags);
+  const totalSteps = getWizardTotalSteps(supplementUse);
+  const currentStep = getWizardStepNumber(16, supplementUse);
 
   const toggleInjuryFlag = (option: string) => {
     if (option === "none") {
@@ -27,8 +31,8 @@ export default function WizardStepSixteenScreen() {
 
   return (
     <WizardStepScreen
-      currentStep={16}
-      totalSteps={18}
+      currentStep={currentStep}
+      totalSteps={totalSteps}
       title="Any injuries or limitations to consider?"
       canGoBack
       isNextEnabled={injuryFlags.length > 0}
@@ -55,7 +59,9 @@ export default function WizardStepSixteenScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>
+                {INJURY_FLAG_LABELS[option]}
+              </Text>
             </Pressable>
           );
         })}

@@ -2,39 +2,38 @@ import { useState } from "react";
 import { View, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
-import { getWizardStepNumber, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
+import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
-export default function WizardStepSeventeenScreen() {
+export default function WizardStepFifteenBScreen() {
   const router = useRouter();
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
-  const injuryNotes = useWizardDraftStore((s) => s.injuryNotes);
-  const setInjuryNotes = useWizardDraftStore((s) => s.setInjuryNotes);
-  const [injuryNotesInput, setInjuryNotesInput] = useState(injuryNotes || "");
+  const supplementOther = useWizardDraftStore((s) => s.supplementOther);
+  const setSupplementOther = useWizardDraftStore((s) => s.setSupplementOther);
+  const [supplementOtherInput, setSupplementOtherInput] = useState(supplementOther || "");
   const totalSteps = getWizardTotalSteps(supplementUse);
-  const currentStep = getWizardStepNumber(17, supplementUse);
 
   return (
     <WizardStepScreen
-      currentStep={currentStep}
+      currentStep={16}
       totalSteps={totalSteps}
-      title="Anything else we should know about your injuries or limitations?"
+      title="What other supplements do you use?"
       canGoBack
       isNextEnabled
-      onNext={() => router.push("/(profile)/wizard/step-18")}
+      onNext={() => router.push("/(profile)/wizard/step-16")}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>
           <TextInput
-            value={injuryNotesInput}
+            value={supplementOtherInput}
             onChangeText={(value) => {
-              setInjuryNotesInput(value);
-              setInjuryNotes(value.length > 0 ? value : null);
+              setSupplementOtherInput(value);
+              setSupplementOther(value.length > 0 ? value : null);
             }}
             onSubmitEditing={Keyboard.dismiss}
             returnKeyType="done"
             multiline
-            placeholder="Describe your injury (optional)"
+            placeholder="Other supplements (optional)"
             style={{ borderWidth: 1, width: "100%", padding: 8, minHeight: 120, textAlignVertical: "top" }}
           />
         </View>

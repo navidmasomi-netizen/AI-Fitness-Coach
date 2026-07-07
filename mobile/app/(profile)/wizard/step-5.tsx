@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { EQUIPMENT_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
 const EQUIPMENT_OPTIONS = ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"];
@@ -8,7 +9,9 @@ const EQUIPMENT_OPTIONS = ["barbell", "dumbbell", "machine", "cable", "bodyweigh
 export default function WizardStepFiveScreen() {
   const router = useRouter();
   const equipmentAccess = useWizardDraftStore((s) => s.equipmentAccess);
+  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setEquipmentAccess = useWizardDraftStore((s) => s.setEquipmentAccess);
+  const totalSteps = getWizardTotalSteps(supplementUse);
 
   const toggleEquipment = (option: string) => {
     if (equipmentAccess.includes(option)) {
@@ -22,7 +25,7 @@ export default function WizardStepFiveScreen() {
   return (
     <WizardStepScreen
       currentStep={5}
-      totalSteps={18}
+      totalSteps={totalSteps}
       title="What equipment do you have access to?"
       canGoBack
       isNextEnabled={equipmentAccess.length > 0}
@@ -43,7 +46,7 @@ export default function WizardStepFiveScreen() {
                 backgroundColor: isSelected ? "#e3f2fd" : "#fff",
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{option}</Text>
+              <Text style={{ fontSize: 16, fontWeight: isSelected ? "700" : "400" }}>{EQUIPMENT_LABELS[option]}</Text>
             </Pressable>
           );
         })}
