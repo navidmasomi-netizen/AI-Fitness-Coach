@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
@@ -36,6 +36,9 @@ export default function WizardStepFifteenBScreen() {
             placeholder="Other supplements (optional)"
             style={{ borderWidth: 1, width: "100%", padding: 8, minHeight: 120, textAlignVertical: "top" }}
           />
+          <Pressable onPress={Keyboard.dismiss} style={{ paddingVertical: 6, paddingHorizontal: 10, alignSelf: "flex-end", marginTop: 8 }}>
+            <Text style={{ color: "#666" }}>Done</Text>
+          </Pressable>
         </View>
       </TouchableWithoutFeedback>
     </WizardStepScreen>
