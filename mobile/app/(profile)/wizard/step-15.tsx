@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { ScrollView, View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
 import { SUPPLEMENT_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
@@ -52,7 +52,7 @@ export default function WizardStepFifteenScreen() {
         )
       }
     >
-      <View style={{ gap: 10 }}>
+      <ScrollView contentContainerStyle={{ gap: 10, paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
         {SUPPLEMENT_OPTIONS.map((option) => {
           const isSelected = supplementUse.includes(option);
           return (
@@ -73,7 +73,7 @@ export default function WizardStepFifteenScreen() {
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
     </WizardStepScreen>
   );
 }

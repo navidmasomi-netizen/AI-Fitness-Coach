@@ -32,7 +32,7 @@ export function WizardStepScreen({
 
   return (
     <View style={{ flex: 1, padding: 24, paddingTop: 60, justifyContent: "space-between" }}>
-      <View>
+      <View style={{ flex: 1 }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <Text style={{ fontSize: 13, color: "#777" }}>
             Step {currentStep} of {totalSteps}
@@ -43,7 +43,7 @@ export function WizardStepScreen({
         </View>
 
         <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>{title}</Text>
-        <View>{children}</View>
+        <View style={{ flex: 1 }}>{children}</View>
       </View>
 
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 24 }}>
