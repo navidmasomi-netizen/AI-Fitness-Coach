@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepFourScreen() {
   const sessionDurationMin = useWizardDraftStore((s) => s.sessionDurationMin);
   const setSessionDurationMin = useWizardDraftStore((s) => s.setSessionDurationMin);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepFourScreen() {
       title="How long should each session be?"
       canGoBack
       isNextEnabled={sessionDurationMin !== null}
-      onNext={() => router.push("/(profile)/wizard/step-5")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (sessionDurationMin === null) return;
+        const didSave = await saveStep({ sessionDurationMin }, 4);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-5");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {SESSION_DURATION_OPTIONS.map((option) => {

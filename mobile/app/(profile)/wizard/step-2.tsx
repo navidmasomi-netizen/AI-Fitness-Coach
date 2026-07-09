@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { TRAINING_LEVEL_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepTwoScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setTrainingLevel = useWizardDraftStore((s) => s.setTrainingLevel);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepTwoScreen() {
       title="What is your training level?"
       canGoBack
       isNextEnabled={trainingLevel !== null}
-      onNext={() => router.push("/(profile)/wizard/step-3")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (!trainingLevel) return;
+        const didSave = await saveStep({ trainingLevel }, 2);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-3");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {TRAINING_LEVEL_OPTIONS.map((option) => {

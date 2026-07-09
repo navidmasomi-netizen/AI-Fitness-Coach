@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardStepNumber, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -13,6 +14,7 @@ export default function WizardStepSeventeenScreen() {
   const [injuryNotesInput, setInjuryNotesInput] = useState(injuryNotes || "");
   const totalSteps = getWizardTotalSteps(supplementUse);
   const currentStep = getWizardStepNumber(17, supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -21,7 +23,14 @@ export default function WizardStepSeventeenScreen() {
       title="Anything else we should know about your injuries or limitations?"
       canGoBack
       isNextEnabled
-      onNext={() => router.push("/(profile)/wizard/step-18")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        const didSave = await saveStep({ injuryNotes }, currentStep);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-18");
+        }
+      }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>

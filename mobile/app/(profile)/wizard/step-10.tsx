@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { OCCUPATION_TYPE_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepTenScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setOccupationType = useWizardDraftStore((s) => s.setOccupationType);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepTenScreen() {
       title="What best describes your occupation?"
       canGoBack
       isNextEnabled={occupationType !== null}
-      onNext={() => router.push("/(profile)/wizard/step-11")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (!occupationType) return;
+        const didSave = await saveStep({ occupationType }, 10);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-11");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {OCCUPATION_TYPE_OPTIONS.map((option) => {

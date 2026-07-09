@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepThreeScreen() {
   const trainingDaysPerWeek = useWizardDraftStore((s) => s.trainingDaysPerWeek);
   const setTrainingDaysPerWeek = useWizardDraftStore((s) => s.setTrainingDaysPerWeek);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepThreeScreen() {
       title="How many days per week do you train?"
       canGoBack
       isNextEnabled={trainingDaysPerWeek !== null}
-      onNext={() => router.push("/(profile)/wizard/step-4")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (trainingDaysPerWeek === null) return;
+        const didSave = await saveStep({ trainingDaysPerWeek }, 3);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-4");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {TRAINING_DAY_OPTIONS.map((option) => {

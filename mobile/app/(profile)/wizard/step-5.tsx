@@ -1,6 +1,7 @@
-import { View, Text, Pressable } from "react-native";
+import { ScrollView, View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { EQUIPMENT_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepFiveScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setEquipmentAccess = useWizardDraftStore((s) => s.setEquipmentAccess);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   const toggleEquipment = (option: string) => {
     if (equipmentAccess.includes(option)) {
@@ -29,9 +31,17 @@ export default function WizardStepFiveScreen() {
       title="What equipment do you have access to?"
       canGoBack
       isNextEnabled={equipmentAccess.length > 0}
-      onNext={() => router.push("/(profile)/wizard/step-6")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (equipmentAccess.length === 0) return;
+        const didSave = await saveStep({ equipmentAccess }, 5);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-6");
+        }
+      }}
     >
-      <View style={{ gap: 10 }}>
+      <ScrollView contentContainerStyle={{ gap: 10, paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
         {EQUIPMENT_OPTIONS.map((option) => {
           const isSelected = equipmentAccess.includes(option);
           return (
@@ -50,7 +60,7 @@ export default function WizardStepFiveScreen() {
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
     </WizardStepScreen>
   );
 }

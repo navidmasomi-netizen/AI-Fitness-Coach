@@ -46,6 +46,12 @@ const requiredFields = [
   "units",
 ];
 
+const defaultProfileMetadata = {
+  preferredLanguage: "en",
+  timezone: "UTC",
+  units: "metric",
+};
+
 function validateProfileBounds(body) {
   if (Object.prototype.hasOwnProperty.call(body, "age")) {
     if (!Number.isInteger(body.age) || body.age < 13 || body.age > 100) {
@@ -124,9 +130,9 @@ function buildProfileCreateData(userId, patchData) {
     cardioPreference: "",
     injuryFlags: [],
     injuryNotes: null,
-    preferredLanguage: "",
-    timezone: "",
-    units: "",
+    preferredLanguage: defaultProfileMetadata.preferredLanguage,
+    timezone: defaultProfileMetadata.timezone,
+    units: defaultProfileMetadata.units,
     lastCompletedStep: 0,
     ...patchData,
   };
@@ -201,8 +207,15 @@ export const completeMyProfile = async (req, res) => {
       return res.status(400).json({ success: false, message: "Profile is incomplete" });
     }
 
+    const normalizedProfile = {
+      ...profile,
+      preferredLanguage: profile.preferredLanguage?.trim() || defaultProfileMetadata.preferredLanguage,
+      timezone: profile.timezone?.trim() || defaultProfileMetadata.timezone,
+      units: profile.units?.trim() || defaultProfileMetadata.units,
+    };
+
     for (const field of requiredFields) {
-      if (isMissingRequiredValue(field, profile[field])) {
+      if (isMissingRequiredValue(field, normalizedProfile[field])) {
         return res.status(400).json({ success: false, message: "Profile is incomplete" });
       }
     }
@@ -210,6 +223,9 @@ export const completeMyProfile = async (req, res) => {
     const completedProfile = await prisma.userProfile.update({
       where: { userId },
       data: {
+        preferredLanguage: normalizedProfile.preferredLanguage,
+        timezone: normalizedProfile.timezone,
+        units: normalizedProfile.units,
         wizardCompleted: true,
         wizardCompletedAt: new Date(),
       },

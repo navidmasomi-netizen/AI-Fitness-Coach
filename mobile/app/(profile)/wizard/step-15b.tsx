@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepFifteenBScreen() {
   const setSupplementOther = useWizardDraftStore((s) => s.setSupplementOther);
   const [supplementOtherInput, setSupplementOtherInput] = useState(supplementOther || "");
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,14 @@ export default function WizardStepFifteenBScreen() {
       title="What other supplements do you use?"
       canGoBack
       isNextEnabled
-      onNext={() => router.push("/(profile)/wizard/step-16")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        const didSave = await saveStep({}, 16);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-16");
+        }
+      }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View>

@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { RECOVERY_QUALITY_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepElevenScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setRecoveryQuality = useWizardDraftStore((s) => s.setRecoveryQuality);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepElevenScreen() {
       title="How would you rate your recovery quality?"
       canGoBack
       isNextEnabled={recoveryQuality !== null}
-      onNext={() => router.push("/(profile)/wizard/step-12")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (!recoveryQuality) return;
+        const didSave = await saveStep({ recoveryQuality }, 11);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-12");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {RECOVERY_QUALITY_OPTIONS.map((option) => {

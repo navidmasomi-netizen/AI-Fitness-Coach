@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { CARDIO_PREFERENCE_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepFourteenScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setCardioPreference = useWizardDraftStore((s) => s.setCardioPreference);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepFourteenScreen() {
       title="What is your cardio preference?"
       canGoBack
       isNextEnabled={cardioPreference !== null}
-      onNext={() => router.push("/(profile)/wizard/step-15")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (!cardioPreference) return;
+        const didSave = await saveStep({ cardioPreference }, 14);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-15");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {CARDIO_PREFERENCE_OPTIONS.map((option) => {

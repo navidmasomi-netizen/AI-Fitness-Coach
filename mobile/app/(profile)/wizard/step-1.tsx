@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { GOAL_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepOneScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setGoal = useWizardDraftStore((s) => s.setGoal);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepOneScreen() {
       title="What is your primary goal?"
       canGoBack={false}
       isNextEnabled={goal !== null}
-      onNext={() => router.push("/(profile)/wizard/step-2")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (!goal) return;
+        const didSave = await saveStep({ goal }, 1);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-2");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {GOAL_OPTIONS.map((option) => {

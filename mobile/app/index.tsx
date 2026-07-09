@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { Redirect } from "expo-router";
-import { getMyProfile } from "../src/api/profile";
+import { getFullProfile } from "../src/api/profile";
 import { useAuthStore } from "../src/store/authStore";
 import { hasSeenIntro } from "../src/store/onboardingStorage";
+import { hydrateWizardDraft, resetWizardDraft } from "../src/store/wizardHydrate";
+import { resolveWizardResumeRoute, type WizardRoute } from "../src/utils/wizardResume";
 
 export default function Index() {
   const isLoading = useAuthStore((s) => s.isLoading);
@@ -13,6 +15,7 @@ export default function Index() {
   const [introSeen, setIntroSeen] = useState(false);
   const [profileChecked, setProfileChecked] = useState(false);
   const [wizardCompleted, setWizardCompleted] = useState(false);
+  const [resumeRoute, setResumeRoute] = useState<WizardRoute>("/(profile)/wizard/step-1");
 
   useEffect(() => {
     if (isLoading) return;
@@ -41,6 +44,7 @@ export default function Index() {
     if (isLoading) return;
 
     if (!isAuthenticated) {
+      resetWizardDraft();
       setProfileChecked(false);
       return;
     }
@@ -54,15 +58,19 @@ export default function Index() {
 
     setProfileChecked(false);
 
-    getMyProfile()
+    getFullProfile()
       .then((profile) => {
         if (cancelled) return;
+        hydrateWizardDraft(profile);
         setWizardCompleted(!!profile?.wizardCompleted);
+        setResumeRoute(resolveWizardResumeRoute(profile));
         setProfileChecked(true);
       })
       .catch(() => {
         if (cancelled) return;
+        resetWizardDraft();
         setWizardCompleted(false);
+        setResumeRoute("/(profile)/wizard/step-1");
         setProfileChecked(true);
       });
 
@@ -94,7 +102,7 @@ export default function Index() {
   }
 
   if (!wizardCompleted) {
-    return <Redirect href="/(profile)/wizard/step-1" />;
+    return <Redirect href={resumeRoute} />;
   }
 
   return <Redirect href="/(tabs)" />;

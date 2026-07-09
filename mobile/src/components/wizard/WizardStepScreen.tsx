@@ -9,8 +9,11 @@ interface WizardStepScreenProps {
   title: string;
   canGoBack: boolean;
   isNextEnabled: boolean;
-  onNext: () => void;
+  onNext: () => void | Promise<void>;
   children: ReactNode;
+  isNextLoading?: boolean;
+  errorMessage?: string | null;
+  nextLabel?: string;
 }
 
 export function WizardStepScreen({
@@ -21,6 +24,9 @@ export function WizardStepScreen({
   isNextEnabled,
   onNext,
   children,
+  isNextLoading = false,
+  errorMessage = null,
+  nextLabel = "Next",
 }: WizardStepScreenProps) {
   const router = useRouter();
   const logout = useAuthStore((s) => s.logout);
@@ -46,6 +52,8 @@ export function WizardStepScreen({
         <View style={{ flex: 1 }}>{children}</View>
       </View>
 
+      {errorMessage ? <Text style={{ color: "red", fontSize: 12, marginBottom: 12 }}>{errorMessage}</Text> : null}
+
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 24 }}>
         {canGoBack ? (
           <Pressable
@@ -62,15 +70,15 @@ export function WizardStepScreen({
 
         <Pressable
           onPress={onNext}
-          disabled={!isNextEnabled}
+          disabled={!isNextEnabled || isNextLoading}
           style={{
             paddingVertical: 14,
             paddingHorizontal: 20,
-            backgroundColor: isNextEnabled ? "#2196f3" : "#bbdefb",
+            backgroundColor: isNextEnabled && !isNextLoading ? "#2196f3" : "#bbdefb",
             borderRadius: 10,
           }}
         >
-          <Text style={{ color: "white", fontWeight: "bold" }}>Next</Text>
+          <Text style={{ color: "white", fontWeight: "bold" }}>{isNextLoading ? "Saving..." : nextLabel}</Text>
         </Pressable>
       </View>
     </View>

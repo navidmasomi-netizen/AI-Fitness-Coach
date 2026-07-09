@@ -1,6 +1,7 @@
 import { ScrollView, View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { SUPPLEMENT_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -23,6 +24,7 @@ export default function WizardStepFifteenScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setSupplementUse = useWizardDraftStore((s) => s.setSupplementUse);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   const toggleSupplement = (option: string) => {
     if (option === "none") {
@@ -46,11 +48,14 @@ export default function WizardStepFifteenScreen() {
       title="Which supplements do you use?"
       canGoBack
       isNextEnabled={supplementUse.length > 0}
-      onNext={() =>
-        router.push(
-          supplementUse.includes("other") ? "/(profile)/wizard/step-15b" : "/(profile)/wizard/step-16"
-        )
-      }
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (supplementUse.length === 0) return;
+        const didSave = await saveStep({ supplementUse }, 15);
+        if (!didSave) return;
+        router.push(supplementUse.includes("other") ? "/(profile)/wizard/step-15b" : "/(profile)/wizard/step-16");
+      }}
     >
       <ScrollView contentContainerStyle={{ gap: 10, paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
         {SUPPLEMENT_OPTIONS.map((option) => {

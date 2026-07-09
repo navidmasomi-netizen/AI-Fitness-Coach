@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { NUTRITION_HABITS_LABELS, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepTwelveScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setNutritionHabits = useWizardDraftStore((s) => s.setNutritionHabits);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepTwelveScreen() {
       title="How would you describe your nutrition habits?"
       canGoBack
       isNextEnabled={nutritionHabits !== null}
-      onNext={() => router.push("/(profile)/wizard/step-13")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (!nutritionHabits) return;
+        const didSave = await saveStep({ nutritionHabits }, 12);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-13");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {NUTRITION_HABITS_OPTIONS.map((option) => {

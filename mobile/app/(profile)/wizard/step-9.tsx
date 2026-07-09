@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepNineScreen() {
   const setWeightKg = useWizardDraftStore((s) => s.setWeightKg);
   const [weightInput, setWeightInput] = useState(weightKg !== null ? String(weightKg) : "");
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   const parsedWeight = Number(weightInput);
   const isWeightValid = !Number.isNaN(parsedWeight) && parsedWeight >= 20 && parsedWeight <= 400;
@@ -24,10 +26,15 @@ export default function WizardStepNineScreen() {
       title="What is your weight in kg?"
       canGoBack
       isNextEnabled={isWeightValid}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
       onNext={() => {
         if (!isWeightValid) return;
-        setWeightKg(parsedWeight);
-        router.push("/(profile)/wizard/step-10");
+        saveStep({ weightKg: parsedWeight }, 9).then((didSave) => {
+          if (!didSave) return;
+          setWeightKg(parsedWeight);
+          router.push("/(profile)/wizard/step-10");
+        });
       }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

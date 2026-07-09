@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepSixScreen() {
   const setAge = useWizardDraftStore((s) => s.setAge);
   const [ageInput, setAgeInput] = useState(age !== null ? String(age) : "");
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   const parsedAge = Number(ageInput);
   const isAgeValid = Number.isInteger(parsedAge) && parsedAge >= 13 && parsedAge <= 100;
@@ -24,10 +26,15 @@ export default function WizardStepSixScreen() {
       title="How old are you?"
       canGoBack
       isNextEnabled={isAgeValid}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
       onNext={() => {
         if (!isAgeValid) return;
-        setAge(parsedAge);
-        router.push("/(profile)/wizard/step-7");
+        saveStep({ age: parsedAge }, 6).then((didSave) => {
+          if (!didSave) return;
+          setAge(parsedAge);
+          router.push("/(profile)/wizard/step-7");
+        });
       }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

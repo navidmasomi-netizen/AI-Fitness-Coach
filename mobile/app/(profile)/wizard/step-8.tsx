@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableWithoutFeedback, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepEightScreen() {
   const setHeightCm = useWizardDraftStore((s) => s.setHeightCm);
   const [heightInput, setHeightInput] = useState(heightCm !== null ? String(heightCm) : "");
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   const parsedHeight = Number(heightInput);
   const isHeightValid = !Number.isNaN(parsedHeight) && parsedHeight >= 100 && parsedHeight <= 250;
@@ -24,10 +26,15 @@ export default function WizardStepEightScreen() {
       title="What is your height in cm?"
       canGoBack
       isNextEnabled={isHeightValid}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
       onNext={() => {
         if (!isHeightValid) return;
-        setHeightCm(parsedHeight);
-        router.push("/(profile)/wizard/step-9");
+        saveStep({ heightCm: parsedHeight }, 8).then((didSave) => {
+          if (!didSave) return;
+          setHeightCm(parsedHeight);
+          router.push("/(profile)/wizard/step-9");
+        });
       }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

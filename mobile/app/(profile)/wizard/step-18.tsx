@@ -1,5 +1,8 @@
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { ApiError } from "../../../src/api/client";
+import { completeProfile } from "../../../src/api/profile";
 import { useAuthStore } from "../../../src/store/authStore";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 import {
@@ -34,16 +37,30 @@ export default function WizardStepEighteenScreen() {
   const draft = useWizardDraftStore();
   const totalSteps = getWizardTotalSteps(draft.supplementUse);
   const currentStep = getWizardStepNumber(18, draft.supplementUse);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const onLogout = async () => {
     await logout();
     router.replace("/(auth)/login");
   };
 
-  const onCreateProgram = () => {
-    // Phase 4C will replace this placeholder with backend profile completion + program creation.
-    console.log("Build My AI Program tapped - Phase 4C will wire this to backend submission");
-    Alert.alert("Phase 4C", "Build My AI Program will be connected in Phase 4C.");
+  const onCreateProgram = async () => {
+    setIsCompleting(true);
+    setErrorMessage(null);
+
+    try {
+      await completeProfile();
+      router.replace("/");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage("Couldn't complete your profile. Check your connection and try again.");
+      }
+    } finally {
+      setIsCompleting(false);
+    }
   };
 
   return (
@@ -98,6 +115,8 @@ export default function WizardStepEighteenScreen() {
         </View>
       </ScrollView>
 
+      {errorMessage ? <Text style={{ color: "red", fontSize: 12, marginBottom: 12 }}>{errorMessage}</Text> : null}
+
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 24 }}>
         <Pressable
           onPress={() => router.back()}
@@ -108,9 +127,15 @@ export default function WizardStepEighteenScreen() {
 
         <Pressable
           onPress={onCreateProgram}
-          style={{ paddingVertical: 14, paddingHorizontal: 20, backgroundColor: "#2196f3", borderRadius: 10 }}
+          disabled={isCompleting}
+          style={{
+            paddingVertical: 14,
+            paddingHorizontal: 20,
+            backgroundColor: isCompleting ? "#bbdefb" : "#2196f3",
+            borderRadius: 10,
+          }}
         >
-          <Text style={{ color: "white", fontWeight: "bold" }}>Build My AI Program</Text>
+          <Text style={{ color: "white", fontWeight: "bold" }}>{isCompleting ? "Saving..." : "Build My AI Program"}</Text>
         </Pressable>
       </View>
     </View>

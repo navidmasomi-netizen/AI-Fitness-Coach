@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { WizardStepScreen } from "../../../src/components/wizard/WizardStepScreen";
+import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
 import { getWizardTotalSteps } from "../../../src/constants/wizardLabels";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
 
@@ -12,6 +13,7 @@ export default function WizardStepThirteenScreen() {
   const supplementUse = useWizardDraftStore((s) => s.supplementUse);
   const setMealFrequency = useWizardDraftStore((s) => s.setMealFrequency);
   const totalSteps = getWizardTotalSteps(supplementUse);
+  const { isSaving, errorMessage, saveStep } = useWizardStepSave();
 
   return (
     <WizardStepScreen
@@ -20,7 +22,15 @@ export default function WizardStepThirteenScreen() {
       title="How many meals do you usually eat per day?"
       canGoBack
       isNextEnabled={mealFrequency !== null}
-      onNext={() => router.push("/(profile)/wizard/step-14")}
+      isNextLoading={isSaving}
+      errorMessage={errorMessage}
+      onNext={async () => {
+        if (mealFrequency === null) return;
+        const didSave = await saveStep({ mealFrequency }, 13);
+        if (didSave) {
+          router.push("/(profile)/wizard/step-14");
+        }
+      }}
     >
       <View style={{ gap: 10 }}>
         {MEAL_FREQUENCY_OPTIONS.map((option) => {
