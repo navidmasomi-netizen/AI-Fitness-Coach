@@ -46,3 +46,6 @@ mobile/ios/
 
 # Temporary files
 *.tmp
+
+# Local database backups
+backend/backups/
