@@ -138,6 +138,7 @@ model Exercise {
 model Program {
   id          Int           @id @default(autoincrement())
   name        String
+  description String?
   splitFamily SplitFamily
   goal        Goal
   isStatic    Boolean       @default(true)
