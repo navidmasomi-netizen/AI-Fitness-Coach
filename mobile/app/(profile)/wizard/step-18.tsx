@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { ApiError } from "../../../src/api/client";
+import { generateProgram } from "../../../src/api/programs";
 import { completeProfile } from "../../../src/api/profile";
 import { useAuthStore } from "../../../src/store/authStore";
 import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
+import { resetWizardDraft } from "../../../src/store/wizardHydrate";
 import {
   CARDIO_PREFERENCE_LABELS,
   EQUIPMENT_LABELS,
@@ -37,30 +39,66 @@ export default function WizardStepEighteenScreen() {
   const draft = useWizardDraftStore();
   const totalSteps = getWizardTotalSteps(draft.supplementUse);
   const currentStep = getWizardStepNumber(18, draft.supplementUse);
-  const [isCompleting, setIsCompleting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showGoHomeAction, setShowGoHomeAction] = useState(false);
 
   const onLogout = async () => {
     await logout();
     router.replace("/(auth)/login");
   };
 
+  function getGenerationErrorMessage(error: unknown): string {
+    if (!(error instanceof ApiError)) {
+      return "Something went wrong while generating your program. Please try again.";
+    }
+
+    if (error.status === 0) {
+      return "Couldn't reach the server. Check your connection and try again.";
+    }
+
+    if (error.status === 401) {
+      return "Your session expired. Please log in again.";
+    }
+
+    if (error.status === 404) {
+      return "We couldn't find your profile. Please try again.";
+    }
+
+    if (error.status === 400) {
+      return "Your profile isn't fully complete yet. Please review your answers.";
+    }
+
+    if (error.status === 409) {
+      return "You already have an active program.";
+    }
+
+    if (error.status === 422) {
+      return "We couldn't build a program with your current equipment and injury settings. Try adjusting your profile and retrying.";
+    }
+
+    return "Something went wrong while generating your program. Please try again.";
+  }
+
   const onCreateProgram = async () => {
-    setIsCompleting(true);
+    if (isGenerating) return;
+
+    setIsGenerating(true);
     setErrorMessage(null);
+    setShowGoHomeAction(false);
 
     try {
       await completeProfile();
+      await generateProgram();
+      resetWizardDraft();
       router.replace("/");
     } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage("Couldn't complete your profile. Check your connection and try again.");
-      }
-    } finally {
-      setIsCompleting(false);
+      const nextMessage = getGenerationErrorMessage(error);
+      setErrorMessage(nextMessage);
+      setShowGoHomeAction(error instanceof ApiError && error.status === 409);
     }
+
+    setIsGenerating(false);
   };
 
   return (
@@ -116,6 +154,11 @@ export default function WizardStepEighteenScreen() {
       </ScrollView>
 
       {errorMessage ? <Text style={{ color: "red", fontSize: 12, marginBottom: 12 }}>{errorMessage}</Text> : null}
+      {showGoHomeAction ? (
+        <Pressable onPress={() => router.replace("/")} style={{ marginBottom: 12, alignSelf: "flex-start" }}>
+          <Text style={{ color: "#2196f3", fontSize: 13, fontWeight: "bold" }}>Go to Home</Text>
+        </Pressable>
+      ) : null}
 
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 24 }}>
         <Pressable
@@ -127,15 +170,15 @@ export default function WizardStepEighteenScreen() {
 
         <Pressable
           onPress={onCreateProgram}
-          disabled={isCompleting}
+          disabled={isGenerating}
           style={{
             paddingVertical: 14,
             paddingHorizontal: 20,
-            backgroundColor: isCompleting ? "#bbdefb" : "#2196f3",
+            backgroundColor: isGenerating ? "#bbdefb" : "#2196f3",
             borderRadius: 10,
           }}
         >
-          <Text style={{ color: "white", fontWeight: "bold" }}>{isCompleting ? "Saving..." : "Build My AI Program"}</Text>
+          <Text style={{ color: "white", fontWeight: "bold" }}>{isGenerating ? "Building..." : "Build My AI Program"}</Text>
         </Pressable>
       </View>
     </View>
