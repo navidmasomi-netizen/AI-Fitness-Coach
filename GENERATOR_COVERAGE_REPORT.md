@@ -1,0 +1,6920 @@
+# GENERATOR_COVERAGE_REPORT
+
+## 1. Executive Summary
+- Matrix profiles audited: 1062 (42 in Pass A, 1008 in Pass B, 12 in Pass C).
+- Additional sex/age invariance executions: 25 (5 reference profiles × 5 runs each).
+- Overall outcomes across Passes A+B+C: 204 PASS, 824 PASS_WITH_DEGRADATION, 34 FAIL.
+- Average quality score: 41.32. Median quality score: 40.00.
+- Pass B full-gym/no-injury logic-only sweep produced 0 FAIL and 804 PASS_WITH_DEGRADATION results; any FAIL there should be triaged as generator logic risk.
+- Worst movement-pattern success rates: vertical_pull (96.85%), single_leg (96.89%), squat (97.16%).
+- Program/UserProgram write-model safety check: before={"program":6,"programDay":21,"programDayExercise":100,"userProgram":5,"exercise":39}, after={"program":6,"programDay":21,"programDayExercise":100,"userProgram":5,"exercise":39}.
+
+## 2. Metadata
+- Generator Version: 1.0
+- Exercise Dataset Size: 39
+- Audit Version: 1.0
+- Execution Date: 2026-07-14T09:37:02.941Z
+- Total Profiles Tested: 1087 (1062 matrix + 25 invariance executions)
+
+## 3. Outcome Breakdown
+| Scope | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Non-PASS % |
+| --- | --- | --- | --- | --- | --- |
+| Passes A+B+C | 204 | 824 | 34 | 19.21% | 80.79% |
+
+## 4. Average and Median Quality Score
+| Scope | Average Score | Median Score |
+| --- | --- | --- |
+| Overall | 41.32 | 40.00 |
+| Pass A | 18.33 | 0.00 |
+| Pass B | 42.76 | 40.00 |
+| Pass C | 0.83 | 0.00 |
+
+## 5. Success Metrics by Equipment Tier
+| Tier | Label | Profiles | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Avg Score |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| E1 | Bodyweight | 6 | 0 | 0 | 6 | 0.00% | 0.00 |
+| E2 | Dumbbell + Bodyweight | 6 | 0 | 0 | 6 | 0.00% | 0.00 |
+| E3 | Dumbbell + Pull-Up Bar + Bodyweight | 6 | 0 | 0 | 6 | 0.00% | 0.00 |
+| E4 | Barbell + Dumbbell + Bodyweight | 6 | 0 | 4 | 2 | 0.00% | 15.00 |
+| E5 | Machine + Cable | 6 | 0 | 4 | 2 | 0.00% | 6.67 |
+| E6 | Full Commercial Gym | 6 | 0 | 4 | 2 | 0.00% | 53.33 |
+| E7 | Full Commercial Gym (No Pull-Up Bar) | 6 | 0 | 4 | 2 | 0.00% | 53.33 |
+
+## 6. Success Metrics by Injury Combination
+| Combo | Label | Profiles | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Avg Score |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| I1 | none | 7 | 0 | 4 | 3 | 0.00% | 30.00 |
+| I2 | knee | 7 | 0 | 0 | 7 | 0.00% | 0.00 |
+| I3 | shoulder | 7 | 0 | 4 | 3 | 0.00% | 25.71 |
+| I4 | wrist | 7 | 0 | 4 | 3 | 0.00% | 25.71 |
+| I5 | lower_back | 7 | 0 | 4 | 3 | 0.00% | 28.57 |
+| I6 | knee+shoulder | 7 | 0 | 0 | 7 | 0.00% | 0.00 |
+
+## 7. Pass B Logic-Only Results
+| Profiles | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Avg Score |
+| --- | --- | --- | --- | --- | --- |
+| 1008 | 204 | 804 | 0 | 20.24% | 42.76 |
+
+Pass B produced no FAIL results.
+
+## 8. Movement-Pattern Risk Ranking
+| Pattern | Required | Ideal | Fallback L1 | Fallback L2 | Omissions | Failures | Success % |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| vertical_pull | 1525 | 993 | 376 | 108 | 48 | 0 | 96.85% |
+| single_leg | 1417 | 624 | 541 | 208 | 44 | 0 | 96.89% |
+| squat | 2431 | 1584 | 586 | 192 | 0 | 69 | 97.16% |
+| anti_extension | 1159 | 360 | 219 | 564 | 16 | 0 | 98.62% |
+| lunge | 1417 | 406 | 317 | 678 | 16 | 0 | 98.87% |
+| elbow_flexion | 2274 | 686 | 570 | 994 | 24 | 0 | 98.94% |
+| vertical_press | 2274 | 1379 | 692 | 183 | 20 | 0 | 99.12% |
+| elbow_extension | 1417 | 448 | 317 | 646 | 6 | 0 | 99.58% |
+| horizontal_press | 2431 | 909 | 758 | 762 | 0 | 2 | 99.92% |
+| hinge | 2382 | 1628 | 573 | 181 | 0 | 0 | 100.00% |
+| horizontal_pull | 2431 | 1287 | 758 | 386 | 0 | 0 | 100.00% |
+| trunk_flexion | 1208 | 454 | 221 | 533 | 0 | 0 | 100.00% |
+
+## 9. Equipment Risk Ranking
+| Tier | Label | FAIL | PASS_WITH_DEGRADATION | PASS % | Avg Score |
+| --- | --- | --- | --- | --- | --- |
+| E1 | Bodyweight | 6 | 0 | 0.00% | 0.00 |
+| E2 | Dumbbell + Bodyweight | 6 | 0 | 0.00% | 0.00 |
+| E3 | Dumbbell + Pull-Up Bar + Bodyweight | 6 | 0 | 0.00% | 0.00 |
+| E4 | Barbell + Dumbbell + Bodyweight | 2 | 4 | 0.00% | 15.00 |
+| E5 | Machine + Cable | 2 | 4 | 0.00% | 6.67 |
+| E6 | Full Commercial Gym | 2 | 4 | 0.00% | 53.33 |
+| E7 | Full Commercial Gym (No Pull-Up Bar) | 2 | 4 | 0.00% | 53.33 |
+
+## 10. Injury Risk Ranking
+| Combo | Label | FAIL | PASS_WITH_DEGRADATION | PASS % | Interaction Gap |
+| --- | --- | --- | --- | --- | --- |
+| I1 | none | 3 | 4 | 0.00% | no |
+| I2 | knee | 7 | 0 | 0.00% | no |
+| I3 | shoulder | 3 | 4 | 0.00% | no |
+| I4 | wrist | 3 | 4 | 0.00% | no |
+| I5 | lower_back | 3 | 4 | 0.00% | no |
+| I6 | knee+shoulder | 7 | 0 | 0.00% | no |
+
+## 11. Full Failure Classification
+### expected_data_gap
+- A_E1_I1 (A) Bodyweight × none
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E1_I2 (A) Bodyweight × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E1_I3 (A) Bodyweight × shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E1_I4 (A) Bodyweight × wrist
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="upper_a" movementPattern="horizontal_press" under constraints equipmentAccess=["bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E1_I5 (A) Bodyweight × lower_back
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["lower_back"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E1_I6 (A) Bodyweight × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E2_I1 (A) Dumbbell + Bodyweight × none
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E2_I2 (A) Dumbbell + Bodyweight × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E2_I3 (A) Dumbbell + Bodyweight × shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E2_I4 (A) Dumbbell + Bodyweight × wrist
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E2_I5 (A) Dumbbell + Bodyweight × lower_back
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["lower_back"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E2_I6 (A) Dumbbell + Bodyweight × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I1 (A) Dumbbell + Pull-Up Bar + Bodyweight × none
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I2 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I3 (A) Dumbbell + Pull-Up Bar + Bodyweight × shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I4 (A) Dumbbell + Pull-Up Bar + Bodyweight × wrist
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I5 (A) Dumbbell + Pull-Up Bar + Bodyweight × lower_back
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["lower_back"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I6 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E4_I1 (A) Barbell + Dumbbell + Bodyweight × none
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E4_I2 (A) Barbell + Dumbbell + Bodyweight × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E4_I3 (A) Barbell + Dumbbell + Bodyweight × shoulder
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E4_I4 (A) Barbell + Dumbbell + Bodyweight × wrist
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E4_I5 (A) Barbell + Dumbbell + Bodyweight × lower_back
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 30
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E4_I6 (A) Barbell + Dumbbell + Bodyweight × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E5_I2 (A) Machine + Cable × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["machine","cable"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E5_I6 (A) Machine + Cable × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["machine","cable"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C01 (C) Beginner pull-up-bar+dumbbell+bodyweight with knee+shoulder limits
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C03 (C) Beginner pull-up-bar+dumbbell+bodyweight exact squat-gap case
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C05 (C) Beginner bodyweight only with knee limitation on 1-day split
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="full_body" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C06 (C) Beginner dumbbell+bodyweight only baseline
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C07 (C) Beginner dumbbell+bodyweight with wrist limitation
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C09 (C) Advanced barbell+dumbbell+bodyweight with lower_back limitation
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- C11 (C) Intermediate pull-up-bar+dumbbell+bodyweight with lower_back limitation, 6-day reduced-volume profile
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a_light" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["lower_back"], goal=recomposition, trainingLevel=intermediate. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C12 (C) Advanced bodyweight-only fat-loss profile on 3-day split
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="full_body_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["none"], goal=fat_loss, trainingLevel=advanced. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+### novel_data_gap
+- A_E5_I1 (A) Machine + Cable × none
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E5_I3 (A) Machine + Cable × shoulder
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E5_I4 (A) Machine + Cable × wrist
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E5_I5 (A) Machine + Cable × lower_back
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E6_I2 (A) Full Commercial Gym × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E6_I6 (A) Full Commercial Gym × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E7_I2 (A) Full Commercial Gym (No Pull-Up Bar) × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E7_I6 (A) Full Commercial Gym (No Pull-Up Bar) × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C02 (C) Advanced machine+cable only baseline
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- C04 (C) Advanced full commercial gym with knee+shoulder on 7-day split
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="legs_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"], injuryFlags=["knee","shoulder"], goal=strength, trainingLevel=advanced. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C10 (C) Beginner machine+cable with shoulder limitation
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+### injury_interaction_gap
+- None
+### generator_logic_defect
+- None
+### unexpected_unclassified
+- A_E6_I1 (A) Full Commercial Gym × none
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E6_I3 (A) Full Commercial Gym × shoulder
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E6_I4 (A) Full Commercial Gym × wrist
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E6_I5 (A) Full Commercial Gym × lower_back
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I1 (A) Full Commercial Gym (No Pull-Up Bar) × none
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I3 (A) Full Commercial Gym (No Pull-Up Bar) × shoulder
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I4 (A) Full Commercial Gym (No Pull-Up Bar) × wrist
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I5 (A) Full Commercial Gym (No Pull-Up Bar) × lower_back
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_high_30 (B) fat_loss advanced 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_high_45 (B) fat_loss advanced 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_high_60 (B) fat_loss advanced 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_high_75 (B) fat_loss advanced 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_low_30 (B) fat_loss advanced 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_low_45 (B) fat_loss advanced 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_low_60 (B) fat_loss advanced 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_low_75 (B) fat_loss advanced 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_medium_30 (B) fat_loss advanced 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_medium_45 (B) fat_loss advanced 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_medium_60 (B) fat_loss advanced 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_1d_medium_75 (B) fat_loss advanced 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_high_30 (B) fat_loss advanced 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_high_45 (B) fat_loss advanced 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_high_60 (B) fat_loss advanced 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_high_75 (B) fat_loss advanced 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_low_30 (B) fat_loss advanced 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_low_45 (B) fat_loss advanced 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_low_60 (B) fat_loss advanced 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_low_75 (B) fat_loss advanced 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_medium_30 (B) fat_loss advanced 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_medium_45 (B) fat_loss advanced 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_medium_60 (B) fat_loss advanced 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_2d_medium_75 (B) fat_loss advanced 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_high_30 (B) fat_loss advanced 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_high_45 (B) fat_loss advanced 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_high_60 (B) fat_loss advanced 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_high_75 (B) fat_loss advanced 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_low_30 (B) fat_loss advanced 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_low_45 (B) fat_loss advanced 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_low_60 (B) fat_loss advanced 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_low_75 (B) fat_loss advanced 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_medium_30 (B) fat_loss advanced 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_medium_45 (B) fat_loss advanced 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_medium_60 (B) fat_loss advanced 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_3d_medium_75 (B) fat_loss advanced 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_high_30 (B) fat_loss advanced 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_high_45 (B) fat_loss advanced 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_high_60 (B) fat_loss advanced 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_high_75 (B) fat_loss advanced 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_low_30 (B) fat_loss advanced 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_low_45 (B) fat_loss advanced 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_low_60 (B) fat_loss advanced 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_low_75 (B) fat_loss advanced 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_medium_30 (B) fat_loss advanced 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_medium_45 (B) fat_loss advanced 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_medium_60 (B) fat_loss advanced 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_4d_medium_75 (B) fat_loss advanced 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_high_30 (B) fat_loss advanced 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_high_45 (B) fat_loss advanced 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_high_60 (B) fat_loss advanced 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_high_75 (B) fat_loss advanced 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_low_30 (B) fat_loss advanced 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_low_45 (B) fat_loss advanced 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_low_60 (B) fat_loss advanced 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_low_75 (B) fat_loss advanced 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_medium_30 (B) fat_loss advanced 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_medium_45 (B) fat_loss advanced 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_medium_60 (B) fat_loss advanced 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_5d_medium_75 (B) fat_loss advanced 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_high_30 (B) fat_loss advanced 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_high_45 (B) fat_loss advanced 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_high_60 (B) fat_loss advanced 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_high_75 (B) fat_loss advanced 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_low_30 (B) fat_loss advanced 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_low_45 (B) fat_loss advanced 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_low_60 (B) fat_loss advanced 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_low_75 (B) fat_loss advanced 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_medium_30 (B) fat_loss advanced 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_medium_45 (B) fat_loss advanced 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_medium_60 (B) fat_loss advanced 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_6d_medium_75 (B) fat_loss advanced 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_high_30 (B) fat_loss advanced 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_high_45 (B) fat_loss advanced 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_high_60 (B) fat_loss advanced 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_high_75 (B) fat_loss advanced 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_low_30 (B) fat_loss advanced 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_low_45 (B) fat_loss advanced 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_low_60 (B) fat_loss advanced 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_low_75 (B) fat_loss advanced 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_medium_30 (B) fat_loss advanced 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_medium_45 (B) fat_loss advanced 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_medium_60 (B) fat_loss advanced 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_advanced_7d_medium_75 (B) fat_loss advanced 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_high_30 (B) fat_loss intermediate 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_high_45 (B) fat_loss intermediate 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_high_60 (B) fat_loss intermediate 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_high_75 (B) fat_loss intermediate 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_low_30 (B) fat_loss intermediate 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_low_45 (B) fat_loss intermediate 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_low_60 (B) fat_loss intermediate 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_low_75 (B) fat_loss intermediate 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_medium_30 (B) fat_loss intermediate 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_medium_45 (B) fat_loss intermediate 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_medium_60 (B) fat_loss intermediate 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_1d_medium_75 (B) fat_loss intermediate 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_high_30 (B) fat_loss intermediate 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_high_45 (B) fat_loss intermediate 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_high_60 (B) fat_loss intermediate 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_high_75 (B) fat_loss intermediate 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_low_30 (B) fat_loss intermediate 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_low_45 (B) fat_loss intermediate 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_low_60 (B) fat_loss intermediate 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_low_75 (B) fat_loss intermediate 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_medium_30 (B) fat_loss intermediate 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_medium_45 (B) fat_loss intermediate 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_medium_60 (B) fat_loss intermediate 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_2d_medium_75 (B) fat_loss intermediate 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_high_30 (B) fat_loss intermediate 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_high_45 (B) fat_loss intermediate 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_high_60 (B) fat_loss intermediate 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_high_75 (B) fat_loss intermediate 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_low_30 (B) fat_loss intermediate 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_low_45 (B) fat_loss intermediate 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_low_60 (B) fat_loss intermediate 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_low_75 (B) fat_loss intermediate 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_medium_30 (B) fat_loss intermediate 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_medium_45 (B) fat_loss intermediate 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_medium_60 (B) fat_loss intermediate 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_3d_medium_75 (B) fat_loss intermediate 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_high_30 (B) fat_loss intermediate 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_high_45 (B) fat_loss intermediate 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_high_60 (B) fat_loss intermediate 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_high_75 (B) fat_loss intermediate 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_low_30 (B) fat_loss intermediate 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_low_45 (B) fat_loss intermediate 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_low_60 (B) fat_loss intermediate 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_low_75 (B) fat_loss intermediate 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_medium_30 (B) fat_loss intermediate 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_medium_45 (B) fat_loss intermediate 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_medium_60 (B) fat_loss intermediate 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_4d_medium_75 (B) fat_loss intermediate 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_high_30 (B) fat_loss intermediate 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_high_45 (B) fat_loss intermediate 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_high_60 (B) fat_loss intermediate 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_high_75 (B) fat_loss intermediate 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_low_30 (B) fat_loss intermediate 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_low_45 (B) fat_loss intermediate 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_low_60 (B) fat_loss intermediate 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_low_75 (B) fat_loss intermediate 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_medium_30 (B) fat_loss intermediate 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_medium_45 (B) fat_loss intermediate 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_medium_60 (B) fat_loss intermediate 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_5d_medium_75 (B) fat_loss intermediate 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_high_30 (B) fat_loss intermediate 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_high_45 (B) fat_loss intermediate 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_high_60 (B) fat_loss intermediate 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_high_75 (B) fat_loss intermediate 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_low_30 (B) fat_loss intermediate 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_low_45 (B) fat_loss intermediate 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_low_60 (B) fat_loss intermediate 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_low_75 (B) fat_loss intermediate 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_medium_30 (B) fat_loss intermediate 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_medium_45 (B) fat_loss intermediate 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_medium_60 (B) fat_loss intermediate 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_6d_medium_75 (B) fat_loss intermediate 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_high_30 (B) fat_loss intermediate 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_high_45 (B) fat_loss intermediate 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_high_60 (B) fat_loss intermediate 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_high_75 (B) fat_loss intermediate 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_low_30 (B) fat_loss intermediate 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_low_45 (B) fat_loss intermediate 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_low_60 (B) fat_loss intermediate 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_low_75 (B) fat_loss intermediate 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_medium_30 (B) fat_loss intermediate 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_medium_45 (B) fat_loss intermediate 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_medium_60 (B) fat_loss intermediate 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_fat_loss_intermediate_7d_medium_75 (B) fat_loss intermediate 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"fat_loss","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_high_30 (B) hypertrophy advanced 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_high_45 (B) hypertrophy advanced 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_high_60 (B) hypertrophy advanced 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_high_75 (B) hypertrophy advanced 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_low_30 (B) hypertrophy advanced 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_low_45 (B) hypertrophy advanced 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_low_60 (B) hypertrophy advanced 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_low_75 (B) hypertrophy advanced 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_medium_30 (B) hypertrophy advanced 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_medium_45 (B) hypertrophy advanced 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_medium_60 (B) hypertrophy advanced 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_1d_medium_75 (B) hypertrophy advanced 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_high_30 (B) hypertrophy advanced 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_high_45 (B) hypertrophy advanced 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_high_60 (B) hypertrophy advanced 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_high_75 (B) hypertrophy advanced 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_low_30 (B) hypertrophy advanced 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_low_45 (B) hypertrophy advanced 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_low_60 (B) hypertrophy advanced 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_low_75 (B) hypertrophy advanced 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_medium_30 (B) hypertrophy advanced 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_medium_45 (B) hypertrophy advanced 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_medium_60 (B) hypertrophy advanced 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_2d_medium_75 (B) hypertrophy advanced 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_high_30 (B) hypertrophy advanced 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_high_45 (B) hypertrophy advanced 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_high_60 (B) hypertrophy advanced 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_high_75 (B) hypertrophy advanced 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_low_30 (B) hypertrophy advanced 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_low_45 (B) hypertrophy advanced 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_low_60 (B) hypertrophy advanced 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_low_75 (B) hypertrophy advanced 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_medium_30 (B) hypertrophy advanced 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_medium_45 (B) hypertrophy advanced 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_medium_60 (B) hypertrophy advanced 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_3d_medium_75 (B) hypertrophy advanced 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 25
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_high_30 (B) hypertrophy advanced 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_high_45 (B) hypertrophy advanced 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_high_60 (B) hypertrophy advanced 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_high_75 (B) hypertrophy advanced 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_low_30 (B) hypertrophy advanced 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_low_45 (B) hypertrophy advanced 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_low_60 (B) hypertrophy advanced 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_low_75 (B) hypertrophy advanced 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_medium_30 (B) hypertrophy advanced 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_medium_45 (B) hypertrophy advanced 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_medium_60 (B) hypertrophy advanced 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_4d_medium_75 (B) hypertrophy advanced 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_high_30 (B) hypertrophy advanced 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_high_45 (B) hypertrophy advanced 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_high_60 (B) hypertrophy advanced 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_high_75 (B) hypertrophy advanced 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_low_30 (B) hypertrophy advanced 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_low_45 (B) hypertrophy advanced 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_low_60 (B) hypertrophy advanced 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_low_75 (B) hypertrophy advanced 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_medium_30 (B) hypertrophy advanced 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_medium_45 (B) hypertrophy advanced 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_medium_60 (B) hypertrophy advanced 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_5d_medium_75 (B) hypertrophy advanced 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_high_30 (B) hypertrophy advanced 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_high_45 (B) hypertrophy advanced 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_high_60 (B) hypertrophy advanced 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_high_75 (B) hypertrophy advanced 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_low_30 (B) hypertrophy advanced 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_low_45 (B) hypertrophy advanced 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_low_60 (B) hypertrophy advanced 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_low_75 (B) hypertrophy advanced 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_medium_30 (B) hypertrophy advanced 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_medium_45 (B) hypertrophy advanced 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_medium_60 (B) hypertrophy advanced 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_6d_medium_75 (B) hypertrophy advanced 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_high_30 (B) hypertrophy advanced 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_high_45 (B) hypertrophy advanced 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_high_60 (B) hypertrophy advanced 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_high_75 (B) hypertrophy advanced 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_low_30 (B) hypertrophy advanced 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_low_45 (B) hypertrophy advanced 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_low_60 (B) hypertrophy advanced 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_low_75 (B) hypertrophy advanced 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_medium_30 (B) hypertrophy advanced 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_medium_45 (B) hypertrophy advanced 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_medium_60 (B) hypertrophy advanced 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_advanced_7d_medium_75 (B) hypertrophy advanced 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_30 (B) hypertrophy beginner 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_45 (B) hypertrophy beginner 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_60 (B) hypertrophy beginner 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_75 (B) hypertrophy beginner 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_30 (B) hypertrophy beginner 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_45 (B) hypertrophy beginner 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_60 (B) hypertrophy beginner 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_75 (B) hypertrophy beginner 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_30 (B) hypertrophy beginner 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_45 (B) hypertrophy beginner 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_60 (B) hypertrophy beginner 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_75 (B) hypertrophy beginner 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_30 (B) hypertrophy beginner 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_45 (B) hypertrophy beginner 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_60 (B) hypertrophy beginner 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_75 (B) hypertrophy beginner 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_30 (B) hypertrophy beginner 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_45 (B) hypertrophy beginner 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_60 (B) hypertrophy beginner 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_75 (B) hypertrophy beginner 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_30 (B) hypertrophy beginner 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_45 (B) hypertrophy beginner 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_60 (B) hypertrophy beginner 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_75 (B) hypertrophy beginner 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_30 (B) hypertrophy beginner 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_45 (B) hypertrophy beginner 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_60 (B) hypertrophy beginner 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_75 (B) hypertrophy beginner 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_30 (B) hypertrophy beginner 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_45 (B) hypertrophy beginner 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_60 (B) hypertrophy beginner 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_75 (B) hypertrophy beginner 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_30 (B) hypertrophy beginner 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_45 (B) hypertrophy beginner 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_60 (B) hypertrophy beginner 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_75 (B) hypertrophy beginner 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_30 (B) hypertrophy beginner 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_45 (B) hypertrophy beginner 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_60 (B) hypertrophy beginner 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_75 (B) hypertrophy beginner 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_30 (B) hypertrophy beginner 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_45 (B) hypertrophy beginner 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_60 (B) hypertrophy beginner 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_75 (B) hypertrophy beginner 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_30 (B) hypertrophy beginner 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_45 (B) hypertrophy beginner 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_60 (B) hypertrophy beginner 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_75 (B) hypertrophy beginner 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_high_30 (B) hypertrophy intermediate 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_high_45 (B) hypertrophy intermediate 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_high_60 (B) hypertrophy intermediate 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_high_75 (B) hypertrophy intermediate 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_low_30 (B) hypertrophy intermediate 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_low_45 (B) hypertrophy intermediate 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_low_60 (B) hypertrophy intermediate 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_low_75 (B) hypertrophy intermediate 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_medium_30 (B) hypertrophy intermediate 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_medium_45 (B) hypertrophy intermediate 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_medium_60 (B) hypertrophy intermediate 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_1d_medium_75 (B) hypertrophy intermediate 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_high_30 (B) hypertrophy intermediate 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_high_45 (B) hypertrophy intermediate 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_high_60 (B) hypertrophy intermediate 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_high_75 (B) hypertrophy intermediate 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_low_30 (B) hypertrophy intermediate 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_low_45 (B) hypertrophy intermediate 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_low_60 (B) hypertrophy intermediate 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_low_75 (B) hypertrophy intermediate 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_medium_30 (B) hypertrophy intermediate 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_medium_45 (B) hypertrophy intermediate 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_medium_60 (B) hypertrophy intermediate 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_2d_medium_75 (B) hypertrophy intermediate 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_high_30 (B) hypertrophy intermediate 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_high_45 (B) hypertrophy intermediate 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_high_60 (B) hypertrophy intermediate 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_high_75 (B) hypertrophy intermediate 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_low_30 (B) hypertrophy intermediate 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_low_45 (B) hypertrophy intermediate 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_low_60 (B) hypertrophy intermediate 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_low_75 (B) hypertrophy intermediate 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_medium_30 (B) hypertrophy intermediate 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_medium_45 (B) hypertrophy intermediate 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_medium_60 (B) hypertrophy intermediate 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_3d_medium_75 (B) hypertrophy intermediate 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_high_30 (B) hypertrophy intermediate 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_high_45 (B) hypertrophy intermediate 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_high_60 (B) hypertrophy intermediate 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_high_75 (B) hypertrophy intermediate 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_low_30 (B) hypertrophy intermediate 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_low_45 (B) hypertrophy intermediate 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_low_60 (B) hypertrophy intermediate 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_low_75 (B) hypertrophy intermediate 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_medium_30 (B) hypertrophy intermediate 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_medium_45 (B) hypertrophy intermediate 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_medium_60 (B) hypertrophy intermediate 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_4d_medium_75 (B) hypertrophy intermediate 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_high_30 (B) hypertrophy intermediate 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_high_45 (B) hypertrophy intermediate 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_high_60 (B) hypertrophy intermediate 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_high_75 (B) hypertrophy intermediate 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_low_30 (B) hypertrophy intermediate 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_low_45 (B) hypertrophy intermediate 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_low_60 (B) hypertrophy intermediate 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_low_75 (B) hypertrophy intermediate 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_medium_30 (B) hypertrophy intermediate 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_medium_45 (B) hypertrophy intermediate 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_medium_60 (B) hypertrophy intermediate 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_5d_medium_75 (B) hypertrophy intermediate 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_high_30 (B) hypertrophy intermediate 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_high_45 (B) hypertrophy intermediate 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_high_60 (B) hypertrophy intermediate 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_high_75 (B) hypertrophy intermediate 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_low_30 (B) hypertrophy intermediate 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_low_45 (B) hypertrophy intermediate 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_low_60 (B) hypertrophy intermediate 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_low_75 (B) hypertrophy intermediate 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_medium_30 (B) hypertrophy intermediate 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_medium_45 (B) hypertrophy intermediate 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_medium_60 (B) hypertrophy intermediate 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_6d_medium_75 (B) hypertrophy intermediate 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_high_30 (B) hypertrophy intermediate 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_high_45 (B) hypertrophy intermediate 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_high_60 (B) hypertrophy intermediate 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_high_75 (B) hypertrophy intermediate 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_low_30 (B) hypertrophy intermediate 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_low_45 (B) hypertrophy intermediate 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_low_60 (B) hypertrophy intermediate 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_low_75 (B) hypertrophy intermediate 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_medium_30 (B) hypertrophy intermediate 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_medium_45 (B) hypertrophy intermediate 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_medium_60 (B) hypertrophy intermediate 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_intermediate_7d_medium_75 (B) hypertrophy intermediate 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_high_30 (B) recomposition advanced 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_high_45 (B) recomposition advanced 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_high_60 (B) recomposition advanced 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_high_75 (B) recomposition advanced 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_low_30 (B) recomposition advanced 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_low_45 (B) recomposition advanced 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_low_60 (B) recomposition advanced 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_low_75 (B) recomposition advanced 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_medium_30 (B) recomposition advanced 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_medium_45 (B) recomposition advanced 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_medium_60 (B) recomposition advanced 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_1d_medium_75 (B) recomposition advanced 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_high_30 (B) recomposition advanced 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_high_45 (B) recomposition advanced 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_high_60 (B) recomposition advanced 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_high_75 (B) recomposition advanced 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_low_30 (B) recomposition advanced 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_low_45 (B) recomposition advanced 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_low_60 (B) recomposition advanced 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_low_75 (B) recomposition advanced 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_medium_30 (B) recomposition advanced 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_medium_45 (B) recomposition advanced 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_medium_60 (B) recomposition advanced 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_2d_medium_75 (B) recomposition advanced 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 10
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_high_30 (B) recomposition advanced 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_high_45 (B) recomposition advanced 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_high_60 (B) recomposition advanced 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_high_75 (B) recomposition advanced 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_low_30 (B) recomposition advanced 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_low_45 (B) recomposition advanced 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_low_60 (B) recomposition advanced 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_low_75 (B) recomposition advanced 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_medium_30 (B) recomposition advanced 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_medium_45 (B) recomposition advanced 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_medium_60 (B) recomposition advanced 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_3d_medium_75 (B) recomposition advanced 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_high_30 (B) recomposition advanced 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_high_45 (B) recomposition advanced 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_high_60 (B) recomposition advanced 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_high_75 (B) recomposition advanced 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_low_30 (B) recomposition advanced 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_low_45 (B) recomposition advanced 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_low_60 (B) recomposition advanced 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_low_75 (B) recomposition advanced 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_medium_30 (B) recomposition advanced 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_medium_45 (B) recomposition advanced 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_medium_60 (B) recomposition advanced 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_4d_medium_75 (B) recomposition advanced 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_high_30 (B) recomposition advanced 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_high_45 (B) recomposition advanced 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_high_60 (B) recomposition advanced 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_high_75 (B) recomposition advanced 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_low_30 (B) recomposition advanced 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_low_45 (B) recomposition advanced 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_low_60 (B) recomposition advanced 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_low_75 (B) recomposition advanced 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_medium_30 (B) recomposition advanced 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_medium_45 (B) recomposition advanced 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_medium_60 (B) recomposition advanced 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_5d_medium_75 (B) recomposition advanced 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_high_30 (B) recomposition advanced 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_high_45 (B) recomposition advanced 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_high_60 (B) recomposition advanced 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_high_75 (B) recomposition advanced 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_low_30 (B) recomposition advanced 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_low_45 (B) recomposition advanced 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_low_60 (B) recomposition advanced 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_low_75 (B) recomposition advanced 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_medium_30 (B) recomposition advanced 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_medium_45 (B) recomposition advanced 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_medium_60 (B) recomposition advanced 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_6d_medium_75 (B) recomposition advanced 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_high_30 (B) recomposition advanced 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_high_45 (B) recomposition advanced 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_high_60 (B) recomposition advanced 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_high_75 (B) recomposition advanced 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_low_30 (B) recomposition advanced 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_low_45 (B) recomposition advanced 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_low_60 (B) recomposition advanced 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_low_75 (B) recomposition advanced 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_medium_30 (B) recomposition advanced 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_medium_45 (B) recomposition advanced 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_medium_60 (B) recomposition advanced 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_advanced_7d_medium_75 (B) recomposition advanced 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_high_30 (B) recomposition intermediate 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_high_45 (B) recomposition intermediate 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_high_60 (B) recomposition intermediate 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_high_75 (B) recomposition intermediate 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_low_30 (B) recomposition intermediate 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_low_45 (B) recomposition intermediate 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_low_60 (B) recomposition intermediate 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_low_75 (B) recomposition intermediate 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_medium_30 (B) recomposition intermediate 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_medium_45 (B) recomposition intermediate 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_medium_60 (B) recomposition intermediate 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_1d_medium_75 (B) recomposition intermediate 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 85
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_high_30 (B) recomposition intermediate 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_high_45 (B) recomposition intermediate 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_high_60 (B) recomposition intermediate 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_high_75 (B) recomposition intermediate 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_low_30 (B) recomposition intermediate 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_low_45 (B) recomposition intermediate 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_low_60 (B) recomposition intermediate 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_low_75 (B) recomposition intermediate 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_medium_30 (B) recomposition intermediate 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_medium_45 (B) recomposition intermediate 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_medium_60 (B) recomposition intermediate 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_2d_medium_75 (B) recomposition intermediate 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_high_30 (B) recomposition intermediate 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_high_45 (B) recomposition intermediate 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_high_60 (B) recomposition intermediate 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_high_75 (B) recomposition intermediate 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_low_30 (B) recomposition intermediate 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_low_45 (B) recomposition intermediate 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_low_60 (B) recomposition intermediate 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_low_75 (B) recomposition intermediate 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_medium_30 (B) recomposition intermediate 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_medium_45 (B) recomposition intermediate 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_medium_60 (B) recomposition intermediate 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_3d_medium_75 (B) recomposition intermediate 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_high_30 (B) recomposition intermediate 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_high_45 (B) recomposition intermediate 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_high_60 (B) recomposition intermediate 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_high_75 (B) recomposition intermediate 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_low_30 (B) recomposition intermediate 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_low_45 (B) recomposition intermediate 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_low_60 (B) recomposition intermediate 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_low_75 (B) recomposition intermediate 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_medium_30 (B) recomposition intermediate 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_medium_45 (B) recomposition intermediate 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_medium_60 (B) recomposition intermediate 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_4d_medium_75 (B) recomposition intermediate 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_high_30 (B) recomposition intermediate 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_high_45 (B) recomposition intermediate 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_high_60 (B) recomposition intermediate 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_high_75 (B) recomposition intermediate 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_low_30 (B) recomposition intermediate 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_low_45 (B) recomposition intermediate 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_low_60 (B) recomposition intermediate 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_low_75 (B) recomposition intermediate 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_medium_30 (B) recomposition intermediate 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_medium_45 (B) recomposition intermediate 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_medium_60 (B) recomposition intermediate 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_5d_medium_75 (B) recomposition intermediate 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 5
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_high_30 (B) recomposition intermediate 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_high_45 (B) recomposition intermediate 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_high_60 (B) recomposition intermediate 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_high_75 (B) recomposition intermediate 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_low_30 (B) recomposition intermediate 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_low_45 (B) recomposition intermediate 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_low_60 (B) recomposition intermediate 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_low_75 (B) recomposition intermediate 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_medium_30 (B) recomposition intermediate 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_medium_45 (B) recomposition intermediate 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_medium_60 (B) recomposition intermediate 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_6d_medium_75 (B) recomposition intermediate 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_high_30 (B) recomposition intermediate 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_high_45 (B) recomposition intermediate 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_high_60 (B) recomposition intermediate 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_high_75 (B) recomposition intermediate 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_low_30 (B) recomposition intermediate 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_low_45 (B) recomposition intermediate 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_low_60 (B) recomposition intermediate 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_low_75 (B) recomposition intermediate 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_medium_30 (B) recomposition intermediate 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_medium_45 (B) recomposition intermediate 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_medium_60 (B) recomposition intermediate 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_recomposition_intermediate_7d_medium_75 (B) recomposition intermediate 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 40
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_high_30 (B) strength advanced 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_high_45 (B) strength advanced 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_high_60 (B) strength advanced 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_high_75 (B) strength advanced 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_low_30 (B) strength advanced 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_low_45 (B) strength advanced 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_low_60 (B) strength advanced 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_low_75 (B) strength advanced 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_medium_30 (B) strength advanced 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_medium_45 (B) strength advanced 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_medium_60 (B) strength advanced 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_1d_medium_75 (B) strength advanced 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 75
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_high_30 (B) strength advanced 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_high_45 (B) strength advanced 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_high_60 (B) strength advanced 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_high_75 (B) strength advanced 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_low_30 (B) strength advanced 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_low_45 (B) strength advanced 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_low_60 (B) strength advanced 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_low_75 (B) strength advanced 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_medium_30 (B) strength advanced 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_medium_45 (B) strength advanced 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_medium_60 (B) strength advanced 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_2d_medium_75 (B) strength advanced 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 50
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_high_30 (B) strength advanced 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_high_45 (B) strength advanced 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_high_60 (B) strength advanced 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_high_75 (B) strength advanced 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_low_30 (B) strength advanced 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_low_45 (B) strength advanced 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_low_60 (B) strength advanced 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_low_75 (B) strength advanced 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_medium_30 (B) strength advanced 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_medium_45 (B) strength advanced 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_medium_60 (B) strength advanced 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_3d_medium_75 (B) strength advanced 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_high_30 (B) strength advanced 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_high_45 (B) strength advanced 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_high_60 (B) strength advanced 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_high_75 (B) strength advanced 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_low_30 (B) strength advanced 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_low_45 (B) strength advanced 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_low_60 (B) strength advanced 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_low_75 (B) strength advanced 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_medium_30 (B) strength advanced 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_medium_45 (B) strength advanced 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_medium_60 (B) strength advanced 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_4d_medium_75 (B) strength advanced 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_high_30 (B) strength advanced 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_high_45 (B) strength advanced 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_high_60 (B) strength advanced 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_high_75 (B) strength advanced 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_low_30 (B) strength advanced 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_low_45 (B) strength advanced 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_low_60 (B) strength advanced 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_low_75 (B) strength advanced 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_medium_30 (B) strength advanced 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_medium_45 (B) strength advanced 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_medium_60 (B) strength advanced 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_5d_medium_75 (B) strength advanced 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_high_30 (B) strength advanced 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_high_45 (B) strength advanced 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_high_60 (B) strength advanced 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_high_75 (B) strength advanced 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_low_30 (B) strength advanced 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_low_45 (B) strength advanced 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_low_60 (B) strength advanced 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_low_75 (B) strength advanced 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_medium_30 (B) strength advanced 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_medium_45 (B) strength advanced 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_medium_60 (B) strength advanced 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_6d_medium_75 (B) strength advanced 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_high_30 (B) strength advanced 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_high_45 (B) strength advanced 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_high_60 (B) strength advanced 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_high_75 (B) strength advanced 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_low_30 (B) strength advanced 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_low_45 (B) strength advanced 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_low_60 (B) strength advanced 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_low_75 (B) strength advanced 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_medium_30 (B) strength advanced 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_medium_45 (B) strength advanced 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_medium_60 (B) strength advanced 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_advanced_7d_medium_75 (B) strength advanced 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_high_30 (B) strength beginner 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_high_45 (B) strength beginner 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_high_60 (B) strength beginner 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_high_75 (B) strength beginner 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_low_30 (B) strength beginner 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_low_45 (B) strength beginner 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_low_60 (B) strength beginner 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_low_75 (B) strength beginner 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_medium_30 (B) strength beginner 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_medium_45 (B) strength beginner 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_medium_60 (B) strength beginner 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_1d_medium_75 (B) strength beginner 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_high_30 (B) strength beginner 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_high_45 (B) strength beginner 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_high_60 (B) strength beginner 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_high_75 (B) strength beginner 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_low_30 (B) strength beginner 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_low_45 (B) strength beginner 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_low_60 (B) strength beginner 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_low_75 (B) strength beginner 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_medium_30 (B) strength beginner 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_medium_45 (B) strength beginner 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_medium_60 (B) strength beginner 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_2d_medium_75 (B) strength beginner 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_high_30 (B) strength beginner 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_high_45 (B) strength beginner 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_high_60 (B) strength beginner 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_high_75 (B) strength beginner 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_low_30 (B) strength beginner 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_low_45 (B) strength beginner 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_low_60 (B) strength beginner 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_low_75 (B) strength beginner 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_medium_30 (B) strength beginner 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_medium_45 (B) strength beginner 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_medium_60 (B) strength beginner 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_3d_medium_75 (B) strength beginner 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 55
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_high_30 (B) strength beginner 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_high_45 (B) strength beginner 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_high_60 (B) strength beginner 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_high_75 (B) strength beginner 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_low_30 (B) strength beginner 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_low_45 (B) strength beginner 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_low_60 (B) strength beginner 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_low_75 (B) strength beginner 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_medium_30 (B) strength beginner 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_medium_45 (B) strength beginner 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_medium_60 (B) strength beginner 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_4d_medium_75 (B) strength beginner 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_high_30 (B) strength beginner 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_high_45 (B) strength beginner 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_high_60 (B) strength beginner 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_high_75 (B) strength beginner 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_low_30 (B) strength beginner 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_low_45 (B) strength beginner 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_low_60 (B) strength beginner 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_low_75 (B) strength beginner 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_medium_30 (B) strength beginner 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_medium_45 (B) strength beginner 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_medium_60 (B) strength beginner 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_5d_medium_75 (B) strength beginner 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_high_30 (B) strength beginner 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_high_45 (B) strength beginner 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_high_60 (B) strength beginner 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_high_75 (B) strength beginner 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_low_30 (B) strength beginner 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_low_45 (B) strength beginner 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_low_60 (B) strength beginner 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_low_75 (B) strength beginner 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_medium_30 (B) strength beginner 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_medium_45 (B) strength beginner 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_medium_60 (B) strength beginner 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_6d_medium_75 (B) strength beginner 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_high_30 (B) strength beginner 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_high_45 (B) strength beginner 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_high_60 (B) strength beginner 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_high_75 (B) strength beginner 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_low_30 (B) strength beginner 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_low_45 (B) strength beginner 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_low_60 (B) strength beginner 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_low_75 (B) strength beginner 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_medium_30 (B) strength beginner 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_medium_45 (B) strength beginner 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_medium_60 (B) strength beginner 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_beginner_7d_medium_75 (B) strength beginner 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_high_30 (B) strength intermediate 1d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_high_45 (B) strength intermediate 1d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_high_60 (B) strength intermediate 1d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_high_75 (B) strength intermediate 1d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_low_30 (B) strength intermediate 1d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_low_45 (B) strength intermediate 1d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_low_60 (B) strength intermediate 1d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_low_75 (B) strength intermediate 1d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_medium_30 (B) strength intermediate 1d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_medium_45 (B) strength intermediate 1d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_medium_60 (B) strength intermediate 1d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_1d_medium_75 (B) strength intermediate 1d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_high_30 (B) strength intermediate 2d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_high_45 (B) strength intermediate 2d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_high_60 (B) strength intermediate 2d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_high_75 (B) strength intermediate 2d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_low_30 (B) strength intermediate 2d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_low_45 (B) strength intermediate 2d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_low_60 (B) strength intermediate 2d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_low_75 (B) strength intermediate 2d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_medium_30 (B) strength intermediate 2d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_medium_45 (B) strength intermediate 2d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_medium_60 (B) strength intermediate 2d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_2d_medium_75 (B) strength intermediate 2d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 60
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":2,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_high_30 (B) strength intermediate 3d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_high_45 (B) strength intermediate 3d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_high_60 (B) strength intermediate 3d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_high_75 (B) strength intermediate 3d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_low_30 (B) strength intermediate 3d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_low_45 (B) strength intermediate 3d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_low_60 (B) strength intermediate 3d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_low_75 (B) strength intermediate 3d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_medium_30 (B) strength intermediate 3d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_medium_45 (B) strength intermediate 3d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_medium_60 (B) strength intermediate 3d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_3d_medium_75 (B) strength intermediate 3d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_high_30 (B) strength intermediate 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_high_45 (B) strength intermediate 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_high_60 (B) strength intermediate 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_high_75 (B) strength intermediate 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_low_30 (B) strength intermediate 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_low_45 (B) strength intermediate 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_low_60 (B) strength intermediate 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_low_75 (B) strength intermediate 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_medium_30 (B) strength intermediate 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_medium_45 (B) strength intermediate 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_medium_60 (B) strength intermediate 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_4d_medium_75 (B) strength intermediate 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_high_30 (B) strength intermediate 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_high_45 (B) strength intermediate 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_high_60 (B) strength intermediate 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_high_75 (B) strength intermediate 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_low_30 (B) strength intermediate 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_low_45 (B) strength intermediate 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_low_60 (B) strength intermediate 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_low_75 (B) strength intermediate 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_medium_30 (B) strength intermediate 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_medium_45 (B) strength intermediate 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_medium_60 (B) strength intermediate 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_5d_medium_75 (B) strength intermediate 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_high_30 (B) strength intermediate 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_high_45 (B) strength intermediate 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_high_60 (B) strength intermediate 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_high_75 (B) strength intermediate 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_low_30 (B) strength intermediate 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_low_45 (B) strength intermediate 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_low_60 (B) strength intermediate 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_low_75 (B) strength intermediate 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_medium_30 (B) strength intermediate 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_medium_45 (B) strength intermediate 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_medium_60 (B) strength intermediate 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_6d_medium_75 (B) strength intermediate 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_high_30 (B) strength intermediate 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_high_45 (B) strength intermediate 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_high_60 (B) strength intermediate 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_high_75 (B) strength intermediate 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_low_30 (B) strength intermediate 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_low_45 (B) strength intermediate 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_low_60 (B) strength intermediate 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_low_75 (B) strength intermediate 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_medium_30 (B) strength intermediate 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_medium_45 (B) strength intermediate 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_medium_60 (B) strength intermediate 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_strength_intermediate_7d_medium_75 (B) strength intermediate 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 20
+  - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- C08 (C) Intermediate full gym without pull-up bar on 5-day split
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+
+## 12. Degraded-Profile Analysis
+- A_E4_I1 (A) Barbell + Dumbbell + Bodyweight × none
+  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E4_I3 (A) Barbell + Dumbbell + Bodyweight × shoulder
+  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E4_I4 (A) Barbell + Dumbbell + Bodyweight × wrist
+  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E4_I5 (A) Barbell + Dumbbell + Bodyweight × lower_back
+  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E5_I1 (A) Machine + Cable × none
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E5_I3 (A) Machine + Cable × shoulder
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E5_I4 (A) Machine + Cable × wrist
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E5_I5 (A) Machine + Cable × lower_back
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E6_I1 (A) Full Commercial Gym × none
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E6_I3 (A) Full Commercial Gym × shoulder
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E6_I4 (A) Full Commercial Gym × wrist
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E6_I5 (A) Full Commercial Gym × lower_back
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I1 (A) Full Commercial Gym (No Pull-Up Bar) × none
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I3 (A) Full Commercial Gym (No Pull-Up Bar) × shoulder
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I4 (A) Full Commercial Gym (No Pull-Up Bar) × wrist
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I5 (A) Full Commercial Gym (No Pull-Up Bar) × lower_back
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_high_30 (B) fat_loss advanced 1d high 30min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_high_45 (B) fat_loss advanced 1d high 45min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_high_60 (B) fat_loss advanced 1d high 60min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_high_75 (B) fat_loss advanced 1d high 75min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_low_30 (B) fat_loss advanced 1d low 30min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_low_45 (B) fat_loss advanced 1d low 45min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_low_60 (B) fat_loss advanced 1d low 60min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_low_75 (B) fat_loss advanced 1d low 75min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_medium_30 (B) fat_loss advanced 1d medium 30min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_medium_45 (B) fat_loss advanced 1d medium 45min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_medium_60 (B) fat_loss advanced 1d medium 60min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_1d_medium_75 (B) fat_loss advanced 1d medium 75min
+  - Fallback L1: 0, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_high_30 (B) fat_loss advanced 2d high 30min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_high_45 (B) fat_loss advanced 2d high 45min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_high_60 (B) fat_loss advanced 2d high 60min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_high_75 (B) fat_loss advanced 2d high 75min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_low_30 (B) fat_loss advanced 2d low 30min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_low_45 (B) fat_loss advanced 2d low 45min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_low_60 (B) fat_loss advanced 2d low 60min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_low_75 (B) fat_loss advanced 2d low 75min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_medium_30 (B) fat_loss advanced 2d medium 30min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_medium_45 (B) fat_loss advanced 2d medium 45min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_medium_60 (B) fat_loss advanced 2d medium 60min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_2d_medium_75 (B) fat_loss advanced 2d medium 75min
+  - Fallback L1: 0, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_high_30 (B) fat_loss advanced 3d high 30min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_high_45 (B) fat_loss advanced 3d high 45min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_high_60 (B) fat_loss advanced 3d high 60min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_high_75 (B) fat_loss advanced 3d high 75min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_low_30 (B) fat_loss advanced 3d low 30min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_low_45 (B) fat_loss advanced 3d low 45min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_low_60 (B) fat_loss advanced 3d low 60min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_low_75 (B) fat_loss advanced 3d low 75min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_medium_30 (B) fat_loss advanced 3d medium 30min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_medium_45 (B) fat_loss advanced 3d medium 45min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_medium_60 (B) fat_loss advanced 3d medium 60min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_3d_medium_75 (B) fat_loss advanced 3d medium 75min
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_high_30 (B) fat_loss advanced 4d high 30min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_high_45 (B) fat_loss advanced 4d high 45min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_high_60 (B) fat_loss advanced 4d high 60min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_high_75 (B) fat_loss advanced 4d high 75min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_low_30 (B) fat_loss advanced 4d low 30min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_low_45 (B) fat_loss advanced 4d low 45min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_low_60 (B) fat_loss advanced 4d low 60min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_low_75 (B) fat_loss advanced 4d low 75min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_medium_30 (B) fat_loss advanced 4d medium 30min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_medium_45 (B) fat_loss advanced 4d medium 45min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_medium_60 (B) fat_loss advanced 4d medium 60min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_4d_medium_75 (B) fat_loss advanced 4d medium 75min
+  - Fallback L1: 0, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_high_30 (B) fat_loss advanced 5d high 30min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_high_45 (B) fat_loss advanced 5d high 45min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_high_60 (B) fat_loss advanced 5d high 60min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_high_75 (B) fat_loss advanced 5d high 75min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_low_30 (B) fat_loss advanced 5d low 30min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_low_45 (B) fat_loss advanced 5d low 45min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_low_60 (B) fat_loss advanced 5d low 60min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_low_75 (B) fat_loss advanced 5d low 75min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_medium_30 (B) fat_loss advanced 5d medium 30min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_medium_45 (B) fat_loss advanced 5d medium 45min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_medium_60 (B) fat_loss advanced 5d medium 60min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_5d_medium_75 (B) fat_loss advanced 5d medium 75min
+  - Fallback L1: 0, Fallback L2: 28, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_high_30 (B) fat_loss advanced 6d high 30min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_high_45 (B) fat_loss advanced 6d high 45min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_high_60 (B) fat_loss advanced 6d high 60min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_high_75 (B) fat_loss advanced 6d high 75min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_low_30 (B) fat_loss advanced 6d low 30min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_low_45 (B) fat_loss advanced 6d low 45min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_low_60 (B) fat_loss advanced 6d low 60min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_low_75 (B) fat_loss advanced 6d low 75min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_medium_30 (B) fat_loss advanced 6d medium 30min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_medium_45 (B) fat_loss advanced 6d medium 45min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_medium_60 (B) fat_loss advanced 6d medium 60min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_6d_medium_75 (B) fat_loss advanced 6d medium 75min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_high_30 (B) fat_loss advanced 7d high 30min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_high_45 (B) fat_loss advanced 7d high 45min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_high_60 (B) fat_loss advanced 7d high 60min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_high_75 (B) fat_loss advanced 7d high 75min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_low_30 (B) fat_loss advanced 7d low 30min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_low_45 (B) fat_loss advanced 7d low 45min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_low_60 (B) fat_loss advanced 7d low 60min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_low_75 (B) fat_loss advanced 7d low 75min
+  - Fallback L1: 0, Fallback L2: 36, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_medium_30 (B) fat_loss advanced 7d medium 30min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_medium_45 (B) fat_loss advanced 7d medium 45min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_medium_60 (B) fat_loss advanced 7d medium 60min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_advanced_7d_medium_75 (B) fat_loss advanced 7d medium 75min
+  - Fallback L1: 0, Fallback L2: 20, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_high_30 (B) fat_loss intermediate 1d high 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_high_45 (B) fat_loss intermediate 1d high 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_high_60 (B) fat_loss intermediate 1d high 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_high_75 (B) fat_loss intermediate 1d high 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_low_30 (B) fat_loss intermediate 1d low 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_low_45 (B) fat_loss intermediate 1d low 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_low_60 (B) fat_loss intermediate 1d low 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_low_75 (B) fat_loss intermediate 1d low 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_medium_30 (B) fat_loss intermediate 1d medium 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_medium_45 (B) fat_loss intermediate 1d medium 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_medium_60 (B) fat_loss intermediate 1d medium 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_1d_medium_75 (B) fat_loss intermediate 1d medium 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_high_30 (B) fat_loss intermediate 2d high 30min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_high_45 (B) fat_loss intermediate 2d high 45min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_high_60 (B) fat_loss intermediate 2d high 60min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_high_75 (B) fat_loss intermediate 2d high 75min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_low_30 (B) fat_loss intermediate 2d low 30min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_low_45 (B) fat_loss intermediate 2d low 45min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_low_60 (B) fat_loss intermediate 2d low 60min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_low_75 (B) fat_loss intermediate 2d low 75min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_medium_30 (B) fat_loss intermediate 2d medium 30min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_medium_45 (B) fat_loss intermediate 2d medium 45min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_medium_60 (B) fat_loss intermediate 2d medium 60min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_2d_medium_75 (B) fat_loss intermediate 2d medium 75min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_high_30 (B) fat_loss intermediate 3d high 30min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_high_45 (B) fat_loss intermediate 3d high 45min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_high_60 (B) fat_loss intermediate 3d high 60min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_high_75 (B) fat_loss intermediate 3d high 75min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_low_30 (B) fat_loss intermediate 3d low 30min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_low_45 (B) fat_loss intermediate 3d low 45min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_low_60 (B) fat_loss intermediate 3d low 60min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_low_75 (B) fat_loss intermediate 3d low 75min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_medium_30 (B) fat_loss intermediate 3d medium 30min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_medium_45 (B) fat_loss intermediate 3d medium 45min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_medium_60 (B) fat_loss intermediate 3d medium 60min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_3d_medium_75 (B) fat_loss intermediate 3d medium 75min
+  - Fallback L1: 18, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_high_30 (B) fat_loss intermediate 4d high 30min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_high_45 (B) fat_loss intermediate 4d high 45min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_high_60 (B) fat_loss intermediate 4d high 60min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_high_75 (B) fat_loss intermediate 4d high 75min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_low_30 (B) fat_loss intermediate 4d low 30min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_low_45 (B) fat_loss intermediate 4d low 45min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_low_60 (B) fat_loss intermediate 4d low 60min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_low_75 (B) fat_loss intermediate 4d low 75min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_medium_30 (B) fat_loss intermediate 4d medium 30min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_medium_45 (B) fat_loss intermediate 4d medium 45min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_medium_60 (B) fat_loss intermediate 4d medium 60min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_4d_medium_75 (B) fat_loss intermediate 4d medium 75min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_high_30 (B) fat_loss intermediate 5d high 30min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_high_45 (B) fat_loss intermediate 5d high 45min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_high_60 (B) fat_loss intermediate 5d high 60min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_high_75 (B) fat_loss intermediate 5d high 75min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_low_30 (B) fat_loss intermediate 5d low 30min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_low_45 (B) fat_loss intermediate 5d low 45min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_low_60 (B) fat_loss intermediate 5d low 60min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_low_75 (B) fat_loss intermediate 5d low 75min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_medium_30 (B) fat_loss intermediate 5d medium 30min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_medium_45 (B) fat_loss intermediate 5d medium 45min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_medium_60 (B) fat_loss intermediate 5d medium 60min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_5d_medium_75 (B) fat_loss intermediate 5d medium 75min
+  - Fallback L1: 30, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_high_30 (B) fat_loss intermediate 6d high 30min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_high_45 (B) fat_loss intermediate 6d high 45min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_high_60 (B) fat_loss intermediate 6d high 60min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_high_75 (B) fat_loss intermediate 6d high 75min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_low_30 (B) fat_loss intermediate 6d low 30min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_low_45 (B) fat_loss intermediate 6d low 45min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_low_60 (B) fat_loss intermediate 6d low 60min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_low_75 (B) fat_loss intermediate 6d low 75min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_medium_30 (B) fat_loss intermediate 6d medium 30min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_medium_45 (B) fat_loss intermediate 6d medium 45min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_medium_60 (B) fat_loss intermediate 6d medium 60min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_6d_medium_75 (B) fat_loss intermediate 6d medium 75min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_high_30 (B) fat_loss intermediate 7d high 30min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_high_45 (B) fat_loss intermediate 7d high 45min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_high_60 (B) fat_loss intermediate 7d high 60min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_high_75 (B) fat_loss intermediate 7d high 75min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_low_30 (B) fat_loss intermediate 7d low 30min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_low_45 (B) fat_loss intermediate 7d low 45min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_low_60 (B) fat_loss intermediate 7d low 60min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_low_75 (B) fat_loss intermediate 7d low 75min
+  - Fallback L1: 36, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_medium_30 (B) fat_loss intermediate 7d medium 30min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_medium_45 (B) fat_loss intermediate 7d medium 45min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_medium_60 (B) fat_loss intermediate 7d medium 60min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_fat_loss_intermediate_7d_medium_75 (B) fat_loss intermediate 7d medium 75min
+  - Fallback L1: 20, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_high_30 (B) hypertrophy advanced 1d high 30min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_high_45 (B) hypertrophy advanced 1d high 45min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_high_60 (B) hypertrophy advanced 1d high 60min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_high_75 (B) hypertrophy advanced 1d high 75min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_low_30 (B) hypertrophy advanced 1d low 30min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_low_45 (B) hypertrophy advanced 1d low 45min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_low_60 (B) hypertrophy advanced 1d low 60min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_low_75 (B) hypertrophy advanced 1d low 75min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_medium_30 (B) hypertrophy advanced 1d medium 30min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_medium_45 (B) hypertrophy advanced 1d medium 45min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_medium_60 (B) hypertrophy advanced 1d medium 60min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_1d_medium_75 (B) hypertrophy advanced 1d medium 75min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_high_30 (B) hypertrophy advanced 2d high 30min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_high_45 (B) hypertrophy advanced 2d high 45min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_high_60 (B) hypertrophy advanced 2d high 60min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_high_75 (B) hypertrophy advanced 2d high 75min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_low_30 (B) hypertrophy advanced 2d low 30min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_low_45 (B) hypertrophy advanced 2d low 45min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_low_60 (B) hypertrophy advanced 2d low 60min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_low_75 (B) hypertrophy advanced 2d low 75min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_medium_30 (B) hypertrophy advanced 2d medium 30min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_medium_45 (B) hypertrophy advanced 2d medium 45min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_medium_60 (B) hypertrophy advanced 2d medium 60min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_2d_medium_75 (B) hypertrophy advanced 2d medium 75min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_high_30 (B) hypertrophy advanced 3d high 30min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_high_45 (B) hypertrophy advanced 3d high 45min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_high_60 (B) hypertrophy advanced 3d high 60min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_high_75 (B) hypertrophy advanced 3d high 75min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_low_30 (B) hypertrophy advanced 3d low 30min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_low_45 (B) hypertrophy advanced 3d low 45min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_low_60 (B) hypertrophy advanced 3d low 60min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_low_75 (B) hypertrophy advanced 3d low 75min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_medium_30 (B) hypertrophy advanced 3d medium 30min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_medium_45 (B) hypertrophy advanced 3d medium 45min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_medium_60 (B) hypertrophy advanced 3d medium 60min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_3d_medium_75 (B) hypertrophy advanced 3d medium 75min
+  - Fallback L1: 3, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_high_30 (B) hypertrophy advanced 4d high 30min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_high_45 (B) hypertrophy advanced 4d high 45min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_high_60 (B) hypertrophy advanced 4d high 60min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_high_75 (B) hypertrophy advanced 4d high 75min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_low_30 (B) hypertrophy advanced 4d low 30min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_low_45 (B) hypertrophy advanced 4d low 45min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_low_60 (B) hypertrophy advanced 4d low 60min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_low_75 (B) hypertrophy advanced 4d low 75min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_medium_30 (B) hypertrophy advanced 4d medium 30min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_medium_45 (B) hypertrophy advanced 4d medium 45min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_medium_60 (B) hypertrophy advanced 4d medium 60min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_4d_medium_75 (B) hypertrophy advanced 4d medium 75min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_high_30 (B) hypertrophy advanced 5d high 30min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_high_45 (B) hypertrophy advanced 5d high 45min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_high_60 (B) hypertrophy advanced 5d high 60min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_high_75 (B) hypertrophy advanced 5d high 75min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_low_30 (B) hypertrophy advanced 5d low 30min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_low_45 (B) hypertrophy advanced 5d low 45min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_low_60 (B) hypertrophy advanced 5d low 60min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_low_75 (B) hypertrophy advanced 5d low 75min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_medium_30 (B) hypertrophy advanced 5d medium 30min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_medium_45 (B) hypertrophy advanced 5d medium 45min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_medium_60 (B) hypertrophy advanced 5d medium 60min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_5d_medium_75 (B) hypertrophy advanced 5d medium 75min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_high_30 (B) hypertrophy advanced 6d high 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_high_45 (B) hypertrophy advanced 6d high 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_high_60 (B) hypertrophy advanced 6d high 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_high_75 (B) hypertrophy advanced 6d high 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_low_30 (B) hypertrophy advanced 6d low 30min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_low_45 (B) hypertrophy advanced 6d low 45min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_low_60 (B) hypertrophy advanced 6d low 60min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_low_75 (B) hypertrophy advanced 6d low 75min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_medium_30 (B) hypertrophy advanced 6d medium 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_medium_45 (B) hypertrophy advanced 6d medium 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_medium_60 (B) hypertrophy advanced 6d medium 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_6d_medium_75 (B) hypertrophy advanced 6d medium 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_high_30 (B) hypertrophy advanced 7d high 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_high_45 (B) hypertrophy advanced 7d high 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_high_60 (B) hypertrophy advanced 7d high 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_high_75 (B) hypertrophy advanced 7d high 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_low_30 (B) hypertrophy advanced 7d low 30min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_low_45 (B) hypertrophy advanced 7d low 45min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_low_60 (B) hypertrophy advanced 7d low 60min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_low_75 (B) hypertrophy advanced 7d low 75min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_medium_30 (B) hypertrophy advanced 7d medium 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_medium_45 (B) hypertrophy advanced 7d medium 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_medium_60 (B) hypertrophy advanced 7d medium 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_advanced_7d_medium_75 (B) hypertrophy advanced 7d medium 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_30 (B) hypertrophy beginner 4d high 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_45 (B) hypertrophy beginner 4d high 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_60 (B) hypertrophy beginner 4d high 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_75 (B) hypertrophy beginner 4d high 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_30 (B) hypertrophy beginner 4d low 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_45 (B) hypertrophy beginner 4d low 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_60 (B) hypertrophy beginner 4d low 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_75 (B) hypertrophy beginner 4d low 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_30 (B) hypertrophy beginner 4d medium 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_45 (B) hypertrophy beginner 4d medium 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_60 (B) hypertrophy beginner 4d medium 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_75 (B) hypertrophy beginner 4d medium 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_30 (B) hypertrophy beginner 5d high 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_45 (B) hypertrophy beginner 5d high 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_60 (B) hypertrophy beginner 5d high 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_75 (B) hypertrophy beginner 5d high 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_30 (B) hypertrophy beginner 5d low 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_45 (B) hypertrophy beginner 5d low 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_60 (B) hypertrophy beginner 5d low 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_75 (B) hypertrophy beginner 5d low 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_30 (B) hypertrophy beginner 5d medium 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_45 (B) hypertrophy beginner 5d medium 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_60 (B) hypertrophy beginner 5d medium 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_75 (B) hypertrophy beginner 5d medium 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_30 (B) hypertrophy beginner 6d high 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_45 (B) hypertrophy beginner 6d high 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_60 (B) hypertrophy beginner 6d high 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_75 (B) hypertrophy beginner 6d high 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_30 (B) hypertrophy beginner 6d low 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_45 (B) hypertrophy beginner 6d low 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_60 (B) hypertrophy beginner 6d low 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_75 (B) hypertrophy beginner 6d low 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_30 (B) hypertrophy beginner 6d medium 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_45 (B) hypertrophy beginner 6d medium 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_60 (B) hypertrophy beginner 6d medium 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_75 (B) hypertrophy beginner 6d medium 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_30 (B) hypertrophy beginner 7d high 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_45 (B) hypertrophy beginner 7d high 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_60 (B) hypertrophy beginner 7d high 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_75 (B) hypertrophy beginner 7d high 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_30 (B) hypertrophy beginner 7d low 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_45 (B) hypertrophy beginner 7d low 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_60 (B) hypertrophy beginner 7d low 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_75 (B) hypertrophy beginner 7d low 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_30 (B) hypertrophy beginner 7d medium 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_45 (B) hypertrophy beginner 7d medium 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_60 (B) hypertrophy beginner 7d medium 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_75 (B) hypertrophy beginner 7d medium 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_high_30 (B) hypertrophy intermediate 1d high 30min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_high_45 (B) hypertrophy intermediate 1d high 45min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_high_60 (B) hypertrophy intermediate 1d high 60min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_high_75 (B) hypertrophy intermediate 1d high 75min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_low_30 (B) hypertrophy intermediate 1d low 30min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_low_45 (B) hypertrophy intermediate 1d low 45min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_low_60 (B) hypertrophy intermediate 1d low 60min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_low_75 (B) hypertrophy intermediate 1d low 75min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_medium_30 (B) hypertrophy intermediate 1d medium 30min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_medium_45 (B) hypertrophy intermediate 1d medium 45min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_medium_60 (B) hypertrophy intermediate 1d medium 60min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_1d_medium_75 (B) hypertrophy intermediate 1d medium 75min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_high_30 (B) hypertrophy intermediate 2d high 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_high_45 (B) hypertrophy intermediate 2d high 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_high_60 (B) hypertrophy intermediate 2d high 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_high_75 (B) hypertrophy intermediate 2d high 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_low_30 (B) hypertrophy intermediate 2d low 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_low_45 (B) hypertrophy intermediate 2d low 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_low_60 (B) hypertrophy intermediate 2d low 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_low_75 (B) hypertrophy intermediate 2d low 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_medium_30 (B) hypertrophy intermediate 2d medium 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_medium_45 (B) hypertrophy intermediate 2d medium 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_medium_60 (B) hypertrophy intermediate 2d medium 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_2d_medium_75 (B) hypertrophy intermediate 2d medium 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_high_30 (B) hypertrophy intermediate 3d high 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_high_45 (B) hypertrophy intermediate 3d high 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_high_60 (B) hypertrophy intermediate 3d high 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_high_75 (B) hypertrophy intermediate 3d high 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_low_30 (B) hypertrophy intermediate 3d low 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_low_45 (B) hypertrophy intermediate 3d low 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_low_60 (B) hypertrophy intermediate 3d low 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_low_75 (B) hypertrophy intermediate 3d low 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_medium_30 (B) hypertrophy intermediate 3d medium 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_medium_45 (B) hypertrophy intermediate 3d medium 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_medium_60 (B) hypertrophy intermediate 3d medium 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_3d_medium_75 (B) hypertrophy intermediate 3d medium 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_high_30 (B) hypertrophy intermediate 4d high 30min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_high_45 (B) hypertrophy intermediate 4d high 45min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_high_60 (B) hypertrophy intermediate 4d high 60min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_high_75 (B) hypertrophy intermediate 4d high 75min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_low_30 (B) hypertrophy intermediate 4d low 30min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_low_45 (B) hypertrophy intermediate 4d low 45min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_low_60 (B) hypertrophy intermediate 4d low 60min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_low_75 (B) hypertrophy intermediate 4d low 75min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_medium_30 (B) hypertrophy intermediate 4d medium 30min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_medium_45 (B) hypertrophy intermediate 4d medium 45min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_medium_60 (B) hypertrophy intermediate 4d medium 60min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_4d_medium_75 (B) hypertrophy intermediate 4d medium 75min
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_high_30 (B) hypertrophy intermediate 5d high 30min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_high_45 (B) hypertrophy intermediate 5d high 45min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_high_60 (B) hypertrophy intermediate 5d high 60min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_high_75 (B) hypertrophy intermediate 5d high 75min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_low_30 (B) hypertrophy intermediate 5d low 30min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_low_45 (B) hypertrophy intermediate 5d low 45min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_low_60 (B) hypertrophy intermediate 5d low 60min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_low_75 (B) hypertrophy intermediate 5d low 75min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_medium_30 (B) hypertrophy intermediate 5d medium 30min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_medium_45 (B) hypertrophy intermediate 5d medium 45min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_medium_60 (B) hypertrophy intermediate 5d medium 60min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_5d_medium_75 (B) hypertrophy intermediate 5d medium 75min
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_high_30 (B) hypertrophy intermediate 6d high 30min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_high_45 (B) hypertrophy intermediate 6d high 45min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_high_60 (B) hypertrophy intermediate 6d high 60min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_high_75 (B) hypertrophy intermediate 6d high 75min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_low_30 (B) hypertrophy intermediate 6d low 30min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_low_45 (B) hypertrophy intermediate 6d low 45min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_low_60 (B) hypertrophy intermediate 6d low 60min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_low_75 (B) hypertrophy intermediate 6d low 75min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_medium_30 (B) hypertrophy intermediate 6d medium 30min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_medium_45 (B) hypertrophy intermediate 6d medium 45min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_medium_60 (B) hypertrophy intermediate 6d medium 60min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_6d_medium_75 (B) hypertrophy intermediate 6d medium 75min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_high_30 (B) hypertrophy intermediate 7d high 30min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_high_45 (B) hypertrophy intermediate 7d high 45min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_high_60 (B) hypertrophy intermediate 7d high 60min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_high_75 (B) hypertrophy intermediate 7d high 75min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_low_30 (B) hypertrophy intermediate 7d low 30min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_low_45 (B) hypertrophy intermediate 7d low 45min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_low_60 (B) hypertrophy intermediate 7d low 60min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_low_75 (B) hypertrophy intermediate 7d low 75min
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_medium_30 (B) hypertrophy intermediate 7d medium 30min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_medium_45 (B) hypertrophy intermediate 7d medium 45min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_medium_60 (B) hypertrophy intermediate 7d medium 60min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_intermediate_7d_medium_75 (B) hypertrophy intermediate 7d medium 75min
+  - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_high_30 (B) recomposition advanced 1d high 30min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_high_45 (B) recomposition advanced 1d high 45min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_high_60 (B) recomposition advanced 1d high 60min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_high_75 (B) recomposition advanced 1d high 75min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_low_30 (B) recomposition advanced 1d low 30min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_low_45 (B) recomposition advanced 1d low 45min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_low_60 (B) recomposition advanced 1d low 60min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_low_75 (B) recomposition advanced 1d low 75min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_medium_30 (B) recomposition advanced 1d medium 30min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_medium_45 (B) recomposition advanced 1d medium 45min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_medium_60 (B) recomposition advanced 1d medium 60min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_1d_medium_75 (B) recomposition advanced 1d medium 75min
+  - Fallback L1: 3, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_high_30 (B) recomposition advanced 2d high 30min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_high_45 (B) recomposition advanced 2d high 45min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_high_60 (B) recomposition advanced 2d high 60min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_high_75 (B) recomposition advanced 2d high 75min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_low_30 (B) recomposition advanced 2d low 30min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_low_45 (B) recomposition advanced 2d low 45min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_low_60 (B) recomposition advanced 2d low 60min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_low_75 (B) recomposition advanced 2d low 75min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_medium_30 (B) recomposition advanced 2d medium 30min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_medium_45 (B) recomposition advanced 2d medium 45min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_medium_60 (B) recomposition advanced 2d medium 60min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_2d_medium_75 (B) recomposition advanced 2d medium 75min
+  - Fallback L1: 6, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_high_30 (B) recomposition advanced 3d high 30min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_high_45 (B) recomposition advanced 3d high 45min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_high_60 (B) recomposition advanced 3d high 60min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_high_75 (B) recomposition advanced 3d high 75min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_low_30 (B) recomposition advanced 3d low 30min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_low_45 (B) recomposition advanced 3d low 45min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_low_60 (B) recomposition advanced 3d low 60min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_low_75 (B) recomposition advanced 3d low 75min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_medium_30 (B) recomposition advanced 3d medium 30min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_medium_45 (B) recomposition advanced 3d medium 45min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_medium_60 (B) recomposition advanced 3d medium 60min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_3d_medium_75 (B) recomposition advanced 3d medium 75min
+  - Fallback L1: 9, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_high_30 (B) recomposition advanced 4d high 30min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_high_45 (B) recomposition advanced 4d high 45min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_high_60 (B) recomposition advanced 4d high 60min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_high_75 (B) recomposition advanced 4d high 75min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_low_30 (B) recomposition advanced 4d low 30min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_low_45 (B) recomposition advanced 4d low 45min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_low_60 (B) recomposition advanced 4d low 60min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_low_75 (B) recomposition advanced 4d low 75min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_medium_30 (B) recomposition advanced 4d medium 30min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_medium_45 (B) recomposition advanced 4d medium 45min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_medium_60 (B) recomposition advanced 4d medium 60min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_4d_medium_75 (B) recomposition advanced 4d medium 75min
+  - Fallback L1: 8, Fallback L2: 16, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_high_30 (B) recomposition advanced 5d high 30min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_high_45 (B) recomposition advanced 5d high 45min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_high_60 (B) recomposition advanced 5d high 60min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_high_75 (B) recomposition advanced 5d high 75min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_low_30 (B) recomposition advanced 5d low 30min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_low_45 (B) recomposition advanced 5d low 45min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_low_60 (B) recomposition advanced 5d low 60min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_low_75 (B) recomposition advanced 5d low 75min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_medium_30 (B) recomposition advanced 5d medium 30min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_medium_45 (B) recomposition advanced 5d medium 45min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_medium_60 (B) recomposition advanced 5d medium 60min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_5d_medium_75 (B) recomposition advanced 5d medium 75min
+  - Fallback L1: 9, Fallback L2: 19, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_high_30 (B) recomposition advanced 6d high 30min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_high_45 (B) recomposition advanced 6d high 45min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_high_60 (B) recomposition advanced 6d high 60min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_high_75 (B) recomposition advanced 6d high 75min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_low_30 (B) recomposition advanced 6d low 30min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_low_45 (B) recomposition advanced 6d low 45min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_low_60 (B) recomposition advanced 6d low 60min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_low_75 (B) recomposition advanced 6d low 75min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_medium_30 (B) recomposition advanced 6d medium 30min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_medium_45 (B) recomposition advanced 6d medium 45min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_medium_60 (B) recomposition advanced 6d medium 60min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_6d_medium_75 (B) recomposition advanced 6d medium 75min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_high_30 (B) recomposition advanced 7d high 30min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_high_45 (B) recomposition advanced 7d high 45min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_high_60 (B) recomposition advanced 7d high 60min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_high_75 (B) recomposition advanced 7d high 75min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_low_30 (B) recomposition advanced 7d low 30min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_low_45 (B) recomposition advanced 7d low 45min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_low_60 (B) recomposition advanced 7d low 60min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_low_75 (B) recomposition advanced 7d low 75min
+  - Fallback L1: 12, Fallback L2: 24, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_medium_30 (B) recomposition advanced 7d medium 30min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_medium_45 (B) recomposition advanced 7d medium 45min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_medium_60 (B) recomposition advanced 7d medium 60min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_advanced_7d_medium_75 (B) recomposition advanced 7d medium 75min
+  - Fallback L1: 8, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_high_30 (B) recomposition intermediate 1d high 30min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_high_45 (B) recomposition intermediate 1d high 45min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_high_60 (B) recomposition intermediate 1d high 60min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_high_75 (B) recomposition intermediate 1d high 75min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_low_30 (B) recomposition intermediate 1d low 30min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_low_45 (B) recomposition intermediate 1d low 45min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_low_60 (B) recomposition intermediate 1d low 60min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_low_75 (B) recomposition intermediate 1d low 75min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_medium_30 (B) recomposition intermediate 1d medium 30min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_medium_45 (B) recomposition intermediate 1d medium 45min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_medium_60 (B) recomposition intermediate 1d medium 60min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_1d_medium_75 (B) recomposition intermediate 1d medium 75min
+  - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_high_30 (B) recomposition intermediate 2d high 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_high_45 (B) recomposition intermediate 2d high 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_high_60 (B) recomposition intermediate 2d high 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_high_75 (B) recomposition intermediate 2d high 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_low_30 (B) recomposition intermediate 2d low 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_low_45 (B) recomposition intermediate 2d low 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_low_60 (B) recomposition intermediate 2d low 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_low_75 (B) recomposition intermediate 2d low 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_medium_30 (B) recomposition intermediate 2d medium 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_medium_45 (B) recomposition intermediate 2d medium 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_medium_60 (B) recomposition intermediate 2d medium 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_2d_medium_75 (B) recomposition intermediate 2d medium 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_high_30 (B) recomposition intermediate 3d high 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_high_45 (B) recomposition intermediate 3d high 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_high_60 (B) recomposition intermediate 3d high 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_high_75 (B) recomposition intermediate 3d high 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_low_30 (B) recomposition intermediate 3d low 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_low_45 (B) recomposition intermediate 3d low 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_low_60 (B) recomposition intermediate 3d low 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_low_75 (B) recomposition intermediate 3d low 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_medium_30 (B) recomposition intermediate 3d medium 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_medium_45 (B) recomposition intermediate 3d medium 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_medium_60 (B) recomposition intermediate 3d medium 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_3d_medium_75 (B) recomposition intermediate 3d medium 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_high_30 (B) recomposition intermediate 4d high 30min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_high_45 (B) recomposition intermediate 4d high 45min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_high_60 (B) recomposition intermediate 4d high 60min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_high_75 (B) recomposition intermediate 4d high 75min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_low_30 (B) recomposition intermediate 4d low 30min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_low_45 (B) recomposition intermediate 4d low 45min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_low_60 (B) recomposition intermediate 4d low 60min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_low_75 (B) recomposition intermediate 4d low 75min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_medium_30 (B) recomposition intermediate 4d medium 30min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_medium_45 (B) recomposition intermediate 4d medium 45min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_medium_60 (B) recomposition intermediate 4d medium 60min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_4d_medium_75 (B) recomposition intermediate 4d medium 75min
+  - Fallback L1: 16, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_high_30 (B) recomposition intermediate 5d high 30min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_high_45 (B) recomposition intermediate 5d high 45min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_high_60 (B) recomposition intermediate 5d high 60min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_high_75 (B) recomposition intermediate 5d high 75min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_low_30 (B) recomposition intermediate 5d low 30min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_low_45 (B) recomposition intermediate 5d low 45min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_low_60 (B) recomposition intermediate 5d low 60min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_low_75 (B) recomposition intermediate 5d low 75min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_medium_30 (B) recomposition intermediate 5d medium 30min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_medium_45 (B) recomposition intermediate 5d medium 45min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_medium_60 (B) recomposition intermediate 5d medium 60min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_5d_medium_75 (B) recomposition intermediate 5d medium 75min
+  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_high_30 (B) recomposition intermediate 6d high 30min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_high_45 (B) recomposition intermediate 6d high 45min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_high_60 (B) recomposition intermediate 6d high 60min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_high_75 (B) recomposition intermediate 6d high 75min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_low_30 (B) recomposition intermediate 6d low 30min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_low_45 (B) recomposition intermediate 6d low 45min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_low_60 (B) recomposition intermediate 6d low 60min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_low_75 (B) recomposition intermediate 6d low 75min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_medium_30 (B) recomposition intermediate 6d medium 30min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_medium_45 (B) recomposition intermediate 6d medium 45min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_medium_60 (B) recomposition intermediate 6d medium 60min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_6d_medium_75 (B) recomposition intermediate 6d medium 75min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_high_30 (B) recomposition intermediate 7d high 30min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_high_45 (B) recomposition intermediate 7d high 45min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_high_60 (B) recomposition intermediate 7d high 60min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_high_75 (B) recomposition intermediate 7d high 75min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_low_30 (B) recomposition intermediate 7d low 30min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_low_45 (B) recomposition intermediate 7d low 45min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_low_60 (B) recomposition intermediate 7d low 60min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_low_75 (B) recomposition intermediate 7d low 75min
+  - Fallback L1: 24, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_medium_30 (B) recomposition intermediate 7d medium 30min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_medium_45 (B) recomposition intermediate 7d medium 45min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_medium_60 (B) recomposition intermediate 7d medium 60min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_recomposition_intermediate_7d_medium_75 (B) recomposition intermediate 7d medium 75min
+  - Fallback L1: 12, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_high_30 (B) strength advanced 1d high 30min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_high_45 (B) strength advanced 1d high 45min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_high_60 (B) strength advanced 1d high 60min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_high_75 (B) strength advanced 1d high 75min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_low_30 (B) strength advanced 1d low 30min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_low_45 (B) strength advanced 1d low 45min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_low_60 (B) strength advanced 1d low 60min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_low_75 (B) strength advanced 1d low 75min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_medium_30 (B) strength advanced 1d medium 30min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_medium_45 (B) strength advanced 1d medium 45min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_medium_60 (B) strength advanced 1d medium 60min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_1d_medium_75 (B) strength advanced 1d medium 75min
+  - Fallback L1: 1, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_high_30 (B) strength advanced 2d high 30min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_high_45 (B) strength advanced 2d high 45min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_high_60 (B) strength advanced 2d high 60min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_high_75 (B) strength advanced 2d high 75min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_low_30 (B) strength advanced 2d low 30min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_low_45 (B) strength advanced 2d low 45min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_low_60 (B) strength advanced 2d low 60min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_low_75 (B) strength advanced 2d low 75min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_medium_30 (B) strength advanced 2d medium 30min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_medium_45 (B) strength advanced 2d medium 45min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_medium_60 (B) strength advanced 2d medium 60min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_2d_medium_75 (B) strength advanced 2d medium 75min
+  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_high_30 (B) strength advanced 3d high 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_high_45 (B) strength advanced 3d high 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_high_60 (B) strength advanced 3d high 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_high_75 (B) strength advanced 3d high 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_low_30 (B) strength advanced 3d low 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_low_45 (B) strength advanced 3d low 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_low_60 (B) strength advanced 3d low 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_low_75 (B) strength advanced 3d low 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_medium_30 (B) strength advanced 3d medium 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_medium_45 (B) strength advanced 3d medium 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_medium_60 (B) strength advanced 3d medium 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_3d_medium_75 (B) strength advanced 3d medium 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_high_30 (B) strength advanced 4d high 30min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_high_45 (B) strength advanced 4d high 45min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_high_60 (B) strength advanced 4d high 60min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_high_75 (B) strength advanced 4d high 75min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_low_30 (B) strength advanced 4d low 30min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_low_45 (B) strength advanced 4d low 45min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_low_60 (B) strength advanced 4d low 60min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_low_75 (B) strength advanced 4d low 75min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_medium_30 (B) strength advanced 4d medium 30min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_medium_45 (B) strength advanced 4d medium 45min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_medium_60 (B) strength advanced 4d medium 60min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_4d_medium_75 (B) strength advanced 4d medium 75min
+  - Fallback L1: 4, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_high_30 (B) strength advanced 5d high 30min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_high_45 (B) strength advanced 5d high 45min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_high_60 (B) strength advanced 5d high 60min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_high_75 (B) strength advanced 5d high 75min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_low_30 (B) strength advanced 5d low 30min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_low_45 (B) strength advanced 5d low 45min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_low_60 (B) strength advanced 5d low 60min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_low_75 (B) strength advanced 5d low 75min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_medium_30 (B) strength advanced 5d medium 30min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_medium_45 (B) strength advanced 5d medium 45min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_medium_60 (B) strength advanced 5d medium 60min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_5d_medium_75 (B) strength advanced 5d medium 75min
+  - Fallback L1: 4, Fallback L2: 14, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_high_30 (B) strength advanced 6d high 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_high_45 (B) strength advanced 6d high 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_high_60 (B) strength advanced 6d high 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_high_75 (B) strength advanced 6d high 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_low_30 (B) strength advanced 6d low 30min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_low_45 (B) strength advanced 6d low 45min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_low_60 (B) strength advanced 6d low 60min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_low_75 (B) strength advanced 6d low 75min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_medium_30 (B) strength advanced 6d medium 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_medium_45 (B) strength advanced 6d medium 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_medium_60 (B) strength advanced 6d medium 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_6d_medium_75 (B) strength advanced 6d medium 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_high_30 (B) strength advanced 7d high 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_high_45 (B) strength advanced 7d high 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_high_60 (B) strength advanced 7d high 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_high_75 (B) strength advanced 7d high 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_low_30 (B) strength advanced 7d low 30min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_low_45 (B) strength advanced 7d low 45min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_low_60 (B) strength advanced 7d low 60min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_low_75 (B) strength advanced 7d low 75min
+  - Fallback L1: 6, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_medium_30 (B) strength advanced 7d medium 30min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_medium_45 (B) strength advanced 7d medium 45min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_medium_60 (B) strength advanced 7d medium 60min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_advanced_7d_medium_75 (B) strength advanced 7d medium 75min
+  - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_high_30 (B) strength beginner 1d high 30min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_high_45 (B) strength beginner 1d high 45min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_high_60 (B) strength beginner 1d high 60min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_high_75 (B) strength beginner 1d high 75min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_low_30 (B) strength beginner 1d low 30min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_low_45 (B) strength beginner 1d low 45min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_low_60 (B) strength beginner 1d low 60min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_low_75 (B) strength beginner 1d low 75min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_medium_30 (B) strength beginner 1d medium 30min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_medium_45 (B) strength beginner 1d medium 45min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_medium_60 (B) strength beginner 1d medium 60min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_1d_medium_75 (B) strength beginner 1d medium 75min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_high_30 (B) strength beginner 2d high 30min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_high_45 (B) strength beginner 2d high 45min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_high_60 (B) strength beginner 2d high 60min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_high_75 (B) strength beginner 2d high 75min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_low_30 (B) strength beginner 2d low 30min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_low_45 (B) strength beginner 2d low 45min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_low_60 (B) strength beginner 2d low 60min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_low_75 (B) strength beginner 2d low 75min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_medium_30 (B) strength beginner 2d medium 30min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_medium_45 (B) strength beginner 2d medium 45min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_medium_60 (B) strength beginner 2d medium 60min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_2d_medium_75 (B) strength beginner 2d medium 75min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_high_30 (B) strength beginner 3d high 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_high_45 (B) strength beginner 3d high 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_high_60 (B) strength beginner 3d high 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_high_75 (B) strength beginner 3d high 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_low_30 (B) strength beginner 3d low 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_low_45 (B) strength beginner 3d low 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_low_60 (B) strength beginner 3d low 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_low_75 (B) strength beginner 3d low 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_medium_30 (B) strength beginner 3d medium 30min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_medium_45 (B) strength beginner 3d medium 45min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_medium_60 (B) strength beginner 3d medium 60min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_3d_medium_75 (B) strength beginner 3d medium 75min
+  - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_high_30 (B) strength beginner 4d high 30min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_high_45 (B) strength beginner 4d high 45min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_high_60 (B) strength beginner 4d high 60min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_high_75 (B) strength beginner 4d high 75min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_low_30 (B) strength beginner 4d low 30min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_low_45 (B) strength beginner 4d low 45min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_low_60 (B) strength beginner 4d low 60min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_low_75 (B) strength beginner 4d low 75min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_medium_30 (B) strength beginner 4d medium 30min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_medium_45 (B) strength beginner 4d medium 45min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_medium_60 (B) strength beginner 4d medium 60min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_4d_medium_75 (B) strength beginner 4d medium 75min
+  - Fallback L1: 8, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_high_30 (B) strength beginner 5d high 30min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_high_45 (B) strength beginner 5d high 45min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_high_60 (B) strength beginner 5d high 60min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_high_75 (B) strength beginner 5d high 75min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_low_30 (B) strength beginner 5d low 30min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_low_45 (B) strength beginner 5d low 45min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_low_60 (B) strength beginner 5d low 60min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_low_75 (B) strength beginner 5d low 75min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_medium_30 (B) strength beginner 5d medium 30min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_medium_45 (B) strength beginner 5d medium 45min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_medium_60 (B) strength beginner 5d medium 60min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_5d_medium_75 (B) strength beginner 5d medium 75min
+  - Fallback L1: 10, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_high_30 (B) strength beginner 6d high 30min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_high_45 (B) strength beginner 6d high 45min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_high_60 (B) strength beginner 6d high 60min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_high_75 (B) strength beginner 6d high 75min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_low_30 (B) strength beginner 6d low 30min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_low_45 (B) strength beginner 6d low 45min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_low_60 (B) strength beginner 6d low 60min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_low_75 (B) strength beginner 6d low 75min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_medium_30 (B) strength beginner 6d medium 30min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_medium_45 (B) strength beginner 6d medium 45min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_medium_60 (B) strength beginner 6d medium 60min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_6d_medium_75 (B) strength beginner 6d medium 75min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_high_30 (B) strength beginner 7d high 30min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_high_45 (B) strength beginner 7d high 45min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_high_60 (B) strength beginner 7d high 60min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_high_75 (B) strength beginner 7d high 75min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_low_30 (B) strength beginner 7d low 30min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_low_45 (B) strength beginner 7d low 45min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_low_60 (B) strength beginner 7d low 60min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_low_75 (B) strength beginner 7d low 75min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_medium_30 (B) strength beginner 7d medium 30min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_medium_45 (B) strength beginner 7d medium 45min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_medium_60 (B) strength beginner 7d medium 60min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_beginner_7d_medium_75 (B) strength beginner 7d medium 75min
+  - Fallback L1: 12, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_high_30 (B) strength intermediate 1d high 30min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_high_45 (B) strength intermediate 1d high 45min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_high_60 (B) strength intermediate 1d high 60min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_high_75 (B) strength intermediate 1d high 75min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_low_30 (B) strength intermediate 1d low 30min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_low_45 (B) strength intermediate 1d low 45min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_low_60 (B) strength intermediate 1d low 60min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_low_75 (B) strength intermediate 1d low 75min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_medium_30 (B) strength intermediate 1d medium 30min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_medium_45 (B) strength intermediate 1d medium 45min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_medium_60 (B) strength intermediate 1d medium 60min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_1d_medium_75 (B) strength intermediate 1d medium 75min
+  - Fallback L1: 2, Fallback L2: 1, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_high_30 (B) strength intermediate 2d high 30min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_high_45 (B) strength intermediate 2d high 45min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_high_60 (B) strength intermediate 2d high 60min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_high_75 (B) strength intermediate 2d high 75min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_low_30 (B) strength intermediate 2d low 30min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_low_45 (B) strength intermediate 2d low 45min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_low_60 (B) strength intermediate 2d low 60min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_low_75 (B) strength intermediate 2d low 75min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_medium_30 (B) strength intermediate 2d medium 30min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_medium_45 (B) strength intermediate 2d medium 45min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_medium_60 (B) strength intermediate 2d medium 60min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_2d_medium_75 (B) strength intermediate 2d medium 75min
+  - Fallback L1: 4, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_high_30 (B) strength intermediate 3d high 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_high_45 (B) strength intermediate 3d high 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_high_60 (B) strength intermediate 3d high 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_high_75 (B) strength intermediate 3d high 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_low_30 (B) strength intermediate 3d low 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_low_45 (B) strength intermediate 3d low 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_low_60 (B) strength intermediate 3d low 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_low_75 (B) strength intermediate 3d low 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_medium_30 (B) strength intermediate 3d medium 30min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_medium_45 (B) strength intermediate 3d medium 45min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_medium_60 (B) strength intermediate 3d medium 60min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_3d_medium_75 (B) strength intermediate 3d medium 75min
+  - Fallback L1: 6, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_high_30 (B) strength intermediate 4d high 30min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_high_45 (B) strength intermediate 4d high 45min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_high_60 (B) strength intermediate 4d high 60min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_high_75 (B) strength intermediate 4d high 75min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_low_30 (B) strength intermediate 4d low 30min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_low_45 (B) strength intermediate 4d low 45min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_low_60 (B) strength intermediate 4d low 60min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_low_75 (B) strength intermediate 4d low 75min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_medium_30 (B) strength intermediate 4d medium 30min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_medium_45 (B) strength intermediate 4d medium 45min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_medium_60 (B) strength intermediate 4d medium 60min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_4d_medium_75 (B) strength intermediate 4d medium 75min
+  - Fallback L1: 6, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_high_30 (B) strength intermediate 5d high 30min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_high_45 (B) strength intermediate 5d high 45min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_high_60 (B) strength intermediate 5d high 60min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_high_75 (B) strength intermediate 5d high 75min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_low_30 (B) strength intermediate 5d low 30min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_low_45 (B) strength intermediate 5d low 45min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_low_60 (B) strength intermediate 5d low 60min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_low_75 (B) strength intermediate 5d low 75min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_medium_30 (B) strength intermediate 5d medium 30min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_medium_45 (B) strength intermediate 5d medium 45min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_medium_60 (B) strength intermediate 5d medium 60min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_5d_medium_75 (B) strength intermediate 5d medium 75min
+  - Fallback L1: 8, Fallback L2: 9, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_high_30 (B) strength intermediate 6d high 30min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_high_45 (B) strength intermediate 6d high 45min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_high_60 (B) strength intermediate 6d high 60min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_high_75 (B) strength intermediate 6d high 75min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_low_30 (B) strength intermediate 6d low 30min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_low_45 (B) strength intermediate 6d low 45min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_low_60 (B) strength intermediate 6d low 60min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_low_75 (B) strength intermediate 6d low 75min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_medium_30 (B) strength intermediate 6d medium 30min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_medium_45 (B) strength intermediate 6d medium 45min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_medium_60 (B) strength intermediate 6d medium 60min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_6d_medium_75 (B) strength intermediate 6d medium 75min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_high_30 (B) strength intermediate 7d high 30min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_high_45 (B) strength intermediate 7d high 45min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_high_60 (B) strength intermediate 7d high 60min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_high_75 (B) strength intermediate 7d high 75min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_low_30 (B) strength intermediate 7d low 30min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_low_45 (B) strength intermediate 7d low 45min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_low_60 (B) strength intermediate 7d low 60min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_low_75 (B) strength intermediate 7d low 75min
+  - Fallback L1: 9, Fallback L2: 12, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_medium_30 (B) strength intermediate 7d medium 30min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_medium_45 (B) strength intermediate 7d medium 45min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_medium_60 (B) strength intermediate 7d medium 60min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_strength_intermediate_7d_medium_75 (B) strength intermediate 7d medium 75min
+  - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- C02 (C) Advanced machine+cable only baseline
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- C08 (C) Intermediate full gym without pull-up bar on 5-day split
+  - Fallback L1: 17, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- C09 (C) Advanced barbell+dumbbell+bodyweight with lower_back limitation
+  - Fallback L1: 6, Fallback L2: 17, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- C10 (C) Beginner machine+cable with shoulder limitation
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+
+## 13. Sex/Age Invariance Results
+- A_E6_I1: PASS
+  - Baseline Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Variants Checked: [{"sex":"female","age":30},{"sex":"male","age":18},{"sex":"male","age":30},{"sex":"male","age":45},{"sex":"male","age":60}]
+  - Result: All compared plans were byte-identical.
+- A_E3_I6: PASS
+  - Baseline Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Variants Checked: [{"sex":"female","age":30},{"sex":"male","age":18},{"sex":"male","age":30},{"sex":"male","age":45},{"sex":"male","age":60}]
+  - Result: All compared plans were byte-identical.
+- C03: PASS
+  - Baseline Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Variants Checked: [{"sex":"female","age":30},{"sex":"male","age":18},{"sex":"male","age":30},{"sex":"male","age":45},{"sex":"male","age":60}]
+  - Result: All compared plans were byte-identical.
+- C04: PASS
+  - Baseline Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Variants Checked: [{"sex":"female","age":30},{"sex":"male","age":18},{"sex":"male","age":30},{"sex":"male","age":45},{"sex":"male","age":60}]
+  - Result: All compared plans were byte-identical.
+- C05: PASS
+  - Baseline Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Variants Checked: [{"sex":"female","age":30},{"sex":"male","age":18},{"sex":"male","age":30},{"sex":"male","age":45},{"sex":"male","age":60}]
+  - Result: All compared plans were byte-identical.
+
+## 14. Prioritized Seed Recommendations
+### Priority 1
+- single_leg (novel_data_gap)
+  - Failed Profiles Affected: 5
+  - Degraded Profiles Affected: 6
+  - Blocks Primary Slot: no
+  - Distinct Equipment/Injury Combos Affected: 8
+  - Affected Profile IDs: A_E5_I1, A_E5_I3, A_E5_I4, A_E5_I5, A_E6_I2, A_E6_I6, A_E7_I2, A_E7_I6, C02, C04, C10
+- squat (novel_data_gap)
+  - Failed Profiles Affected: 5
+  - Degraded Profiles Affected: 0
+  - Blocks Primary Slot: yes
+  - Distinct Equipment/Injury Combos Affected: 4
+  - Affected Profile IDs: A_E6_I2, A_E6_I6, A_E7_I2, A_E7_I6, C04
+- anti_extension (novel_data_gap)
+  - Failed Profiles Affected: 0
+  - Degraded Profiles Affected: 6
+  - Blocks Primary Slot: no
+  - Distinct Equipment/Injury Combos Affected: 4
+  - Affected Profile IDs: A_E5_I1, A_E5_I3, A_E5_I4, A_E5_I5, C02, C10
+### Priority 2
+- lunge (novel_data_gap)
+  - Failed Profiles Affected: 0
+  - Degraded Profiles Affected: 6
+  - Blocks Primary Slot: no
+  - Distinct Equipment/Injury Combos Affected: 4
+  - Affected Profile IDs: A_E5_I1, A_E5_I3, A_E5_I4, A_E5_I5, C02, C10
+### Priority 3
+- None
