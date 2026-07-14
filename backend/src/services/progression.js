@@ -1,6 +1,10 @@
 import prisma from "../lib/prisma.js";
+import { computeRecoveryModifier } from "./recoveryEngine.js";
+import { analyzeWorkoutHistory } from "./workoutAnalyzer.js";
 
+const DEFAULT_ANALYSIS_WINDOW_DAYS = 28;
 const LOWER_BODY_PATTERNS = ["squat", "hinge", "lunge", "single_leg"];
+let computeRecoveryModifierImpl = computeRecoveryModifier;
 
 function roundToQuarter(value) {
   return Math.round(value / 1.25) * 1.25;
@@ -13,214 +17,316 @@ function getWeightIncrement(exercise, isBeginner) {
   if (isLowerBody && isCompound) {
     return isBeginner ? 1.25 : 2.5;
   }
-  // Upper body compound and all isolation exercises use the conservative increment.
   return 1.25;
 }
 
-function getMaxLoggedWeight(setLogs) {
-  const weights = setLogs.map((s) => s.weightKg).filter((w) => w !== null && w !== undefined);
-  if (weights.length === 0) return null;
-  return Math.max(...weights);
+function formatConfidence(confidence) {
+  return confidence.toFixed(2);
 }
 
-/**
- * Evaluate one exercise's performance within a completed session against its
- * prescribed top-of-range target, and produce a single deterministic
- * recommendation row (not yet persisted).
- */
-function evaluateExercise({ exercise, prescription, setLogs, isBeginner, previousFailureStreak }) {
-  if (!prescription) {
-    return {
-      recommendationType: "maintain",
-      previousWeightKg: getMaxLoggedWeight(setLogs),
-      recommendedWeightKg: getMaxLoggedWeight(setLogs),
-      previousTargetLow: null,
-      previousTargetHigh: null,
-      recommendedTargetLow: null,
-      recommendedTargetHigh: null,
-      consecutiveFailures: previousFailureStreak,
-      reason: "No program prescription found for this exercise; cannot evaluate progression.",
-    };
-  }
+function getLatestLoggedWeight(exerciseSummary) {
+  return exerciseSummary?.recentSets?.[0]?.weightKg ?? null;
+}
 
-  if (!setLogs || setLogs.length === 0) {
-    return {
-      recommendationType: "maintain",
-      previousWeightKg: null,
-      recommendedWeightKg: null,
-      previousTargetLow: prescription.repRangeLow,
-      previousTargetHigh: prescription.repRangeHigh,
-      recommendedTargetLow: prescription.repRangeLow,
-      recommendedTargetHigh: prescription.repRangeHigh,
-      consecutiveFailures: previousFailureStreak,
-      reason: "No sets were logged for this exercise; cannot evaluate progression.",
-    };
-  }
-
-  const topRange = prescription.repRangeHigh;
-  const allSetsHitTop = setLogs.every((s) => s.reps >= topRange);
-  const previousWeight = getMaxLoggedWeight(setLogs);
-  const progressionType = exercise.progressionType || "load";
-
-  if (allSetsHitTop) {
-    // Full success.
-    if (progressionType === "time") {
-      const recommendedHigh = prescription.repRangeHigh + 10;
-      const recommendedLow = prescription.repRangeLow + 5;
-      return {
-        recommendationType: "increase",
-        previousWeightKg: previousWeight,
-        recommendedWeightKg: previousWeight,
-        previousTargetLow: prescription.repRangeLow,
-        previousTargetHigh: prescription.repRangeHigh,
-        recommendedTargetLow: recommendedLow,
-        recommendedTargetHigh: recommendedHigh,
-        consecutiveFailures: 0,
-        reason: "All sets reached the top of the time range; duration increased.",
-      };
-    }
-
-    if (progressionType === "reps_then_load" && previousWeight !== null) {
-      // Once reps are maxed at this weight, the next step is a load increase
-      // and resetting reps back to the bottom of the range.
-      const increment = getWeightIncrement(exercise, isBeginner);
-      return {
-        recommendationType: "increase",
-        previousWeightKg: previousWeight,
-        recommendedWeightKg: roundToQuarter(previousWeight + increment),
-        previousTargetLow: prescription.repRangeLow,
-        previousTargetHigh: prescription.repRangeHigh,
-        recommendedTargetLow: prescription.repRangeLow,
-        recommendedTargetHigh: prescription.repRangeHigh,
-        consecutiveFailures: 0,
-        reason: "All sets reached top reps at this weight; weight increased and reps reset.",
-      };
-    }
-
-    // Default: load-based progression.
-    const increment = getWeightIncrement(exercise, isBeginner);
-    const recommendedWeight = previousWeight !== null ? roundToQuarter(previousWeight + increment) : null;
-    return {
-      recommendationType: "increase",
-      previousWeightKg: previousWeight,
-      recommendedWeightKg: recommendedWeight,
-      previousTargetLow: prescription.repRangeLow,
-      previousTargetHigh: prescription.repRangeHigh,
-      recommendedTargetLow: prescription.repRangeLow,
-      recommendedTargetHigh: prescription.repRangeHigh,
-      consecutiveFailures: 0,
-      reason: "All sets reached the top of the prescribed rep range; weight increased.",
-    };
-  }
-
-  // Not full success: maintain or deload depending on failure streak.
-  const newFailureStreak = previousFailureStreak + 1;
-
-  if (newFailureStreak >= 2) {
-    const deloadWeight = previousWeight !== null ? roundToQuarter(previousWeight * 0.9) : null;
-    return {
-      recommendationType: "deload",
-      previousWeightKg: previousWeight,
-      recommendedWeightKg: deloadWeight,
-      previousTargetLow: prescription.repRangeLow,
-      previousTargetHigh: prescription.repRangeHigh,
-      recommendedTargetLow: prescription.repRangeLow,
-      recommendedTargetHigh: prescription.repRangeHigh,
-      consecutiveFailures: newFailureStreak,
-      reason: "Two consecutive sessions failed to reach the top of the rep range; weight reduced.",
-    };
-  }
-
+function buildFallbackExerciseSummary(exerciseId, exerciseName, movementPattern) {
   return {
-    recommendationType: "maintain",
-    previousWeightKg: previousWeight,
-    recommendedWeightKg: previousWeight,
-    previousTargetLow: prescription.repRangeLow,
-    previousTargetHigh: prescription.repRangeHigh,
-    recommendedTargetLow: prescription.repRangeLow,
-    recommendedTargetHigh: prescription.repRangeHigh,
-    consecutiveFailures: newFailureStreak,
-    reason: "At least one set did not reach the top of the rep range; weight maintained for another attempt.",
+    exerciseId,
+    exerciseName,
+    movementPattern,
+    timesPrescribed: 0,
+    timesLogged: 0,
+    adherenceRate: null,
+    performanceTrend: {
+      direction: "insufficient_data",
+      confidence: 0,
+      reason: "insufficient_sessions",
+    },
+    lastLoggedAt: null,
+    recentSets: [],
   };
 }
 
+/**
+ * Progression Engine v2 rules:
+ * - Decisions are driven by WorkoutAnalysis.exerciseSummaries[].performanceTrend.
+ * - Trend confidence boundary is inclusive: confidence >= 0.67 is eligible for increase.
+ * - Recovery modifier interpretation:
+ *   recoveryQuality === "low" always downgrades an increase decision to maintain.
+ *   This is the conservative interpretation of "may downgrade" and never creates deload.
+ * - Weight/progression math is preserved from the previous engine:
+ *   lower-body-compound increment table, roundToQuarter, 10% deload, and
+ *   progressionType handling for time / reps_then_load / default load.
+ */
+export function evaluateProgression({
+  exerciseSummary,
+  prescription,
+  exercise,
+  isBeginner,
+  staticRecoveryQuality,
+  recoveryModifier,
+  previousRecommendation,
+}) {
+  const trace = {
+    decision: "maintain",
+    because: [],
+  };
+
+  const previousFailureStreak = previousRecommendation?.consecutiveFailures ?? 0;
+  const trend = exerciseSummary.performanceTrend;
+  const previousWeight = getLatestLoggedWeight(exerciseSummary);
+
+  trace.because.push(`performance_trend:${trend.direction}`);
+  trace.because.push(`trend_confidence:${formatConfidence(trend.confidence)}`);
+  trace.because.push(`trend_reason:${trend.reason}`);
+  trace.because.push(`consecutive_failures:${previousFailureStreak}`);
+
+  let recommendationType;
+  let consecutiveFailures = 0;
+
+  if (trend.direction === "insufficient_data") {
+    recommendationType = "maintain";
+    consecutiveFailures = previousFailureStreak;
+  } else if (trend.direction === "increasing" && trend.confidence < 0.67) {
+    recommendationType = "maintain";
+    consecutiveFailures = previousFailureStreak;
+  } else if (trend.direction === "increasing" && trend.confidence >= 0.67) {
+    recommendationType = "increase";
+    consecutiveFailures = 0;
+  } else if (trend.direction === "flat") {
+    recommendationType = "maintain";
+    consecutiveFailures = previousFailureStreak;
+  } else if (
+    trend.direction === "decreasing" &&
+    (!previousRecommendation || previousRecommendation.consecutiveFailures < 1)
+  ) {
+    recommendationType = "maintain";
+    consecutiveFailures = previousFailureStreak + 1;
+  } else if (
+    trend.direction === "decreasing" &&
+    previousRecommendation &&
+    previousRecommendation.consecutiveFailures >= 1
+  ) {
+    recommendationType = "deload";
+    consecutiveFailures = previousFailureStreak;
+  } else {
+    recommendationType = "maintain";
+    consecutiveFailures = previousFailureStreak;
+  }
+
+  const isIncreaseEligibleBeforeRecovery = recommendationType === "increase";
+  const staticRecoveryDowngrade =
+    isIncreaseEligibleBeforeRecovery && staticRecoveryQuality === "low";
+  const behavioralRecoveryDowngrade =
+    isIncreaseEligibleBeforeRecovery && recoveryModifier === "caution";
+
+  if (staticRecoveryDowngrade) {
+    trace.because.push(`static_recovery_quality:${staticRecoveryQuality}`);
+    trace.because.push("static_recovery_downgrade:increase_to_maintain");
+  }
+
+  if (behavioralRecoveryDowngrade) {
+    trace.because.push(`behavioral_recovery_modifier:${recoveryModifier}`);
+    trace.because.push("behavioral_recovery_downgrade:increase_to_maintain");
+  }
+
+  if (staticRecoveryDowngrade || behavioralRecoveryDowngrade) {
+    recommendationType = "maintain";
+  }
+
+  trace.decision = recommendationType;
+
+  const previousTargetLow = prescription?.repRangeLow ?? null;
+  const previousTargetHigh = prescription?.repRangeHigh ?? null;
+  let recommendedWeightKg = previousWeight;
+  let recommendedTargetLow = previousTargetLow;
+  let recommendedTargetHigh = previousTargetHigh;
+
+  let reason = "Workout trend stayed stable; load maintained for the next session.";
+
+  if (recommendationType === "increase") {
+    const progressionType = prescription?.progressionType || exercise.progressionType || "load";
+
+    if (progressionType === "time") {
+      recommendedWeightKg = previousWeight;
+      recommendedTargetLow =
+        previousTargetLow === null ? null : previousTargetLow + 5;
+      recommendedTargetHigh =
+        previousTargetHigh === null ? null : previousTargetHigh + 10;
+      reason =
+        "Recent workout trend is increasing with sufficient confidence; duration increased for the next session.";
+    } else if (progressionType === "reps_then_load" && previousWeight !== null) {
+      const increment = getWeightIncrement(exercise, isBeginner);
+      recommendedWeightKg = roundToQuarter(previousWeight + increment);
+      recommendedTargetLow = previousTargetLow;
+      recommendedTargetHigh = previousTargetHigh;
+      reason =
+        "Recent workout trend is increasing with sufficient confidence; weight increased and reps reset for the next session.";
+    } else {
+      const increment = getWeightIncrement(exercise, isBeginner);
+      recommendedWeightKg =
+        previousWeight !== null ? roundToQuarter(previousWeight + increment) : null;
+      recommendedTargetLow = previousTargetLow;
+      recommendedTargetHigh = previousTargetHigh;
+      reason =
+        "Recent workout trend is increasing with sufficient confidence; weight increased for the next session.";
+    }
+  } else if (recommendationType === "deload") {
+    recommendedWeightKg =
+      previousWeight !== null ? roundToQuarter(previousWeight * 0.9) : null;
+    recommendedTargetLow = previousTargetLow;
+    recommendedTargetHigh = previousTargetHigh;
+    reason =
+      "Recent workout trend is decreasing for a second straight evaluation; weight reduced for the next session.";
+  } else if (trend.direction === "insufficient_data") {
+    reason = "There is not enough workout history yet; load maintained for the next session.";
+  } else if (trend.direction === "increasing" && trend.confidence < 0.67) {
+    reason =
+      "Workout trend is improving but confidence is still below threshold; load maintained for the next session.";
+  } else if (trend.direction === "increasing" && staticRecoveryQuality === "low" && recoveryModifier === "caution") {
+    reason =
+      "Workout trend is improving, but low recovery quality and recent training behavior triggered a conservative hold for the next session.";
+  } else if (trend.direction === "increasing" && staticRecoveryQuality === "low") {
+    reason =
+      "Workout trend is improving, but low recovery quality triggered a conservative hold for the next session.";
+  } else if (trend.direction === "increasing" && recoveryModifier === "caution") {
+    reason =
+      "Workout trend is improving, but recent training behavior triggered a conservative hold for the next session.";
+  } else if (trend.direction === "flat") {
+    reason = "Workout trend is flat; load maintained for the next session.";
+  } else if (trend.direction === "decreasing") {
+    reason =
+      "Workout trend is decreasing; load maintained for one more attempt before any deload.";
+  }
+
+  return {
+    recommendationType,
+    previousWeightKg: previousWeight,
+    recommendedWeightKg,
+    previousTargetLow,
+    previousTargetHigh,
+    recommendedTargetLow,
+    recommendedTargetHigh,
+    progressionType: exercise.progressionType || null,
+    consecutiveFailures,
+    reason,
+    trace,
+  };
+}
+
+export async function persistProgressionRecommendation({
+  userId,
+  exerciseId,
+  sourceSessionId,
+  evaluation,
+}) {
+  return prisma.progressionRecommendation.create({
+    data: {
+      userId,
+      exerciseId,
+      sourceSessionId,
+      recommendationType: evaluation.recommendationType,
+      previousWeightKg: evaluation.previousWeightKg,
+      recommendedWeightKg: evaluation.recommendedWeightKg,
+      previousTargetLow: evaluation.previousTargetLow,
+      previousTargetHigh: evaluation.previousTargetHigh,
+      recommendedTargetLow: evaluation.recommendedTargetLow,
+      recommendedTargetHigh: evaluation.recommendedTargetHigh,
+      progressionType: evaluation.progressionType,
+      consecutiveFailures: evaluation.consecutiveFailures,
+      reason: evaluation.reason,
+    },
+    include: { exercise: true },
+  });
+}
+
+export function __setComputeRecoveryModifierForTests(overrideFn) {
+  computeRecoveryModifierImpl = overrideFn || computeRecoveryModifier;
+}
+
+export function __resetComputeRecoveryModifierForTests() {
+  computeRecoveryModifierImpl = computeRecoveryModifier;
+}
+
+// TD-S4-001: no idempotency guard for repeated sourceSessionId calls — deferred, see Sprint 4 Phase 2 closure.
 export async function evaluateSessionProgression(sessionId, userId) {
   const session = await prisma.workoutSession.findUnique({
     where: { id: sessionId },
-    include: {
-      setLogs: {
-        include: { exercise: true },
-      },
-    },
   });
 
   if (!session || session.userId !== userId) {
-    return { recommendations: [], warning: "Session not found for this user; no progression evaluated." };
+    return { recommendations: [], evaluations: [], warning: "Session not found for this user; no progression evaluated." };
   }
 
   if (!session.programDayId) {
-    return { recommendations: [], warning: "Session has no associated program day; no progression evaluated." };
+    return { recommendations: [], evaluations: [], warning: "Session has no associated program day; no progression evaluated." };
   }
 
-  const userProfile = await prisma.userProfile.findUnique({ where: { userId } });
+  const [userProfile, prescriptions, workoutAnalysis] = await Promise.all([
+    prisma.userProfile.findUnique({ where: { userId } }),
+    prisma.programDayExercise.findMany({
+      where: { programDayId: session.programDayId },
+      include: { exercise: true },
+    }),
+    analyzeWorkoutHistory({ userId, windowDays: DEFAULT_ANALYSIS_WINDOW_DAYS }),
+  ]);
+  const recoveryResult = computeRecoveryModifierImpl({ workoutAnalysis });
+
   const isBeginner = userProfile?.trainingLevel === "beginner";
-
-  const prescriptions = await prisma.programDayExercise.findMany({
-    where: { programDayId: session.programDayId },
-    include: { exercise: true },
-  });
-
-  const setLogsByExercise = {};
-  for (const log of session.setLogs) {
-    if (!setLogsByExercise[log.exerciseId]) setLogsByExercise[log.exerciseId] = [];
-    setLogsByExercise[log.exerciseId].push(log);
-  }
+  const staticRecoveryQuality = userProfile?.recoveryQuality || "medium";
+  const summariesByExerciseId = new Map(
+    workoutAnalysis.exerciseSummaries.map((summary) => [summary.exerciseId, summary])
+  );
 
   const recommendations = [];
+  const evaluations = [];
 
   for (const prescription of prescriptions) {
     const exerciseId = prescription.exerciseId;
     const exercise = prescription.exercise;
-    const setLogs = setLogsByExercise[exerciseId] || [];
+    const exerciseSummary =
+      summariesByExerciseId.get(exerciseId) ||
+      buildFallbackExerciseSummary(
+        exerciseId,
+        exercise.nameEn || `Exercise ${exerciseId}`,
+        exercise.movementPattern || null
+      );
 
     const previousRecommendation = await prisma.progressionRecommendation.findFirst({
       where: { userId, exerciseId },
       orderBy: { createdAt: "desc" },
     });
-    const previousFailureStreak =
-      previousRecommendation && previousRecommendation.recommendationType === "maintain"
-        ? previousRecommendation.consecutiveFailures
-        : 0;
 
-    const evaluation = evaluateExercise({
-      exercise,
-      prescription,
-      setLogs,
+    const evaluation = evaluateProgression({
+      exerciseSummary,
+      prescription: {
+        repRangeLow: prescription.repRangeLow,
+        repRangeHigh: prescription.repRangeHigh,
+        progressionType: prescription.progressionType,
+      },
+      exercise: {
+        movementPattern: exercise.movementPattern,
+        complexity: exercise.complexity,
+        progressionType: exercise.progressionType,
+      },
       isBeginner,
-      previousFailureStreak,
+      staticRecoveryQuality,
+      recoveryModifier: recoveryResult.recoveryModifier,
+      previousRecommendation,
     });
 
-    const created = await prisma.progressionRecommendation.create({
-      data: {
-        userId,
-        exerciseId,
-        sourceSessionId: sessionId,
-        recommendationType: evaluation.recommendationType,
-        previousWeightKg: evaluation.previousWeightKg,
-        recommendedWeightKg: evaluation.recommendedWeightKg,
-        previousTargetLow: evaluation.previousTargetLow,
-        previousTargetHigh: evaluation.previousTargetHigh,
-        recommendedTargetLow: evaluation.recommendedTargetLow,
-        recommendedTargetHigh: evaluation.recommendedTargetHigh,
-        progressionType: exercise.progressionType,
-        consecutiveFailures: evaluation.consecutiveFailures,
-        reason: evaluation.reason,
-      },
-      include: { exercise: true },
+    const created = await persistProgressionRecommendation({
+      userId,
+      exerciseId,
+      sourceSessionId: sessionId,
+      evaluation,
     });
 
     recommendations.push(created);
+    evaluations.push({
+      exerciseId,
+      evaluation,
+    });
   }
 
-  return { recommendations, warning: null };
+  return { recommendations, evaluations, recoveryResult, warning: null };
 }
