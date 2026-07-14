@@ -3,57 +3,57 @@
 ## 1. Executive Summary
 - Matrix profiles audited: 1062 (42 in Pass A, 1008 in Pass B, 12 in Pass C).
 - Additional sex/age invariance executions: 25 (5 reference profiles × 5 runs each).
-- Overall outcomes across Passes A+B+C: 260 PASS, 799 PASS_WITH_DEGRADATION, 3 FAIL.
-- Average quality score: 44.01. Median quality score: 40.00.
-- Pass B full-gym/no-injury logic-only sweep produced 0 FAIL and 756 PASS_WITH_DEGRADATION results; any FAIL there should be triaged as generator logic risk.
-- Worst movement-pattern success rates: vertical_pull (96.85%), single_leg (98.73%), lunge (98.87%).
-- Program/UserProgram write-model safety check: before={"program":6,"programDay":21,"programDayExercise":100,"userProgram":5,"exercise":42}, after={"program":6,"programDay":21,"programDayExercise":100,"userProgram":5,"exercise":42}.
+- Overall outcomes across Passes A+B+C: 204 PASS, 824 PASS_WITH_DEGRADATION, 34 FAIL.
+- Average quality score: 41.32. Median quality score: 40.00.
+- Pass B full-gym/no-injury logic-only sweep produced 0 FAIL and 804 PASS_WITH_DEGRADATION results; any FAIL there should be triaged as generator logic risk.
+- Worst movement-pattern success rates: vertical_pull (96.85%), single_leg (96.89%), squat (97.16%).
+- Program/UserProgram write-model safety check: before={"program":6,"programDay":21,"programDayExercise":100,"userProgram":5,"exercise":39}, after={"program":6,"programDay":21,"programDayExercise":100,"userProgram":5,"exercise":39}.
 
 ## 2. Metadata
 - Generator Version: 1.0
-- Exercise Dataset Size: 42
+- Exercise Dataset Size: 39
 - Audit Version: 1.0
-- Execution Date: 2026-07-14T11:02:46.861Z
+- Execution Date: 2026-07-14T09:37:02.941Z
 - Total Profiles Tested: 1087 (1062 matrix + 25 invariance executions)
 
 ## 3. Outcome Breakdown
 | Scope | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Non-PASS % |
 | --- | --- | --- | --- | --- | --- |
-| Passes A+B+C | 260 | 799 | 3 | 24.48% | 75.52% |
+| Passes A+B+C | 204 | 824 | 34 | 19.21% | 80.79% |
 
 ## 4. Average and Median Quality Score
 | Scope | Average Score | Median Score |
 | --- | --- | --- |
-| Overall | 44.01 | 40.00 |
-| Pass A | 45.24 | 50.00 |
-| Pass B | 44.19 | 40.00 |
-| Pass C | 24.58 | 2.50 |
+| Overall | 41.32 | 40.00 |
+| Pass A | 18.33 | 0.00 |
+| Pass B | 42.76 | 40.00 |
+| Pass C | 0.83 | 0.00 |
 
 ## 5. Success Metrics by Equipment Tier
 | Tier | Label | Profiles | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Avg Score |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| E1 | Bodyweight | 6 | 0 | 5 | 1 | 0.00% | 0.00 |
-| E2 | Dumbbell + Bodyweight | 6 | 0 | 6 | 0 | 0.00% | 23.33 |
-| E3 | Dumbbell + Pull-Up Bar + Bodyweight | 6 | 0 | 6 | 0 | 0.00% | 36.67 |
-| E4 | Barbell + Dumbbell + Bodyweight | 6 | 0 | 6 | 0 | 0.00% | 23.33 |
-| E5 | Machine + Cable | 6 | 0 | 4 | 2 | 0.00% | 46.67 |
-| E6 | Full Commercial Gym | 6 | 4 | 2 | 0 | 66.67% | 93.33 |
-| E7 | Full Commercial Gym (No Pull-Up Bar) | 6 | 4 | 2 | 0 | 66.67% | 93.33 |
+| E1 | Bodyweight | 6 | 0 | 0 | 6 | 0.00% | 0.00 |
+| E2 | Dumbbell + Bodyweight | 6 | 0 | 0 | 6 | 0.00% | 0.00 |
+| E3 | Dumbbell + Pull-Up Bar + Bodyweight | 6 | 0 | 0 | 6 | 0.00% | 0.00 |
+| E4 | Barbell + Dumbbell + Bodyweight | 6 | 0 | 4 | 2 | 0.00% | 15.00 |
+| E5 | Machine + Cable | 6 | 0 | 4 | 2 | 0.00% | 6.67 |
+| E6 | Full Commercial Gym | 6 | 0 | 4 | 2 | 0.00% | 53.33 |
+| E7 | Full Commercial Gym (No Pull-Up Bar) | 6 | 0 | 4 | 2 | 0.00% | 53.33 |
 
 ## 6. Success Metrics by Injury Combination
 | Combo | Label | Profiles | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Avg Score |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| I1 | none | 7 | 2 | 5 | 0 | 28.57% | 62.86 |
-| I2 | knee | 7 | 0 | 6 | 1 | 0.00% | 25.71 |
-| I3 | shoulder | 7 | 2 | 5 | 0 | 28.57% | 47.14 |
-| I4 | wrist | 7 | 2 | 4 | 1 | 28.57% | 50.00 |
-| I5 | lower_back | 7 | 2 | 5 | 0 | 28.57% | 62.86 |
-| I6 | knee+shoulder | 7 | 0 | 6 | 1 | 0.00% | 22.86 |
+| I1 | none | 7 | 0 | 4 | 3 | 0.00% | 30.00 |
+| I2 | knee | 7 | 0 | 0 | 7 | 0.00% | 0.00 |
+| I3 | shoulder | 7 | 0 | 4 | 3 | 0.00% | 25.71 |
+| I4 | wrist | 7 | 0 | 4 | 3 | 0.00% | 25.71 |
+| I5 | lower_back | 7 | 0 | 4 | 3 | 0.00% | 28.57 |
+| I6 | knee+shoulder | 7 | 0 | 0 | 7 | 0.00% | 0.00 |
 
 ## 7. Pass B Logic-Only Results
 | Profiles | PASS | PASS_WITH_DEGRADATION | FAIL | PASS % | Avg Score |
 | --- | --- | --- | --- | --- | --- |
-| 1008 | 252 | 756 | 0 | 25.00% | 44.19 |
+| 1008 | 204 | 804 | 0 | 20.24% | 42.76 |
 
 Pass B produced no FAIL results.
 
@@ -61,14 +61,14 @@ Pass B produced no FAIL results.
 | Pattern | Required | Ideal | Fallback L1 | Fallback L2 | Omissions | Failures | Success % |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | vertical_pull | 1525 | 993 | 376 | 108 | 48 | 0 | 96.85% |
-| single_leg | 1417 | 646 | 541 | 212 | 18 | 0 | 98.73% |
+| single_leg | 1417 | 624 | 541 | 208 | 44 | 0 | 96.89% |
+| squat | 2431 | 1584 | 586 | 192 | 0 | 69 | 97.16% |
+| anti_extension | 1159 | 360 | 219 | 564 | 16 | 0 | 98.62% |
 | lunge | 1417 | 406 | 317 | 678 | 16 | 0 | 98.87% |
 | elbow_flexion | 2274 | 686 | 570 | 994 | 24 | 0 | 98.94% |
 | vertical_press | 2274 | 1379 | 692 | 183 | 20 | 0 | 99.12% |
 | elbow_extension | 1417 | 448 | 317 | 646 | 6 | 0 | 99.58% |
-| squat | 2431 | 1649 | 583 | 195 | 0 | 4 | 99.84% |
 | horizontal_press | 2431 | 909 | 758 | 762 | 0 | 2 | 99.92% |
-| anti_extension | 1159 | 518 | 293 | 348 | 0 | 0 | 100.00% |
 | hinge | 2382 | 1628 | 573 | 181 | 0 | 0 | 100.00% |
 | horizontal_pull | 2431 | 1287 | 758 | 386 | 0 | 0 | 100.00% |
 | trunk_flexion | 1208 | 454 | 221 | 533 | 0 | 0 | 100.00% |
@@ -76,116 +76,146 @@ Pass B produced no FAIL results.
 ## 9. Equipment Risk Ranking
 | Tier | Label | FAIL | PASS_WITH_DEGRADATION | PASS % | Avg Score |
 | --- | --- | --- | --- | --- | --- |
-| E5 | Machine + Cable | 2 | 4 | 0.00% | 46.67 |
-| E1 | Bodyweight | 1 | 5 | 0.00% | 0.00 |
-| E2 | Dumbbell + Bodyweight | 0 | 6 | 0.00% | 23.33 |
-| E3 | Dumbbell + Pull-Up Bar + Bodyweight | 0 | 6 | 0.00% | 36.67 |
-| E4 | Barbell + Dumbbell + Bodyweight | 0 | 6 | 0.00% | 23.33 |
-| E6 | Full Commercial Gym | 0 | 2 | 66.67% | 93.33 |
-| E7 | Full Commercial Gym (No Pull-Up Bar) | 0 | 2 | 66.67% | 93.33 |
+| E1 | Bodyweight | 6 | 0 | 0.00% | 0.00 |
+| E2 | Dumbbell + Bodyweight | 6 | 0 | 0.00% | 0.00 |
+| E3 | Dumbbell + Pull-Up Bar + Bodyweight | 6 | 0 | 0.00% | 0.00 |
+| E4 | Barbell + Dumbbell + Bodyweight | 2 | 4 | 0.00% | 15.00 |
+| E5 | Machine + Cable | 2 | 4 | 0.00% | 6.67 |
+| E6 | Full Commercial Gym | 2 | 4 | 0.00% | 53.33 |
+| E7 | Full Commercial Gym (No Pull-Up Bar) | 2 | 4 | 0.00% | 53.33 |
 
 ## 10. Injury Risk Ranking
 | Combo | Label | FAIL | PASS_WITH_DEGRADATION | PASS % | Interaction Gap |
 | --- | --- | --- | --- | --- | --- |
-| I2 | knee | 1 | 6 | 0.00% | no |
-| I6 | knee+shoulder | 1 | 6 | 0.00% | no |
-| I1 | none | 0 | 5 | 28.57% | no |
-| I3 | shoulder | 0 | 5 | 28.57% | no |
-| I4 | wrist | 1 | 4 | 28.57% | no |
-| I5 | lower_back | 0 | 5 | 28.57% | no |
+| I1 | none | 3 | 4 | 0.00% | no |
+| I2 | knee | 7 | 0 | 0.00% | no |
+| I3 | shoulder | 3 | 4 | 0.00% | no |
+| I4 | wrist | 3 | 4 | 0.00% | no |
+| I5 | lower_back | 3 | 4 | 0.00% | no |
+| I6 | knee+shoulder | 7 | 0 | 0.00% | no |
 
 ## 11. Full Failure Classification
 ### expected_data_gap
 - A_E1_I1 (A) Bodyweight × none
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E1_I2 (A) Bodyweight × knee
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E1_I3 (A) Bodyweight × shoulder
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E1_I4 (A) Bodyweight × wrist
   - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
   - Failure/Degradation Reason: Program generation failed for primary slot dayType="upper_a" movementPattern="horizontal_press" under constraints equipmentAccess=["bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E1_I5 (A) Bodyweight × lower_back
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["lower_back"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E1_I6 (A) Bodyweight × knee+shoulder
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E2_I1 (A) Dumbbell + Bodyweight × none
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 50
+  - Outcome: FAIL
+  - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E2_I2 (A) Dumbbell + Bodyweight × knee
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E2_I3 (A) Dumbbell + Bodyweight × shoulder
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 20
+  - Outcome: FAIL
+  - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E2_I4 (A) Dumbbell + Bodyweight × wrist
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 20
+  - Outcome: FAIL
+  - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E2_I5 (A) Dumbbell + Bodyweight × lower_back
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 50
+  - Outcome: FAIL
+  - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["lower_back"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E2_I6 (A) Dumbbell + Bodyweight × knee+shoulder
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I1 (A) Dumbbell + Pull-Up Bar + Bodyweight × none
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I2 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I3 (A) Dumbbell + Pull-Up Bar + Bodyweight × shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I4 (A) Dumbbell + Pull-Up Bar + Bodyweight × wrist
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I5 (A) Dumbbell + Pull-Up Bar + Bodyweight × lower_back
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["lower_back"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E3_I6 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E4_I1 (A) Barbell + Dumbbell + Bodyweight × none
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 50
+  - Quality Score: 40
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I2 (A) Barbell + Dumbbell + Bodyweight × knee
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E4_I3 (A) Barbell + Dumbbell + Bodyweight × shoulder
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 20
+  - Quality Score: 10
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
   - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I4 (A) Barbell + Dumbbell + Bodyweight × wrist
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 20
+  - Quality Score: 10
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
   - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I5 (A) Barbell + Dumbbell + Bodyweight × lower_back
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 50
+  - Quality Score: 30
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
   - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I6 (A) Barbell + Dumbbell + Bodyweight × knee+shoulder
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - A_E5_I2 (A) Machine + Cable × knee
   - Outcome: FAIL
   - Quality Score: 0
@@ -196,121 +226,146 @@ Pass B produced no FAIL results.
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
   - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["machine","cable"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C01 (C) Beginner pull-up-bar+dumbbell+bodyweight with knee+shoulder limits
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- C03 (C) Beginner pull-up-bar+dumbbell+bodyweight exact squat-gap case
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - C05 (C) Beginner bodyweight only with knee limitation on 1-day split
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 80
+  - Outcome: FAIL
+  - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":1,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"full_body","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="full_body" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - C06 (C) Beginner dumbbell+bodyweight only baseline
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 50
+  - Outcome: FAIL
+  - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["none"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - C07 (C) Beginner dumbbell+bodyweight with wrist limitation
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 20
+  - Outcome: FAIL
+  - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["dumbbell","bodyweight"], injuryFlags=["wrist"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - C09 (C) Advanced barbell+dumbbell+bodyweight with lower_back limitation
   - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 0
   - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
   - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- C11 (C) Intermediate pull-up-bar+dumbbell+bodyweight with lower_back limitation, 6-day reduced-volume profile
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a_light" movementPattern="squat" under constraints equipmentAccess=["dumbbell","pull_up_bar","bodyweight"], injuryFlags=["lower_back"], goal=recomposition, trainingLevel=intermediate. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - C12 (C) Advanced bodyweight-only fat-loss profile on 3-day split
-  - Outcome: PASS_WITH_DEGRADATION
+  - Outcome: FAIL
   - Quality Score: 0
   - Inputs: {"goal":"fat_loss","trainingLevel":"advanced","trainingDaysPerWeek":3,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"full_body_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"full_body_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"full_body_c","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="full_body_a" movementPattern="squat" under constraints equipmentAccess=["bodyweight"], injuryFlags=["none"], goal=fat_loss, trainingLevel=advanced. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 ### novel_data_gap
-- A_E3_I2 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 20
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E3_I3 (A) Dumbbell + Pull-Up Bar + Bodyweight × shoulder
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 20
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E3_I4 (A) Dumbbell + Pull-Up Bar + Bodyweight × wrist
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 40
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E3_I6 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee+shoulder
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 0
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I1 (A) Machine + Cable × none
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
+  - Quality Score: 10
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I3 (A) Machine + Cable × shoulder
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
+  - Quality Score: 10
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I4 (A) Machine + Cable × wrist
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
+  - Quality Score: 10
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["wrist"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I5 (A) Machine + Cable × lower_back
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
+  - Quality Score: 10
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["lower_back"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- C01 (C) Beginner pull-up-bar+dumbbell+bodyweight with knee+shoulder limits
-  - Outcome: PASS_WITH_DEGRADATION
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E6_I2 (A) Full Commercial Gym × knee
+  - Outcome: FAIL
   - Quality Score: 0
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E6_I6 (A) Full Commercial Gym × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E7_I2 (A) Full Commercial Gym (No Pull-Up Bar) × knee
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight"], injuryFlags=["knee"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
+- A_E7_I6 (A) Full Commercial Gym (No Pull-Up Bar) × knee+shoulder
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="lower_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight"], injuryFlags=["knee","shoulder"], goal=hypertrophy, trainingLevel=beginner. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - C02 (C) Advanced machine+cable only baseline
   - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- C04 (C) Advanced full commercial gym with knee+shoulder on 7-day split
+  - Outcome: FAIL
+  - Quality Score: 0
+  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: Program generation failed for primary slot dayType="legs_a" movementPattern="squat" under constraints equipmentAccess=["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"], injuryFlags=["knee","shoulder"], goal=strength, trainingLevel=advanced. No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3.
 - C10 (C) Beginner machine+cable with shoulder limitation
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
+  - Quality Score: 10
   - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["machine","cable"],"injuryFlags":["shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Failure/Degradation Reason: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 ### injury_interaction_gap
 - None
 ### generator_logic_defect
 - None
 ### unexpected_unclassified
-- A_E3_I1 (A) Dumbbell + Pull-Up Bar + Bodyweight × none
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: []
-- A_E3_I5 (A) Dumbbell + Pull-Up Bar + Bodyweight × lower_back
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
-  - Failure/Degradation Reason: []
-- A_E6_I2 (A) Full Commercial Gym × knee
+- A_E6_I1 (A) Full Commercial Gym × none
   - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 80
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
-- A_E6_I6 (A) Full Commercial Gym × knee+shoulder
+- A_E6_I3 (A) Full Commercial Gym × shoulder
   - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 80
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["shoulder"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
-- A_E7_I2 (A) Full Commercial Gym (No Pull-Up Bar) × knee
+- A_E6_I4 (A) Full Commercial Gym × wrist
   - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 80
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["knee"],"sex":"male","age":30}
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["wrist"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
-- A_E7_I6 (A) Full Commercial Gym (No Pull-Up Bar) × knee+shoulder
+- A_E6_I5 (A) Full Commercial Gym × lower_back
   - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 80
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I1 (A) Full Commercial Gym (No Pull-Up Bar) × none
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I3 (A) Full Commercial Gym (No Pull-Up Bar) × shoulder
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["shoulder"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I4 (A) Full Commercial Gym (No Pull-Up Bar) × wrist
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["wrist"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- A_E7_I5 (A) Full Commercial Gym (No Pull-Up Bar) × lower_back
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_fat_loss_advanced_1d_high_30 (B) fat_loss advanced 1d high 30min
   - Outcome: PASS_WITH_DEGRADATION
@@ -1572,6 +1627,246 @@ Pass B produced no FAIL results.
   - Quality Score: 0
   - Inputs: {"goal":"hypertrophy","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_30 (B) hypertrophy beginner 4d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_45 (B) hypertrophy beginner 4d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_60 (B) hypertrophy beginner 4d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_high_75 (B) hypertrophy beginner 4d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_30 (B) hypertrophy beginner 4d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_45 (B) hypertrophy beginner 4d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_60 (B) hypertrophy beginner 4d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_low_75 (B) hypertrophy beginner 4d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_30 (B) hypertrophy beginner 4d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_45 (B) hypertrophy beginner 4d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_60 (B) hypertrophy beginner 4d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_4d_medium_75 (B) hypertrophy beginner 4d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_30 (B) hypertrophy beginner 5d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_45 (B) hypertrophy beginner 5d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_60 (B) hypertrophy beginner 5d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_high_75 (B) hypertrophy beginner 5d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_30 (B) hypertrophy beginner 5d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_45 (B) hypertrophy beginner 5d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_60 (B) hypertrophy beginner 5d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_low_75 (B) hypertrophy beginner 5d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_30 (B) hypertrophy beginner 5d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_45 (B) hypertrophy beginner 5d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_60 (B) hypertrophy beginner 5d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_5d_medium_75 (B) hypertrophy beginner 5d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 80
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_30 (B) hypertrophy beginner 6d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_45 (B) hypertrophy beginner 6d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_60 (B) hypertrophy beginner 6d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_high_75 (B) hypertrophy beginner 6d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_30 (B) hypertrophy beginner 6d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_45 (B) hypertrophy beginner 6d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_60 (B) hypertrophy beginner 6d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_low_75 (B) hypertrophy beginner 6d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_30 (B) hypertrophy beginner 6d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_45 (B) hypertrophy beginner 6d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_60 (B) hypertrophy beginner 6d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_6d_medium_75 (B) hypertrophy beginner 6d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":6,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_30 (B) hypertrophy beginner 7d high 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_45 (B) hypertrophy beginner 7d high 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_60 (B) hypertrophy beginner 7d high 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_high_75 (B) hypertrophy beginner 7d high 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_30 (B) hypertrophy beginner 7d low 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_45 (B) hypertrophy beginner 7d low 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_60 (B) hypertrophy beginner 7d low 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_low_75 (B) hypertrophy beginner 7d low 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_30 (B) hypertrophy beginner 7d medium 30min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_45 (B) hypertrophy beginner 7d medium 45min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_60 (B) hypertrophy beginner 7d medium 60min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
+- B_hypertrophy_beginner_7d_medium_75 (B) hypertrophy beginner 7d medium 75min
+  - Outcome: PASS_WITH_DEGRADATION
+  - Quality Score: 70
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
+  - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_1d_high_30 (B) hypertrophy intermediate 1d high 30min
   - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 85
@@ -1754,122 +2049,122 @@ Pass B produced no FAIL results.
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_high_30 (B) hypertrophy intermediate 4d high 30min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_high_45 (B) hypertrophy intermediate 4d high 45min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_high_60 (B) hypertrophy intermediate 4d high 60min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_high_75 (B) hypertrophy intermediate 4d high 75min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_low_30 (B) hypertrophy intermediate 4d low 30min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_low_45 (B) hypertrophy intermediate 4d low 45min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_low_60 (B) hypertrophy intermediate 4d low 60min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_low_75 (B) hypertrophy intermediate 4d low 75min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_medium_30 (B) hypertrophy intermediate 4d medium 30min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_medium_45 (B) hypertrophy intermediate 4d medium 45min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_medium_60 (B) hypertrophy intermediate 4d medium 60min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_4d_medium_75 (B) hypertrophy intermediate 4d medium 75min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 30
+  - Quality Score: 20
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_high_30 (B) hypertrophy intermediate 5d high 30min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_high_45 (B) hypertrophy intermediate 5d high 45min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_high_60 (B) hypertrophy intermediate 5d high 60min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_high_75 (B) hypertrophy intermediate 5d high 75min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_low_30 (B) hypertrophy intermediate 5d low 30min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_low_45 (B) hypertrophy intermediate 5d low 45min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_low_60 (B) hypertrophy intermediate 5d low 60min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_low_75 (B) hypertrophy intermediate 5d low 75min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"low","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_medium_30 (B) hypertrophy intermediate 5d medium 30min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":30,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_medium_45 (B) hypertrophy intermediate 5d medium 45min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":45,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_medium_60 (B) hypertrophy intermediate 5d medium 60min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_5d_medium_75 (B) hypertrophy intermediate 5d medium 75min
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 15
+  - Quality Score: 5
   - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 - B_hypertrophy_intermediate_6d_high_30 (B) hypertrophy intermediate 6d high 30min
@@ -4092,119 +4387,59 @@ Pass B produced no FAIL results.
   - Quality Score: 20
   - Inputs: {"goal":"strength","trainingLevel":"intermediate","trainingDaysPerWeek":7,"recoveryQuality":"medium","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
-- C03 (C) Beginner pull-up-bar+dumbbell+bodyweight exact squat-gap case
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 70
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"beginner","trainingDaysPerWeek":4,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: []
-- C04 (C) Advanced full commercial gym with knee+shoulder on 7-day split
-  - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 0
-  - Inputs: {"goal":"strength","trainingLevel":"advanced","trainingDaysPerWeek":7,"recoveryQuality":"high","sessionDurationMin":75,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight","pull_up_bar"],"injuryFlags":["knee","shoulder"],"sex":"male","age":30}
-  - Failure/Degradation Reason: []
 - C08 (C) Intermediate full gym without pull-up bar on 5-day split
   - Outcome: PASS_WITH_DEGRADATION
-  - Quality Score: 5
-  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
-  - Failure/Degradation Reason: []
-- C11 (C) Intermediate pull-up-bar+dumbbell+bodyweight with lower_back limitation, 6-day reduced-volume profile
-  - Outcome: PASS_WITH_DEGRADATION
   - Quality Score: 0
-  - Inputs: {"goal":"recomposition","trainingLevel":"intermediate","trainingDaysPerWeek":6,"recoveryQuality":"low","sessionDurationMin":45,"equipmentAccess":["dumbbell","pull_up_bar","bodyweight"],"injuryFlags":["lower_back"],"sex":"male","age":30}
+  - Inputs: {"goal":"hypertrophy","trainingLevel":"intermediate","trainingDaysPerWeek":5,"recoveryQuality":"medium","sessionDurationMin":60,"equipmentAccess":["barbell","dumbbell","machine","cable","bodyweight"],"injuryFlags":["none"],"sex":"male","age":30}
   - Failure/Degradation Reason: []
 
 ## 12. Degraded-Profile Analysis
-- A_E1_I1 (A) Bodyweight × none
-  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E1_I2 (A) Bodyweight × knee
-  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E1_I3 (A) Bodyweight × shoulder
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 8, Structurally Degraded Days: 2
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E1_I5 (A) Bodyweight × lower_back
-  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E1_I6 (A) Bodyweight × knee+shoulder
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 10, Structurally Degraded Days: 2
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E2_I1 (A) Dumbbell + Bodyweight × none
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E2_I2 (A) Dumbbell + Bodyweight × knee
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E2_I3 (A) Dumbbell + Bodyweight × shoulder
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E2_I4 (A) Dumbbell + Bodyweight × wrist
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E2_I5 (A) Dumbbell + Bodyweight × lower_back
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E2_I6 (A) Dumbbell + Bodyweight × knee+shoulder
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E3_I1 (A) Dumbbell + Pull-Up Bar + Bodyweight × none
-  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
-  - Diagnostics: none
-- A_E3_I2 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee
-  - Fallback L1: 2, Fallback L2: 4, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E3_I3 (A) Dumbbell + Pull-Up Bar + Bodyweight × shoulder
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E3_I4 (A) Dumbbell + Pull-Up Bar + Bodyweight × wrist
-  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E3_I5 (A) Dumbbell + Pull-Up Bar + Bodyweight × lower_back
-  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
-  - Diagnostics: none
-- A_E3_I6 (A) Dumbbell + Pull-Up Bar + Bodyweight × knee+shoulder
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I1 (A) Barbell + Dumbbell + Bodyweight × none
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
+  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
   - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E4_I2 (A) Barbell + Dumbbell + Bodyweight × knee
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I3 (A) Barbell + Dumbbell + Bodyweight × shoulder
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
+  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
   - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I4 (A) Barbell + Dumbbell + Bodyweight × wrist
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
+  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
   - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E4_I5 (A) Barbell + Dumbbell + Bodyweight × lower_back
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
+  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
   - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E4_I6 (A) Barbell + Dumbbell + Bodyweight × knee+shoulder
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I1 (A) Machine + Cable × none
-  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I3 (A) Machine + Cable × shoulder
-  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I4 (A) Machine + Cable × wrist
-  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - A_E5_I5 (A) Machine + Cable × lower_back
-  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- A_E6_I2 (A) Full Commercial Gym × knee
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+- A_E6_I1 (A) Full Commercial Gym × none
   - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
-- A_E6_I6 (A) Full Commercial Gym × knee+shoulder
+- A_E6_I3 (A) Full Commercial Gym × shoulder
   - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
-- A_E7_I2 (A) Full Commercial Gym (No Pull-Up Bar) × knee
+- A_E6_I4 (A) Full Commercial Gym × wrist
   - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
-- A_E7_I6 (A) Full Commercial Gym (No Pull-Up Bar) × knee+shoulder
+- A_E6_I5 (A) Full Commercial Gym × lower_back
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I1 (A) Full Commercial Gym (No Pull-Up Bar) × none
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I3 (A) Full Commercial Gym (No Pull-Up Bar) × shoulder
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I4 (A) Full Commercial Gym (No Pull-Up Bar) × wrist
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- A_E7_I5 (A) Full Commercial Gym (No Pull-Up Bar) × lower_back
   - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_fat_loss_advanced_1d_high_30 (B) fat_loss advanced 1d high 30min
@@ -4963,6 +5198,150 @@ Pass B produced no FAIL results.
 - B_hypertrophy_advanced_7d_medium_75 (B) hypertrophy advanced 7d medium 75min
   - Fallback L1: 4, Fallback L2: 8, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_30 (B) hypertrophy beginner 4d high 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_45 (B) hypertrophy beginner 4d high 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_60 (B) hypertrophy beginner 4d high 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_high_75 (B) hypertrophy beginner 4d high 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_30 (B) hypertrophy beginner 4d low 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_45 (B) hypertrophy beginner 4d low 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_60 (B) hypertrophy beginner 4d low 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_low_75 (B) hypertrophy beginner 4d low 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_30 (B) hypertrophy beginner 4d medium 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_45 (B) hypertrophy beginner 4d medium 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_60 (B) hypertrophy beginner 4d medium 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_4d_medium_75 (B) hypertrophy beginner 4d medium 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_30 (B) hypertrophy beginner 5d high 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_45 (B) hypertrophy beginner 5d high 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_60 (B) hypertrophy beginner 5d high 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_high_75 (B) hypertrophy beginner 5d high 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_30 (B) hypertrophy beginner 5d low 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_45 (B) hypertrophy beginner 5d low 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_60 (B) hypertrophy beginner 5d low 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_low_75 (B) hypertrophy beginner 5d low 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_30 (B) hypertrophy beginner 5d medium 30min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_45 (B) hypertrophy beginner 5d medium 45min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_60 (B) hypertrophy beginner 5d medium 60min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_5d_medium_75 (B) hypertrophy beginner 5d medium 75min
+  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_30 (B) hypertrophy beginner 6d high 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_45 (B) hypertrophy beginner 6d high 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_60 (B) hypertrophy beginner 6d high 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_high_75 (B) hypertrophy beginner 6d high 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_30 (B) hypertrophy beginner 6d low 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_45 (B) hypertrophy beginner 6d low 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_60 (B) hypertrophy beginner 6d low 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_low_75 (B) hypertrophy beginner 6d low 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_30 (B) hypertrophy beginner 6d medium 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_45 (B) hypertrophy beginner 6d medium 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_60 (B) hypertrophy beginner 6d medium 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_6d_medium_75 (B) hypertrophy beginner 6d medium 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_30 (B) hypertrophy beginner 7d high 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_45 (B) hypertrophy beginner 7d high 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_60 (B) hypertrophy beginner 7d high 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_high_75 (B) hypertrophy beginner 7d high 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_30 (B) hypertrophy beginner 7d low 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_45 (B) hypertrophy beginner 7d low 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_60 (B) hypertrophy beginner 7d low 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_low_75 (B) hypertrophy beginner 7d low 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_30 (B) hypertrophy beginner 7d medium 30min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_45 (B) hypertrophy beginner 7d medium 45min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_60 (B) hypertrophy beginner 7d medium 60min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
+- B_hypertrophy_beginner_7d_medium_75 (B) hypertrophy beginner 7d medium 75min
+  - Fallback L1: 0, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Diagnostics: none
 - B_hypertrophy_intermediate_1d_high_30 (B) hypertrophy intermediate 1d high 30min
   - Fallback L1: 3, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
@@ -5072,76 +5451,76 @@ Pass B produced no FAIL results.
   - Fallback L1: 9, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_high_30 (B) hypertrophy intermediate 4d high 30min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_high_45 (B) hypertrophy intermediate 4d high 45min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_high_60 (B) hypertrophy intermediate 4d high 60min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_high_75 (B) hypertrophy intermediate 4d high 75min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_low_30 (B) hypertrophy intermediate 4d low 30min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_low_45 (B) hypertrophy intermediate 4d low 45min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_low_60 (B) hypertrophy intermediate 4d low 60min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_low_75 (B) hypertrophy intermediate 4d low 75min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_medium_30 (B) hypertrophy intermediate 4d medium 30min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_medium_45 (B) hypertrophy intermediate 4d medium 45min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_medium_60 (B) hypertrophy intermediate 4d medium 60min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_4d_medium_75 (B) hypertrophy intermediate 4d medium 75min
-  - Fallback L1: 14, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 12, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_high_30 (B) hypertrophy intermediate 5d high 30min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_high_45 (B) hypertrophy intermediate 5d high 45min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_high_60 (B) hypertrophy intermediate 5d high 60min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_high_75 (B) hypertrophy intermediate 5d high 75min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_low_30 (B) hypertrophy intermediate 5d low 30min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_low_45 (B) hypertrophy intermediate 5d low 45min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_low_60 (B) hypertrophy intermediate 5d low 60min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_low_75 (B) hypertrophy intermediate 5d low 75min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_medium_30 (B) hypertrophy intermediate 5d medium 30min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_medium_45 (B) hypertrophy intermediate 5d medium 45min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_medium_60 (B) hypertrophy intermediate 5d medium 60min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_5d_medium_75 (B) hypertrophy intermediate 5d medium 75min
-  - Fallback L1: 17, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 15, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_6d_high_30 (B) hypertrophy intermediate 6d high 30min
   - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
@@ -5156,16 +5535,16 @@ Pass B produced no FAIL results.
   - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_6d_low_30 (B) hypertrophy intermediate 6d low 30min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_6d_low_45 (B) hypertrophy intermediate 6d low 45min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_6d_low_60 (B) hypertrophy intermediate 6d low 60min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_6d_low_75 (B) hypertrophy intermediate 6d low 75min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_6d_medium_30 (B) hypertrophy intermediate 6d medium 30min
   - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
@@ -5192,16 +5571,16 @@ Pass B produced no FAIL results.
   - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_7d_low_30 (B) hypertrophy intermediate 7d low 30min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_7d_low_45 (B) hypertrophy intermediate 7d low 45min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_7d_low_60 (B) hypertrophy intermediate 7d low 60min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_7d_low_75 (B) hypertrophy intermediate 7d low 75min
-  - Fallback L1: 21, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 18, Fallback L2: 3, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - B_hypertrophy_intermediate_7d_medium_30 (B) hypertrophy intermediate 7d medium 30min
   - Fallback L1: 10, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
@@ -6475,42 +6854,18 @@ Pass B produced no FAIL results.
 - B_strength_intermediate_7d_medium_75 (B) strength intermediate 7d medium 75min
   - Fallback L1: 4, Fallback L2: 6, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
-- C01 (C) Beginner pull-up-bar+dumbbell+bodyweight with knee+shoulder limits
-  - Fallback L1: 0, Fallback L2: 4, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_press","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - C02 (C) Advanced machine+cable only baseline
-  - Fallback L1: 0, Fallback L2: 22, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- C03 (C) Beginner pull-up-bar+dumbbell+bodyweight exact squat-gap case
-  - Fallback L1: 2, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
-  - Diagnostics: none
-- C04 (C) Advanced full commercial gym with knee+shoulder on 7-day split
-  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
-  - Diagnostics: none
-- C05 (C) Beginner bodyweight only with knee limitation on 1-day split
-  - Fallback L1: 1, Fallback L2: 0, Omitted Accessory Slots: 1, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"full_body","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- C06 (C) Beginner dumbbell+bodyweight only baseline
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- C07 (C) Beginner dumbbell+bodyweight with wrist limitation
-  - Fallback L1: 0, Fallback L2: 2, Omitted Accessory Slots: 4, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Fallback L1: 0, Fallback L2: 18, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - C08 (C) Intermediate full gym without pull-up bar on 5-day split
-  - Fallback L1: 19, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
+  - Fallback L1: 17, Fallback L2: 2, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
   - Diagnostics: none
 - C09 (C) Advanced barbell+dumbbell+bodyweight with lower_back limitation
   - Fallback L1: 6, Fallback L2: 17, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
   - Diagnostics: [{"dayType":"upper_a","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"upper_b","movementPattern":"vertical_pull","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 - C10 (C) Beginner machine+cable with shoulder limitation
-  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 2, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
-- C11 (C) Intermediate pull-up-bar+dumbbell+bodyweight with lower_back limitation, 6-day reduced-volume profile
-  - Fallback L1: 33, Fallback L2: 0, Omitted Accessory Slots: 0, Structurally Degraded Days: 0
-  - Diagnostics: none
-- C12 (C) Advanced bodyweight-only fat-loss profile on 3-day split
-  - Fallback L1: 0, Fallback L2: 15, Omitted Accessory Slots: 3, Structurally Degraded Days: 0
-  - Diagnostics: [{"dayType":"full_body_a","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"full_body_b","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"full_body_c","movementPattern":"elbow_flexion","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
+  - Fallback L1: 0, Fallback L2: 0, Omitted Accessory Slots: 6, Structurally Degraded Days: 0
+  - Diagnostics: [{"dayType":"lower_a","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_a","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"lunge","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"single_leg","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."},{"dayType":"lower_b","movementPattern":"anti_extension","reason":"No exercise candidate found after applying movement pattern, equipment, and injury safety constraints across fallback levels 0-3."}]
 
 ## 13. Sex/Age Invariance Results
 - A_E6_I1: PASS
@@ -6536,36 +6891,30 @@ Pass B produced no FAIL results.
 
 ## 14. Prioritized Seed Recommendations
 ### Priority 1
+- single_leg (novel_data_gap)
+  - Failed Profiles Affected: 5
+  - Degraded Profiles Affected: 6
+  - Blocks Primary Slot: no
+  - Distinct Equipment/Injury Combos Affected: 8
+  - Affected Profile IDs: A_E5_I1, A_E5_I3, A_E5_I4, A_E5_I5, A_E6_I2, A_E6_I6, A_E7_I2, A_E7_I6, C02, C04, C10
+- squat (novel_data_gap)
+  - Failed Profiles Affected: 5
+  - Degraded Profiles Affected: 0
+  - Blocks Primary Slot: yes
+  - Distinct Equipment/Injury Combos Affected: 4
+  - Affected Profile IDs: A_E6_I2, A_E6_I6, A_E7_I2, A_E7_I6, C04
+- anti_extension (novel_data_gap)
+  - Failed Profiles Affected: 0
+  - Degraded Profiles Affected: 6
+  - Blocks Primary Slot: no
+  - Distinct Equipment/Injury Combos Affected: 4
+  - Affected Profile IDs: A_E5_I1, A_E5_I3, A_E5_I4, A_E5_I5, C02, C10
+### Priority 2
 - lunge (novel_data_gap)
   - Failed Profiles Affected: 0
   - Degraded Profiles Affected: 6
   - Blocks Primary Slot: no
   - Distinct Equipment/Injury Combos Affected: 4
   - Affected Profile IDs: A_E5_I1, A_E5_I3, A_E5_I4, A_E5_I5, C02, C10
-- single_leg (novel_data_gap)
-  - Failed Profiles Affected: 0
-  - Degraded Profiles Affected: 3
-  - Blocks Primary Slot: no
-  - Distinct Equipment/Injury Combos Affected: 2
-  - Affected Profile IDs: A_E3_I2, A_E3_I6, C01
-- vertical_press (novel_data_gap)
-  - Failed Profiles Affected: 0
-  - Degraded Profiles Affected: 3
-  - Blocks Primary Slot: no
-  - Distinct Equipment/Injury Combos Affected: 2
-  - Affected Profile IDs: A_E3_I3, A_E3_I6, C01
-### Priority 2
-- vertical_pull (novel_data_gap)
-  - Failed Profiles Affected: 0
-  - Degraded Profiles Affected: 3
-  - Blocks Primary Slot: no
-  - Distinct Equipment/Injury Combos Affected: 2
-  - Affected Profile IDs: A_E3_I3, A_E3_I6, C01
-- elbow_flexion (novel_data_gap)
-  - Failed Profiles Affected: 0
-  - Degraded Profiles Affected: 1
-  - Blocks Primary Slot: no
-  - Distinct Equipment/Injury Combos Affected: 1
-  - Affected Profile IDs: A_E3_I4
 ### Priority 3
 - None

@@ -396,6 +396,36 @@ const RAW_EXERCISES = [
     progression_type: "load", substitution_list: ["اسکوات", "پرس پا"],
     desc: "آرنج‌ها را بالا نگه دار، تنه را صاف حفظ کن و با کنترل کامل در خط میانی پایین برو.", gif: "🏋️"
   },
+  // Deliberately the first knee-safe squat candidate in this dataset: controlled ROM, no external load,
+  // rehab-oriented execution, and intended for pain-free ranges without the knee_stress flag.
+  {
+    name_fa: "اسکوات بدون وزنه (دامنه کنترل‌شده)", name_en: "Bodyweight Squat (Controlled Range)",
+    primary_muscles: ["پا"], secondary_muscles: ["سرینی", "کور"], movement_pattern: "squat",
+    equipment: "بدون ابزار", difficulty: "مبتدی", complexity: "compound",
+    suitable_goals: ["hypertrophy", "fat_loss", "recomposition"], contraindications: [],
+    joint_stress_flags: [], default_rep_range: "12-20", default_rest_range: "45-60 ثانیه",
+    progression_type: "reps", substitution_list: ["Back Squat", "Leg Press"],
+    desc: "با دامنه کنترل‌شده و بدون بار خارجی اسکوات بزن، زانوها را در محدوده بدون درد نگه دار و حرکت را آرام اجرا کن.", gif: "🧍"
+  },
+  // First knee-safe single-leg option in this dataset: hip-dominant execution without loaded knee flexion.
+  {
+    name_fa: "اکستنشن تک‌پا کابل", name_en: "Cable Single-Leg Hip Extension",
+    primary_muscles: ["سرینی"], secondary_muscles: ["کور", "پشت ران"], movement_pattern: "single_leg",
+    equipment: "کابل", difficulty: "مبتدی", complexity: "compound",
+    suitable_goals: ["hypertrophy", "fat_loss", "recomposition"], contraindications: [],
+    joint_stress_flags: [], default_rep_range: "10-15", default_rest_range: "45-75 ثانیه",
+    progression_type: "reps_then_load", substitution_list: ["Step-Up", "Dumbbell Step-Up"],
+    desc: "مچ‌بند کابل را به مچ پا وصل کن، لگن را ثابت نگه دار و پا را به عقب و بالا فشار بده بدون اینکه زانو بار بگیرد.", gif: "🦿"
+  },
+  {
+    name_fa: "پالوف پرس کابل", name_en: "Cable Pallof Press",
+    primary_muscles: ["کور"], secondary_muscles: ["شکم", "سرشانه"], movement_pattern: "anti_extension",
+    equipment: "کابل", difficulty: "مبتدی", complexity: "isolation",
+    suitable_goals: ["hypertrophy", "fat_loss", "recomposition"], contraindications: [],
+    joint_stress_flags: [], default_rep_range: "10-15", default_rest_range: "30-45 ثانیه",
+    progression_type: "reps", substitution_list: ["Plank", "Dead Bug"],
+    desc: "کنار دستگاه بایست، کابل را مقابل سینه بگیر و دست‌ها را به جلو پرس کن در حالی که تنه در برابر چرخش مقاومت می‌کند.", gif: "🛡️"
+  },
 ];
 
 const RAW_PROGRAMS = [
