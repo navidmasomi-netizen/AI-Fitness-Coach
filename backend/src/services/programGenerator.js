@@ -6,7 +6,7 @@ import { selectExercise } from "./exerciseSelector.js";
 import { resolveSplit } from "./splitResolver.js";
 import { resolvePrescription } from "./volumeResolver.js";
 
-function assertProfileCompleted(userId, profile) {
+export function assertProfileCompleted(userId, profile) {
   if (!profile) {
     throw new Error(`User profile not found for user ${userId}.`);
   }
@@ -32,16 +32,23 @@ function buildZeroExerciseDayError({ dayType, profile }) {
   );
 }
 
-function buildProgramAlreadyActiveError(userId) {
+export function buildProgramAlreadyActiveError(userId) {
   return new Error(`Program already active for user ${userId}.`);
 }
 
-function isUserProgramUniqueConstraintError(error) {
+export function isUserProgramUniqueConstraintError(error) {
   return (
-    error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === "P2002" &&
-    Array.isArray(error.meta?.target) &&
-    error.meta.target.includes("userId")
+    (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002" &&
+      Array.isArray(error.meta?.target) &&
+      error.meta.target.some((target) => target === "userId" || target === "\"userId\"")
+    ) ||
+    (
+      error instanceof Error &&
+      /Unique constraint failed on the fields:\s+\(`?"userId"`?\)/.test(error.message)
+    ) ||
+    (error instanceof Error && /^Program already active for user \d+\.$/.test(error.message))
   );
 }
 
