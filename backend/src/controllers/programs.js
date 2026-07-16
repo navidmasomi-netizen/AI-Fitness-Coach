@@ -136,6 +136,12 @@ async function buildRegenerationRecommendation(userId) {
     include: ACTIVE_PROGRAM_INCLUDE,
   });
 
+  const snapshot = activeUserProgram
+    ? await prisma.userProgramProfileSnapshot.findUnique({
+        where: { userProgramId: activeUserProgram.id },
+      })
+    : null;
+
   const recentSessions = await prisma.workoutSession.findMany({
     where: {
       userId,
@@ -181,10 +187,10 @@ async function buildRegenerationRecommendation(userId) {
       }
     : null;
   const programProfileSnapshot = {
-    goal: currentProgram?.goal ?? null,
-    equipmentAccess: undefined,
-    injuryFlags: undefined,
-    trainingDaysPerWeek: undefined,
+    goal: snapshot?.goal ?? currentProgram?.goal ?? null,
+    equipmentAccess: snapshot?.equipmentAccess ?? undefined,
+    injuryFlags: snapshot?.injuryFlags ?? undefined,
+    trainingDaysPerWeek: snapshot?.trainingDaysPerWeek ?? undefined,
   };
 
   const regenerationEvaluation = evaluateRegenerationEligibility({

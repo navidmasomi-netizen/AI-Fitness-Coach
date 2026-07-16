@@ -2,12 +2,10 @@ const PROGRAM_AGE_TRIGGER_DAYS = 56;
 
 function arraysEqualAsSets(left, right) {
   if (!Array.isArray(left) || !Array.isArray(right)) return false;
-  if (left.length !== right.length) return false;
-
-  const normalizedLeft = [...left].sort();
-  const normalizedRight = [...right].sort();
-
-  return normalizedLeft.every((value, index) => value === normalizedRight[index]);
+  const normalizedLeft = Array.from(new Set(left)).sort();
+  const normalizedRight = Array.from(new Set(right)).sort();
+  return normalizedLeft.length === normalizedRight.length &&
+    normalizedLeft.every((value, index) => value === normalizedRight[index]);
 }
 
 function getUrgencyRank(urgency) {
@@ -141,7 +139,10 @@ export function evaluateEquipmentAccessDrift({
   return {
     evaluable: true,
     drifted: !arraysEqualAsSets(snapshotEquipmentAccess, currentEquipmentAccess),
-    detail: "equipmentAccess drift comparison is available for future activation.",
+    detail:
+      !arraysEqualAsSets(snapshotEquipmentAccess, currentEquipmentAccess)
+        ? `Program snapshot equipmentAccess=[${snapshotEquipmentAccess.join(", ")}] while current user equipmentAccess=[${currentEquipmentAccess.join(", ")}].`
+        : "equipmentAccess unchanged since program generation.",
   };
 }
 
@@ -163,7 +164,10 @@ export function evaluateInjuryFlagsDrift({
   return {
     evaluable: true,
     drifted: !arraysEqualAsSets(snapshotInjuryFlags, currentInjuryFlags),
-    detail: "injuryFlags drift comparison is available for future activation.",
+    detail:
+      !arraysEqualAsSets(snapshotInjuryFlags, currentInjuryFlags)
+        ? `Program snapshot injuryFlags=[${snapshotInjuryFlags.join(", ")}] while current user injuryFlags=[${currentInjuryFlags.join(", ")}].`
+        : "injuryFlags unchanged since program generation.",
   };
 }
 
@@ -286,6 +290,24 @@ export function evaluateRegenerationEligibility({
     });
     reasons.push("Your current training frequency differs from the training frequency your current program was built around.");
     urgency = pickHigherUrgency(urgency, "moderate");
+  }
+
+  if (equipmentAccessDrift.evaluable && equipmentAccessDrift.drifted) {
+    triggeringFactors.push({
+      factor: "profile_drift_equipment_access",
+      detail: equipmentAccessDrift.detail,
+    });
+    reasons.push("Your available equipment has changed since your current program was built.");
+    urgency = pickHigherUrgency(urgency, "moderate");
+  }
+
+  if (injuryFlagsDrift.evaluable && injuryFlagsDrift.drifted) {
+    triggeringFactors.push({
+      factor: "profile_drift_injury_flags",
+      detail: injuryFlagsDrift.detail,
+    });
+    reasons.push("Your injury/limitation profile has changed since your current program was built.");
+    urgency = pickHigherUrgency(urgency, "high");
   }
 
   if (sustainedProgression.triggered) {
