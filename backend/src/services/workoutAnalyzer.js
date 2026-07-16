@@ -40,6 +40,7 @@ const MISSED_SESSION_GAP_LIMIT = 5;
  * @property {NormalizedHistoryPrescribedExercise[]} prescribedExercises
  * @property {number} programDayCount
  * @property {boolean} hasActiveProgram
+ * @property {number} activeDaysInWindow
  * @property {number} weeksInWindow
  * @property {Date} windowStart
  * @property {Date} windowEnd
@@ -71,6 +72,20 @@ function getWindowBounds(windowDays) {
 
 function getWeeksInWindow(windowDays) {
   return Math.ceil(windowDays / 7);
+}
+
+function getActiveDaysInWindow({ activatedAt, windowStart, windowEnd, windowDays }) {
+  if (!activatedAt) {
+    return windowDays;
+  }
+
+  const daysSinceActivation = daysBetween(windowEnd, activatedAt);
+  const clampedDaysActive = clamp(daysSinceActivation, 0, windowDays);
+  const daysActiveInsideWindow = activatedAt > windowStart
+    ? clampedDaysActive
+    : windowDays;
+
+  return daysActiveInsideWindow < 1 ? 0 : daysActiveInsideWindow;
 }
 
 export async function fetchRawHistory({ userId, windowStart, windowEnd }) {
@@ -131,6 +146,14 @@ export async function fetchRawHistory({ userId, windowStart, windowEnd }) {
 export function normalizeHistory(rawHistory, { windowStart, windowEnd, windowDays }) {
   const hasActiveProgram = !!rawHistory.activeProgram;
   const programDays = rawHistory.activeProgram?.program?.days || [];
+  const activeDaysInWindow = hasActiveProgram
+    ? getActiveDaysInWindow({
+        activatedAt: rawHistory.activeProgram?.activatedAt ?? null,
+        windowStart,
+        windowEnd,
+        windowDays,
+      })
+    : 0;
 
   const sessions = rawHistory.sessions.map((session) => ({
     id: session.id,
@@ -170,6 +193,7 @@ export function normalizeHistory(rawHistory, { windowStart, windowEnd, windowDay
     prescribedExercises,
     programDayCount: programDays.length,
     hasActiveProgram,
+    activeDaysInWindow,
     weeksInWindow: getWeeksInWindow(windowDays),
     windowStart,
     windowEnd,
@@ -450,8 +474,12 @@ export function computePatternSummaries(normalizedHistory) {
 }
 
 export function computeSessionConsistency(normalizedHistory) {
+  const activeDaysInWindow =
+    normalizedHistory.activeDaysInWindow ?? normalizedHistory.weeksInWindow * 7;
   const scheduledSessions = normalizedHistory.hasActiveProgram
-    ? normalizedHistory.programDayCount * normalizedHistory.weeksInWindow
+    ? activeDaysInWindow < 1
+      ? 0
+      : normalizedHistory.programDayCount * Math.ceil(activeDaysInWindow / 7)
     : 0;
 
   const completedSessions = normalizedHistory.sessions.length;
@@ -514,4 +542,3 @@ export async function analyzeWorkoutHistory({ userId, windowDays = 28 }) {
     sessionConsistency,
   };
 }
-

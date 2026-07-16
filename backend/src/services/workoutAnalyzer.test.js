@@ -454,6 +454,30 @@ async function main() {
       },
     },
     {
+      name: "computeSessionConsistency -> recently activated program with zero completed sessions",
+      input: "active less than one day, scheduled sessions should stay zero",
+      fn: () => {
+        const actual = computeSessionConsistency({
+          sessions: [],
+          setLogs: [],
+          prescribedExercises: [],
+          programDayCount: 4,
+          hasActiveProgram: true,
+          activeDaysInWindow: 0,
+          weeksInWindow: 4,
+          windowStart: new Date("2026-07-01T00:00:00.000Z"),
+          windowEnd: new Date("2026-07-28T00:00:00.000Z"),
+        });
+        assert.deepEqual(actual, {
+          scheduledSessions: 0,
+          completedSessions: 0,
+          completionRate: null,
+          missedSessionGaps: [],
+        });
+        return actual;
+      },
+    },
+    {
       name: "computeSessionConsistency -> partial adherence with same-day multiple sessions",
       input: "4 scheduled, 3 completed, same-day sessions preserved",
       fn: () => {
@@ -530,6 +554,7 @@ async function main() {
       fn: () => {
         const rawHistory = {
           activeProgram: {
+            activatedAt: new Date("2026-06-30T00:00:00.000Z"),
             program: {
               days: [
                 {
@@ -607,6 +632,7 @@ async function main() {
           ],
           programDayCount: 1,
           hasActiveProgram: true,
+          activeDaysInWindow: 28,
           weeksInWindow: 4,
           windowStart: new Date("2026-07-01T00:00:00.000Z"),
           windowEnd: new Date("2026-07-28T00:00:00.000Z"),
@@ -682,6 +708,10 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
+          await prisma.userProgram.update({
+            where: { userId: user.id },
+            data: { activatedAt: new Date("2026-06-18T09:00:00.000Z") },
+          });
           const firstDay = program.days[0];
           const firstExercise = firstDay.exercises[0];
 
@@ -756,6 +786,10 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
+          await prisma.userProgram.update({
+            where: { userId: user.id },
+            data: { activatedAt: new Date("2026-06-18T09:00:00.000Z") },
+          });
           const firstDay = program.days[0];
           const firstExercise = firstDay.exercises[0];
 

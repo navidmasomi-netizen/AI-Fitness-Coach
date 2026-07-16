@@ -704,6 +704,10 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
+          await prisma.userProgram.update({
+            where: { userId: user.id },
+            data: { activatedAt: new Date("2026-06-18T09:00:00.000Z") },
+          });
           const firstDay = program.days[0];
           const targetExercise = firstDay.exercises[0];
           let recoveryCallCount = 0;
@@ -814,6 +818,10 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
+          await prisma.userProgram.update({
+            where: { userId: user.id },
+            data: { activatedAt: new Date("2026-06-18T09:00:00.000Z") },
+          });
           const firstDay = program.days[0];
           const targetExercise = firstDay.exercises[0];
           const supportExercise = firstDay.exercises[1];
@@ -906,6 +914,10 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
+          await prisma.userProgram.update({
+            where: { userId: user.id },
+            data: { activatedAt: new Date("2026-06-18T09:00:00.000Z") },
+          });
           const firstDay = program.days[0];
           const targetExercise = firstDay.exercises[0];
 
@@ -978,6 +990,10 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
+          await prisma.userProgram.update({
+            where: { userId: user.id },
+            data: { activatedAt: new Date("2026-06-20T09:00:00.000Z") },
+          });
           const firstDay = program.days[0];
           const targetExercise = firstDay.exercises[0];
 
