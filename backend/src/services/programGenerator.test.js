@@ -100,15 +100,16 @@ async function cleanupUserArtifacts(userId) {
 }
 
 async function snapshotCounts() {
-  const [program, programDay, programDayExercise, userProgram, exercise] = await Promise.all([
+  const [program, programDay, programDayExercise, userProgram, userProgramProfileSnapshot, exercise] = await Promise.all([
     prisma.program.count(),
     prisma.programDay.count(),
     prisma.programDayExercise.count(),
     prisma.userProgram.count(),
+    prisma.userProgramProfileSnapshot.count(),
     prisma.exercise.count(),
   ]);
 
-  return { program, programDay, programDayExercise, userProgram, exercise };
+  return { program, programDay, programDayExercise, userProgram, userProgramProfileSnapshot, exercise };
 }
 
 function summarizeProgram(program) {
@@ -181,6 +182,46 @@ const cases = [
     },
   },
   {
+    name: "1a. successful generation creates exactly one profile snapshot matching the input profile",
+    input: { profileSnapshot: true },
+    run: async () => {
+      const profileData = buildCompleteProfileData({
+        goal: "strength",
+        trainingDaysPerWeek: 5,
+        equipmentAccess: ["barbell", "machine", "cable"],
+        injuryFlags: ["shoulder", "wrist"],
+      });
+      const user = await createTestUser({
+        profileData,
+      });
+
+      try {
+        const program = await generateProgramForUser(user.id);
+        const generatedUserProgram = await prisma.userProgram.findUniqueOrThrow({
+          where: { userId: user.id },
+        });
+        const snapshot = await prisma.userProgramProfileSnapshot.findUnique({
+          where: { userProgramId: generatedUserProgram.id },
+        });
+
+        assert.ok(program);
+        assert(snapshot);
+        assert.equal(snapshot.userProgramId, generatedUserProgram.id);
+        assert.equal(snapshot.goal, profileData.goal);
+        assert.deepEqual(snapshot.equipmentAccess, profileData.equipmentAccess);
+        assert.deepEqual(snapshot.injuryFlags, profileData.injuryFlags);
+        assert.equal(snapshot.trainingDaysPerWeek, profileData.trainingDaysPerWeek);
+
+        return {
+          userProgramId: generatedUserProgram.id,
+          snapshot,
+        };
+      } finally {
+        await cleanupUserArtifacts(user.id);
+      }
+    },
+  },
+  {
     name: "2. incomplete profile rejects before generation",
     input: { wizardCompleted: false },
     run: async () => {
@@ -232,6 +273,9 @@ const cases = [
         const beforeUserProgram = await prisma.userProgram.findUnique({
           where: { userId: user.id },
         });
+        const beforeSnapshot = await prisma.userProgramProfileSnapshot.findUnique({
+          where: { userProgramId: beforeUserProgram.id },
+        });
         const beforeProgramCount = await prisma.program.count();
 
         await assert.rejects(() => generateProgramForUser(user.id), /Program already active/);
@@ -239,15 +283,22 @@ const cases = [
         const afterUserProgram = await prisma.userProgram.findUnique({
           where: { userId: user.id },
         });
+        const afterSnapshot = await prisma.userProgramProfileSnapshot.findUnique({
+          where: { userProgramId: beforeUserProgram.id },
+        });
         const afterProgramCount = await prisma.program.count();
 
         assert.equal(afterUserProgram.id, beforeUserProgram.id);
         assert.equal(afterUserProgram.programId, beforeUserProgram.programId);
+        assert(beforeSnapshot);
+        assert(afterSnapshot);
+        assert.equal(beforeSnapshot.id, afterSnapshot.id);
         assert.equal(afterProgramCount, beforeProgramCount);
 
         return {
           firstProgramId: firstProgram.id,
           userProgramId: beforeUserProgram.id,
+          profileSnapshotId: beforeSnapshot.id,
           programId: beforeUserProgram.programId,
           beforeProgramCount,
           afterProgramCount,
@@ -566,14 +617,25 @@ const cases = [
                 plannedDays: invalidPlannedDays,
                 description,
                 goal: profile.goal,
+                equipmentAccess: profile.equipmentAccess,
+                injuryFlags: profile.injuryFlags,
+                trainingDaysPerWeek: profile.trainingDaysPerWeek,
               })
             ),
           /Foreign key constraint|Record to update not found|violates foreign key constraint|An operation failed/
         );
 
+        const orphanedSnapshots = await prisma.userProgramProfileSnapshot.findMany({
+          where: {
+            userProgram: {
+              userId: user.id,
+            },
+          },
+        });
         const after = await snapshotCounts();
+        assert.equal(orphanedSnapshots.length, 0);
         assert.deepEqual(after, before);
-        return { before, after };
+        return { before, after, orphanedSnapshotsCount: orphanedSnapshots.length };
       } finally {
         await cleanupUserArtifacts(user.id);
       }

@@ -146,6 +146,9 @@ export async function persistProgramPlan({
   plannedDays,
   description,
   goal,
+  equipmentAccess,
+  injuryFlags,
+  trainingDaysPerWeek,
 }) {
   const createdProgram = await tx.program.create({
     data: {
@@ -183,8 +186,9 @@ export async function persistProgramPlan({
     }
   }
 
+  let createdUserProgram;
   try {
-    await tx.userProgram.create({
+    createdUserProgram = await tx.userProgram.create({
       data: {
         userId,
         programId: createdProgram.id,
@@ -197,6 +201,16 @@ export async function persistProgramPlan({
     }
     throw error;
   }
+
+  await tx.userProgramProfileSnapshot.create({
+    data: {
+      userProgramId: createdUserProgram.id,
+      goal,
+      equipmentAccess,
+      injuryFlags,
+      trainingDaysPerWeek,
+    },
+  });
 
   return tx.program.findUnique({
     where: { id: createdProgram.id },
@@ -255,6 +269,9 @@ export async function generateProgramForUser(userId) {
       plannedDays,
       description,
       goal: profile.goal,
+      equipmentAccess: profile.equipmentAccess,
+      injuryFlags: profile.injuryFlags,
+      trainingDaysPerWeek: profile.trainingDaysPerWeek,
     })
   );
 }
