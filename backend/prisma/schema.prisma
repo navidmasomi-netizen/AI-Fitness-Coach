@@ -69,7 +69,7 @@ model User {
   createdAt DateTime         @default(now())
   profile   UserProfile?
   sessions  WorkoutSession[]
-  program   UserProgram?
+  program   UserProgram[]
   progressionRecommendations ProgressionRecommendation[]
 }
 
@@ -173,10 +173,11 @@ model ProgramDayExercise {
 
 model UserProgram {
   id              Int      @id @default(autoincrement())
-  userId          Int      @unique
+  userId          Int
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   programId       Int
   program         Program  @relation(fields: [programId], references: [id])
+  isActive        Boolean  @default(true)
   currentDayIndex Int      @default(0)
   activatedAt     DateTime @default(now())
   profileSnapshot UserProgramProfileSnapshot?
