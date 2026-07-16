@@ -112,6 +112,7 @@ export default function WorkoutSessionScreen() {
       queryClient.invalidateQueries({ queryKey: ["completedSessions"] });
       queryClient.invalidateQueries({ queryKey: ["myProgram"] });
       queryClient.invalidateQueries({ queryKey: ["activeSession"] });
+      queryClient.invalidateQueries({ queryKey: ["regenerationRecommendation"] });
       router.replace(`/workout/summary/${sessionId}`);
     },
     onError: (err: any) => {

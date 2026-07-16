@@ -52,8 +52,22 @@ export interface GeneratedProgram {
   userProgram: GeneratedUserProgram[];
 }
 
+export interface RegenerationRecommendation {
+  regenerationRecommended: boolean;
+  urgency: "none" | "low" | "moderate" | "high";
+  reasons: string[];
+  triggeringFactors: { factor: string; detail: string }[];
+  knownLimitations: { dimension: string; reason: string }[];
+}
+
 export function generateProgram(): Promise<GeneratedProgram> {
   return apiRequest<GeneratedProgram>("/programs/generate", {
     method: "POST",
   });
+}
+
+export function getRegenerationRecommendation(): Promise<RegenerationRecommendation | null> {
+  return apiRequest<RegenerationRecommendation>("/programs/regeneration-recommendation", {
+    method: "GET",
+  }).catch(() => null);
 }
