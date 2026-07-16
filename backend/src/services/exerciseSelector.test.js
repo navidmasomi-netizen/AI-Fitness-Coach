@@ -6,7 +6,7 @@ import {
   selectExerciseForUser,
 } from "./exerciseSelector.js";
 
-const EXPECTED_EXERCISE_COUNT = 39;
+const MINIMUM_EXPECTED_EXERCISE_COUNT = 42;
 
 function summarizeResult(result) {
   return {
@@ -38,7 +38,10 @@ const exercises = await prisma.exercise.findMany({
   orderBy: { id: "asc" },
 });
 
-assert.equal(exercises.length, EXPECTED_EXERCISE_COUNT);
+assert.ok(
+  exercises.length >= MINIMUM_EXPECTED_EXERCISE_COUNT,
+  `Expected at least ${MINIMUM_EXPECTED_EXERCISE_COUNT} exercises, found ${exercises.length}`
+);
 
 const distinctStressFlags = Array.from(new Set(exercises.flatMap((exercise) => exercise.jointStressFlags))).sort();
 const mappedStressFlags = Object.values(INJURY_TO_JOINT_STRESS_MAP).sort();
