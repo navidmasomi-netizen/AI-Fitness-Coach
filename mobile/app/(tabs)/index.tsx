@@ -1,14 +1,15 @@
 import { View, Text, Pressable, FlatList, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../../src/store/authStore";
-import { getPrograms } from "../../src/api/programs";
+import { getPrograms, getRegenerationRecommendation } from "../../src/api/programs";
 import { getMyProgram } from "../../src/api/userPrograms";
 import { startFromActiveProgram, getActiveSession, getMyCompletedSessions } from "../../src/api/sessions";
 import { getSessionProgressions } from "../../src/api/progressions";
 import { getLastSetForExercise, getTrend } from "../../src/utils/compareSets";
 import { buildWorkoutName, estimateMinutes } from "../../src/utils/workoutMeta";
 import { Program } from "../../src/types/program";
+import { RegenerationInsightCard } from "../../src/components/RegenerationInsightCard";
 
 function buildLastSessionSignal(recommendations: { recommendationType: string }[] | undefined): string | null {
   if (!recommendations || recommendations.length === 0) return null;
@@ -30,6 +31,7 @@ function buildLastSessionSignal(recommendations: { recommendationType: string }[
 
 export default function HomeScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
 
@@ -41,6 +43,12 @@ export default function HomeScreen() {
   const { data: myProgram, isLoading: isMyProgramLoading } = useQuery({
     queryKey: ["myProgram"],
     queryFn: getMyProgram,
+  });
+
+  const { data: regenerationRecommendation, isLoading: isRegenerationLoading } = useQuery({
+    queryKey: ["regenerationRecommendation"],
+    queryFn: getRegenerationRecommendation,
+    staleTime: 60 * 60 * 1000,
   });
 
   const { data: activeSession, isLoading: isActiveSessionLoading } = useQuery({
@@ -116,6 +124,7 @@ export default function HomeScreen() {
 
   const onLogout = async () => {
     await logout();
+    queryClient.clear();
     router.replace("/(auth)/login");
   };
 
@@ -242,6 +251,11 @@ export default function HomeScreen() {
           </View>
         )}
       </View>
+
+      <RegenerationInsightCard
+        recommendation={regenerationRecommendation}
+        isLoading={isRegenerationLoading}
+      />
 
       <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12 }}>Programs</Text>
 
