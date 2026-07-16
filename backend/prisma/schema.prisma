@@ -179,6 +179,18 @@ model UserProgram {
   program         Program  @relation(fields: [programId], references: [id])
   currentDayIndex Int      @default(0)
   activatedAt     DateTime @default(now())
+  profileSnapshot UserProgramProfileSnapshot?
+}
+
+model UserProgramProfileSnapshot {
+  id                  Int         @id @default(autoincrement())
+  userProgramId       Int         @unique
+  userProgram         UserProgram @relation(fields: [userProgramId], references: [id], onDelete: Cascade)
+  goal                String
+  equipmentAccess     String[]
+  injuryFlags         String[]
+  trainingDaysPerWeek Int
+  createdAt           DateTime    @default(now())
 }
 
 model WorkoutSession {
