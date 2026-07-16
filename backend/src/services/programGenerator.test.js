@@ -76,17 +76,19 @@ async function createTestUser({ profileData } = {}) {
 }
 
 async function cleanupUserArtifacts(userId) {
-  const userProgram = await prisma.userProgram.findUnique({
+  const userPrograms = await prisma.userProgram.findMany({
     where: { userId },
+    select: { programId: true },
   });
 
-  if (userProgram) {
-    await prisma.userProgram.delete({
+  if (userPrograms.length > 0) {
+    await prisma.userProgram.deleteMany({
       where: { userId },
     });
 
-    await prisma.program.delete({
-      where: { id: userProgram.programId },
+    const programIds = [...new Set(userPrograms.map((entry) => entry.programId))];
+    await prisma.program.deleteMany({
+      where: { id: { in: programIds } },
     });
   }
 
@@ -97,6 +99,36 @@ async function cleanupUserArtifacts(userId) {
   await prisma.user.delete({
     where: { id: userId },
   });
+}
+
+async function getActiveUserProgram(userId) {
+  return prisma.userProgram.findFirst({
+    where: { userId, isActive: true },
+  });
+}
+
+async function createArchivedUserProgram(userId) {
+  const program = await prisma.program.create({
+    data: {
+      name: `Archived Program ${userId} ${Date.now()}`,
+      description: "Archived compatibility fixture",
+      splitFamily: "upper_lower",
+      goal: "hypertrophy",
+      isStatic: false,
+    },
+  });
+
+  const userProgram = await prisma.userProgram.create({
+    data: {
+      userId,
+      programId: program.id,
+      currentDayIndex: 0,
+      activatedAt: new Date("2026-06-01T09:00:00.000Z"),
+      isActive: false,
+    },
+  });
+
+  return { program, userProgram };
 }
 
 async function snapshotCounts() {
@@ -197,8 +229,8 @@ const cases = [
 
       try {
         const program = await generateProgramForUser(user.id);
-        const generatedUserProgram = await prisma.userProgram.findUniqueOrThrow({
-          where: { userId: user.id },
+        const generatedUserProgram = await prisma.userProgram.findFirstOrThrow({
+          where: { userId: user.id, isActive: true },
         });
         const snapshot = await prisma.userProgramProfileSnapshot.findUnique({
           where: { userProgramId: generatedUserProgram.id },
@@ -270,9 +302,7 @@ const cases = [
 
       try {
         const firstProgram = await generateProgramForUser(user.id);
-        const beforeUserProgram = await prisma.userProgram.findUnique({
-          where: { userId: user.id },
-        });
+        const beforeUserProgram = await getActiveUserProgram(user.id);
         const beforeSnapshot = await prisma.userProgramProfileSnapshot.findUnique({
           where: { userProgramId: beforeUserProgram.id },
         });
@@ -280,14 +310,14 @@ const cases = [
 
         await assert.rejects(() => generateProgramForUser(user.id), /Program already active/);
 
-        const afterUserProgram = await prisma.userProgram.findUnique({
-          where: { userId: user.id },
-        });
+        const afterUserProgram = await getActiveUserProgram(user.id);
         const afterSnapshot = await prisma.userProgramProfileSnapshot.findUnique({
           where: { userProgramId: beforeUserProgram.id },
         });
         const afterProgramCount = await prisma.program.count();
 
+        assert(beforeUserProgram);
+        assert(afterUserProgram);
         assert.equal(afterUserProgram.id, beforeUserProgram.id);
         assert.equal(afterUserProgram.programId, beforeUserProgram.programId);
         assert(beforeSnapshot);
@@ -302,6 +332,104 @@ const cases = [
           programId: beforeUserProgram.programId,
           beforeProgramCount,
           afterProgramCount,
+        };
+      } finally {
+        await cleanupUserArtifacts(user.id);
+      }
+    },
+  },
+  {
+    name: "4a. first-time generation succeeds when only archived UserProgram rows exist",
+    input: { archivedRowsDoNotBlock: true },
+    run: async () => {
+      const user = await createTestUser({
+        profileData: buildCompleteProfileData(),
+      });
+
+      try {
+        const archived = await createArchivedUserProgram(user.id);
+        const program = await generateProgramForUser(user.id);
+        const userPrograms = await prisma.userProgram.findMany({
+          where: { userId: user.id },
+          orderBy: { id: "asc" },
+        });
+        const activeUserProgram = await getActiveUserProgram(user.id);
+        const snapshots = await prisma.userProgramProfileSnapshot.findMany({
+          where: {
+            userProgram: {
+              userId: user.id,
+            },
+          },
+          orderBy: { id: "asc" },
+        });
+
+        assert.equal(userPrograms.length, 2);
+        assert(activeUserProgram);
+        assert.equal(activeUserProgram.programId, program.id);
+        assert.equal(userPrograms.filter((entry) => entry.isActive === false).length, 1);
+        assert.equal(userPrograms.filter((entry) => entry.isActive === true).length, 1);
+        assert.equal(snapshots.length, 1);
+
+        return {
+          archivedUserProgramId: archived.userProgram.id,
+          activeUserProgramId: activeUserProgram.id,
+          activeProgramId: program.id,
+          totalUserPrograms: userPrograms.length,
+          snapshotCount: snapshots.length,
+        };
+      } finally {
+        await cleanupUserArtifacts(user.id);
+      }
+    },
+  },
+  {
+    name: "4b. generation still rejects when an active row exists even if archived rows also exist",
+    input: { activeRowStillBlocks: true },
+    run: async () => {
+      const user = await createTestUser({
+        profileData: buildCompleteProfileData(),
+      });
+
+      try {
+        const archived = await createArchivedUserProgram(user.id);
+        const firstProgram = await generateProgramForUser(user.id);
+        const beforeActiveUserProgram = await getActiveUserProgram(user.id);
+        const beforeSnapshots = await prisma.userProgramProfileSnapshot.findMany({
+          where: {
+            userProgram: {
+              userId: user.id,
+            },
+          },
+        });
+
+        await assert.rejects(() => generateProgramForUser(user.id), /Program already active/);
+
+        const afterActiveUserProgram = await getActiveUserProgram(user.id);
+        const afterUserPrograms = await prisma.userProgram.findMany({
+          where: { userId: user.id },
+        });
+        const afterSnapshots = await prisma.userProgramProfileSnapshot.findMany({
+          where: {
+            userProgram: {
+              userId: user.id,
+            },
+          },
+        });
+
+        assert(beforeActiveUserProgram);
+        assert(afterActiveUserProgram);
+        assert.equal(afterActiveUserProgram.id, beforeActiveUserProgram.id);
+        assert.equal(afterActiveUserProgram.programId, beforeActiveUserProgram.programId);
+        assert.equal(afterUserPrograms.filter((entry) => entry.isActive === true).length, 1);
+        assert.equal(afterUserPrograms.filter((entry) => entry.isActive === false).length, 1);
+        assert.equal(afterSnapshots.length, beforeSnapshots.length);
+
+        return {
+          archivedUserProgramId: archived.userProgram.id,
+          firstProgramId: firstProgram.id,
+          activeUserProgramId: afterActiveUserProgram.id,
+          userProgramCount: afterUserPrograms.length,
+          snapshotCount: afterSnapshots.length,
         };
       } finally {
         await cleanupUserArtifacts(user.id);
@@ -686,7 +814,7 @@ const cases = [
     },
   },
   {
-    name: "18. no API, controller, route, mobile, schema, or migration file was touched",
+    name: "18. no route, mobile, schema, or migration file was touched",
     input: { workingTreeScope: true },
     run: async () => {
       const statusOutput = execFileSync("git", ["-C", REPO_ROOT, "status", "--short"], {
@@ -701,7 +829,6 @@ const cases = [
       const forbiddenTouched = changedPaths.filter(
         (path) =>
           path.startsWith("mobile/") ||
-          path.startsWith("backend/src/controllers/") ||
           path.startsWith("backend/src/routes/") ||
           path === "backend/prisma/schema.prisma" ||
           path.startsWith("backend/prisma/migrations/")

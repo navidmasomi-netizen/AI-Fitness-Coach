@@ -150,6 +150,12 @@ async function createTestUser({ profileData, suffix }) {
   return user;
 }
 
+async function getActiveUserProgram(userId) {
+  return prisma.userProgram.findFirstOrThrow({
+    where: { userId, isActive: true },
+  });
+}
+
 async function snapshotCounts() {
   const [
     workoutSession,
@@ -691,9 +697,7 @@ async function main() {
         try {
           const program = await createStagnationHistory({ userId: user.id });
           const recentCompletedSessions = await buildRecentCompletedSessionsFromDatabase(user.id);
-          const userProgram = await prisma.userProgram.findUniqueOrThrow({
-            where: { userId: user.id },
-          });
+          const userProgram = await getActiveUserProgram(user.id);
           const userProfile = await prisma.userProfile.findUniqueOrThrow({
             where: { userId: user.id },
           });

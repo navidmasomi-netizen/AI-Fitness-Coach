@@ -133,8 +133,8 @@ export const completeWorkoutSession = async (req, res) => {
     let nextProgramDay = null;
     let warning = null;
 
-    const userProgram = await prisma.userProgram.findUnique({
-      where: { userId },
+    const userProgram = await prisma.userProgram.findFirst({
+      where: { userId, isActive: true },
     });
 
     if (!userProgram) {
@@ -153,7 +153,7 @@ export const completeWorkoutSession = async (req, res) => {
       } else {
         const nextIndex = (userProgram.currentDayIndex + 1) % programDaysCount;
         updatedUserProgram = await prisma.userProgram.update({
-          where: { userId },
+          where: { id: userProgram.id },
           data: { currentDayIndex: nextIndex },
         });
 
@@ -275,8 +275,8 @@ export const startFromActiveProgram = async (req, res) => {
       });
     }
 
-    const userProgram = await prisma.userProgram.findUnique({
-      where: { userId },
+    const userProgram = await prisma.userProgram.findFirst({
+      where: { userId, isActive: true },
     });
 
     if (!userProgram) {

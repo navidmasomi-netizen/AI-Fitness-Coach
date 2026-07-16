@@ -120,6 +120,20 @@ async function createTestUser({ profileData, suffix }) {
   return user;
 }
 
+async function getActiveUserProgram(userId) {
+  return prisma.userProgram.findFirstOrThrow({
+    where: { userId, isActive: true },
+  });
+}
+
+async function updateActiveUserProgram(userId, data) {
+  const activeUserProgram = await getActiveUserProgram(userId);
+  return prisma.userProgram.update({
+    where: { id: activeUserProgram.id },
+    data,
+  });
+}
+
 async function snapshotCounts() {
   const [
     workoutSession,
@@ -708,9 +722,8 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
-          await prisma.userProgram.update({
-            where: { userId: user.id },
-            data: { activatedAt: new Date("2026-06-18T09:00:00.000Z") },
+          await updateActiveUserProgram(user.id, {
+            activatedAt: new Date("2026-06-18T09:00:00.000Z"),
           });
           const firstDay = program.days[0];
           const firstExercise = firstDay.exercises[0];
@@ -786,9 +799,8 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
-          await prisma.userProgram.update({
-            where: { userId: user.id },
-            data: { activatedAt: new Date("2026-06-18T09:00:00.000Z") },
+          await updateActiveUserProgram(user.id, {
+            activatedAt: new Date("2026-06-18T09:00:00.000Z"),
           });
           const firstDay = program.days[0];
           const firstExercise = firstDay.exercises[0];

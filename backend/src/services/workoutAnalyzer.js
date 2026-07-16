@@ -89,8 +89,8 @@ function getActiveDaysInWindow({ activatedAt, windowStart, windowEnd, windowDays
 }
 
 export async function fetchRawHistory({ userId, windowStart, windowEnd }) {
-  const activeProgram = await prisma.userProgram.findUnique({
-    where: { userId },
+  const activeProgram = await prisma.userProgram.findFirst({
+    where: { userId, isActive: true },
     include: {
       program: {
         include: {

@@ -30,20 +30,30 @@ export const activateProgram = async (req, res) => {
       return res.status(404).json({ success: false, message: "Program not found" });
     }
 
-    const userProgram = await prisma.userProgram.upsert({
-      where: { userId },
-      update: {
-        programId: Number(programId),
-        currentDayIndex: 0,
-        activatedAt: new Date(),
-      },
-      create: {
-        userId,
-        programId: Number(programId),
-        currentDayIndex: 0,
-      },
-      include: fullProgramInclude,
+    const activeUserProgram = await prisma.userProgram.findFirst({
+      where: { userId, isActive: true },
     });
+
+    const userProgram = activeUserProgram
+      ? await prisma.userProgram.update({
+          where: { id: activeUserProgram.id },
+          data: {
+            programId: Number(programId),
+            currentDayIndex: 0,
+            activatedAt: new Date(),
+            isActive: true,
+          },
+          include: fullProgramInclude,
+        })
+      : await prisma.userProgram.create({
+          data: {
+            userId,
+            programId: Number(programId),
+            currentDayIndex: 0,
+            isActive: true,
+          },
+          include: fullProgramInclude,
+        });
 
     res.json({ success: true, data: userProgram });
   } catch (error) {
@@ -55,8 +65,8 @@ export const getMyActiveProgram = async (req, res) => {
   const userId = req.userId;
 
   try {
-    const userProgram = await prisma.userProgram.findUnique({
-      where: { userId },
+    const userProgram = await prisma.userProgram.findFirst({
+      where: { userId, isActive: true },
       include: fullProgramInclude,
     });
 

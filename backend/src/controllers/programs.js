@@ -131,8 +131,8 @@ async function buildRegenerationRecommendation(userId) {
     };
   }
 
-  const activeUserProgram = await prisma.userProgram.findUnique({
-    where: { userId },
+  const activeUserProgram = await prisma.userProgram.findFirst({
+    where: { userId, isActive: true },
     include: ACTIVE_PROGRAM_INCLUDE,
   });
 

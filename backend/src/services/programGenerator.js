@@ -238,8 +238,8 @@ export async function generateProgramForUser(userId) {
 
   assertProfileCompleted(userId, profile);
 
-  const existingUserProgram = await prisma.userProgram.findUnique({
-    where: { userId },
+  const existingUserProgram = await prisma.userProgram.findFirst({
+    where: { userId, isActive: true },
   });
 
   if (existingUserProgram) {
