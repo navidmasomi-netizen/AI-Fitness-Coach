@@ -1,5 +1,6 @@
 import prisma from "../lib/prisma.js";
 import { generateProgramForUser } from "../services/programGenerator.js";
+import { regenerateProgramForUser } from "../services/regenerationService.js";
 import { analyzeWorkoutHistory } from "../services/workoutAnalyzer.js";
 import { computeRecoveryModifier } from "../services/recoveryEngine.js";
 import { evaluateRegenerationEligibility } from "../services/regenerationOrchestrator.js";
@@ -76,6 +77,33 @@ function classifyGenerationError(error) {
     status: 500,
     message: "Something went wrong while generating your program. Please try again.",
   };
+}
+
+function classifyRegenerationError(error) {
+  const message = error instanceof Error ? error.message : "";
+
+  if (/^No active program to regenerate for user \d+\.$/.test(message)) {
+    return {
+      status: 404,
+      message: "No active program to regenerate. Generate a new program first.",
+    };
+  }
+
+  if (/^Cannot regenerate while a workout session is in progress\.$/.test(message)) {
+    return {
+      status: 409,
+      message: "Finish your active workout before regenerating your program.",
+    };
+  }
+
+  if (/^Program regeneration already in progress for user \d+\.$/.test(message)) {
+    return {
+      status: 409,
+      message: "Program regeneration is already in progress. Please try again.",
+    };
+  }
+
+  return classifyGenerationError(error);
 }
 
 function buildKnownLimitations(programProfileSnapshot) {
@@ -249,6 +277,21 @@ export const generateProgram = async (req, res) => {
     return res.status(201).json({ success: true, data: program });
   } catch (error) {
     const classified = classifyGenerationError(error);
+    return res.status(classified.status).json({
+      success: false,
+      message: classified.message,
+    });
+  }
+};
+
+export const regenerateProgram = async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const program = await regenerateProgramForUser(userId);
+    return res.status(200).json({ success: true, data: program });
+  } catch (error) {
+    const classified = classifyRegenerationError(error);
     return res.status(classified.status).json({
       success: false,
       message: classified.message,

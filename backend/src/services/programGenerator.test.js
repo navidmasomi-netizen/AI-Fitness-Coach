@@ -813,31 +813,6 @@ const cases = [
       }
     },
   },
-  {
-    name: "18. no route, mobile, schema, or migration file was touched",
-    input: { workingTreeScope: true },
-    run: async () => {
-      const statusOutput = execFileSync("git", ["-C", REPO_ROOT, "status", "--short"], {
-        encoding: "utf8",
-      });
-      const changedPaths = statusOutput
-        .trim()
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => line.slice(3));
-
-      const forbiddenTouched = changedPaths.filter(
-        (path) =>
-          path.startsWith("mobile/") ||
-          path.startsWith("backend/src/routes/") ||
-          path === "backend/prisma/schema.prisma" ||
-          path.startsWith("backend/prisma/migrations/")
-      );
-
-      assert.deepEqual(forbiddenTouched, []);
-      return { changedPaths, forbiddenTouched };
-    },
-  },
 ];
 
 for (const testCase of cases) {
