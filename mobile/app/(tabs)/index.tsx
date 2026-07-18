@@ -1,8 +1,9 @@
-import { View, Text, Pressable, FlatList, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, FlatList, ActivityIndicator, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../../src/store/authStore";
-import { getPrograms, getRegenerationRecommendation } from "../../src/api/programs";
+import { ApiError } from "../../src/api/client";
+import { getPrograms, getRegenerationRecommendation, regenerateProgram } from "../../src/api/programs";
 import { getMyProgram } from "../../src/api/userPrograms";
 import { startFromActiveProgram, getActiveSession, getMyCompletedSessions } from "../../src/api/sessions";
 import { getSessionProgressions } from "../../src/api/progressions";
@@ -27,6 +28,36 @@ function buildLastSessionSignal(recommendations: { recommendationType: string }[
   if (deloads > 0) parts.push(`${deloads} deload`);
   if (parts.length === 0) return null;
   return `Last session: ${parts.join(" / ")}`;
+}
+
+function getRegenerationErrorMessage(error: unknown): string | null {
+  if (!(error instanceof ApiError)) {
+    return "Something went wrong. Please try again.";
+  }
+
+  if (error.status === 401) {
+    return null;
+  }
+
+  if (error.status === 404) {
+    return "No active program.";
+  }
+
+  if (error.status === 409) {
+    if (error.message === "Finish your active workout before regenerating your program.") {
+      return "Finish your current workout before regenerating.";
+    }
+
+    if (error.message === "Program regeneration is already in progress. Please try again.") {
+      return "Program already regenerated.";
+    }
+  }
+
+  if (error.status === 422) {
+    return "Unable to build a suitable program.";
+  }
+
+  return "Something went wrong. Please try again.";
 }
 
 export default function HomeScreen() {
@@ -108,6 +139,23 @@ export default function HomeScreen() {
     },
   });
 
+  const regenerateMutation = useMutation({
+    mutationFn: regenerateProgram,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["programs"] }),
+        queryClient.invalidateQueries({ queryKey: ["myProgram"] }),
+        queryClient.invalidateQueries({ queryKey: ["regenerationRecommendation"] }),
+        queryClient.invalidateQueries({ queryKey: ["activeSession"] }),
+      ]);
+    },
+    onError: (error) => {
+      const message = getRegenerationErrorMessage(error);
+      if (!message) return;
+      Alert.alert("Regeneration Failed", message);
+    },
+  });
+
   const onResume = () => {
     if (!activeSession) return;
     router.push({
@@ -126,6 +174,29 @@ export default function HomeScreen() {
     await logout();
     queryClient.clear();
     router.replace("/(auth)/login");
+  };
+
+  const onConfirmRegenerate = () => {
+    if (regenerateMutation.isPending) return;
+
+    Alert.alert(
+      "Regenerate Program?",
+      "Your current workouts and history will be preserved.\n\nA new AI program will replace your active program.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Regenerate",
+          style: "destructive",
+          onPress: () => {
+            if (regenerateMutation.isPending) return;
+            regenerateMutation.mutate();
+          },
+        },
+      ]
+    );
   };
 
   const renderProgram = ({ item }: { item: Program }) => {
@@ -255,6 +326,8 @@ export default function HomeScreen() {
       <RegenerationInsightCard
         recommendation={regenerationRecommendation}
         isLoading={isRegenerationLoading}
+        onRegenerate={onConfirmRegenerate}
+        isRegenerating={regenerateMutation.isPending}
       />
 
       <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12 }}>Programs</Text>

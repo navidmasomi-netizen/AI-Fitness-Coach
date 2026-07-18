@@ -66,6 +66,12 @@ export function generateProgram(): Promise<GeneratedProgram> {
   });
 }
 
+export function regenerateProgram(): Promise<GeneratedProgram> {
+  return apiRequest<GeneratedProgram>("/programs/regenerate", {
+    method: "POST",
+  });
+}
+
 export function getRegenerationRecommendation(): Promise<RegenerationRecommendation | null> {
   return apiRequest<RegenerationRecommendation>("/programs/regeneration-recommendation", {
     method: "GET",

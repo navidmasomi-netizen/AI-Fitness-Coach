@@ -1,9 +1,11 @@
-import { View, Text } from "react-native";
+import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import type { RegenerationRecommendation } from "../api/programs";
 
 interface RegenerationInsightCardProps {
   recommendation: RegenerationRecommendation | null | undefined;
   isLoading: boolean;
+  onRegenerate: () => void;
+  isRegenerating: boolean;
 }
 
 function getHeadline(urgency: RegenerationRecommendation["urgency"]) {
@@ -21,6 +23,8 @@ function getHeadline(urgency: RegenerationRecommendation["urgency"]) {
 export function RegenerationInsightCard({
   recommendation,
   isLoading,
+  onRegenerate,
+  isRegenerating,
 }: RegenerationInsightCardProps) {
   if (isLoading || !recommendation) {
     return null;
@@ -127,6 +131,27 @@ export function RegenerationInsightCard({
       <Text style={{ fontSize: 12, color: "#7a8796", marginTop: 10 }}>
         You can review this anytime.
       </Text>
+
+      <Pressable
+        onPress={onRegenerate}
+        disabled={isRegenerating}
+        style={{
+          marginTop: 14,
+          borderRadius: 8,
+          backgroundColor: isRegenerating ? "#9db9d6" : accentColor,
+          paddingVertical: 12,
+          paddingHorizontal: 14,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "row",
+          gap: 8,
+        }}
+      >
+        {isRegenerating ? <ActivityIndicator size="small" color="#ffffff" /> : null}
+        <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 14 }}>
+          {isRegenerating ? "Regenerating..." : "Regenerate Program"}
+        </Text>
+      </Pressable>
     </View>
   );
 }
