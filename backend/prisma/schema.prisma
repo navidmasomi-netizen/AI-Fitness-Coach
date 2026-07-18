@@ -235,9 +235,14 @@ model ProgressionRecommendation {
   previousTargetHigh    Int?
   recommendedTargetLow  Int?
   recommendedTargetHigh Int?
+  targetSets            Int?
+  confidence            Float?
+  reasonCode            String?
   progressionType       String?
   consecutiveFailures   Int                @default(0)
   reason                String
   status                String             @default("active")
   createdAt             DateTime           @default(now())
+
+  @@unique([userId, exerciseId, sourceSessionId])
 }
