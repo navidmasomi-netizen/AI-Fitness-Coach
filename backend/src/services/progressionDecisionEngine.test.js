@@ -1,0 +1,1228 @@
+import assert from "node:assert/strict";
+
+import {
+  DECISION_TYPES,
+  PROGRESSION_RULES_VERSION,
+  ProgressionDecisionValidationError,
+  REASON_CODES,
+  RULE_CATALOG,
+  decideProgression,
+} from "./progressionDecisionEngine.js";
+
+function serializeForLog(value) {
+  return JSON.stringify(value, null, 2);
+}
+
+function printCaseStart(name, input) {
+  console.log(`CASE: ${name}`);
+  console.log(`INPUT: ${serializeForLog(input)}`);
+}
+
+function printCaseResult(passed, actual, error) {
+  if (typeof actual !== "undefined") {
+    console.log(`ACTUAL: ${serializeForLog(actual)}`);
+  }
+  if (error) {
+    console.log(`ERROR: ${error.stack || error.message}`);
+  }
+  console.log(`RESULT: ${passed ? "PASS" : "FAIL"}`);
+  console.log("---");
+}
+
+async function runCase(name, input, fn) {
+  printCaseStart(name, input);
+  try {
+    const actual = await fn();
+    printCaseResult(true, actual);
+    return true;
+  } catch (error) {
+    printCaseResult(false, undefined, error);
+    return false;
+  }
+}
+
+function deepFreeze(value) {
+  if (!value || typeof value !== "object" || Object.isFrozen(value)) {
+    return value;
+  }
+
+  Object.freeze(value);
+  for (const nestedValue of Object.values(value)) {
+    deepFreeze(nestedValue);
+  }
+  return value;
+}
+
+function assertNoUndefined(value, path = "root") {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => assertNoUndefined(entry, `${path}[${index}]`));
+    return;
+  }
+
+  if (!value || typeof value !== "object") {
+    return;
+  }
+
+  for (const [key, nestedValue] of Object.entries(value)) {
+    assert.notEqual(nestedValue, undefined, `${path}.${key} must not be undefined`);
+    assertNoUndefined(nestedValue, `${path}.${key}`);
+  }
+}
+
+function buildAnalysis(overrides = {}) {
+  return {
+    exerciseId: 15,
+    sourceSessionId: 501,
+    prescription: {
+      prescribedSets: 3,
+      prescribedRepLow: 8,
+      prescribedRepHigh: 12,
+      prescribedRestSeconds: 90,
+    },
+    observedPerformance: {
+      loggedSetCount: 3,
+      completedSetCount: 3,
+      successfulSetCount: 3,
+      failedSetCount: 0,
+      totalReps: 30,
+      totalVolumeKg: 1265,
+      averageWeightKg: 42.5,
+      maximumWeightKg: 45,
+      minimumWeightKg: 40,
+      bestSet: { setNumber: 3, reps: 8, weightKg: 45 },
+      finalSet: { setNumber: 3, reps: 8, weightKg: 45 },
+      prescribedSetCompletionRate: 1,
+      targetRepHitRate: 1,
+    },
+    historyFacts: {
+      previousSessionWeightKg: 42.5,
+      weightDeltaKg: 2.5,
+      weightDeltaPercent: 5.8824,
+      previousPrescribedSetCompletionRate: 1,
+      prescribedSetCompletionRateDelta: 0,
+      consecutiveSuccessfulSessions: 2,
+      consecutiveFailedSessions: 0,
+    },
+    hasSufficientData: true,
+    dataQualityFlags: [],
+    ...overrides,
+  };
+}
+
+function buildInput(overrides = {}) {
+  return {
+    analysis: buildAnalysis(),
+    progressionPolicy: {
+      progressionMode: "load",
+      allowsLoadAdjustment: true,
+      allowsSetAdjustment: false,
+      allowsRepAdjustment: false,
+      validIncrement: true,
+    },
+    recoveryConstraint: null,
+    previousDecisionContext: null,
+    existingRecommendationContext: null,
+    policyThresholds: {
+      deloadFailureStreak: 2,
+    },
+    ...overrides,
+  };
+}
+
+function expectValidationError(fn, messagePart) {
+  assert.throws(fn, (error) => {
+    assert.equal(error instanceof ProgressionDecisionValidationError, true);
+    if (messagePart) {
+      assert.match(error.message, new RegExp(messagePart));
+    }
+    return true;
+  });
+}
+
+async function main() {
+  let passed = 0;
+  let failed = 0;
+
+  const cases = [
+    {
+      name: "full success repeated success increases load",
+      input: "valid analyzer output with repeated successful sessions",
+      fn: () => {
+        const actual = decideProgression(buildInput());
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
+        assert.equal(actual.loadAdjustmentSteps, 1);
+        assert.equal(actual.setAdjustment, 0);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_SUCCESS);
+        assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
+        assert.equal(actual.shouldPersist, true);
+        assert.equal(actual.requiresManualReview, false);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
+        return actual;
+      },
+    },
+    {
+      name: "performance improvement increases load",
+      input: "full success with positive weight delta but without repeated success threshold",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: 42.5,
+                weightDeltaKg: 2.5,
+                weightDeltaPercent: 5.8824,
+                previousPrescribedSetCompletionRate: 0.6667,
+                prescribedSetCompletionRateDelta: 0.3333,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
+        assert.equal(actual.reasonCode, REASON_CODES.PERFORMANCE_IMPROVED);
+        assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
+        return actual;
+      },
+    },
+    {
+      name: "partial prescribed completion maintains",
+      input: "fewer successful reps than prescription requires",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              observedPerformance: {
+                loggedSetCount: 2,
+                completedSetCount: 2,
+                successfulSetCount: 2,
+                failedSetCount: 0,
+                totalReps: 20,
+                totalVolumeKg: 825,
+                averageWeightKg: 41.25,
+                maximumWeightKg: 42.5,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 2, reps: 10, weightKg: 42.5 },
+                finalSet: { setNumber: 2, reps: 10, weightKg: 42.5 },
+                prescribedSetCompletionRate: 0.6667,
+                targetRepHitRate: 1,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_PARTIALLY_MET);
+        return actual;
+      },
+    },
+    {
+      name: "mixed success and failure maintains",
+      input: "some sets below prescribedRepLow",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              observedPerformance: {
+                loggedSetCount: 3,
+                completedSetCount: 3,
+                successfulSetCount: 1,
+                failedSetCount: 2,
+                totalReps: 25,
+                totalVolumeKg: 1162.5,
+                averageWeightKg: 42.5,
+                maximumWeightKg: 45,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 3, reps: 6, weightKg: 45 },
+                finalSet: { setNumber: 3, reps: 6, weightKg: 45 },
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 0.3333,
+              },
+              historyFacts: {
+                previousSessionWeightKg: 45,
+                weightDeltaKg: 0,
+                weightDeltaPercent: 0,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 1,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_PARTIALLY_MET);
+        assert.equal(actual.secondaryReasonCodes.includes(REASON_CODES.REPEATED_FAILURE), true);
+        return actual;
+      },
+    },
+    {
+      name: "invalid analysis flags trigger manual review",
+      input: "severe analyzer data-quality flag present",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              dataQualityFlags: ["missing_prescribed_rep_low"],
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MANUAL_REVIEW);
+        assert.equal(actual.reasonCode, REASON_CODES.INVALID_ANALYSIS);
+        assert.equal(actual.requiresManualReview, true);
+        assert.equal(actual.shouldPersist, false);
+        return actual;
+      },
+    },
+    {
+      name: "insufficient data returns non-persisted outcome",
+      input: "analyzer marks exercise history as insufficient",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              hasSufficientData: false,
+              dataQualityFlags: ["missing_previous_history"],
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.INSUFFICIENT_DATA);
+        assert.equal(actual.reasonCode, REASON_CODES.INSUFFICIENT_HISTORY);
+        assert.equal(actual.shouldPersist, false);
+        return actual;
+      },
+    },
+    {
+      name: "repeated failed sessions deload",
+      input: "history failure streak meets deload threshold",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              observedPerformance: {
+                loggedSetCount: 3,
+                completedSetCount: 3,
+                successfulSetCount: 1,
+                failedSetCount: 2,
+                totalReps: 23,
+                totalVolumeKg: 1010,
+                averageWeightKg: 42.5,
+                maximumWeightKg: 45,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 3, reps: 5, weightKg: 45 },
+                finalSet: { setNumber: 3, reps: 5, weightKg: 45 },
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 0.3333,
+              },
+              historyFacts: {
+                previousSessionWeightKg: 47.5,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.2632,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 2,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.loadAdjustmentSteps, -1);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        return actual;
+      },
+    },
+    {
+      name: "previous decision context can trigger deload",
+      input: "legacy consecutiveFailures context is honored",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: 47.5,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.2632,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 1,
+              },
+            }),
+            previousDecisionContext: {
+              previousDecisionType: DECISION_TYPES.MAINTAIN,
+              consecutiveFailures: 2,
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        return actual;
+      },
+    },
+    {
+      name: "full targets met but regressed performance maintains",
+      input: "completion remains full while load regresses",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: 47.5,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.2632,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.PERFORMANCE_REGRESSED);
+        return actual;
+      },
+    },
+    {
+      name: "full targets met without improvement maintains",
+      input: "flat performance after complete success",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: 45,
+                weightDeltaKg: 0,
+                weightDeltaPercent: 0,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_FULLY_MET);
+        return actual;
+      },
+    },
+    {
+      name: "recovery caution downgrades increase to maintain",
+      input: "performance supports increase but recovery forbids upgrade",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            recoveryConstraint: {
+              recoveryModifier: "caution",
+              confidence: 0.8,
+              signalStrength: "strong",
+              reasonCode: "recovery_caution",
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.RECOVERY_OVERRIDE);
+        assert.deepEqual(actual.secondaryReasonCodes, [
+          REASON_CODES.REPEATED_SUCCESS,
+          REASON_CODES.TARGETS_FULLY_MET,
+        ]);
+        return actual;
+      },
+    },
+    {
+      name: "recovery supportive never upgrades maintain",
+      input: "supportive recovery cannot turn maintain into increase",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: 45,
+                weightDeltaKg: 0,
+                weightDeltaPercent: 0,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+            recoveryConstraint: {
+              recoveryModifier: "supportive",
+              confidence: 0.9,
+              signalStrength: "strong",
+              reasonCode: "recovery_supportive",
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_FULLY_MET);
+        return actual;
+      },
+    },
+    {
+      name: "missing load data holds despite full success",
+      input: "load-based progression without best-set load",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              observedPerformance: {
+                loggedSetCount: 3,
+                completedSetCount: 3,
+                successfulSetCount: 3,
+                failedSetCount: 0,
+                totalReps: 30,
+                totalVolumeKg: 0,
+                averageWeightKg: null,
+                maximumWeightKg: null,
+                minimumWeightKg: null,
+                bestSet: { setNumber: 3, reps: 8, weightKg: null },
+                finalSet: { setNumber: 3, reps: 8, weightKg: null },
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 1,
+              },
+              dataQualityFlags: ["missing_weight_data"],
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.MISSING_LOAD_DATA);
+        return actual;
+      },
+    },
+    {
+      name: "bodyweight non-load policy maintains without missing-load hold rule",
+      input: "non-load policy keeps complete bodyweight performance factual",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              observedPerformance: {
+                loggedSetCount: 3,
+                completedSetCount: 3,
+                successfulSetCount: 3,
+                failedSetCount: 0,
+                totalReps: 30,
+                totalVolumeKg: 0,
+                averageWeightKg: null,
+                maximumWeightKg: null,
+                minimumWeightKg: null,
+                bestSet: { setNumber: 3, reps: 8, weightKg: null },
+                finalSet: { setNumber: 3, reps: 8, weightKg: null },
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 1,
+              },
+              historyFacts: {
+                previousSessionWeightKg: null,
+                weightDeltaKg: null,
+                weightDeltaPercent: null,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+              dataQualityFlags: ["missing_weight_data"],
+            }),
+            progressionPolicy: {
+              progressionMode: "time",
+              allowsLoadAdjustment: false,
+              allowsSetAdjustment: false,
+              allowsRepAdjustment: false,
+              validIncrement: true,
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_FULLY_MET);
+        assert.equal(actual.loadAdjustmentSteps, 0);
+        return actual;
+      },
+    },
+    {
+      name: "zero prescribed sets skip with dedicated reason",
+      input: "valid structure but unusable zero-prescription domain case",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              prescription: {
+                prescribedSets: 0,
+                prescribedRepLow: 8,
+                prescribedRepHigh: 12,
+                prescribedRestSeconds: 90,
+              },
+              observedPerformance: {
+                loggedSetCount: 0,
+                completedSetCount: 0,
+                successfulSetCount: 0,
+                failedSetCount: 0,
+                totalReps: 0,
+                totalVolumeKg: 0,
+                averageWeightKg: null,
+                maximumWeightKg: null,
+                minimumWeightKg: null,
+                bestSet: null,
+                finalSet: null,
+                prescribedSetCompletionRate: null,
+                targetRepHitRate: null,
+              },
+              historyFacts: {
+                previousSessionWeightKg: null,
+                weightDeltaKg: null,
+                weightDeltaPercent: null,
+                previousPrescribedSetCompletionRate: null,
+                prescribedSetCompletionRateDelta: null,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 0,
+              },
+              hasSufficientData: true,
+              dataQualityFlags: ["zero_prescribed_sets", "no_logged_sets"],
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.SKIP);
+        assert.equal(actual.reasonCode, REASON_CODES.ZERO_PRESCRIPTION);
+        assert.equal(actual.shouldPersist, false);
+        return actual;
+      },
+    },
+    {
+      name: "invalid increment skips recommendation",
+      input: "policy cannot resolve a valid progression step",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            progressionPolicy: {
+              progressionMode: "load",
+              allowsLoadAdjustment: true,
+              allowsSetAdjustment: false,
+              allowsRepAdjustment: false,
+              validIncrement: false,
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.SKIP);
+        assert.equal(actual.reasonCode, REASON_CODES.NO_VALID_INCREMENT);
+        assert.equal(actual.shouldPersist, false);
+        return actual;
+      },
+    },
+    {
+      name: "already evaluated context skips deterministically",
+      input: "orchestrator says this source session already has a decision",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            existingRecommendationContext: {
+              alreadyEvaluated: true,
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.SKIP);
+        assert.equal(actual.reasonCode, REASON_CODES.ALREADY_EVALUATED);
+        return actual;
+      },
+    },
+    {
+      name: "invalid analysis precedence beats already evaluated",
+      input: "manual-review rule precedes skip rule",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              dataQualityFlags: ["missing_prescribed_rep_high"],
+            }),
+            existingRecommendationContext: {
+              alreadyEvaluated: true,
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MANUAL_REVIEW);
+        assert.equal(actual.reasonCode, REASON_CODES.INVALID_ANALYSIS);
+        return actual;
+      },
+    },
+    {
+      name: "repeated failure precedence beats partial hold",
+      input: "deload threshold wins before partial completion hold",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              observedPerformance: {
+                loggedSetCount: 2,
+                completedSetCount: 2,
+                successfulSetCount: 1,
+                failedSetCount: 1,
+                totalReps: 17,
+                totalVolumeKg: 720,
+                averageWeightKg: 41.25,
+                maximumWeightKg: 42.5,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 2, reps: 7, weightKg: 42.5 },
+                finalSet: { setNumber: 2, reps: 7, weightKg: 42.5 },
+                prescribedSetCompletionRate: 0.6667,
+                targetRepHitRate: 0.5,
+              },
+              historyFacts: {
+                previousSessionWeightKg: 45,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.5556,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: -0.3333,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 2,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        return actual;
+      },
+    },
+    {
+      name: "candidate priority prefers repeated success over performance improved",
+      input: "both increase candidates exist and higher-priority repeated success wins",
+      fn: () => {
+        const actual = decideProgression(buildInput());
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_SUCCESS);
+        return actual;
+      },
+    },
+    {
+      name: "secondary reason codes are deduplicated",
+      input: "multiple improvement signals do not duplicate codes",
+      fn: () => {
+        const actual = decideProgression(buildInput());
+        assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
+        return actual;
+      },
+    },
+    {
+      name: "secondary reason codes are ordered deterministically",
+      input: "recovery override keeps a stable sorted secondary list",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            recoveryConstraint: {
+              recoveryModifier: "caution",
+              confidence: 0.7,
+              signalStrength: "strong",
+              reasonCode: "recovery_caution",
+            },
+          })
+        );
+        assert.deepEqual(actual.secondaryReasonCodes, [
+          REASON_CODES.REPEATED_SUCCESS,
+          REASON_CODES.TARGETS_FULLY_MET,
+        ]);
+        return actual;
+      },
+    },
+    {
+      name: "increase adjustment semantics are abstract only",
+      input: "engine emits steps not concrete target weights",
+      fn: () => {
+        const actual = decideProgression(buildInput());
+        assert.equal(actual.loadAdjustmentSteps, 1);
+        assert.equal("targetWeightKg" in actual, false);
+        assert.equal("targetSets" in actual, false);
+        assert.equal("targetRepLow" in actual, false);
+        assert.equal("targetRepHigh" in actual, false);
+        return actual;
+      },
+    },
+    {
+      name: "deload adjustment semantics are abstract only",
+      input: "deload emits negative step without concrete load",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: 47.5,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.2632,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: -0.3333,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 3,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.loadAdjustmentSteps, -1);
+        assert.equal(actual.setAdjustment, 0);
+        assert.equal(actual.repAdjustment, 0);
+        return actual;
+      },
+    },
+    {
+      name: "skip never persists",
+      input: "all skip decisions force shouldPersist false",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            existingRecommendationContext: { alreadyEvaluated: true },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.SKIP);
+        assert.equal(actual.shouldPersist, false);
+        return actual;
+      },
+    },
+    {
+      name: "manual review never persists",
+      input: "manual review is non-persisted metadata-only output",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              dataQualityFlags: ["missing_prescribed_rep_low"],
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MANUAL_REVIEW);
+        assert.equal(actual.shouldPersist, false);
+        return actual;
+      },
+    },
+    {
+      name: "confidence rounds to two decimals and stays within range",
+      input: "increase decision with bonuses produces deterministic rounded confidence",
+      fn: () => {
+        const actual = decideProgression(buildInput());
+        assert.equal(actual.confidence, 0.8);
+        assert.equal(actual.confidence >= 0 && actual.confidence <= 1, true);
+        return actual;
+      },
+    },
+    {
+      name: "confidence lower bound clamps at zero",
+      input: "insufficient data plus multiple flags cannot go negative",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              hasSufficientData: false,
+              dataQualityFlags: [
+                "missing_previous_history",
+                "missing_weight_data",
+                "no_logged_sets",
+                "zero_prescribed_sets",
+              ],
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.INSUFFICIENT_DATA);
+        assert.equal(actual.confidence, 0);
+        return actual;
+      },
+    },
+    {
+      name: "confidence does not change selected decision",
+      input: "repeated success still increases without a confidence threshold gate",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              dataQualityFlags: ["missing_weight_data", "nonfatal_flag_a"],
+              historyFacts: {
+                previousSessionWeightKg: 42.5,
+                weightDeltaKg: 2.5,
+                weightDeltaPercent: 5.8824,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 2,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
+        assert.equal(actual.confidence < 0.67, true);
+        return actual;
+      },
+    },
+    {
+      name: "output has no undefined fields",
+      input: "serialized output must be fully defined",
+      fn: () => {
+        const actual = decideProgression(buildInput());
+        assertNoUndefined(actual);
+        return actual;
+      },
+    },
+    {
+      name: "input immutability is preserved",
+      input: "deep-frozen input remains unchanged",
+      fn: () => {
+        const input = buildInput();
+        const snapshot = JSON.parse(JSON.stringify(input));
+        deepFreeze(input);
+        const actual = decideProgression(input);
+        assert.deepEqual(input, snapshot);
+        return actual;
+      },
+    },
+    {
+      name: "output is deeply frozen",
+      input: "returned decision object must be immutable",
+      fn: () => {
+        const actual = decideProgression(buildInput());
+        assert.equal(Object.isFrozen(actual), true);
+        assert.equal(Object.isFrozen(actual.secondaryReasonCodes), true);
+        assert.throws(
+          () => {
+            const mutable = actual;
+            mutable.loadAdjustmentSteps = 99;
+          },
+          TypeError
+        );
+        return actual;
+      },
+    },
+    {
+      name: "determinism returns deep-equal outputs",
+      input: "same input evaluated repeatedly",
+      fn: () => {
+        const input = buildInput();
+        const first = decideProgression(input);
+        const second = decideProgression(input);
+        assert.deepEqual(first, second);
+        return first;
+      },
+    },
+    {
+      name: "engine does not read real clock",
+      input: "Date access is blocked during evaluation",
+      fn: () => {
+        const OriginalDate = globalThis.Date;
+        class ThrowingDate extends OriginalDate {
+          constructor(...args) {
+            if (args.length === 0) {
+              throw new Error("real clock access is forbidden");
+            }
+            super(...args);
+          }
+
+          static now() {
+            throw new Error("real clock access is forbidden");
+          }
+        }
+
+        globalThis.Date = ThrowingDate;
+        try {
+          const actual = decideProgression(buildInput());
+          assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
+          return actual;
+        } finally {
+          globalThis.Date = OriginalDate;
+        }
+      },
+    },
+    {
+      name: "negative counts are rejected",
+      input: "structurally impossible analyzer counts",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                analysis: buildAnalysis({
+                  observedPerformance: {
+                    loggedSetCount: -1,
+                    completedSetCount: 3,
+                    successfulSetCount: 3,
+                    failedSetCount: 0,
+                    totalReps: 30,
+                    totalVolumeKg: 1265,
+                    averageWeightKg: 42.5,
+                    maximumWeightKg: 45,
+                    minimumWeightKg: 40,
+                    bestSet: { setNumber: 3, reps: 8, weightKg: 45 },
+                    finalSet: { setNumber: 3, reps: 8, weightKg: 45 },
+                    prescribedSetCompletionRate: 1,
+                    targetRepHitRate: 1,
+                  },
+                }),
+              })
+            ),
+          "loggedSetCount"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "nan and infinity rates are rejected",
+      input: "malformed analyzer rates are structural validation errors",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                analysis: buildAnalysis({
+                  observedPerformance: {
+                    loggedSetCount: 3,
+                    completedSetCount: 3,
+                    successfulSetCount: 3,
+                    failedSetCount: 0,
+                    totalReps: 30,
+                    totalVolumeKg: 1265,
+                    averageWeightKg: 42.5,
+                    maximumWeightKg: 45,
+                    minimumWeightKg: 40,
+                    bestSet: { setNumber: 3, reps: 8, weightKg: 45 },
+                    finalSet: { setNumber: 3, reps: 8, weightKg: 45 },
+                    prescribedSetCompletionRate: Number.NaN,
+                    targetRepHitRate: Infinity,
+                  },
+                }),
+              })
+            ),
+          "prescribedSetCompletionRate"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "missing identity is rejected",
+      input: "exercise identity is structurally required",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                analysis: buildAnalysis({
+                  exerciseId: null,
+                }),
+              })
+            ),
+          "exerciseId"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "unknown recovery constraint is rejected",
+      input: "recovery modifier enum must be known",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                recoveryConstraint: {
+                  recoveryModifier: "panic",
+                  confidence: 0.5,
+                  signalStrength: "moderate",
+                  reasonCode: null,
+                },
+              })
+            ),
+          "recoveryModifier"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "unknown progression mode is rejected",
+      input: "policy enum must be validated",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                progressionPolicy: {
+                  progressionMode: "velocity",
+                  allowsLoadAdjustment: true,
+                  allowsSetAdjustment: false,
+                  allowsRepAdjustment: false,
+                  validIncrement: true,
+                },
+              })
+            ),
+          "progressionMode"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "invalid previous decision context is rejected",
+      input: "legacy context still requires a valid decision enum",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                previousDecisionContext: {
+                  previousDecisionType: "HOLD",
+                  consecutiveFailures: 1,
+                },
+              })
+            ),
+          "previousDecisionType"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "invalid existing recommendation context is rejected",
+      input: "alreadyEvaluated must be boolean when provided",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                existingRecommendationContext: {
+                  alreadyEvaluated: "yes",
+                },
+              })
+            ),
+          "alreadyEvaluated"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "invalid policy thresholds are rejected",
+      input: "deload threshold must be a positive integer",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildInput({
+                policyThresholds: {
+                  deloadFailureStreak: 0,
+                },
+              })
+            ),
+          "deloadFailureStreak"
+        );
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "rules catalog remains stable and versioned",
+      input: "rule metadata has ids, priorities, and terminal flags",
+      fn: () => {
+        assert.equal(Array.isArray(RULE_CATALOG), true);
+        assert.equal(RULE_CATALOG.length, 14);
+        assert.equal(PROGRESSION_RULES_VERSION, "progression_decision_rules_v1");
+        for (const rule of RULE_CATALOG) {
+          assert.equal(typeof rule.id, "string");
+          assert.equal(typeof rule.priority, "number");
+          assert.equal(typeof rule.terminal, "boolean");
+        }
+        return RULE_CATALOG;
+      },
+    },
+    {
+      name: "same-source skip beats no valid increment",
+      input: "already-evaluated context wins before lower-priority policy skip",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            progressionPolicy: {
+              progressionMode: "load",
+              allowsLoadAdjustment: true,
+              allowsSetAdjustment: false,
+              allowsRepAdjustment: false,
+              validIncrement: false,
+            },
+            existingRecommendationContext: {
+              alreadyEvaluated: true,
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.SKIP);
+        assert.equal(actual.reasonCode, REASON_CODES.ALREADY_EVALUATED);
+        return actual;
+      },
+    },
+    {
+      name: "recovery does not upgrade a maintain decision",
+      input: "supportive recovery cannot overcome partial completion",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              observedPerformance: {
+                loggedSetCount: 2,
+                completedSetCount: 2,
+                successfulSetCount: 2,
+                failedSetCount: 0,
+                totalReps: 20,
+                totalVolumeKg: 825,
+                averageWeightKg: 41.25,
+                maximumWeightKg: 42.5,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 2, reps: 10, weightKg: 42.5 },
+                finalSet: { setNumber: 2, reps: 10, weightKg: 42.5 },
+                prescribedSetCompletionRate: 0.6667,
+                targetRepHitRate: 1,
+              },
+            }),
+            recoveryConstraint: {
+              recoveryModifier: "supportive",
+              confidence: 0.8,
+              signalStrength: "strong",
+              reasonCode: "recovery_supportive",
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_PARTIALLY_MET);
+        return actual;
+      },
+    },
+    {
+      name: "conflicting signals reduce confidence without changing rule outcome",
+      input: "improved completion and lower load create a mixed-signal increase",
+      fn: () => {
+        const actual = decideProgression(
+          buildInput({
+            analysis: buildAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: 47.5,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.2632,
+                previousPrescribedSetCompletionRate: 0.6667,
+                prescribedSetCompletionRateDelta: 0.3333,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
+        assert.equal(actual.reasonCode, REASON_CODES.PERFORMANCE_IMPROVED);
+        assert.equal(actual.confidence, 0.55);
+        return actual;
+      },
+    },
+  ];
+
+  for (const testCase of cases) {
+    const ok = await runCase(testCase.name, testCase.input, testCase.fn);
+    if (ok) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+  }
+
+  console.log(`SUMMARY: ${passed} passed, ${failed} failed, ${cases.length} total`);
+  if (failed > 0) {
+    process.exitCode = 1;
+  }
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
