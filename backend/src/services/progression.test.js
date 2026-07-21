@@ -272,6 +272,14 @@ async function createCompletedSessionWithOneSet({
   return session;
 }
 
+function buildLoggedSets({ targetExercise, reps, weightKg, count = targetExercise.sets }) {
+  return Array.from({ length: count }, (_, index) => ({
+    setNumber: index + 1,
+    reps,
+    weightKg,
+  }));
+}
+
 async function main() {
   let passed = 0;
   let failed = 0;
@@ -1064,10 +1072,26 @@ async function main() {
       },
     },
     {
-      name: "integration -> duplicate invocation behavior remains unchanged",
-      input: "same session evaluated twice directly through service",
+      name: "integration -> duplicate invocation returns existing immutable recommendation",
+      input: "orchestrator duplicate handling keeps one row and never updates it",
       fn: async () => {
-        const suffix = `duplicate-${Date.now()}`;
+        const [{ Prisma }, orchestratorModule] = await Promise.all([
+          import("@prisma/client"),
+          import("./progressionPersistenceOrchestrator.js"),
+        ]);
+        const {
+          PROGRESSION_PERSISTENCE_OUTCOMES,
+          orchestrateProgressionPersistence,
+        } = orchestratorModule;
+
+        const baseRecoveryConstraint = {
+          recoveryModifier: "neutral",
+          confidence: 0.4,
+          signalStrength: "moderate",
+          reasonCode: null,
+        };
+
+        const suffix = "duplicate-invariant";
         const user = await createTestUser({
           suffix,
           profileData: {
@@ -1086,7 +1110,40 @@ async function main() {
           const firstDay = program.days[0];
           const targetExercise = firstDay.exercises[0];
 
-          const session = await createCompletedSessionWithOneSet({
+          const priorSession = await createCompletedSessionWithOneSet({
+            userId: user.id,
+            programId: program.id,
+            programDayId: firstDay.id,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-11T09:00:00.000Z"),
+            completedAt: new Date("2026-07-11T09:45:00.000Z"),
+            loggedAt: new Date("2026-07-11T09:05:00.000Z"),
+            weightKg: null,
+            reps: targetExercise.repRangeHigh,
+          });
+
+          await prisma.setLog.deleteMany({
+            where: {
+              sessionId: priorSession.id,
+              exerciseId: targetExercise.exerciseId,
+            },
+          });
+          await prisma.setLog.createMany({
+            data: buildLoggedSets({
+              targetExercise,
+              reps: targetExercise.repRangeHigh,
+              weightKg: null,
+            }).map((set, index) => ({
+              sessionId: priorSession.id,
+              exerciseId: targetExercise.exerciseId,
+              setNumber: set.setNumber,
+              reps: set.reps,
+              weightKg: set.weightKg,
+              loggedAt: new Date(new Date("2026-07-11T09:05:00.000Z").getTime() + index * 60000),
+            })),
+          });
+
+          const sessionA = await createCompletedSessionWithOneSet({
             userId: user.id,
             programId: program.id,
             programDayId: firstDay.id,
@@ -1094,26 +1151,279 @@ async function main() {
             startedAt: new Date("2026-07-12T09:00:00.000Z"),
             completedAt: new Date("2026-07-12T09:45:00.000Z"),
             loggedAt: new Date("2026-07-12T09:05:00.000Z"),
-            weightKg: 30,
+            weightKg: null,
             reps: targetExercise.repRangeHigh,
           });
-
-          const firstRun = await evaluateSessionProgression(session.id, user.id);
-          const secondRun = await evaluateSessionProgression(session.id, user.id);
-          const persisted = await prisma.progressionRecommendation.findMany({
-            where: { sourceSessionId: session.id, userId: user.id },
-            orderBy: [{ exerciseId: "asc" }, { createdAt: "asc" }],
+          await prisma.setLog.deleteMany({
+            where: {
+              sessionId: sessionA.id,
+              exerciseId: targetExercise.exerciseId,
+            },
+          });
+          await prisma.setLog.createMany({
+            data: buildLoggedSets({
+              targetExercise,
+              reps: targetExercise.repRangeHigh,
+              weightKg: null,
+            }).map((set, index) => ({
+              sessionId: sessionA.id,
+              exerciseId: targetExercise.exerciseId,
+              setNumber: set.setNumber,
+              reps: set.reps,
+              weightKg: set.weightKg,
+              loggedAt: new Date(new Date("2026-07-12T09:05:00.000Z").getTime() + index * 60000),
+            })),
           });
 
-          assert.equal(
-            persisted.length,
-            firstRun.recommendations.length + secondRun.recommendations.length
-          );
+          const sessionB = await createCompletedSessionWithOneSet({
+            userId: user.id,
+            programId: program.id,
+            programDayId: firstDay.id,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-13T09:00:00.000Z"),
+            completedAt: new Date("2026-07-13T09:45:00.000Z"),
+            loggedAt: new Date("2026-07-13T09:05:00.000Z"),
+            weightKg: null,
+            reps: targetExercise.repRangeHigh,
+          });
+          await prisma.setLog.deleteMany({
+            where: {
+              sessionId: sessionB.id,
+              exerciseId: targetExercise.exerciseId,
+            },
+          });
+          await prisma.setLog.createMany({
+            data: buildLoggedSets({
+              targetExercise,
+              reps: targetExercise.repRangeHigh,
+              weightKg: null,
+            }).map((set, index) => ({
+              sessionId: sessionB.id,
+              exerciseId: targetExercise.exerciseId,
+              setNumber: set.setNumber,
+              reps: set.reps,
+              weightKg: set.weightKg,
+              loggedAt: new Date(new Date("2026-07-13T09:05:00.000Z").getTime() + index * 60000),
+            })),
+          });
+
+          const inputA = {
+            userId: user.id,
+            exerciseId: targetExercise.exerciseId,
+            sourceSessionId: sessionA.id,
+            recoveryConstraint: baseRecoveryConstraint,
+          };
+
+          const firstRun = await orchestrateProgressionPersistence(inputA);
+          assert.equal(firstRun.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
+          assert(firstRun.recommendation);
+          assert(firstRun.decision);
+          assert.equal(firstRun.duplicateRecovered, false);
+
+          const rowsAfterFirstRun = await prisma.progressionRecommendation.findMany({
+            where: { userId: user.id, exerciseId: targetExercise.exerciseId, sourceSessionId: sessionA.id },
+            orderBy: { createdAt: "asc" },
+            include: { exercise: true },
+          });
+          assert.equal(rowsAfterFirstRun.length, 1);
+
+          const secondRun = await orchestrateProgressionPersistence(inputA);
+          assert.equal(secondRun.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.ALREADY_EXISTS);
+          assert(secondRun.recommendation);
+          assert.equal(secondRun.decision, null);
+          assert.equal(secondRun.duplicateRecovered, false);
+
+          const rowsAfterSecondRun = await prisma.progressionRecommendation.findMany({
+            where: { userId: user.id, exerciseId: targetExercise.exerciseId, sourceSessionId: sessionA.id },
+            orderBy: { createdAt: "asc" },
+            include: { exercise: true },
+          });
+          assert.equal(rowsAfterSecondRun.length, 1);
+          assert.deepEqual(secondRun.recommendation, rowsAfterSecondRun[0]);
+          assert.deepEqual(rowsAfterSecondRun[0], rowsAfterFirstRun[0]);
+
+          const concurrentInput = {
+            userId: user.id,
+            exerciseId: targetExercise.exerciseId,
+            sourceSessionId: sessionB.id,
+            recoveryConstraint: baseRecoveryConstraint,
+          };
+          const concurrentRuns = await Promise.all([
+            orchestrateProgressionPersistence(concurrentInput),
+            orchestrateProgressionPersistence(concurrentInput),
+          ]);
+          const concurrentOutcomes = concurrentRuns.map((entry) => entry.outcome).sort();
+          assert.deepEqual(concurrentOutcomes, [
+            PROGRESSION_PERSISTENCE_OUTCOMES.ALREADY_EXISTS,
+            PROGRESSION_PERSISTENCE_OUTCOMES.CREATED,
+          ]);
+
+          const concurrentRows = await prisma.progressionRecommendation.findMany({
+            where: { userId: user.id, exerciseId: targetExercise.exerciseId, sourceSessionId: sessionB.id },
+            orderBy: { createdAt: "asc" },
+          });
+          assert.equal(concurrentRows.length, 1);
+
+          const sessionC = await createCompletedSessionWithOneSet({
+            userId: user.id,
+            programId: program.id,
+            programDayId: firstDay.id,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-14T09:00:00.000Z"),
+            completedAt: new Date("2026-07-14T09:45:00.000Z"),
+            loggedAt: new Date("2026-07-14T09:05:00.000Z"),
+            weightKg: null,
+            reps: targetExercise.repRangeHigh,
+          });
+          await prisma.setLog.deleteMany({
+            where: {
+              sessionId: sessionC.id,
+              exerciseId: targetExercise.exerciseId,
+            },
+          });
+          await prisma.setLog.createMany({
+            data: buildLoggedSets({
+              targetExercise,
+              reps: targetExercise.repRangeHigh,
+              weightKg: null,
+            }).map((set, index) => ({
+              sessionId: sessionC.id,
+              exerciseId: targetExercise.exerciseId,
+              setNumber: set.setNumber,
+              reps: set.reps,
+              weightKg: set.weightKg,
+              loggedAt: new Date(new Date("2026-07-14T09:05:00.000Z").getTime() + index * 60000),
+            })),
+          });
+
+          const inputC = {
+            userId: user.id,
+            exerciseId: targetExercise.exerciseId,
+            sourceSessionId: sessionC.id,
+            recoveryConstraint: baseRecoveryConstraint,
+          };
+
+          const createdForP2002 = await orchestrateProgressionPersistence(inputC);
+          assert.equal(createdForP2002.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
+          const existingRowForP2002 = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: { userId: user.id, exerciseId: targetExercise.exerciseId, sourceSessionId: sessionC.id },
+            include: { exercise: true },
+          });
+
+          const originalCreate = prisma.progressionRecommendation.create.bind(prisma.progressionRecommendation);
+          const originalFindUnique = prisma.progressionRecommendation.findUnique.bind(prisma.progressionRecommendation);
+          let duplicateCheckCount = 0;
+          prisma.progressionRecommendation.findUnique = async (...args) => {
+            duplicateCheckCount += 1;
+            if (duplicateCheckCount === 1) {
+              return null;
+            }
+            return originalFindUnique(...args);
+          };
+          prisma.progressionRecommendation.create = async () => {
+            throw new Prisma.PrismaClientKnownRequestError("duplicate", {
+              code: "P2002",
+              clientVersion: "test",
+              meta: { target: ["userId", "exerciseId", "sourceSessionId"] },
+            });
+          };
+
+          let recoveredDuplicate;
+          try {
+            recoveredDuplicate = await orchestrateProgressionPersistence(inputC);
+          } finally {
+            prisma.progressionRecommendation.create = originalCreate;
+            prisma.progressionRecommendation.findUnique = originalFindUnique;
+          }
+
+          assert.equal(recoveredDuplicate.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.ALREADY_EXISTS);
+          assert.equal(recoveredDuplicate.duplicateRecovered, true);
+          assert.equal(recoveredDuplicate.decision, null);
+          assert.deepEqual(recoveredDuplicate.recommendation, existingRowForP2002);
+
+          const sessionD = await createCompletedSessionWithOneSet({
+            userId: user.id,
+            programId: program.id,
+            programDayId: firstDay.id,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-15T09:00:00.000Z"),
+            completedAt: new Date("2026-07-15T09:45:00.000Z"),
+            loggedAt: new Date("2026-07-15T09:05:00.000Z"),
+            weightKg: null,
+            reps: targetExercise.repRangeHigh,
+          });
+          await prisma.setLog.deleteMany({
+            where: {
+              sessionId: sessionD.id,
+              exerciseId: targetExercise.exerciseId,
+            },
+          });
+          await prisma.setLog.createMany({
+            data: buildLoggedSets({
+              targetExercise,
+              reps: targetExercise.repRangeHigh,
+              weightKg: null,
+            }).map((set, index) => ({
+              sessionId: sessionD.id,
+              exerciseId: targetExercise.exerciseId,
+              setNumber: set.setNumber,
+              reps: set.reps,
+              weightKg: set.weightKg,
+              loggedAt: new Date(new Date("2026-07-15T09:05:00.000Z").getTime() + index * 60000),
+            })),
+          });
+
+          const inputD = {
+            userId: user.id,
+            exerciseId: targetExercise.exerciseId,
+            sourceSessionId: sessionD.id,
+            recoveryConstraint: baseRecoveryConstraint,
+          };
+
+          const originalCreateForUnrelated = prisma.progressionRecommendation.create.bind(prisma.progressionRecommendation);
+          prisma.progressionRecommendation.create = async () => {
+            throw new Prisma.PrismaClientKnownRequestError("unrelated unique", {
+              code: "P2002",
+              clientVersion: "test",
+              meta: { target: ["confidence"] },
+            });
+          };
+
+          try {
+            await assert.rejects(
+              () => orchestrateProgressionPersistence(inputD),
+              (error) =>
+                error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"
+            );
+          } finally {
+            prisma.progressionRecommendation.create = originalCreateForUnrelated;
+          }
+
+          const rowsAfterUnrelatedAttempt = await prisma.progressionRecommendation.findMany({
+            where: { userId: user.id, exerciseId: targetExercise.exerciseId, sourceSessionId: sessionD.id },
+          });
+          assert.equal(rowsAfterUnrelatedAttempt.length, 0);
+
+          const differentIdentityResult = await orchestrateProgressionPersistence({
+            userId: user.id,
+            exerciseId: targetExercise.exerciseId,
+            sourceSessionId: sessionD.id,
+            recoveryConstraint: baseRecoveryConstraint,
+          });
+          assert.equal(differentIdentityResult.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
+
+          const finalRows = await prisma.progressionRecommendation.findMany({
+            where: { userId: user.id, exerciseId: targetExercise.exerciseId },
+            orderBy: [{ sourceSessionId: "asc" }, { createdAt: "asc" }],
+          });
+          assert.equal(finalRows.length, 4);
 
           return {
-            firstRunCount: firstRun.recommendations.length,
-            secondRunCount: secondRun.recommendations.length,
-            persistedCount: persisted.length,
+            sequentialOutcomes: [firstRun.outcome, secondRun.outcome],
+            concurrentOutcomes,
+            p2002RecoveredOutcome: recoveredDuplicate.outcome,
+            differentIdentityOutcome: differentIdentityResult.outcome,
+            totalRows: finalRows.length,
           };
         } finally {
           await cleanupUserArtifacts(user.id);
