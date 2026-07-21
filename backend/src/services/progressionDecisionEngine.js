@@ -1,7 +1,8 @@
-export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v1";
+export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v2";
 
 export const DECISION_TYPES = Object.freeze({
   INCREASE_LOAD: "INCREASE_LOAD",
+  INCREASE_REPS: "INCREASE_REPS",
   MAINTAIN: "MAINTAIN",
   DELOAD: "DELOAD",
   INSUFFICIENT_DATA: "INSUFFICIENT_DATA",
@@ -16,8 +17,10 @@ export const REASON_CODES = Object.freeze({
   TARGETS_FULLY_MET: "RULE_V1_TARGETS_FULLY_MET",
   TARGETS_PARTIALLY_MET: "RULE_V1_TARGETS_PARTIALLY_MET",
   PERFORMANCE_IMPROVED: "RULE_V1_PERFORMANCE_IMPROVED",
+  REP_PERFORMANCE_IMPROVED: "RULE_V1_REP_PERFORMANCE_IMPROVED",
   PERFORMANCE_REGRESSED: "RULE_V1_PERFORMANCE_REGRESSED",
   REPEATED_SUCCESS: "RULE_V1_REPEATED_SUCCESS",
+  REPEATED_REP_SUCCESS: "RULE_V1_REPEATED_REP_SUCCESS",
   REPEATED_FAILURE: "RULE_V1_REPEATED_FAILURE",
   RECOVERY_OVERRIDE: "RULE_V1_RECOVERY_OVERRIDE",
   MISSING_LOAD_DATA: "RULE_V1_MISSING_LOAD_DATA",
@@ -27,7 +30,7 @@ export const REASON_CODES = Object.freeze({
 
 const DECISION_TYPE_VALUES = new Set(Object.values(DECISION_TYPES));
 const REASON_CODE_VALUES = new Set(Object.values(REASON_CODES));
-const PROGRESSION_MODE_VALUES = new Set(["load", "time", "reps_then_load"]);
+const PROGRESSION_MODE_VALUES = new Set(["load", "time", "reps", "reps_then_load"]);
 const RECOVERY_MODIFIER_VALUES = new Set(["supportive", "neutral", "caution"]);
 const SIGNAL_STRENGTH_VALUES = new Set(["weak", "moderate", "strong"]);
 
@@ -205,7 +208,7 @@ function validateProgressionPolicy(policy) {
   }
 
   if (!PROGRESSION_MODE_VALUES.has(policy.progressionMode)) {
-    throw new ProgressionDecisionValidationError("progressionPolicy.progressionMode must be one of: load, time, reps_then_load");
+    throw new ProgressionDecisionValidationError("progressionPolicy.progressionMode must be one of: load, time, reps, reps_then_load");
   }
 
   for (const field of ["allowsLoadAdjustment", "allowsSetAdjustment", "allowsRepAdjustment", "validIncrement"]) {
@@ -317,6 +320,8 @@ function buildContext(input) {
   const analysis = input.analysis;
   const observed = analysis.observedPerformance;
   const history = analysis.historyFacts;
+  const progressionMode = input.progressionPolicy.progressionMode;
+  const isRepsMode = progressionMode === "reps";
   const fullTargetSuccess =
     observed.prescribedSetCompletionRate === 1 &&
     observed.targetRepHitRate === 1 &&
@@ -327,15 +332,17 @@ function buildContext(input) {
   const improvementSignals = [];
   const regressionSignals = [];
 
-  if (history.weightDeltaKg !== null && history.weightDeltaKg > 0) {
+  if (!isRepsMode && history.weightDeltaKg !== null && history.weightDeltaKg > 0) {
     improvementSignals.push(REASON_CODES.PERFORMANCE_IMPROVED);
   }
 
   if (history.prescribedSetCompletionRateDelta !== null && history.prescribedSetCompletionRateDelta > 0) {
-    improvementSignals.push(REASON_CODES.PERFORMANCE_IMPROVED);
+    improvementSignals.push(
+      isRepsMode ? REASON_CODES.REP_PERFORMANCE_IMPROVED : REASON_CODES.PERFORMANCE_IMPROVED
+    );
   }
 
-  if (history.weightDeltaKg !== null && history.weightDeltaKg < 0) {
+  if (!isRepsMode && history.weightDeltaKg !== null && history.weightDeltaKg < 0) {
     regressionSignals.push(REASON_CODES.PERFORMANCE_REGRESSED);
   }
 
@@ -357,6 +364,8 @@ function buildContext(input) {
     previousDecisionContext: input.previousDecisionContext ?? null,
     existingRecommendationContext: input.existingRecommendationContext ?? null,
     policyThresholds,
+    progressionMode,
+    isRepsMode,
     fullTargetSuccess,
     partialTargetCompletion,
     improvementSignals,
@@ -509,7 +518,8 @@ function buildRuleR006(context) {
     primaryReasonCode: REASON_CODES.REPEATED_FAILURE,
     secondaryReasonCodes: context.regressionSignals,
     terminal: true,
-    loadAdjustmentSteps: -1,
+    loadAdjustmentSteps: context.isRepsMode ? 0 : -1,
+    repAdjustment: context.isRepsMode ? -1 : 0,
   });
 }
 
@@ -533,6 +543,7 @@ function buildRuleR007(context) {
 function buildRuleR008(context) {
   if (!context.fullTargetSuccess || context.usableLoadData) return null;
   if (!context.progressionPolicy.allowsLoadAdjustment) return null;
+  if (context.isRepsMode) return null;
 
   return createCandidate({
     ruleId: "R008_MISSING_LOAD_DATA_HOLD",
@@ -546,7 +557,21 @@ function buildRuleR008(context) {
 function buildRuleR009(context) {
   if (!context.fullTargetSuccess) return null;
   if (context.analysis.historyFacts.consecutiveSuccessfulSessions < 2) return null;
-  if (!context.progressionPolicy.allowsLoadAdjustment) return null;
+  if (!context.progressionPolicy.allowsLoadAdjustment && !context.progressionPolicy.allowsRepAdjustment) {
+    return null;
+  }
+
+  if (context.isRepsMode) {
+    if (!context.progressionPolicy.allowsRepAdjustment) return null;
+
+    return createCandidate({
+      ruleId: "R009_REPEATED_SUCCESS_INCREASE",
+      decisionType: DECISION_TYPES.INCREASE_REPS,
+      primaryReasonCode: REASON_CODES.REPEATED_REP_SUCCESS,
+      secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+      repAdjustment: 1,
+    });
+  }
 
   return createCandidate({
     ruleId: "R009_REPEATED_SUCCESS_INCREASE",
@@ -560,7 +585,21 @@ function buildRuleR009(context) {
 function buildRuleR010(context) {
   if (!context.fullTargetSuccess) return null;
   if (context.improvementSignals.length === 0) return null;
-  if (!context.progressionPolicy.allowsLoadAdjustment) return null;
+  if (!context.progressionPolicy.allowsLoadAdjustment && !context.progressionPolicy.allowsRepAdjustment) {
+    return null;
+  }
+
+  if (context.isRepsMode) {
+    if (!context.progressionPolicy.allowsRepAdjustment) return null;
+
+    return createCandidate({
+      ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
+      decisionType: DECISION_TYPES.INCREASE_REPS,
+      primaryReasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
+      secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+      repAdjustment: 1,
+    });
+  }
 
   return createCandidate({
     ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
@@ -597,7 +636,12 @@ function buildRuleR012(context) {
 
 function buildRuleR013(context, candidate) {
   if (!candidate) return null;
-  if (candidate.decisionType !== DECISION_TYPES.INCREASE_LOAD) return candidate;
+  if (
+    candidate.decisionType !== DECISION_TYPES.INCREASE_LOAD &&
+    candidate.decisionType !== DECISION_TYPES.INCREASE_REPS
+  ) {
+    return candidate;
+  }
   if (context.recoveryConstraint?.recoveryModifier !== "caution") return candidate;
 
   return createCandidate({
@@ -681,7 +725,8 @@ function calculateConfidence(candidate, context) {
   confidence -= qualityPenalty;
 
   if (
-    candidate.decisionType === DECISION_TYPES.INCREASE_LOAD &&
+    (candidate.decisionType === DECISION_TYPES.INCREASE_LOAD ||
+      candidate.decisionType === DECISION_TYPES.INCREASE_REPS) &&
     context.analysis.historyFacts.consecutiveSuccessfulSessions >= 2
   ) {
     confidence += 0.15;
@@ -691,6 +736,13 @@ function calculateConfidence(candidate, context) {
     candidate.decisionType === DECISION_TYPES.INCREASE_LOAD &&
     (context.analysis.historyFacts.weightDeltaKg > 0 ||
       context.analysis.historyFacts.prescribedSetCompletionRateDelta > 0)
+  ) {
+    confidence += 0.15;
+  }
+
+  if (
+    candidate.decisionType === DECISION_TYPES.INCREASE_REPS &&
+    context.analysis.historyFacts.prescribedSetCompletionRateDelta > 0
   ) {
     confidence += 0.15;
   }
