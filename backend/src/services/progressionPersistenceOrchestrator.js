@@ -20,6 +20,7 @@ const DEFAULT_RECOVERY_ANALYSIS_WINDOW_DAYS = 28;
 const PERSISTABLE_DECISION_TYPES = new Set([
   DECISION_TYPES.INCREASE_LOAD,
   DECISION_TYPES.INCREASE_REPS,
+  DECISION_TYPES.INCREASE_DURATION,
   DECISION_TYPES.MAINTAIN,
   DECISION_TYPES.DELOAD,
 ]);
@@ -64,6 +65,10 @@ function isPositiveInteger(value) {
 
 function isNonNegativeInteger(value) {
   return Number.isInteger(value) && value >= 0;
+}
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function normalizeTargetComponent(value) {
@@ -359,6 +364,7 @@ export function classifyDecisionPersistability(decisionType) {
 function mapDecisionTypeToRecommendationType(decisionType) {
   if (decisionType === DECISION_TYPES.INCREASE_LOAD) return "increase";
   if (decisionType === DECISION_TYPES.INCREASE_REPS) return "increase";
+  if (decisionType === DECISION_TYPES.INCREASE_DURATION) return "increase";
   if (decisionType === DECISION_TYPES.MAINTAIN) return "maintain";
   if (decisionType === DECISION_TYPES.DELOAD) return "deload";
 
@@ -409,6 +415,50 @@ function resolvePersistedTargetSets({ decision, analysis }) {
   return Math.max(0, analysis.prescription.prescribedSets + decision.setAdjustment);
 }
 
+function validateDecisionPersistenceContract(decision) {
+  if (!isPlainObject(decision)) {
+    throw new ProgressionPersistenceValidationError("decision is required for Prisma mapping");
+  }
+
+  classifyDecisionPersistability(decision.decisionType);
+
+  if (!Object.hasOwn(decision, "durationAdjustmentSteps")) {
+    throw new ProgressionPersistenceValidationError(
+      "decision.durationAdjustmentSteps is required for persistence"
+    );
+  }
+
+  if (!isNonNegativeInteger(decision.durationAdjustmentSteps)) {
+    throw new ProgressionPersistenceValidationError(
+      "decision.durationAdjustmentSteps must be a non-negative integer"
+    );
+  }
+
+  if (decision.decisionType === DECISION_TYPES.INCREASE_DURATION) {
+    if (decision.durationAdjustmentSteps <= 0) {
+      throw new ProgressionPersistenceValidationError(
+        "INCREASE_DURATION requires decision.durationAdjustmentSteps > 0"
+      );
+    }
+  } else if (decision.durationAdjustmentSteps !== 0) {
+    throw new ProgressionPersistenceValidationError(
+      `Decision type "${decision.decisionType}" requires decision.durationAdjustmentSteps === 0`
+    );
+  }
+
+  if (Object.hasOwn(decision, "durationAdjustmentSeconds")) {
+    throw new ProgressionPersistenceValidationError(
+      "decision.durationAdjustmentSeconds is not supported for persistence"
+    );
+  }
+
+  if (!isNonEmptyString(decision.rulesVersion)) {
+    throw new ProgressionPersistenceValidationError(
+      "decision.rulesVersion must be a non-empty string for persistence"
+    );
+  }
+}
+
 export function mapDecisionToProgressionRecommendationData({
   userId,
   exerciseId,
@@ -419,15 +469,7 @@ export function mapDecisionToProgressionRecommendationData({
   exercise,
   previousRecommendation,
 }) {
-  if (!isPlainObject(decision)) {
-    throw new ProgressionPersistenceValidationError("decision is required for Prisma mapping");
-  }
-
-  if (classifyDecisionPersistability(decision.decisionType) !== "PERSIST") {
-    throw new ProgressionPersistenceUnsupportedDecisionError(
-      `Decision type "${decision.decisionType}" is not persistable`
-    );
-  }
+  validateDecisionPersistenceContract(decision);
 
   return {
     userId,
@@ -441,8 +483,10 @@ export function mapDecisionToProgressionRecommendationData({
     recommendedTargetLow: null,
     recommendedTargetHigh: null,
     targetSets: resolvePersistedTargetSets({ decision, analysis }),
+    durationAdjustmentSteps: decision.durationAdjustmentSteps,
     confidence: decision.confidence,
     reasonCode: decision.reasonCode,
+    rulesVersion: decision.rulesVersion,
     progressionType: prescription.progressionType || exercise.progressionType || "load",
     consecutiveFailures: deriveCompatibilityConsecutiveFailures({
       analysis,

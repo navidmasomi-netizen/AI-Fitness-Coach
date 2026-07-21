@@ -195,6 +195,23 @@ async function createProgramFixture(suffix) {
   };
 }
 
+async function findTimeTargetExercise(programId) {
+  return prisma.programDayExercise.findFirst({
+    where: {
+      programDay: { programId },
+      OR: [
+        { progressionType: "time" },
+        { exercise: { progressionType: "time" } },
+      ],
+    },
+    include: {
+      exercise: true,
+      programDay: true,
+    },
+    orderBy: [{ programDayId: "asc" }, { order: "asc" }],
+  });
+}
+
 async function createWorkoutSession({
   userId,
   programId = null,
@@ -287,6 +304,7 @@ function buildDecision(decisionType, reasonCode, overrides = {}) {
           : 0,
     setAdjustment: 0,
     repAdjustment: decisionType === DECISION_TYPES.INCREASE_REPS ? 1 : 0,
+    durationAdjustmentSteps: decisionType === DECISION_TYPES.INCREASE_DURATION ? 1 : 0,
     reasonCode,
     secondaryReasonCodes: [],
     confidence: 0.5,
@@ -1330,7 +1348,9 @@ async function main() {
         assert.equal(actual.recommendedTargetLow, null);
         assert.equal(actual.recommendedTargetHigh, null);
         assert.equal(actual.targetSets, null);
+        assert.equal(actual.durationAdjustmentSteps, 0);
         assert.equal(actual.reasonCode, REASON_CODES.TARGETS_PARTIALLY_MET);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
         assert.equal(actual.status, "active");
         return actual;
       },
@@ -1364,6 +1384,87 @@ async function main() {
         assert.equal(actual.recommendationType, "increase");
         assert.equal(actual.confidence, 0.8);
         assert.equal(actual.recommendedWeightKg, null);
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
+        return actual;
+      },
+    },
+    {
+      name: "mapping -> increase duration writes abstract time fields exactly",
+      input: "INCREASE_DURATION persists steps and rulesVersion without concrete duration target",
+      fn: () => {
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 22,
+          sourceSessionId: 722,
+          decision: buildDecision(
+            DECISION_TYPES.INCREASE_DURATION,
+            REASON_CODES.REPEATED_TIME_SUCCESS,
+            {
+              exerciseId: 22,
+              sourceSessionId: 722,
+              confidence: 0.7,
+              durationAdjustmentSteps: 2,
+              loadAdjustmentSteps: 0,
+              repAdjustment: 0,
+            }
+          ),
+          analysis: buildAnalysis({
+            exerciseId: 22,
+            sourceSessionId: 722,
+            prescription: {
+              prescribedSets: 3,
+              prescribedRepLow: 20,
+              prescribedRepHigh: 60,
+              prescribedRestSeconds: 30,
+            },
+            observedPerformance: {
+              loggedSetCount: 3,
+              completedSetCount: 3,
+              successfulSetCount: 3,
+              failedSetCount: 0,
+              totalReps: 150,
+              totalVolumeKg: 0,
+              averageWeightKg: null,
+              maximumWeightKg: null,
+              minimumWeightKg: null,
+              bestSet: { setNumber: 3, reps: 60, weightKg: null },
+              finalSet: { setNumber: 3, reps: 60, weightKg: null },
+              prescribedSetCompletionRate: 1,
+              targetRepHitRate: 1,
+            },
+            historyFacts: {
+              previousSessionWeightKg: null,
+              weightDeltaKg: null,
+              weightDeltaPercent: null,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: 0,
+              consecutiveSuccessfulSessions: 2,
+              consecutiveFailedSessions: 0,
+            },
+          }),
+          prescription: {
+            sets: 3,
+            repRangeLow: 20,
+            repRangeHigh: 60,
+            restSeconds: 30,
+            progressionType: "time",
+          },
+          exercise: {
+            id: 22,
+            progressionType: "time",
+          },
+          previousRecommendation: null,
+        });
+
+        assert.equal(actual.recommendationType, "increase");
+        assert.equal(actual.durationAdjustmentSteps, 2);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
+        assert.equal(actual.recommendedWeightKg, null);
+        assert.equal(actual.recommendedTargetLow, null);
+        assert.equal(actual.recommendedTargetHigh, null);
+        assert.equal(actual.targetSets, null);
+        assert.equal(actual.progressionType, "time");
         return actual;
       },
     },
@@ -1442,6 +1543,8 @@ async function main() {
         assert.equal(actual.reasonCode, REASON_CODES.REPEATED_REP_SUCCESS);
         assert.equal(actual.confidence, 0.65);
         assert.equal(actual.progressionType, "reps");
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
         return actual;
       },
     },
@@ -1482,6 +1585,8 @@ async function main() {
         assert.equal(actual.recommendationType, "deload");
         assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
         assert.equal(actual.recommendedWeightKg, null);
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
         return actual;
       },
     },
@@ -1498,6 +1603,14 @@ async function main() {
       input: "MAINTAIN classification",
       fn: () => {
         assert.equal(classifyDecisionPersistability(DECISION_TYPES.MAINTAIN), "PERSIST");
+        return { persistability: "PERSIST" };
+      },
+    },
+    {
+      name: "persistability -> increase duration persists",
+      input: "INCREASE_DURATION classification",
+      fn: () => {
+        assert.equal(classifyDecisionPersistability(DECISION_TYPES.INCREASE_DURATION), "PERSIST");
         return { persistability: "PERSIST" };
       },
     },
@@ -1739,6 +1852,227 @@ async function main() {
       },
     },
     {
+      name: "validation -> increase duration requires positive integer steps",
+      input: "zero, negative, fractional, string, and missing durationAdjustmentSteps are rejected",
+      fn: () => {
+        const buildInput = (decision) => ({
+          userId: 1,
+          exerciseId: 22,
+          sourceSessionId: 722,
+          decision,
+          analysis: buildAnalysis(),
+          prescription: {
+            sets: 3,
+            repRangeLow: 20,
+            repRangeHigh: 60,
+            restSeconds: 30,
+            progressionType: "time",
+          },
+          exercise: {
+            id: 22,
+            progressionType: "time",
+          },
+          previousRecommendation: null,
+        });
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.INCREASE_DURATION, REASON_CODES.REPEATED_TIME_SUCCESS, {
+                  durationAdjustmentSteps: 0,
+                })
+              )
+            ),
+          /durationAdjustmentSteps > 0/
+        );
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.INCREASE_DURATION, REASON_CODES.REPEATED_TIME_SUCCESS, {
+                  durationAdjustmentSteps: -1,
+                })
+              )
+            ),
+          /non-negative integer/
+        );
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.INCREASE_DURATION, REASON_CODES.REPEATED_TIME_SUCCESS, {
+                  durationAdjustmentSteps: 1.5,
+                })
+              )
+            ),
+          /non-negative integer/
+        );
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput({
+                ...buildDecision(
+                  DECISION_TYPES.INCREASE_DURATION,
+                  REASON_CODES.REPEATED_TIME_SUCCESS
+                ),
+                durationAdjustmentSteps: "1",
+              })
+            ),
+          /non-negative integer/
+        );
+
+        const missingDecision = buildDecision(
+          DECISION_TYPES.INCREASE_DURATION,
+          REASON_CODES.REPEATED_TIME_SUCCESS
+        );
+        delete missingDecision.durationAdjustmentSteps;
+        assert.throws(
+          () => mapDecisionToProgressionRecommendationData(buildInput(missingDecision)),
+          /durationAdjustmentSteps is required/
+        );
+
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "validation -> non-duration decisions require zero duration steps",
+      input: "positive duration steps are rejected for load, reps, maintain, and deload",
+      fn: () => {
+        for (const decisionType of [
+          DECISION_TYPES.INCREASE_LOAD,
+          DECISION_TYPES.INCREASE_REPS,
+          DECISION_TYPES.MAINTAIN,
+          DECISION_TYPES.DELOAD,
+        ]) {
+          assert.throws(
+            () =>
+              mapDecisionToProgressionRecommendationData({
+                userId: 1,
+                exerciseId: 15,
+                sourceSessionId: 501,
+                decision: buildDecision(decisionType, REASON_CODES.REPEATED_SUCCESS, {
+                  durationAdjustmentSteps: 1,
+                }),
+                analysis: buildAnalysis(),
+                prescription: {
+                  sets: 3,
+                  repRangeLow: 8,
+                  repRangeHigh: 12,
+                  restSeconds: 90,
+                  progressionType: "load",
+                },
+                exercise: {
+                  id: 15,
+                  progressionType: "load",
+                },
+                previousRecommendation: null,
+              }),
+            /durationAdjustmentSteps === 0/
+          );
+        }
+
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "validation -> rulesVersion required for new persisted decisions",
+      input: "missing and blank rulesVersion rejected",
+      fn: () => {
+        const baseInput = {
+          userId: 1,
+          exerciseId: 15,
+          sourceSessionId: 501,
+          analysis: buildAnalysis(),
+          prescription: {
+            sets: 3,
+            repRangeLow: 8,
+            repRangeHigh: 12,
+            restSeconds: 90,
+            progressionType: "load",
+          },
+          exercise: {
+            id: 15,
+            progressionType: "load",
+          },
+          previousRecommendation: null,
+        };
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData({
+              ...baseInput,
+              decision: buildDecision(DECISION_TYPES.INCREASE_LOAD, REASON_CODES.REPEATED_SUCCESS, {
+                rulesVersion: null,
+              }),
+            }),
+          /rulesVersion must be a non-empty string/
+        );
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData({
+              ...baseInput,
+              decision: buildDecision(DECISION_TYPES.INCREASE_LOAD, REASON_CODES.REPEATED_SUCCESS, {
+                rulesVersion: "   ",
+              }),
+            }),
+          /rulesVersion must be a non-empty string/
+        );
+
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "validation -> durationAdjustmentSeconds is rejected",
+      input: "seconds field is not accepted as a substitute",
+      fn: async () => {
+        let createCalled = false;
+
+        await withPatchedProgressionRecommendationMethods(
+          {
+            create: async () => {
+              createCalled = true;
+              throw new Error("create should not be called");
+            },
+          },
+          async () => {
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  userId: 1,
+                  exerciseId: 22,
+                  sourceSessionId: 722,
+                  decision: {
+                    ...buildDecision(
+                      DECISION_TYPES.INCREASE_DURATION,
+                      REASON_CODES.REPEATED_TIME_SUCCESS
+                    ),
+                    durationAdjustmentSeconds: 15,
+                  },
+                  analysis: buildAnalysis(),
+                  prescription: {
+                    sets: 3,
+                    repRangeLow: 20,
+                    repRangeHigh: 60,
+                    restSeconds: 30,
+                    progressionType: "time",
+                  },
+                  exercise: {
+                    id: 22,
+                    progressionType: "time",
+                  },
+                  previousRecommendation: null,
+                }),
+              /durationAdjustmentSeconds is not supported/
+            );
+          }
+        );
+
+        assert.equal(createCalled, false);
+        return { createCalled };
+      },
+    },
+    {
       name: "created recommendation writes primary reasonCode",
       input: "reasonCode source of truth is versioned decision code",
       fn: async () => {
@@ -1778,6 +2112,121 @@ async function main() {
           return actual;
         } finally {
           await cleanupUserArtifacts(fixture.user.id);
+        }
+      },
+    },
+    {
+      name: "created -> increase duration persists abstract time recommendation",
+      input: "time-mode repeated success stores steps and rulesVersion without concrete targets",
+      fn: async () => {
+        const suffix = nextTestSuffix("increase-duration");
+        const user = await createTestUser({
+          suffix,
+          profileData: {
+            goal: "hypertrophy",
+            trainingLevel: "beginner",
+            trainingDaysPerWeek: 4,
+            recoveryQuality: "medium",
+            sessionDurationMin: 60,
+            equipmentAccess: [
+              "barbell",
+              "dumbbell",
+              "machine",
+              "cable",
+              "bodyweight",
+              "pull_up_bar",
+            ],
+            injuryFlags: ["none"],
+          },
+        });
+        const program = await generateProgramForUser(user.id);
+        const firstDay = await prisma.programDay.findFirstOrThrow({
+          where: { programId: program.id },
+          orderBy: { dayIndex: "asc" },
+        });
+
+        const plankExercise = await prisma.exercise.findFirstOrThrow({
+          where: { nameEn: "Plank" },
+        });
+
+        const seededPlankPrescription = await prisma.programDayExercise.findFirstOrThrow({
+          where: { exerciseId: plankExercise.id },
+          orderBy: [{ id: "asc" }],
+        });
+
+        const existingDayExerciseCount = await prisma.programDayExercise.count({
+          where: { programDayId: firstDay.id },
+        });
+
+        const timeTargetExercise = await prisma.programDayExercise.create({
+          data: {
+            programDayId: firstDay.id,
+            exerciseId: plankExercise.id,
+            order: existingDayExerciseCount,
+            sets: seededPlankPrescription.sets,
+            repRangeLow: seededPlankPrescription.repRangeLow,
+            repRangeHigh: seededPlankPrescription.repRangeHigh,
+            restSeconds: seededPlankPrescription.restSeconds,
+            intensity: seededPlankPrescription.intensity,
+            progressionType: seededPlankPrescription.progressionType,
+            durationIncrementSeconds: seededPlankPrescription.durationIncrementSeconds,
+          },
+          include: {
+            exercise: true,
+            programDay: true,
+          },
+        });
+        try {
+          assert.equal(timeTargetExercise.exercise.nameEn, "Plank");
+          assert.equal(timeTargetExercise.exercise.progressionType, "time");
+          assert.equal(timeTargetExercise.durationIncrementSeconds, 15);
+
+          await createCompletedExerciseSession({
+            userId: user.id,
+            programId: program.id,
+            programDayId: timeTargetExercise.programDayId,
+            exerciseId: timeTargetExercise.exerciseId,
+            startedAt: new Date("2026-07-01T09:00:00.000Z"),
+            sets: buildLoggedSets({
+              targetExercise: timeTargetExercise,
+              reps: timeTargetExercise.repRangeHigh,
+              weightKg: null,
+            }),
+          });
+
+          const sourceSession = await createCompletedExerciseSession({
+            userId: user.id,
+            programId: program.id,
+            programDayId: timeTargetExercise.programDayId,
+            exerciseId: timeTargetExercise.exerciseId,
+            startedAt: new Date("2026-07-08T09:00:00.000Z"),
+            sets: buildLoggedSets({
+              targetExercise: timeTargetExercise,
+              reps: timeTargetExercise.repRangeHigh,
+              weightKg: null,
+            }),
+          });
+
+          const actual = await orchestrateProgressionPersistence({
+            userId: user.id,
+            exerciseId: timeTargetExercise.exerciseId,
+            sourceSessionId: sourceSession.id,
+            recoveryConstraint: NEUTRAL_RECOVERY,
+          });
+
+          assert.equal(actual.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
+          assert.equal(actual.decision.decisionType, DECISION_TYPES.INCREASE_DURATION);
+          assert.equal(actual.decision.durationAdjustmentSteps, 1);
+          assert.equal(actual.recommendation.recommendationType, "increase");
+          assert.equal(actual.recommendation.durationAdjustmentSteps, 1);
+          assert.equal(actual.recommendation.rulesVersion, PROGRESSION_RULES_VERSION);
+          assert.equal(actual.recommendation.recommendedWeightKg, null);
+          assert.equal(actual.recommendation.recommendedTargetLow, null);
+          assert.equal(actual.recommendation.recommendedTargetHigh, null);
+          assert.equal(actual.recommendation.targetSets, null);
+          return actual;
+        } finally {
+          await cleanupUserArtifacts(user.id);
         }
       },
     },
@@ -1937,6 +2386,123 @@ async function main() {
         } finally {
           await cleanupUserArtifacts(fixture.user.id);
         }
+      },
+    },
+    {
+      name: "helper -> legacy null-rulesVersion rows remain readable",
+      input: "P2002 recovery can return legacy row without migration",
+      fn: async () => {
+        const legacyRecommendation = {
+          id: 3,
+          userId: 1,
+          exerciseId: 22,
+          sourceSessionId: 722,
+          recommendationType: "increase",
+          durationAdjustmentSteps: 0,
+          rulesVersion: null,
+          exercise: { id: 22 },
+        };
+
+        const actual = await withPatchedProgressionRecommendationMethods(
+          {
+            create: async () => {
+              throw buildKnownRequestError({
+                target: ["userId", "exerciseId", "sourceSessionId"],
+              });
+            },
+            findUnique: async () => legacyRecommendation,
+          },
+          async () =>
+            createOrRecoverProgressionRecommendation({
+              identity: { userId: 1, exerciseId: 22, sourceSessionId: 722 },
+              createData: {
+                userId: 1,
+                exerciseId: 22,
+                sourceSessionId: 722,
+                recommendationType: "increase",
+                durationAdjustmentSteps: 1,
+                rulesVersion: PROGRESSION_RULES_VERSION,
+              },
+            })
+        );
+
+        assert.equal(actual.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.ALREADY_EXISTS);
+        assert.equal(actual.recommendation.rulesVersion, null);
+        assert.equal(actual.recommendation.durationAdjustmentSteps, 0);
+        return actual;
+      },
+    },
+    {
+      name: "mapping -> deterministic repeated input yields equivalent payload",
+      input: "same increase-duration input twice",
+      fn: () => {
+        const input = {
+          userId: 1,
+          exerciseId: 22,
+          sourceSessionId: 722,
+          decision: buildDecision(
+            DECISION_TYPES.INCREASE_DURATION,
+            REASON_CODES.REPEATED_TIME_SUCCESS,
+            {
+              exerciseId: 22,
+              sourceSessionId: 722,
+            }
+          ),
+          analysis: buildAnalysis(),
+          prescription: {
+            sets: 3,
+            repRangeLow: 20,
+            repRangeHigh: 60,
+            restSeconds: 30,
+            progressionType: "time",
+          },
+          exercise: {
+            id: 22,
+            progressionType: "time",
+          },
+          previousRecommendation: null,
+        };
+        const first = mapDecisionToProgressionRecommendationData(input);
+        const second = mapDecisionToProgressionRecommendationData(input);
+        assert.deepEqual(first, second);
+        return { first, second };
+      },
+    },
+    {
+      name: "mapping -> decision and analysis inputs are not mutated",
+      input: "frozen source objects remain unchanged",
+      fn: () => {
+        const decision = Object.freeze(
+          buildDecision(DECISION_TYPES.INCREASE_DURATION, REASON_CODES.REPEATED_TIME_SUCCESS, {
+            exerciseId: 22,
+            sourceSessionId: 722,
+          })
+        );
+        const analysis = Object.freeze(buildAnalysis());
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 22,
+          sourceSessionId: 722,
+          decision,
+          analysis,
+          prescription: Object.freeze({
+            sets: 3,
+            repRangeLow: 20,
+            repRangeHigh: 60,
+            restSeconds: 30,
+            progressionType: "time",
+          }),
+          exercise: Object.freeze({
+            id: 22,
+            progressionType: "time",
+          }),
+          previousRecommendation: null,
+        });
+
+        assert.equal(decision.durationAdjustmentSteps, 1);
+        assert.equal(analysis.historyFacts.consecutiveSuccessfulSessions, 2);
+        assert.equal(actual.durationAdjustmentSteps, 1);
+        return actual;
       },
     },
   ];
