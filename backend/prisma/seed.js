@@ -132,6 +132,7 @@ const RAW_EXERCISES = [
     equipment: "بدون ابزار", difficulty: "مبتدی", complexity: "isolation",
     suitable_goals: ["fat_loss", "recomposition", "strength"], contraindications: ["شانه", "کمر پایین"],
     joint_stress_flags: ["shoulder_stress"], default_rep_range: "20-60 ثانیه", default_rest_range: "30-45 ثانیه",
+    duration_increment_seconds: 15,
     progression_type: "time", substitution_list: ["کرانچ"],
     desc: "بدن مثل خط‌کش، باسن بالا نره، نفس بکش.", gif: "🧱"
   },
@@ -473,8 +474,7 @@ function setsForComplexity(complexity) {
 }
 
 async function seedExercises() {
-  console.log("Clearing existing Exercise records...");
-  await prisma.exercise.deleteMany({});
+  console.log("Upserting Exercise records...");
 
   const created = {};
   const unmapped = [];
@@ -491,30 +491,45 @@ async function seedExercises() {
     const repRange = parseRange(ex.default_rep_range);
     const restRange = parseRange(ex.default_rest_range);
 
-    const row = await prisma.exercise.create({
-      data: {
-        nameFa: ex.name_fa,
-        nameEn: ex.name_en || null,
-        description: ex.desc || null,
-        icon: ex.gif || null,
-        primaryMuscles: ex.primary_muscles || [],
-        secondaryMuscles: ex.secondary_muscles || [],
-        movementPattern: movementPattern || null,
-        equipment: equipment || null,
-        difficulty: difficulty || null,
-        complexity: ex.complexity || null,
-        suitableGoals: ex.suitable_goals || [],
-        contraindications: ex.contraindications || [],
-        jointStressFlags: ex.joint_stress_flags || [],
-        substitutionNames: ex.substitution_list || [],
-        defaultRepRangeLow: repRange.low,
-        defaultRepRangeHigh: repRange.high,
-        defaultRestSecondsLow: restRange.low,
-        defaultRestSecondsHigh: restRange.high,
-        progressionType: ex.progression_type || null,
-      },
+    const exerciseData = {
+      nameFa: ex.name_fa,
+      nameEn: ex.name_en || null,
+      description: ex.desc || null,
+      icon: ex.gif || null,
+      primaryMuscles: ex.primary_muscles || [],
+      secondaryMuscles: ex.secondary_muscles || [],
+      movementPattern: movementPattern || null,
+      equipment: equipment || null,
+      difficulty: difficulty || null,
+      complexity: ex.complexity || null,
+      suitableGoals: ex.suitable_goals || [],
+      contraindications: ex.contraindications || [],
+      jointStressFlags: ex.joint_stress_flags || [],
+      substitutionNames: ex.substitution_list || [],
+      defaultRepRangeLow: repRange.low,
+      defaultRepRangeHigh: repRange.high,
+      defaultRestSecondsLow: restRange.low,
+      defaultRestSecondsHigh: restRange.high,
+      progressionType: ex.progression_type || null,
+    };
+
+    const existingExercise = await prisma.exercise.findFirst({
+      where: { nameFa: ex.name_fa },
+      select: { id: true },
     });
-    created[ex.name_fa] = row;
+
+    const row = existingExercise
+      ? await prisma.exercise.update({
+          where: { id: existingExercise.id },
+          data: exerciseData,
+        })
+      : await prisma.exercise.create({
+          data: exerciseData,
+        });
+    created[ex.name_fa] = {
+      ...row,
+      durationIncrementSeconds: ex.duration_increment_seconds ?? null,
+    };
   }
 
   console.log(`Inserted ${Object.keys(created).length} exercises.`);
@@ -579,6 +594,7 @@ async function seedPrograms(exerciseByName) {
             repRangeLow: exerciseRow.defaultRepRangeLow ?? 0,
             repRangeHigh: exerciseRow.defaultRepRangeHigh ?? 0,
             restSeconds: exerciseRow.defaultRestSecondsLow ?? 60,
+            durationIncrementSeconds: exerciseRow.durationIncrementSeconds,
             intensity: null,
             progressionType: exerciseRow.progressionType || null,
           },

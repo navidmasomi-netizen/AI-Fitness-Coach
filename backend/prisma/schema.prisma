@@ -167,6 +167,7 @@ model ProgramDayExercise {
   repRangeLow     Int
   repRangeHigh    Int
   restSeconds     Int
+  durationIncrementSeconds Int?
   intensity       String?
   progressionType String?
 }
@@ -236,8 +237,10 @@ model ProgressionRecommendation {
   recommendedTargetLow  Int?
   recommendedTargetHigh Int?
   targetSets            Int?
+  durationAdjustmentSteps Int              @default(0)
   confidence            Float?
   reasonCode            String?
+  rulesVersion          String?
   progressionType       String?
   consecutiveFailures   Int                @default(0)
   reason                String
