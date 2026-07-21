@@ -189,6 +189,66 @@ function buildRepsInput(overrides = {}) {
   };
 }
 
+function buildTimeAnalysis(overrides = {}) {
+  return {
+    exerciseId: 31,
+    sourceSessionId: 631,
+    prescription: {
+      prescribedSets: 3,
+      prescribedRepLow: 30,
+      prescribedRepHigh: 45,
+      prescribedRestSeconds: 45,
+    },
+    observedPerformance: {
+      loggedSetCount: 3,
+      completedSetCount: 3,
+      successfulSetCount: 3,
+      failedSetCount: 0,
+      totalReps: 105,
+      totalVolumeKg: 0,
+      averageWeightKg: null,
+      maximumWeightKg: null,
+      minimumWeightKg: null,
+      bestSet: { setNumber: 3, reps: 35, weightKg: null },
+      finalSet: { setNumber: 3, reps: 35, weightKg: null },
+      prescribedSetCompletionRate: 1,
+      targetRepHitRate: 1,
+    },
+    historyFacts: {
+      previousSessionWeightKg: null,
+      weightDeltaKg: null,
+      weightDeltaPercent: null,
+      previousPrescribedSetCompletionRate: 1,
+      prescribedSetCompletionRateDelta: 0,
+      consecutiveSuccessfulSessions: 2,
+      consecutiveFailedSessions: 0,
+    },
+    hasSufficientData: true,
+    dataQualityFlags: [],
+    ...overrides,
+  };
+}
+
+function buildTimeInput(overrides = {}) {
+  return {
+    analysis: buildTimeAnalysis(),
+    progressionPolicy: {
+      progressionMode: "time",
+      allowsLoadAdjustment: false,
+      allowsSetAdjustment: false,
+      allowsRepAdjustment: false,
+      validIncrement: true,
+    },
+    recoveryConstraint: null,
+    previousDecisionContext: null,
+    existingRecommendationContext: null,
+    policyThresholds: {
+      deloadFailureStreak: 2,
+    },
+    ...overrides,
+  };
+}
+
 function expectValidationError(fn, messagePart) {
   assert.throws(fn, (error) => {
     assert.equal(error instanceof ProgressionDecisionValidationError, true);
@@ -213,6 +273,7 @@ async function main() {
         assert.equal(actual.loadAdjustmentSteps, 1);
         assert.equal(actual.setAdjustment, 0);
         assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.durationAdjustmentSteps, 0);
         assert.equal(actual.reasonCode, REASON_CODES.REPEATED_SUCCESS);
         assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
         assert.equal(actual.shouldPersist, true);
@@ -255,6 +316,7 @@ async function main() {
         assert.equal(actual.loadAdjustmentSteps, 0);
         assert.equal(actual.setAdjustment, 0);
         assert.equal(actual.repAdjustment, 1);
+        assert.equal(actual.durationAdjustmentSteps, 0);
         assert.equal(actual.reasonCode, REASON_CODES.REPEATED_REP_SUCCESS);
         assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
         assert.equal(actual.shouldPersist, true);
@@ -724,21 +786,43 @@ async function main() {
       },
     },
     {
-      name: "time mode remains accepted unchanged",
-      input: "existing time mode still validates and holds",
+      name: "time mode repeated success increases duration",
+      input: "successful time progression emits first-class duration decision",
+      fn: () => {
+        const actual = decideProgression(buildTimeInput());
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_DURATION);
+        assert.equal(actual.loadAdjustmentSteps, 0);
+        assert.equal(actual.setAdjustment, 0);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.durationAdjustmentSteps, 1);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_TIME_SUCCESS);
+        assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
+        return actual;
+      },
+    },
+    {
+      name: "time mode performance improvement increases duration",
+      input: "full time success with positive completion delta but without repeated-success threshold",
       fn: () => {
         const actual = decideProgression(
-          buildInput({
-            progressionPolicy: {
-              progressionMode: "time",
-              allowsLoadAdjustment: false,
-              allowsSetAdjustment: false,
-              allowsRepAdjustment: false,
-              validIncrement: true,
-            },
+          buildTimeInput({
+            analysis: buildTimeAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: null,
+                weightDeltaKg: null,
+                weightDeltaPercent: null,
+                previousPrescribedSetCompletionRate: 0.6667,
+                prescribedSetCompletionRateDelta: 0.3333,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
           })
         );
-        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_DURATION);
+        assert.equal(actual.durationAdjustmentSteps, 1);
+        assert.equal(actual.reasonCode, REASON_CODES.TIME_PERFORMANCE_IMPROVED);
+        assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
         return actual;
       },
     },
@@ -1046,6 +1130,30 @@ async function main() {
       },
     },
     {
+      name: "time recovery caution downgrades increase duration to maintain",
+      input: "successful time progression is still subject to downgrade-only recovery policy",
+      fn: () => {
+        const actual = decideProgression(
+          buildTimeInput({
+            recoveryConstraint: {
+              recoveryModifier: "caution",
+              confidence: 0.8,
+              signalStrength: "strong",
+              reasonCode: "recovery_caution",
+            },
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.RECOVERY_OVERRIDE);
+        assert.deepEqual(actual.secondaryReasonCodes, [
+          REASON_CODES.REPEATED_TIME_SUCCESS,
+          REASON_CODES.TARGETS_FULLY_MET,
+        ]);
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        return actual;
+      },
+    },
+    {
       name: "recovery supportive never upgrades maintain",
       input: "supportive recovery cannot turn maintain into increase",
       fn: () => {
@@ -1111,20 +1219,20 @@ async function main() {
       input: "non-load policy keeps complete bodyweight performance factual",
       fn: () => {
         const actual = decideProgression(
-          buildInput({
-            analysis: buildAnalysis({
+          buildTimeInput({
+            analysis: buildTimeAnalysis({
               observedPerformance: {
                 loggedSetCount: 3,
                 completedSetCount: 3,
                 successfulSetCount: 3,
                 failedSetCount: 0,
-                totalReps: 30,
+                totalReps: 105,
                 totalVolumeKg: 0,
                 averageWeightKg: null,
                 maximumWeightKg: null,
                 minimumWeightKg: null,
-                bestSet: { setNumber: 3, reps: 8, weightKg: null },
-                finalSet: { setNumber: 3, reps: 8, weightKg: null },
+                bestSet: { setNumber: 3, reps: 35, weightKg: null },
+                finalSet: { setNumber: 3, reps: 35, weightKg: null },
                 prescribedSetCompletionRate: 1,
                 targetRepHitRate: 1,
               },
@@ -1134,23 +1242,43 @@ async function main() {
                 weightDeltaPercent: null,
                 previousPrescribedSetCompletionRate: 1,
                 prescribedSetCompletionRateDelta: 0,
-                consecutiveSuccessfulSessions: 1,
+                consecutiveSuccessfulSessions: 2,
                 consecutiveFailedSessions: 0,
               },
               dataQualityFlags: ["missing_weight_data"],
             }),
-            progressionPolicy: {
-              progressionMode: "time",
-              allowsLoadAdjustment: false,
-              allowsSetAdjustment: false,
-              allowsRepAdjustment: false,
-              validIncrement: true,
-            },
           })
         );
-        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
-        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_FULLY_MET);
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_DURATION);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_TIME_SUCCESS);
         assert.equal(actual.loadAdjustmentSteps, 0);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.durationAdjustmentSteps, 1);
+        return actual;
+      },
+    },
+    {
+      name: "missing duration target returns insufficient data",
+      input: "time mode without duration-equivalent prescription does not progress",
+      fn: () => {
+        const actual = decideProgression(
+          buildTimeInput({
+            analysis: buildTimeAnalysis({
+              prescription: {
+                prescribedSets: 3,
+                prescribedRepLow: null,
+                prescribedRepHigh: null,
+                prescribedRestSeconds: 45,
+              },
+              hasSufficientData: false,
+              dataQualityFlags: ["missing_prescribed_rep_low", "missing_prescribed_rep_high"],
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.INSUFFICIENT_DATA);
+        assert.equal(actual.reasonCode, REASON_CODES.MISSING_DURATION_TARGET);
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        assert.equal(actual.shouldPersist, false);
         return actual;
       },
     },
@@ -1343,10 +1471,12 @@ async function main() {
       fn: () => {
         const actual = decideProgression(buildInput());
         assert.equal(actual.loadAdjustmentSteps, 1);
+        assert.equal(actual.durationAdjustmentSteps, 0);
         assert.equal("targetWeightKg" in actual, false);
         assert.equal("targetSets" in actual, false);
         assert.equal("targetRepLow" in actual, false);
         assert.equal("targetRepHigh" in actual, false);
+        assert.equal("targetDurationSeconds" in actual, false);
         return actual;
       },
     },
@@ -1443,23 +1573,23 @@ async function main() {
       input: "repeated success still increases without a confidence threshold gate",
       fn: () => {
         const actual = decideProgression(
-          buildInput({
-            analysis: buildAnalysis({
+          buildTimeInput({
+            analysis: buildTimeAnalysis({
               dataQualityFlags: ["missing_weight_data", "nonfatal_flag_a"],
               historyFacts: {
-                previousSessionWeightKg: 42.5,
-                weightDeltaKg: 2.5,
-                weightDeltaPercent: 5.8824,
-                previousPrescribedSetCompletionRate: 1,
-                prescribedSetCompletionRateDelta: 0,
+                previousSessionWeightKg: null,
+                weightDeltaKg: null,
+                weightDeltaPercent: null,
+                previousPrescribedSetCompletionRate: 0.6667,
+                prescribedSetCompletionRateDelta: 0.3333,
                 consecutiveSuccessfulSessions: 2,
                 consecutiveFailedSessions: 0,
               },
             }),
           })
         );
-        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
-        assert.equal(actual.confidence < 0.67, true);
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_DURATION);
+        assert.equal(actual.confidence, 0.7);
         return actual;
       },
     },
@@ -1726,7 +1856,7 @@ async function main() {
       fn: () => {
         assert.equal(Array.isArray(RULE_CATALOG), true);
         assert.equal(RULE_CATALOG.length, 14);
-        assert.equal(PROGRESSION_RULES_VERSION, "progression_decision_rules_v2");
+        assert.equal(PROGRESSION_RULES_VERSION, "progression_decision_rules_v3");
         for (const rule of RULE_CATALOG) {
           assert.equal(typeof rule.id, "string");
           assert.equal(typeof rule.priority, "number");

@@ -1,8 +1,9 @@
-export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v2";
+export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v3";
 
 export const DECISION_TYPES = Object.freeze({
   INCREASE_LOAD: "INCREASE_LOAD",
   INCREASE_REPS: "INCREASE_REPS",
+  INCREASE_DURATION: "INCREASE_DURATION",
   MAINTAIN: "MAINTAIN",
   DELOAD: "DELOAD",
   INSUFFICIENT_DATA: "INSUFFICIENT_DATA",
@@ -18,12 +19,15 @@ export const REASON_CODES = Object.freeze({
   TARGETS_PARTIALLY_MET: "RULE_V1_TARGETS_PARTIALLY_MET",
   PERFORMANCE_IMPROVED: "RULE_V1_PERFORMANCE_IMPROVED",
   REP_PERFORMANCE_IMPROVED: "RULE_V1_REP_PERFORMANCE_IMPROVED",
+  TIME_PERFORMANCE_IMPROVED: "RULE_V1_TIME_PERFORMANCE_IMPROVED",
   PERFORMANCE_REGRESSED: "RULE_V1_PERFORMANCE_REGRESSED",
   REPEATED_SUCCESS: "RULE_V1_REPEATED_SUCCESS",
   REPEATED_REP_SUCCESS: "RULE_V1_REPEATED_REP_SUCCESS",
+  REPEATED_TIME_SUCCESS: "RULE_V1_REPEATED_TIME_SUCCESS",
   REPEATED_FAILURE: "RULE_V1_REPEATED_FAILURE",
   RECOVERY_OVERRIDE: "RULE_V1_RECOVERY_OVERRIDE",
   MISSING_LOAD_DATA: "RULE_V1_MISSING_LOAD_DATA",
+  MISSING_DURATION_TARGET: "RULE_V1_MISSING_DURATION_TARGET",
   NO_VALID_INCREMENT: "RULE_V1_NO_VALID_INCREMENT",
   ALREADY_EVALUATED: "RULE_V1_ALREADY_EVALUATED",
 });
@@ -322,6 +326,7 @@ function buildContext(input) {
   const history = analysis.historyFacts;
   const progressionMode = input.progressionPolicy.progressionMode;
   const isRepsMode = progressionMode === "reps";
+  const isTimeMode = progressionMode === "time";
   const fullTargetSuccess =
     observed.prescribedSetCompletionRate === 1 &&
     observed.targetRepHitRate === 1 &&
@@ -332,17 +337,21 @@ function buildContext(input) {
   const improvementSignals = [];
   const regressionSignals = [];
 
-  if (!isRepsMode && history.weightDeltaKg !== null && history.weightDeltaKg > 0) {
+  if (!isRepsMode && !isTimeMode && history.weightDeltaKg !== null && history.weightDeltaKg > 0) {
     improvementSignals.push(REASON_CODES.PERFORMANCE_IMPROVED);
   }
 
   if (history.prescribedSetCompletionRateDelta !== null && history.prescribedSetCompletionRateDelta > 0) {
     improvementSignals.push(
-      isRepsMode ? REASON_CODES.REP_PERFORMANCE_IMPROVED : REASON_CODES.PERFORMANCE_IMPROVED
+      isRepsMode
+        ? REASON_CODES.REP_PERFORMANCE_IMPROVED
+        : isTimeMode
+          ? REASON_CODES.TIME_PERFORMANCE_IMPROVED
+          : REASON_CODES.PERFORMANCE_IMPROVED
     );
   }
 
-  if (!isRepsMode && history.weightDeltaKg !== null && history.weightDeltaKg < 0) {
+  if (!isRepsMode && !isTimeMode && history.weightDeltaKg !== null && history.weightDeltaKg < 0) {
     regressionSignals.push(REASON_CODES.PERFORMANCE_REGRESSED);
   }
 
@@ -366,12 +375,19 @@ function buildContext(input) {
     policyThresholds,
     progressionMode,
     isRepsMode,
+    isTimeMode,
     fullTargetSuccess,
     partialTargetCompletion,
     improvementSignals,
     regressionSignals,
     conflictingSignals,
     effectiveConsecutiveFailures,
+    missingDurationTarget:
+      isTimeMode &&
+      (analysis.prescription.prescribedRepLow === null ||
+        analysis.prescription.prescribedRepHigh === null ||
+        analysis.dataQualityFlags.includes("missing_prescribed_rep_low") ||
+        analysis.dataQualityFlags.includes("missing_prescribed_rep_high")),
     usableLoadData:
       analysis.observedPerformance.bestSet?.weightKg !== null &&
       analysis.observedPerformance.bestSet?.weightKg !== undefined,
@@ -411,12 +427,14 @@ function createCandidate({
   loadAdjustmentSteps = 0,
   setAdjustment = 0,
   repAdjustment = 0,
+  durationAdjustmentSteps = 0,
 }) {
   validateDecisionType(decisionType, "candidate.decisionType");
   validateReasonCode(primaryReasonCode, "candidate.primaryReasonCode");
   validateAdjustment(loadAdjustmentSteps, "candidate.loadAdjustmentSteps");
   validateAdjustment(setAdjustment, "candidate.setAdjustment");
   validateAdjustment(repAdjustment, "candidate.repAdjustment");
+  validateAdjustment(durationAdjustmentSteps, "candidate.durationAdjustmentSteps");
 
   const dedupedSecondaries = uniqueOrdered(
     secondaryReasonCodes.filter((code) => code !== primaryReasonCode)
@@ -437,11 +455,14 @@ function createCandidate({
     loadAdjustmentSteps,
     setAdjustment,
     repAdjustment,
+    durationAdjustmentSteps,
   };
 }
 
 function buildRuleR001(context) {
-  const severeFlags = context.analysis.dataQualityFlags.filter((flag) => ANALYSIS_MANUAL_REVIEW_FLAGS.has(flag));
+  const severeFlags = context.analysis.dataQualityFlags.filter(
+    (flag) => ANALYSIS_MANUAL_REVIEW_FLAGS.has(flag) && !context.isTimeMode
+  );
   if (severeFlags.length === 0) return null;
 
   return createCandidate({
@@ -480,6 +501,16 @@ function buildRuleR003(context) {
 }
 
 function buildRuleR004(context) {
+  if (context.missingDurationTarget) {
+    return createCandidate({
+      ruleId: "R004_INSUFFICIENT_HISTORY",
+      decisionType: DECISION_TYPES.INSUFFICIENT_DATA,
+      primaryReasonCode: REASON_CODES.MISSING_DURATION_TARGET,
+      terminal: true,
+      shouldPersist: false,
+    });
+  }
+
   if (context.analysis.hasSufficientData && !context.analysis.dataQualityFlags.includes("missing_previous_history")) {
     return null;
   }
@@ -518,7 +549,7 @@ function buildRuleR006(context) {
     primaryReasonCode: REASON_CODES.REPEATED_FAILURE,
     secondaryReasonCodes: context.regressionSignals,
     terminal: true,
-    loadAdjustmentSteps: context.isRepsMode ? 0 : -1,
+    loadAdjustmentSteps: context.isRepsMode || context.isTimeMode ? 0 : -1,
     repAdjustment: context.isRepsMode ? -1 : 0,
   });
 }
@@ -557,7 +588,11 @@ function buildRuleR008(context) {
 function buildRuleR009(context) {
   if (!context.fullTargetSuccess) return null;
   if (context.analysis.historyFacts.consecutiveSuccessfulSessions < 2) return null;
-  if (!context.progressionPolicy.allowsLoadAdjustment && !context.progressionPolicy.allowsRepAdjustment) {
+  if (
+    !context.progressionPolicy.allowsLoadAdjustment &&
+    !context.progressionPolicy.allowsRepAdjustment &&
+    !context.isTimeMode
+  ) {
     return null;
   }
 
@@ -573,6 +608,16 @@ function buildRuleR009(context) {
     });
   }
 
+  if (context.isTimeMode) {
+    return createCandidate({
+      ruleId: "R009_REPEATED_SUCCESS_INCREASE",
+      decisionType: DECISION_TYPES.INCREASE_DURATION,
+      primaryReasonCode: REASON_CODES.REPEATED_TIME_SUCCESS,
+      secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+      durationAdjustmentSteps: 1,
+    });
+  }
+
   return createCandidate({
     ruleId: "R009_REPEATED_SUCCESS_INCREASE",
     decisionType: DECISION_TYPES.INCREASE_LOAD,
@@ -585,7 +630,11 @@ function buildRuleR009(context) {
 function buildRuleR010(context) {
   if (!context.fullTargetSuccess) return null;
   if (context.improvementSignals.length === 0) return null;
-  if (!context.progressionPolicy.allowsLoadAdjustment && !context.progressionPolicy.allowsRepAdjustment) {
+  if (
+    !context.progressionPolicy.allowsLoadAdjustment &&
+    !context.progressionPolicy.allowsRepAdjustment &&
+    !context.isTimeMode
+  ) {
     return null;
   }
 
@@ -598,6 +647,16 @@ function buildRuleR010(context) {
       primaryReasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
       secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
       repAdjustment: 1,
+    });
+  }
+
+  if (context.isTimeMode) {
+    return createCandidate({
+      ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
+      decisionType: DECISION_TYPES.INCREASE_DURATION,
+      primaryReasonCode: REASON_CODES.TIME_PERFORMANCE_IMPROVED,
+      secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+      durationAdjustmentSteps: 1,
     });
   }
 
@@ -638,7 +697,8 @@ function buildRuleR013(context, candidate) {
   if (!candidate) return null;
   if (
     candidate.decisionType !== DECISION_TYPES.INCREASE_LOAD &&
-    candidate.decisionType !== DECISION_TYPES.INCREASE_REPS
+    candidate.decisionType !== DECISION_TYPES.INCREASE_REPS &&
+    candidate.decisionType !== DECISION_TYPES.INCREASE_DURATION
   ) {
     return candidate;
   }
@@ -722,11 +782,16 @@ function calculateConfidence(candidate, context) {
   }
 
   const qualityPenalty = Math.min(context.analysis.dataQualityFlags.length * 0.1, 0.3);
-  confidence -= qualityPenalty;
+  const adjustedQualityPenalty =
+    context.isTimeMode && context.analysis.dataQualityFlags.includes("missing_weight_data")
+      ? Math.max(0, qualityPenalty - 0.1)
+      : qualityPenalty;
+  confidence -= adjustedQualityPenalty;
 
   if (
     (candidate.decisionType === DECISION_TYPES.INCREASE_LOAD ||
-      candidate.decisionType === DECISION_TYPES.INCREASE_REPS) &&
+      candidate.decisionType === DECISION_TYPES.INCREASE_REPS ||
+      candidate.decisionType === DECISION_TYPES.INCREASE_DURATION) &&
     context.analysis.historyFacts.consecutiveSuccessfulSessions >= 2
   ) {
     confidence += 0.15;
@@ -742,6 +807,13 @@ function calculateConfidence(candidate, context) {
 
   if (
     candidate.decisionType === DECISION_TYPES.INCREASE_REPS &&
+    context.analysis.historyFacts.prescribedSetCompletionRateDelta > 0
+  ) {
+    confidence += 0.15;
+  }
+
+  if (
+    candidate.decisionType === DECISION_TYPES.INCREASE_DURATION &&
     context.analysis.historyFacts.prescribedSetCompletionRateDelta > 0
   ) {
     confidence += 0.15;
@@ -771,6 +843,7 @@ function buildDecisionOutput(candidate, context) {
     loadAdjustmentSteps: candidate.loadAdjustmentSteps,
     setAdjustment: candidate.setAdjustment,
     repAdjustment: candidate.repAdjustment,
+    durationAdjustmentSteps: candidate.durationAdjustmentSteps,
     reasonCode: candidate.primaryReasonCode,
     secondaryReasonCodes: uniqueOrdered(candidate.secondaryReasonCodes).sort(compareReasonCodes),
     confidence: calculateConfidence(candidate, context),
@@ -828,8 +901,20 @@ function validateOutput(output) {
     throw new ProgressionDecisionValidationError("output.shouldPersist must be a boolean");
   }
 
-  for (const field of ["loadAdjustmentSteps", "setAdjustment", "repAdjustment"]) {
+  for (const field of ["loadAdjustmentSteps", "setAdjustment", "repAdjustment", "durationAdjustmentSteps"]) {
     validateAdjustment(output[field], `output.${field}`);
+  }
+
+  if (output.decisionType === DECISION_TYPES.INCREASE_DURATION && output.durationAdjustmentSteps <= 0) {
+    throw new ProgressionDecisionValidationError(
+      "INCREASE_DURATION must emit a positive durationAdjustmentSteps"
+    );
+  }
+
+  if (output.decisionType !== DECISION_TYPES.INCREASE_DURATION && output.durationAdjustmentSteps !== 0) {
+    throw new ProgressionDecisionValidationError(
+      "Only INCREASE_DURATION may emit a non-zero durationAdjustmentSteps"
+    );
   }
 
   if (
