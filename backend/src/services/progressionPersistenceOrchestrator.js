@@ -67,8 +67,16 @@ function isNonNegativeInteger(value) {
   return Number.isInteger(value) && value >= 0;
 }
 
+function isNegativeInteger(value) {
+  return Number.isInteger(value) && value < 0;
+}
+
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function isFiniteInteger(value) {
+  return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value);
 }
 
 function normalizeTargetComponent(value) {
@@ -415,36 +423,145 @@ function resolvePersistedTargetSets({ decision, analysis }) {
   return Math.max(0, analysis.prescription.prescribedSets + decision.setAdjustment);
 }
 
-function validateDecisionPersistenceContract(decision) {
+function validateFiniteIntegerAdjustmentField(decision, fieldName) {
+  if (!Object.hasOwn(decision, fieldName)) {
+    throw new ProgressionPersistenceValidationError(`decision.${fieldName} is required for persistence`);
+  }
+
+  const value = decision[fieldName];
+  if (!isFiniteInteger(value)) {
+    throw new ProgressionPersistenceValidationError(
+      `decision.${fieldName} must be a finite integer`
+    );
+  }
+
+  return value;
+}
+
+function validateExpectedZero(value, fieldName, decisionType) {
+  if (value !== 0) {
+    throw new ProgressionPersistenceValidationError(
+      `Decision type "${decisionType}" requires decision.${fieldName} === 0`
+    );
+  }
+}
+
+function resolveDecisionProgressionMode({ prescription, exercise }) {
+  return prescription.progressionType || exercise.progressionType || "load";
+}
+
+function validateDecisionAdjustmentConsistency({
+  decision,
+  loadAdjustmentSteps,
+  repAdjustment,
+  setAdjustment,
+  durationAdjustmentSteps,
+  progressionMode,
+}) {
+  switch (decision.decisionType) {
+    case DECISION_TYPES.INCREASE_LOAD:
+      if (!isPositiveInteger(loadAdjustmentSteps)) {
+        throw new ProgressionPersistenceValidationError(
+          "INCREASE_LOAD requires decision.loadAdjustmentSteps > 0"
+        );
+      }
+      validateExpectedZero(repAdjustment, "repAdjustment", decision.decisionType);
+      validateExpectedZero(setAdjustment, "setAdjustment", decision.decisionType);
+      validateExpectedZero(durationAdjustmentSteps, "durationAdjustmentSteps", decision.decisionType);
+      return;
+
+    case DECISION_TYPES.INCREASE_REPS:
+      validateExpectedZero(loadAdjustmentSteps, "loadAdjustmentSteps", decision.decisionType);
+      if (!isPositiveInteger(repAdjustment)) {
+        throw new ProgressionPersistenceValidationError(
+          "INCREASE_REPS requires decision.repAdjustment > 0"
+        );
+      }
+      validateExpectedZero(setAdjustment, "setAdjustment", decision.decisionType);
+      validateExpectedZero(durationAdjustmentSteps, "durationAdjustmentSteps", decision.decisionType);
+      return;
+
+    case DECISION_TYPES.INCREASE_DURATION:
+      validateExpectedZero(loadAdjustmentSteps, "loadAdjustmentSteps", decision.decisionType);
+      validateExpectedZero(repAdjustment, "repAdjustment", decision.decisionType);
+      validateExpectedZero(setAdjustment, "setAdjustment", decision.decisionType);
+      if (!isPositiveInteger(durationAdjustmentSteps)) {
+        throw new ProgressionPersistenceValidationError(
+          "INCREASE_DURATION requires decision.durationAdjustmentSteps > 0"
+        );
+      }
+      return;
+
+    case DECISION_TYPES.MAINTAIN:
+      validateExpectedZero(loadAdjustmentSteps, "loadAdjustmentSteps", decision.decisionType);
+      validateExpectedZero(repAdjustment, "repAdjustment", decision.decisionType);
+      validateExpectedZero(setAdjustment, "setAdjustment", decision.decisionType);
+      validateExpectedZero(durationAdjustmentSteps, "durationAdjustmentSteps", decision.decisionType);
+      return;
+
+    case DECISION_TYPES.DELOAD:
+      validateExpectedZero(setAdjustment, "setAdjustment", decision.decisionType);
+      validateExpectedZero(durationAdjustmentSteps, "durationAdjustmentSteps", decision.decisionType);
+
+      if (progressionMode === "reps") {
+        validateExpectedZero(loadAdjustmentSteps, "loadAdjustmentSteps", decision.decisionType);
+        if (!isNegativeInteger(repAdjustment)) {
+          throw new ProgressionPersistenceValidationError(
+            "DELOAD in reps mode requires decision.repAdjustment < 0"
+          );
+        }
+        return;
+      }
+
+      if (progressionMode === "time") {
+        validateExpectedZero(loadAdjustmentSteps, "loadAdjustmentSteps", decision.decisionType);
+        validateExpectedZero(repAdjustment, "repAdjustment", decision.decisionType);
+        return;
+      }
+
+      if (!isNegativeInteger(loadAdjustmentSteps)) {
+        throw new ProgressionPersistenceValidationError(
+          "DELOAD in load or reps_then_load mode requires decision.loadAdjustmentSteps < 0"
+        );
+      }
+      validateExpectedZero(repAdjustment, "repAdjustment", decision.decisionType);
+      return;
+
+    default:
+      return;
+  }
+}
+
+function validateDecisionPersistenceContract({ decision, prescription, exercise }) {
   if (!isPlainObject(decision)) {
     throw new ProgressionPersistenceValidationError("decision is required for Prisma mapping");
   }
 
+  if (!isNonEmptyString(decision.decisionType)) {
+    throw new ProgressionPersistenceValidationError(
+      "decision.decisionType must be a non-empty string for persistence"
+    );
+  }
+
   classifyDecisionPersistability(decision.decisionType);
 
-  if (!Object.hasOwn(decision, "durationAdjustmentSteps")) {
-    throw new ProgressionPersistenceValidationError(
-      "decision.durationAdjustmentSteps is required for persistence"
-    );
-  }
+  const loadAdjustmentSteps = validateFiniteIntegerAdjustmentField(decision, "loadAdjustmentSteps");
+  const repAdjustment = validateFiniteIntegerAdjustmentField(decision, "repAdjustment");
+  const setAdjustment = validateFiniteIntegerAdjustmentField(decision, "setAdjustment");
+  const durationAdjustmentSteps = validateFiniteIntegerAdjustmentField(
+    decision,
+    "durationAdjustmentSteps"
+  );
 
-  if (!isNonNegativeInteger(decision.durationAdjustmentSteps)) {
-    throw new ProgressionPersistenceValidationError(
-      "decision.durationAdjustmentSteps must be a non-negative integer"
-    );
-  }
-
-  if (decision.decisionType === DECISION_TYPES.INCREASE_DURATION) {
-    if (decision.durationAdjustmentSteps <= 0) {
-      throw new ProgressionPersistenceValidationError(
-        "INCREASE_DURATION requires decision.durationAdjustmentSteps > 0"
-      );
-    }
-  } else if (decision.durationAdjustmentSteps !== 0) {
-    throw new ProgressionPersistenceValidationError(
-      `Decision type "${decision.decisionType}" requires decision.durationAdjustmentSteps === 0`
-    );
-  }
+  const progressionMode = resolveDecisionProgressionMode({ prescription, exercise });
+  validateDecisionAdjustmentConsistency({
+    decision,
+    loadAdjustmentSteps,
+    repAdjustment,
+    setAdjustment,
+    durationAdjustmentSteps,
+    progressionMode,
+  });
 
   if (Object.hasOwn(decision, "durationAdjustmentSeconds")) {
     throw new ProgressionPersistenceValidationError(
@@ -469,13 +586,14 @@ export function mapDecisionToProgressionRecommendationData({
   exercise,
   previousRecommendation,
 }) {
-  validateDecisionPersistenceContract(decision);
+  validateDecisionPersistenceContract({ decision, prescription, exercise });
 
   return {
     userId,
     exerciseId,
     sourceSessionId,
     recommendationType: mapDecisionTypeToRecommendationType(decision.decisionType),
+    decisionType: decision.decisionType,
     previousWeightKg: analysis.historyFacts.previousSessionWeightKg,
     recommendedWeightKg: null,
     previousTargetLow: analysis.prescription.prescribedRepLow,
@@ -483,6 +601,9 @@ export function mapDecisionToProgressionRecommendationData({
     recommendedTargetLow: null,
     recommendedTargetHigh: null,
     targetSets: resolvePersistedTargetSets({ decision, analysis }),
+    loadAdjustmentSteps: decision.loadAdjustmentSteps,
+    repAdjustment: decision.repAdjustment,
+    setAdjustment: decision.setAdjustment,
     durationAdjustmentSteps: decision.durationAdjustmentSteps,
     confidence: decision.confidence,
     reasonCode: decision.reasonCode,

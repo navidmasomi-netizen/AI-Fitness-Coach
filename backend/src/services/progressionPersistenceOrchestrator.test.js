@@ -212,6 +212,23 @@ async function findTimeTargetExercise(programId) {
   });
 }
 
+async function findTargetExerciseByProgressionType(programId, progressionType) {
+  return prisma.programDayExercise.findFirst({
+    where: {
+      programDay: { programId },
+      OR: [
+        { progressionType },
+        { exercise: { progressionType } },
+      ],
+    },
+    include: {
+      exercise: true,
+      programDay: true,
+    },
+    orderBy: [{ programDayId: "asc" }, { order: "asc" }],
+  });
+}
+
 async function createWorkoutSession({
   userId,
   programId = null,
@@ -715,6 +732,68 @@ async function main() {
       },
     },
     {
+      name: "created -> increase load recommendation persists normalized fields",
+      input: "full success on a load-mode exercise preserves exact abstract load adjustment",
+      fn: async () => {
+        const fixture = await createProgramFixture(nextTestSuffix("increase-load"));
+        try {
+          const loadTargetExercise = await findTargetExerciseByProgressionType(
+            fixture.program.id,
+            "load"
+          );
+          assert.notEqual(loadTargetExercise, null);
+
+          await createCompletedExerciseSession({
+            userId: fixture.user.id,
+            programId: fixture.program.id,
+            programDayId: loadTargetExercise.programDayId,
+            exerciseId: loadTargetExercise.exerciseId,
+            startedAt: new Date("2026-07-01T09:00:00.000Z"),
+            sets: buildLoggedSets({
+              targetExercise: loadTargetExercise,
+              reps: loadTargetExercise.repRangeHigh,
+              weightKg: 30,
+            }),
+          });
+
+          const sourceSession = await createCompletedExerciseSession({
+            userId: fixture.user.id,
+            programId: fixture.program.id,
+            programDayId: loadTargetExercise.programDayId,
+            exerciseId: loadTargetExercise.exerciseId,
+            startedAt: new Date("2026-07-08T09:00:00.000Z"),
+            sets: buildLoggedSets({
+              targetExercise: loadTargetExercise,
+              reps: loadTargetExercise.repRangeHigh,
+              weightKg: 32.5,
+            }),
+          });
+
+          const actual = await orchestrateProgressionPersistence({
+            userId: fixture.user.id,
+            exerciseId: loadTargetExercise.exerciseId,
+            sourceSessionId: sourceSession.id,
+            recoveryConstraint: NEUTRAL_RECOVERY,
+          });
+
+          assert.equal(actual.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
+          assert.equal(actual.decision.decisionType, DECISION_TYPES.INCREASE_LOAD);
+          assert.equal(actual.recommendation.recommendationType, "increase");
+          assert.equal(actual.recommendation.decisionType, DECISION_TYPES.INCREASE_LOAD);
+          assert.equal(actual.recommendation.loadAdjustmentSteps, 1);
+          assert.equal(actual.recommendation.repAdjustment, 0);
+          assert.equal(actual.recommendation.setAdjustment, 0);
+          assert.equal(actual.recommendation.durationAdjustmentSteps, 0);
+          assert.equal(actual.recommendation.confidence, actual.decision.confidence);
+          assert.equal(actual.recommendation.recommendedWeightKg, null);
+          assert.equal(actual.recommendation.reasonCode, REASON_CODES.REPEATED_SUCCESS);
+          return actual;
+        } finally {
+          await cleanupUserArtifacts(fixture.user.id);
+        }
+      },
+    },
+    {
       name: "created -> increase recommendation persists",
       input: "full success with previous successful session",
       fn: async () => {
@@ -756,6 +835,11 @@ async function main() {
           assert.equal(actual.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
           assert.equal(actual.decision.decisionType, DECISION_TYPES.INCREASE_REPS);
           assert.equal(actual.recommendation.recommendationType, "increase");
+          assert.equal(actual.recommendation.decisionType, DECISION_TYPES.INCREASE_REPS);
+          assert.equal(actual.recommendation.loadAdjustmentSteps, 0);
+          assert.equal(actual.recommendation.repAdjustment, 1);
+          assert.equal(actual.recommendation.setAdjustment, 0);
+          assert.equal(actual.recommendation.durationAdjustmentSteps, 0);
           assert.equal(actual.recommendation.confidence, actual.decision.confidence);
           assert.equal(actual.recommendation.recommendedWeightKg, null);
           assert.equal(actual.recommendation.reasonCode, REASON_CODES.REPEATED_REP_SUCCESS);
@@ -799,6 +883,11 @@ async function main() {
           assert.equal(actual.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
           assert.equal(actual.decision.decisionType, DECISION_TYPES.DELOAD);
           assert.equal(actual.recommendation.recommendationType, "deload");
+          assert.equal(actual.recommendation.decisionType, DECISION_TYPES.DELOAD);
+          assert.equal(actual.recommendation.loadAdjustmentSteps, 0);
+          assert.equal(actual.recommendation.repAdjustment, -1);
+          assert.equal(actual.recommendation.setAdjustment, 0);
+          assert.equal(actual.recommendation.durationAdjustmentSteps, 0);
           return actual;
         } finally {
           await cleanupUserArtifacts(fixture.user.id);
@@ -1341,6 +1430,7 @@ async function main() {
         });
 
         assert.equal(actual.recommendationType, "maintain");
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
         assert.equal(actual.previousWeightKg, 42.5);
         assert.equal(actual.recommendedWeightKg, null);
         assert.equal(actual.previousTargetLow, 8);
@@ -1348,6 +1438,9 @@ async function main() {
         assert.equal(actual.recommendedTargetLow, null);
         assert.equal(actual.recommendedTargetHigh, null);
         assert.equal(actual.targetSets, null);
+        assert.equal(actual.loadAdjustmentSteps, 0);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.setAdjustment, 0);
         assert.equal(actual.durationAdjustmentSteps, 0);
         assert.equal(actual.reasonCode, REASON_CODES.TARGETS_PARTIALLY_MET);
         assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
@@ -1382,8 +1475,12 @@ async function main() {
         });
 
         assert.equal(actual.recommendationType, "increase");
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
         assert.equal(actual.confidence, 0.8);
         assert.equal(actual.recommendedWeightKg, null);
+        assert.equal(actual.loadAdjustmentSteps, 1);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.setAdjustment, 0);
         assert.equal(actual.durationAdjustmentSteps, 0);
         assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
         return actual;
@@ -1458,6 +1555,10 @@ async function main() {
         });
 
         assert.equal(actual.recommendationType, "increase");
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_DURATION);
+        assert.equal(actual.loadAdjustmentSteps, 0);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.setAdjustment, 0);
         assert.equal(actual.durationAdjustmentSteps, 2);
         assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
         assert.equal(actual.recommendedWeightKg, null);
@@ -1536,6 +1637,10 @@ async function main() {
         });
 
         assert.equal(actual.recommendationType, "increase");
+        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_REPS);
+        assert.equal(actual.loadAdjustmentSteps, 0);
+        assert.equal(actual.repAdjustment, 1);
+        assert.equal(actual.setAdjustment, 0);
         assert.equal(actual.recommendedWeightKg, null);
         assert.equal(actual.recommendedTargetLow, null);
         assert.equal(actual.recommendedTargetHigh, null);
@@ -1583,6 +1688,10 @@ async function main() {
         });
 
         assert.equal(actual.recommendationType, "deload");
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.loadAdjustmentSteps, -1);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.setAdjustment, 0);
         assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
         assert.equal(actual.recommendedWeightKg, null);
         assert.equal(actual.durationAdjustmentSteps, 0);
@@ -1852,25 +1961,107 @@ async function main() {
       },
     },
     {
-      name: "validation -> increase duration requires positive integer steps",
-      input: "zero, negative, fractional, string, and missing durationAdjustmentSteps are rejected",
+      name: "validation -> normalized contract requires valid decisionType and integer adjustment fields",
+      input: "missing or invalid decisionType and adjustment fields are rejected",
       fn: () => {
-        const buildInput = (decision) => ({
+        const buildInput = (decision, progressionType = "load") => ({
           userId: 1,
-          exerciseId: 22,
-          sourceSessionId: 722,
+          exerciseId: progressionType === "time" ? 22 : 15,
+          sourceSessionId: progressionType === "time" ? 722 : 501,
           decision,
-          analysis: buildAnalysis(),
+          analysis: buildAnalysis({
+            exerciseId: progressionType === "time" ? 22 : 15,
+            sourceSessionId: progressionType === "time" ? 722 : 501,
+          }),
           prescription: {
             sets: 3,
-            repRangeLow: 20,
-            repRangeHigh: 60,
-            restSeconds: 30,
-            progressionType: "time",
+            repRangeLow: progressionType === "time" ? 20 : 8,
+            repRangeHigh: progressionType === "time" ? 60 : 12,
+            restSeconds: progressionType === "time" ? 30 : 90,
+            progressionType,
           },
           exercise: {
-            id: 22,
-            progressionType: "time",
+            id: progressionType === "time" ? 22 : 15,
+            progressionType,
+          },
+          previousRecommendation: null,
+        });
+
+        for (const invalidDecisionType of [undefined, null, "", "   ", 123]) {
+          const invalidDecision = buildDecision(
+            DECISION_TYPES.INCREASE_LOAD,
+            REASON_CODES.REPEATED_SUCCESS
+          );
+          invalidDecision.decisionType = invalidDecisionType;
+          assert.throws(
+            () => mapDecisionToProgressionRecommendationData(buildInput(invalidDecision)),
+            /decision\.decisionType must be a non-empty string/
+          );
+        }
+
+        for (const fieldName of [
+          "loadAdjustmentSteps",
+          "repAdjustment",
+          "setAdjustment",
+          "durationAdjustmentSteps",
+        ]) {
+          const missingDecision = buildDecision(
+            DECISION_TYPES.INCREASE_LOAD,
+            REASON_CODES.REPEATED_SUCCESS
+          );
+          delete missingDecision[fieldName];
+          assert.throws(
+            () => mapDecisionToProgressionRecommendationData(buildInput(missingDecision)),
+            new RegExp(`decision\\.${fieldName} is required`)
+          );
+
+          for (const invalidValue of [
+            null,
+            "1",
+            true,
+            1.5,
+            Number.NaN,
+            Number.POSITIVE_INFINITY,
+            Number.NEGATIVE_INFINITY,
+          ]) {
+            const invalidDecision = buildDecision(
+              DECISION_TYPES.INCREASE_LOAD,
+              REASON_CODES.REPEATED_SUCCESS
+            );
+            invalidDecision[fieldName] = invalidValue;
+            assert.throws(
+              () => mapDecisionToProgressionRecommendationData(buildInput(invalidDecision)),
+              new RegExp(`decision\\.${fieldName} must be a finite integer`)
+            );
+          }
+        }
+
+        return { error: "validated" };
+      },
+    },
+    {
+      name: "validation -> decision-specific normalized adjustment rules are enforced",
+      input: "increase and maintain decisions require exact active/zero adjustment combinations",
+      fn: () => {
+        const buildInput = (decision, progressionType = "load") => ({
+          userId: 1,
+          exerciseId: progressionType === "time" ? 22 : 15,
+          sourceSessionId: progressionType === "time" ? 722 : 501,
+          decision,
+          analysis: buildAnalysis({
+            exerciseId: progressionType === "time" ? 22 : 15,
+            sourceSessionId: progressionType === "time" ? 722 : 501,
+          }),
+          prescription: {
+            sets: 3,
+            repRangeLow: progressionType === "time" ? 20 : 8,
+            repRangeHigh: progressionType === "time" ? 60 : 12,
+            restSeconds: progressionType === "time" ? 30 : 90,
+            progressionType,
+          },
+          exercise: {
+            id: progressionType === "time" ? 22 : 15,
+            progressionType,
           },
           previousRecommendation: null,
         });
@@ -1879,98 +2070,68 @@ async function main() {
           () =>
             mapDecisionToProgressionRecommendationData(
               buildInput(
+                buildDecision(DECISION_TYPES.INCREASE_LOAD, REASON_CODES.REPEATED_SUCCESS, {
+                  loadAdjustmentSteps: 0,
+                })
+              )
+            ),
+          /INCREASE_LOAD requires decision\.loadAdjustmentSteps > 0/
+        );
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.INCREASE_REPS, REASON_CODES.REPEATED_REP_SUCCESS, {
+                  repAdjustment: 0,
+                }),
+                "reps"
+              )
+            ),
+          /INCREASE_REPS requires decision\.repAdjustment > 0/
+        );
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
                 buildDecision(DECISION_TYPES.INCREASE_DURATION, REASON_CODES.REPEATED_TIME_SUCCESS, {
                   durationAdjustmentSteps: 0,
-                })
-              )
-            ),
-          /durationAdjustmentSteps > 0/
-        );
-        assert.throws(
-          () =>
-            mapDecisionToProgressionRecommendationData(
-              buildInput(
-                buildDecision(DECISION_TYPES.INCREASE_DURATION, REASON_CODES.REPEATED_TIME_SUCCESS, {
-                  durationAdjustmentSteps: -1,
-                })
-              )
-            ),
-          /non-negative integer/
-        );
-        assert.throws(
-          () =>
-            mapDecisionToProgressionRecommendationData(
-              buildInput(
-                buildDecision(DECISION_TYPES.INCREASE_DURATION, REASON_CODES.REPEATED_TIME_SUCCESS, {
-                  durationAdjustmentSteps: 1.5,
-                })
-              )
-            ),
-          /non-negative integer/
-        );
-        assert.throws(
-          () =>
-            mapDecisionToProgressionRecommendationData(
-              buildInput({
-                ...buildDecision(
-                  DECISION_TYPES.INCREASE_DURATION,
-                  REASON_CODES.REPEATED_TIME_SUCCESS
-                ),
-                durationAdjustmentSteps: "1",
-              })
-            ),
-          /non-negative integer/
-        );
-
-        const missingDecision = buildDecision(
-          DECISION_TYPES.INCREASE_DURATION,
-          REASON_CODES.REPEATED_TIME_SUCCESS
-        );
-        delete missingDecision.durationAdjustmentSteps;
-        assert.throws(
-          () => mapDecisionToProgressionRecommendationData(buildInput(missingDecision)),
-          /durationAdjustmentSteps is required/
-        );
-
-        return { error: "validated" };
-      },
-    },
-    {
-      name: "validation -> non-duration decisions require zero duration steps",
-      input: "positive duration steps are rejected for load, reps, maintain, and deload",
-      fn: () => {
-        for (const decisionType of [
-          DECISION_TYPES.INCREASE_LOAD,
-          DECISION_TYPES.INCREASE_REPS,
-          DECISION_TYPES.MAINTAIN,
-          DECISION_TYPES.DELOAD,
-        ]) {
-          assert.throws(
-            () =>
-              mapDecisionToProgressionRecommendationData({
-                userId: 1,
-                exerciseId: 15,
-                sourceSessionId: 501,
-                decision: buildDecision(decisionType, REASON_CODES.REPEATED_SUCCESS, {
-                  durationAdjustmentSteps: 1,
                 }),
-                analysis: buildAnalysis(),
-                prescription: {
-                  sets: 3,
-                  repRangeLow: 8,
-                  repRangeHigh: 12,
-                  restSeconds: 90,
-                  progressionType: "load",
-                },
-                exercise: {
-                  id: 15,
-                  progressionType: "load",
-                },
-                previousRecommendation: null,
-              }),
-            /durationAdjustmentSteps === 0/
+                "time"
+              )
+            ),
+          /INCREASE_DURATION requires decision\.durationAdjustmentSteps > 0/
+        );
+
+        for (const nonZeroField of [
+          "loadAdjustmentSteps",
+          "repAdjustment",
+          "setAdjustment",
+          "durationAdjustmentSteps",
+        ]) {
+          const maintainDecision = buildDecision(
+            DECISION_TYPES.MAINTAIN,
+            REASON_CODES.TARGETS_FULLY_MET
+          );
+          maintainDecision[nonZeroField] = 1;
+          assert.throws(
+            () => mapDecisionToProgressionRecommendationData(buildInput(maintainDecision)),
+            new RegExp(`decision\\.${nonZeroField} === 0`)
           );
         }
+
+        const nonZeroSetDecision = buildDecision(
+          DECISION_TYPES.INCREASE_LOAD,
+          REASON_CODES.REPEATED_SUCCESS,
+          {
+            setAdjustment: 1,
+          }
+        );
+        assert.throws(
+          () => mapDecisionToProgressionRecommendationData(buildInput(nonZeroSetDecision)),
+          /decision\.setAdjustment === 0/
+        );
 
         return { error: "validated" };
       },
@@ -2064,6 +2225,89 @@ async function main() {
                   previousRecommendation: null,
                 }),
               /durationAdjustmentSeconds is not supported/
+            );
+          }
+        );
+
+        assert.equal(createCalled, false);
+        return { createCalled };
+      },
+    },
+    {
+      name: "validation -> invalid normalized contracts fail before prisma create",
+      input: "decisionType, adjustment, and rulesVersion violations do not reach prisma.create",
+      fn: async () => {
+        let createCalled = false;
+
+        await withPatchedProgressionRecommendationMethods(
+          {
+            create: async () => {
+              createCalled = true;
+              throw new Error("create should not be called");
+            },
+          },
+          async () => {
+            const baseInput = {
+              userId: 1,
+              exerciseId: 15,
+              sourceSessionId: 501,
+              analysis: buildAnalysis(),
+              prescription: {
+                sets: 3,
+                repRangeLow: 8,
+                repRangeHigh: 12,
+                restSeconds: 90,
+                progressionType: "load",
+              },
+              exercise: {
+                id: 15,
+                progressionType: "load",
+              },
+              previousRecommendation: null,
+            };
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.INCREASE_LOAD, REASON_CODES.REPEATED_SUCCESS, {
+                    decisionType: "   ",
+                  }),
+                }),
+              /decision\.decisionType must be a non-empty string/
+            );
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.INCREASE_LOAD, REASON_CODES.REPEATED_SUCCESS, {
+                    loadAdjustmentSteps: "1",
+                  }),
+                }),
+              /decision\.loadAdjustmentSteps must be a finite integer/
+            );
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.MAINTAIN, REASON_CODES.TARGETS_FULLY_MET, {
+                    loadAdjustmentSteps: 1,
+                  }),
+                }),
+              /decision\.loadAdjustmentSteps === 0/
+            );
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.INCREASE_LOAD, REASON_CODES.REPEATED_SUCCESS, {
+                    rulesVersion: "",
+                  }),
+                }),
+              /rulesVersion must be a non-empty string/
             );
           }
         );
@@ -2218,6 +2462,10 @@ async function main() {
           assert.equal(actual.decision.decisionType, DECISION_TYPES.INCREASE_DURATION);
           assert.equal(actual.decision.durationAdjustmentSteps, 1);
           assert.equal(actual.recommendation.recommendationType, "increase");
+          assert.equal(actual.recommendation.decisionType, DECISION_TYPES.INCREASE_DURATION);
+          assert.equal(actual.recommendation.loadAdjustmentSteps, 0);
+          assert.equal(actual.recommendation.repAdjustment, 0);
+          assert.equal(actual.recommendation.setAdjustment, 0);
           assert.equal(actual.recommendation.durationAdjustmentSteps, 1);
           assert.equal(actual.recommendation.rulesVersion, PROGRESSION_RULES_VERSION);
           assert.equal(actual.recommendation.recommendedWeightKg, null);
@@ -2355,7 +2603,7 @@ async function main() {
     },
     {
       name: "compatibility field -> consecutiveFailures derives from factual history",
-      input: "persisted maintain row keeps compatibility attempt count",
+      input: "persisted row keeps compatibility attempt count from factual history",
       fn: async () => {
         const fixture = await createProgramFixture(nextTestSuffix("failures"));
         try {
@@ -2381,6 +2629,13 @@ async function main() {
             sourceSessionId: sourceSession.id,
             recoveryConstraint: NEUTRAL_RECOVERY,
           });
+          assert.equal(actual.recommendation.decisionType, actual.decision.decisionType);
+          assert.equal(
+            actual.recommendation.loadAdjustmentSteps,
+            actual.decision.loadAdjustmentSteps
+          );
+          assert.equal(actual.recommendation.repAdjustment, actual.decision.repAdjustment);
+          assert.equal(actual.recommendation.setAdjustment, actual.decision.setAdjustment);
           assert.equal(actual.recommendation.consecutiveFailures >= 1, true);
           return actual;
         } finally {
@@ -2465,6 +2720,10 @@ async function main() {
         const first = mapDecisionToProgressionRecommendationData(input);
         const second = mapDecisionToProgressionRecommendationData(input);
         assert.deepEqual(first, second);
+        assert.equal(first.decisionType, DECISION_TYPES.INCREASE_DURATION);
+        assert.equal(first.loadAdjustmentSteps, 0);
+        assert.equal(first.repAdjustment, 0);
+        assert.equal(first.setAdjustment, 0);
         return { first, second };
       },
     },
