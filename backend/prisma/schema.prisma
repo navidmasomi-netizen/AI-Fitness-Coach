@@ -62,77 +62,77 @@ enum RecommendationType {
 }
 
 model User {
-  id        Int              @id @default(autoincrement())
-  email     String           @unique
-  name      String?
-  password  String?
-  createdAt DateTime         @default(now())
-  profile   UserProfile?
-  sessions  WorkoutSession[]
-  program   UserProgram[]
+  id                         Int                         @id @default(autoincrement())
+  email                      String                      @unique
+  name                       String?
+  password                   String?
+  createdAt                  DateTime                    @default(now())
+  profile                    UserProfile?
+  sessions                   WorkoutSession[]
+  program                    UserProgram[]
   progressionRecommendations ProgressionRecommendation[]
 }
 
 model UserProfile {
-  id                    Int       @id @default(autoincrement())
-  userId                Int       @unique
-  user                  User      @relation(fields: [userId], references: [id])
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
 
-  goal                  String
-  trainingLevel         String
-  trainingDaysPerWeek   Int
-  sessionDurationMin    Int
-  equipmentAccess       String[]
-  age                   Int
-  sex                   String
-  heightCm              Float
-  weightKg              Float
-  occupationType        String
-  recoveryQuality       String
-  nutritionHabits       String
-  mealFrequency         Int
-  supplementUse         String[]
-  cardioPreference      String
-  injuryFlags           String[]
-  injuryNotes           String?
+  goal                String
+  trainingLevel       String
+  trainingDaysPerWeek Int
+  sessionDurationMin  Int
+  equipmentAccess     String[]
+  age                 Int
+  sex                 String
+  heightCm            Float
+  weightKg            Float
+  occupationType      String
+  recoveryQuality     String
+  nutritionHabits     String
+  mealFrequency       Int
+  supplementUse       String[]
+  cardioPreference    String
+  injuryFlags         String[]
+  injuryNotes         String?
 
-  preferredLanguage     String
-  timezone              String
-  units                 String
+  preferredLanguage String
+  timezone          String
+  units             String
 
-  wizardCompleted       Boolean   @default(false)
-  wizardCompletedAt     DateTime?
-  lastCompletedStep     Int       @default(0)
+  wizardCompleted   Boolean   @default(false)
+  wizardCompletedAt DateTime?
+  lastCompletedStep Int       @default(0)
 
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Exercise {
-  id                     Int                   @id @default(autoincrement())
-  nameFa                 String
-  nameEn                 String?
-  description            String?
-  icon                   String?
-  primaryMuscles         String[]
-  secondaryMuscles       String[]
-  movementPattern        MovementPattern?
-  equipment              Equipment?
-  difficulty             Difficulty?
-  complexity             Complexity?
-  suitableGoals          Goal[]
-  contraindications      String[]
-  jointStressFlags       String[]
-  substitutionNames      String[]
-  defaultRepRangeLow     Int?
-  defaultRepRangeHigh    Int?
-  defaultRestSecondsLow  Int?
-  defaultRestSecondsHigh Int?
-  progressionType        String?
-  programDayUsage        ProgramDayExercise[]
-  setLogs                SetLog[]
+  id                         Int                         @id @default(autoincrement())
+  nameFa                     String
+  nameEn                     String?
+  description                String?
+  icon                       String?
+  primaryMuscles             String[]
+  secondaryMuscles           String[]
+  movementPattern            MovementPattern?
+  equipment                  Equipment?
+  difficulty                 Difficulty?
+  complexity                 Complexity?
+  suitableGoals              Goal[]
+  contraindications          String[]
+  jointStressFlags           String[]
+  substitutionNames          String[]
+  defaultRepRangeLow         Int?
+  defaultRepRangeHigh        Int?
+  defaultRestSecondsLow      Int?
+  defaultRestSecondsHigh     Int?
+  progressionType            String?
+  programDayUsage            ProgramDayExercise[]
+  setLogs                    SetLog[]
   progressionRecommendations ProgressionRecommendation[]
-  createdAt              DateTime              @default(now())
+  createdAt                  DateTime                    @default(now())
 }
 
 model Program {
@@ -157,30 +157,30 @@ model ProgramDay {
 }
 
 model ProgramDayExercise {
-  id              Int        @id @default(autoincrement())
-  programDayId    Int
-  programDay      ProgramDay @relation(fields: [programDayId], references: [id], onDelete: Cascade)
-  exerciseId      Int
-  exercise        Exercise   @relation(fields: [exerciseId], references: [id])
-  order           Int
-  sets            Int
-  repRangeLow     Int
-  repRangeHigh    Int
-  restSeconds     Int
+  id                       Int        @id @default(autoincrement())
+  programDayId             Int
+  programDay               ProgramDay @relation(fields: [programDayId], references: [id], onDelete: Cascade)
+  exerciseId               Int
+  exercise                 Exercise   @relation(fields: [exerciseId], references: [id])
+  order                    Int
+  sets                     Int
+  repRangeLow              Int
+  repRangeHigh             Int
+  restSeconds              Int
   durationIncrementSeconds Int?
-  intensity       String?
-  progressionType String?
+  intensity                String?
+  progressionType          String?
 }
 
 model UserProgram {
-  id              Int      @id @default(autoincrement())
+  id              Int                         @id @default(autoincrement())
   userId          Int
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
   programId       Int
-  program         Program  @relation(fields: [programId], references: [id])
-  isActive        Boolean  @default(true)
-  currentDayIndex Int      @default(0)
-  activatedAt     DateTime @default(now())
+  program         Program                     @relation(fields: [programId], references: [id])
+  isActive        Boolean                     @default(true)
+  currentDayIndex Int                         @default(0)
+  activatedAt     DateTime                    @default(now())
   profileSnapshot UserProgramProfileSnapshot?
 }
 
@@ -196,16 +196,16 @@ model UserProgramProfileSnapshot {
 }
 
 model WorkoutSession {
-  id           Int       @id @default(autoincrement())
-  userId       Int
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  programId    Int?
-  programDayId Int?
-  startedAt    DateTime  @default(now())
-  completedAt  DateTime?
-  status       String    @default("active")
-  notes        String?
-  setLogs      SetLog[]
+  id                         Int                         @id @default(autoincrement())
+  userId                     Int
+  user                       User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId                  Int?
+  programDayId               Int?
+  startedAt                  DateTime                    @default(now())
+  completedAt                DateTime?
+  status                     String                      @default("active")
+  notes                      String?
+  setLogs                    SetLog[]
   progressionRecommendations ProgressionRecommendation[]
 }
 
@@ -222,30 +222,34 @@ model SetLog {
 }
 
 model ProgressionRecommendation {
-  id                    Int                @id @default(autoincrement())
-  userId                Int
-  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exerciseId            Int
-  exercise              Exercise           @relation(fields: [exerciseId], references: [id])
-  sourceSessionId       Int
-  sourceSession         WorkoutSession     @relation(fields: [sourceSessionId], references: [id], onDelete: Cascade)
-  recommendationType    RecommendationType
-  previousWeightKg      Float?
-  recommendedWeightKg   Float?
-  previousTargetLow     Int?
-  previousTargetHigh    Int?
-  recommendedTargetLow  Int?
-  recommendedTargetHigh Int?
-  targetSets            Int?
-  durationAdjustmentSteps Int              @default(0)
-  confidence            Float?
-  reasonCode            String?
-  rulesVersion          String?
-  progressionType       String?
-  consecutiveFailures   Int                @default(0)
-  reason                String
-  status                String             @default("active")
-  createdAt             DateTime           @default(now())
+  id                      Int                @id @default(autoincrement())
+  userId                  Int
+  user                    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId              Int
+  exercise                Exercise           @relation(fields: [exerciseId], references: [id])
+  sourceSessionId         Int
+  sourceSession           WorkoutSession     @relation(fields: [sourceSessionId], references: [id], onDelete: Cascade)
+  recommendationType      RecommendationType
+  decisionType            String?
+  previousWeightKg        Float?
+  recommendedWeightKg     Float?
+  previousTargetLow       Int?
+  previousTargetHigh      Int?
+  recommendedTargetLow    Int?
+  recommendedTargetHigh   Int?
+  targetSets              Int?
+  loadAdjustmentSteps     Int                @default(0)
+  repAdjustment           Int                @default(0)
+  setAdjustment           Int                @default(0)
+  durationAdjustmentSteps Int                @default(0)
+  confidence              Float?
+  reasonCode              String?
+  rulesVersion            String?
+  progressionType         String?
+  consecutiveFailures     Int                @default(0)
+  reason                  String
+  status                  String             @default("active")
+  createdAt               DateTime           @default(now())
 
   @@unique([userId, exerciseId, sourceSessionId])
 }
