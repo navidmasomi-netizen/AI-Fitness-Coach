@@ -1,4 +1,4 @@
-export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v3";
+export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v4";
 
 export const DECISION_TYPES = Object.freeze({
   INCREASE_LOAD: "INCREASE_LOAD",
@@ -178,6 +178,12 @@ function validateAnalysisShape(analysis) {
     }
   }
 
+  if (typeof observedPerformance.allPlannedSetsReachedUpperRepBound !== "boolean") {
+    throw new ProgressionDecisionValidationError(
+      "analysis.observedPerformance.allPlannedSetsReachedUpperRepBound must be a boolean"
+    );
+  }
+
   const numericNullableFields = ["totalVolumeKg", "averageWeightKg", "maximumWeightKg", "minimumWeightKg"];
   for (const field of numericNullableFields) {
     const value = observedPerformance[field];
@@ -326,6 +332,7 @@ function buildContext(input) {
   const history = analysis.historyFacts;
   const progressionMode = input.progressionPolicy.progressionMode;
   const isRepsMode = progressionMode === "reps";
+  const isRepsThenLoadMode = progressionMode === "reps_then_load";
   const isTimeMode = progressionMode === "time";
   const fullTargetSuccess =
     observed.prescribedSetCompletionRate === 1 &&
@@ -375,6 +382,7 @@ function buildContext(input) {
     policyThresholds,
     progressionMode,
     isRepsMode,
+    isRepsThenLoadMode,
     isTimeMode,
     fullTargetSuccess,
     partialTargetCompletion,
@@ -575,6 +583,7 @@ function buildRuleR008(context) {
   if (!context.fullTargetSuccess || context.usableLoadData) return null;
   if (!context.progressionPolicy.allowsLoadAdjustment) return null;
   if (context.isRepsMode) return null;
+  if (context.isRepsThenLoadMode) return null;
 
   return createCandidate({
     ruleId: "R008_MISSING_LOAD_DATA_HOLD",
@@ -597,6 +606,30 @@ function buildRuleR009(context) {
   }
 
   if (context.isRepsMode) {
+    if (!context.progressionPolicy.allowsRepAdjustment) return null;
+
+    return createCandidate({
+      ruleId: "R009_REPEATED_SUCCESS_INCREASE",
+      decisionType: DECISION_TYPES.INCREASE_REPS,
+      primaryReasonCode: REASON_CODES.REPEATED_REP_SUCCESS,
+      secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+      repAdjustment: 1,
+    });
+  }
+
+  if (context.isRepsThenLoadMode) {
+    if (context.analysis.observedPerformance.allPlannedSetsReachedUpperRepBound) {
+      if (!context.progressionPolicy.allowsLoadAdjustment) return null;
+
+      return createCandidate({
+        ruleId: "R009_REPEATED_SUCCESS_INCREASE",
+        decisionType: DECISION_TYPES.INCREASE_LOAD,
+        primaryReasonCode: REASON_CODES.REPEATED_SUCCESS,
+        secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+        loadAdjustmentSteps: 1,
+      });
+    }
+
     if (!context.progressionPolicy.allowsRepAdjustment) return null;
 
     return createCandidate({
@@ -639,6 +672,30 @@ function buildRuleR010(context) {
   }
 
   if (context.isRepsMode) {
+    if (!context.progressionPolicy.allowsRepAdjustment) return null;
+
+    return createCandidate({
+      ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
+      decisionType: DECISION_TYPES.INCREASE_REPS,
+      primaryReasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
+      secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+      repAdjustment: 1,
+    });
+  }
+
+  if (context.isRepsThenLoadMode) {
+    if (context.analysis.observedPerformance.allPlannedSetsReachedUpperRepBound) {
+      if (!context.progressionPolicy.allowsLoadAdjustment) return null;
+
+      return createCandidate({
+        ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
+        decisionType: DECISION_TYPES.INCREASE_LOAD,
+        primaryReasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
+        secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+        loadAdjustmentSteps: 1,
+      });
+    }
+
     if (!context.progressionPolicy.allowsRepAdjustment) return null;
 
     return createCandidate({

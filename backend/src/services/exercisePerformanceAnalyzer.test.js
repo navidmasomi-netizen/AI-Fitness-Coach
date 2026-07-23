@@ -130,6 +130,303 @@ async function main() {
       },
     },
     {
+      name: "upper rep bound true when all planned sets meet it exactly",
+      input: "4 planned sets at prescribed high reps",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 12, weightKg: 40 },
+                { setNumber: 2, reps: 12, weightKg: 40 },
+                { setNumber: 3, reps: 12, weightKg: 40 },
+                { setNumber: 4, reps: 12, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, true);
+        return actual;
+      },
+    },
+    {
+      name: "upper rep bound false when any planned set is below it",
+      input: "4 planned sets with one set at 11 while bound is 12",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 12, weightKg: 40 },
+                { setNumber: 2, reps: 12, weightKg: 40 },
+                { setNumber: 3, reps: 11, weightKg: 40 },
+                { setNumber: 4, reps: 12, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, false);
+        return actual;
+      },
+    },
+    {
+      name: "upper rep bound true when every planned set exceeds it",
+      input: "all planned sets above the prescribed high reps",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 13, weightKg: 40 },
+                { setNumber: 2, reps: 14, weightKg: 40 },
+                { setNumber: 3, reps: 15, weightKg: 40 },
+                { setNumber: 4, reps: 16, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, true);
+        return actual;
+      },
+    },
+    {
+      name: "upper rep bound false when fewer completed sets than planned are logged",
+      input: "planned set count exceeds the number of logged completed sets",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 12, weightKg: 40 },
+                { setNumber: 2, reps: 12, weightKg: 40 },
+                { setNumber: 3, reps: 12, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, false);
+        return actual;
+      },
+    },
+    {
+      name: "upper rep bound uses the first planned eligible work sets only",
+      input: "extra completed sets after the planned count do not repair a missed planned set",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 12, weightKg: 40 },
+                { setNumber: 2, reps: 12, weightKg: 40 },
+                { setNumber: 3, reps: 11, weightKg: 40 },
+                { setNumber: 4, reps: 12, weightKg: 40 },
+                { setNumber: 5, reps: 15, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, false);
+        return actual;
+      },
+    },
+    {
+      name: "upper rep bound false when prescribedRepHigh is missing",
+      input: "missing upper rep target never yields a load-transition signal",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: null,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 12, weightKg: 40 },
+                { setNumber: 2, reps: 12, weightKg: 40 },
+                { setNumber: 3, reps: 12, weightKg: 40 },
+                { setNumber: 4, reps: 12, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, false);
+        return actual;
+      },
+    },
+    {
+      name: "invalid prescribedRepHigh still fails at analyzer validation",
+      input: "non-positive upper rep targets are rejected before any signal is derived",
+      fn: () => {
+        assert.throws(
+          () =>
+            analyzeExercisePerformance(
+              buildInput({
+                prescription: {
+                  prescribedSets: 4,
+                  prescribedRepLow: 8,
+                  prescribedRepHigh: 0,
+                  prescribedRestSeconds: 90,
+                },
+              })
+            ),
+          /prescribedRepHigh must be a positive integer or null/
+        );
+      },
+    },
+    {
+      name: "upper rep bound false when there are no set logs",
+      input: "empty sessions never yield a transition signal",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: { sets: [] },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, false);
+        return actual;
+      },
+    },
+    {
+      name: "invalid reps still fail before any upper-bound signal is derived",
+      input: "zero, null, and non-integer reps remain invalid analyzer input",
+      fn: () => {
+        assert.throws(
+          () =>
+            analyzeExercisePerformance(
+              buildInput({
+                currentSession: {
+                  sets: [
+                    { setNumber: 1, reps: 12, weightKg: 40 },
+                    { setNumber: 2, reps: 0, weightKg: 40 },
+                    { setNumber: 3, reps: 12, weightKg: 40 },
+                  ],
+                },
+              })
+            ),
+          /currentSession\.sets\[1\]\.reps must be a positive integer/
+        );
+        assert.throws(
+          () =>
+            analyzeExercisePerformance(
+              buildInput({
+                currentSession: {
+                  sets: [
+                    { setNumber: 1, reps: 12, weightKg: 40 },
+                    { setNumber: 2, reps: null, weightKg: 40 },
+                    { setNumber: 3, reps: 12, weightKg: 40 },
+                  ],
+                },
+              })
+            ),
+          /currentSession\.sets\[1\]\.reps must be a positive integer/
+        );
+        assert.throws(
+          () =>
+            analyzeExercisePerformance(
+              buildInput({
+                currentSession: {
+                  sets: [
+                    { setNumber: 1, reps: 12, weightKg: 40 },
+                    { setNumber: 2, reps: 11.5, weightKg: 40 },
+                    { setNumber: 3, reps: 12, weightKg: 40 },
+                  ],
+                },
+              })
+            ),
+          /currentSession\.sets\[1\]\.reps must be a positive integer/
+        );
+      },
+    },
+    {
+      name: "upper rep bound false when the completed work is incomplete",
+      input: "a session missing planned completed sets is treated as not having reached the upper bound",
+      fn: () => {
+        const actual = analyzeExercisePerformance(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 12, weightKg: 40 },
+                { setNumber: 2, reps: 12, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, false);
+        return actual;
+      },
+    },
+    {
+      name: "upper rep bound derivation does not mutate analyzer input",
+      input: "the new signal remains a pure derivation from current session data",
+      fn: () => {
+        const frozenInput = deepFreeze(
+          buildInput({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            currentSession: {
+              sets: [
+                { setNumber: 1, reps: 12, weightKg: 40 },
+                { setNumber: 2, reps: 12, weightKg: 40 },
+                { setNumber: 3, reps: 12, weightKg: 40 },
+                { setNumber: 4, reps: 12, weightKg: 40 },
+              ],
+            },
+          })
+        );
+        const actual = analyzeExercisePerformance(frozenInput);
+        assert.equal(actual.observedPerformance.allPlannedSetsReachedUpperRepBound, true);
+        return actual;
+      },
+    },
+    {
       name: "empty set list",
       input: "current session has no sets",
       fn: () => {

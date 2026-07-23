@@ -151,6 +151,24 @@ function computeRate(numerator, denominator) {
   return roundToFour(numerator / denominator);
 }
 
+function deriveAllPlannedSetsReachedUpperRepBound(orderedSets, prescription) {
+  if (!isPositiveInteger(prescription.prescribedSets)) {
+    return false;
+  }
+
+  if (!isPositiveInteger(prescription.prescribedRepHigh)) {
+    return false;
+  }
+
+  if (orderedSets.length < prescription.prescribedSets) {
+    return false;
+  }
+
+  return orderedSets
+    .slice(0, prescription.prescribedSets)
+    .every((set) => isPositiveInteger(set.reps) && set.reps >= prescription.prescribedRepHigh);
+}
+
 function deriveSessionFacts(session, prescription) {
   const orderedSets = session.sets
     .map((set, index) => ({ ...set, __index: index }))
@@ -185,6 +203,10 @@ function deriveSessionFacts(session, prescription) {
     orderedSets.length === 0 ? null : buildSetSnapshot(orderedSets[orderedSets.length - 1]);
   const loggedSetCount = orderedSets.length;
   const completedSetCount = loggedSetCount;
+  const allPlannedSetsReachedUpperRepBound = deriveAllPlannedSetsReachedUpperRepBound(
+    orderedSets,
+    prescription
+  );
   const prescribedSetCompletionRate = computeRate(
     Math.min(loggedSetCount, prescription.prescribedSets),
     prescription.prescribedSets
@@ -218,6 +240,7 @@ function deriveSessionFacts(session, prescription) {
     minimumWeightKg,
     bestSet,
     finalSet,
+    allPlannedSetsReachedUpperRepBound,
     prescribedSetCompletionRate,
     targetRepHitRate,
     sessionSuccessful,
@@ -326,6 +349,7 @@ export function analyzeExercisePerformance(input) {
       minimumWeightKg: currentFacts.minimumWeightKg,
       bestSet: currentFacts.bestSet,
       finalSet: currentFacts.finalSet,
+      allPlannedSetsReachedUpperRepBound: currentFacts.allPlannedSetsReachedUpperRepBound,
       prescribedSetCompletionRate: currentFacts.prescribedSetCompletionRate,
       targetRepHitRate: currentFacts.targetRepHitRate,
     },

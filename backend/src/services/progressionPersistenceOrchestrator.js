@@ -298,7 +298,8 @@ function buildProgressionPolicy({ prescription, exercise, progressionPolicyOverr
     progressionMode,
     allowsLoadAdjustment: progressionMode === "load" || progressionMode === "reps_then_load",
     allowsSetAdjustment: false,
-    allowsRepAdjustment: progressionMode === "reps",
+    allowsRepAdjustment:
+      progressionMode === "reps" || progressionMode === "reps_then_load",
     validIncrement: true,
   };
 

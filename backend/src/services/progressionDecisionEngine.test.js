@@ -70,7 +70,7 @@ function assertNoUndefined(value, path = "root") {
 }
 
 function buildAnalysis(overrides = {}) {
-  return {
+  const base = {
     exerciseId: 15,
     sourceSessionId: 501,
     prescription: {
@@ -91,6 +91,7 @@ function buildAnalysis(overrides = {}) {
       minimumWeightKg: 40,
       bestSet: { setNumber: 3, reps: 8, weightKg: 45 },
       finalSet: { setNumber: 3, reps: 8, weightKg: 45 },
+      allPlannedSetsReachedUpperRepBound: false,
       prescribedSetCompletionRate: 1,
       targetRepHitRate: 1,
     },
@@ -105,7 +106,23 @@ function buildAnalysis(overrides = {}) {
     },
     hasSufficientData: true,
     dataQualityFlags: [],
+  };
+
+  return {
+    ...base,
     ...overrides,
+    prescription: {
+      ...base.prescription,
+      ...(overrides.prescription ?? {}),
+    },
+    observedPerformance: {
+      ...base.observedPerformance,
+      ...(overrides.observedPerformance ?? {}),
+    },
+    historyFacts: {
+      ...base.historyFacts,
+      ...(overrides.historyFacts ?? {}),
+    },
   };
 }
 
@@ -130,7 +147,7 @@ function buildInput(overrides = {}) {
 }
 
 function buildRepsAnalysis(overrides = {}) {
-  return {
+  const base = {
     exerciseId: 52,
     sourceSessionId: 552,
     prescription: {
@@ -151,6 +168,7 @@ function buildRepsAnalysis(overrides = {}) {
       minimumWeightKg: null,
       bestSet: { setNumber: 3, reps: 18, weightKg: null },
       finalSet: { setNumber: 3, reps: 18, weightKg: null },
+      allPlannedSetsReachedUpperRepBound: false,
       prescribedSetCompletionRate: 1,
       targetRepHitRate: 1,
     },
@@ -165,7 +183,23 @@ function buildRepsAnalysis(overrides = {}) {
     },
     hasSufficientData: true,
     dataQualityFlags: [],
+  };
+
+  return {
+    ...base,
     ...overrides,
+    prescription: {
+      ...base.prescription,
+      ...(overrides.prescription ?? {}),
+    },
+    observedPerformance: {
+      ...base.observedPerformance,
+      ...(overrides.observedPerformance ?? {}),
+    },
+    historyFacts: {
+      ...base.historyFacts,
+      ...(overrides.historyFacts ?? {}),
+    },
   };
 }
 
@@ -190,7 +224,7 @@ function buildRepsInput(overrides = {}) {
 }
 
 function buildTimeAnalysis(overrides = {}) {
-  return {
+  const base = {
     exerciseId: 31,
     sourceSessionId: 631,
     prescription: {
@@ -211,6 +245,7 @@ function buildTimeAnalysis(overrides = {}) {
       minimumWeightKg: null,
       bestSet: { setNumber: 3, reps: 35, weightKg: null },
       finalSet: { setNumber: 3, reps: 35, weightKg: null },
+      allPlannedSetsReachedUpperRepBound: false,
       prescribedSetCompletionRate: 1,
       targetRepHitRate: 1,
     },
@@ -225,7 +260,23 @@ function buildTimeAnalysis(overrides = {}) {
     },
     hasSufficientData: true,
     dataQualityFlags: [],
+  };
+
+  return {
+    ...base,
     ...overrides,
+    prescription: {
+      ...base.prescription,
+      ...(overrides.prescription ?? {}),
+    },
+    observedPerformance: {
+      ...base.observedPerformance,
+      ...(overrides.observedPerformance ?? {}),
+    },
+    historyFacts: {
+      ...base.historyFacts,
+      ...(overrides.historyFacts ?? {}),
+    },
   };
 }
 
@@ -256,7 +307,7 @@ function buildRepsThenLoadInput(overrides = {}) {
       progressionMode: "reps_then_load",
       allowsLoadAdjustment: true,
       allowsSetAdjustment: false,
-      allowsRepAdjustment: false,
+      allowsRepAdjustment: true,
       validIncrement: true,
     },
     recoveryConstraint: null,
@@ -1011,22 +1062,102 @@ async function main() {
       },
     },
     {
-      name: "reps_then_load mode remains accepted unchanged",
-      input: "existing hybrid mode still increases load",
+      name: "reps_then_load below the upper rep bound increases reps",
+      input: "full success below the prescribed high reps stays in the repetition phase",
       fn: () => {
-        const actual = decideProgression(
-          buildInput({
-            progressionPolicy: {
-              progressionMode: "reps_then_load",
-              allowsLoadAdjustment: true,
-              allowsSetAdjustment: false,
-              allowsRepAdjustment: false,
-              validIncrement: true,
+        const input = buildRepsThenLoadInput({
+          analysis: buildAnalysis({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
             },
-          })
-        );
-        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
-        assert.equal(actual.loadAdjustmentSteps, 1);
+            observedPerformance: {
+              loggedSetCount: 4,
+              completedSetCount: 4,
+              successfulSetCount: 4,
+              failedSetCount: 0,
+              totalReps: 47,
+              totalVolumeKg: 1880,
+              averageWeightKg: 40,
+              maximumWeightKg: 40,
+              minimumWeightKg: 40,
+              bestSet: { setNumber: 1, reps: 12, weightKg: 40 },
+              finalSet: { setNumber: 4, reps: 12, weightKg: 40 },
+              allPlannedSetsReachedUpperRepBound: false,
+              prescribedSetCompletionRate: 1,
+              targetRepHitRate: 1,
+            },
+          }),
+        });
+        const frozenInput = deepFreeze(structuredClone(input));
+        const actual = decideProgression(frozenInput);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.INCREASE_REPS,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 1,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_REP_SUCCESS,
+          secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+          confidence: 0.65,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+        return actual;
+      },
+    },
+    {
+      name: "reps_then_load at the upper rep bound increases load",
+      input: "full success with every planned set at the prescribed high reps transitions to load",
+      fn: () => {
+        const input = buildRepsThenLoadInput({
+          analysis: buildAnalysis({
+            prescription: {
+              prescribedSets: 4,
+              prescribedRepLow: 8,
+              prescribedRepHigh: 12,
+              prescribedRestSeconds: 90,
+            },
+            observedPerformance: {
+              loggedSetCount: 4,
+              completedSetCount: 4,
+              successfulSetCount: 4,
+              failedSetCount: 0,
+              totalReps: 48,
+              totalVolumeKg: 1920,
+              averageWeightKg: 40,
+              maximumWeightKg: 40,
+              minimumWeightKg: 40,
+              bestSet: { setNumber: 1, reps: 12, weightKg: 40 },
+              finalSet: { setNumber: 4, reps: 12, weightKg: 40 },
+              allPlannedSetsReachedUpperRepBound: true,
+              prescribedSetCompletionRate: 1,
+              targetRepHitRate: 1,
+            },
+          }),
+        });
+        const frozenInput = deepFreeze(structuredClone(input));
+        const actual = decideProgression(frozenInput);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.INCREASE_LOAD,
+          loadAdjustmentSteps: 1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_SUCCESS,
+          secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+          confidence: 0.8,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
         return actual;
       },
     },
@@ -1064,6 +1195,256 @@ async function main() {
           shouldPersist: true,
           rulesVersion: PROGRESSION_RULES_VERSION,
         });
+        return actual;
+      },
+    },
+    {
+      name: "reps_then_load performance improvement below the upper bound increases reps",
+      input: "explicit false upper-bound signal prevents a premature load increase",
+      fn: () => {
+        const actual = decideProgression(
+          buildRepsThenLoadInput({
+            analysis: buildAnalysis({
+              prescription: {
+                prescribedSets: 4,
+                prescribedRepLow: 8,
+                prescribedRepHigh: 12,
+                prescribedRestSeconds: 90,
+              },
+              observedPerformance: {
+                loggedSetCount: 4,
+                completedSetCount: 4,
+                successfulSetCount: 4,
+                failedSetCount: 0,
+                totalReps: 47,
+                totalVolumeKg: 1880,
+                averageWeightKg: 40,
+                maximumWeightKg: 40,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 1, reps: 12, weightKg: 40 },
+                finalSet: { setNumber: 4, reps: 12, weightKg: 40 },
+                allPlannedSetsReachedUpperRepBound: false,
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 1,
+              },
+              historyFacts: {
+                previousSessionWeightKg: 40,
+                weightDeltaKg: 0,
+                weightDeltaPercent: 0,
+                previousPrescribedSetCompletionRate: 0.75,
+                prescribedSetCompletionRateDelta: 0.25,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.INCREASE_REPS,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 1,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
+          secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+          confidence: 0.65,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+        return actual;
+      },
+    },
+    {
+      name: "reps_then_load performance improvement at the upper bound increases load",
+      input: "explicit true upper-bound signal transitions the successful hybrid mode into load progression",
+      fn: () => {
+        const actual = decideProgression(
+          buildRepsThenLoadInput({
+            analysis: buildAnalysis({
+              prescription: {
+                prescribedSets: 4,
+                prescribedRepLow: 8,
+                prescribedRepHigh: 12,
+                prescribedRestSeconds: 90,
+              },
+              observedPerformance: {
+                loggedSetCount: 4,
+                completedSetCount: 4,
+                successfulSetCount: 4,
+                failedSetCount: 0,
+                totalReps: 48,
+                totalVolumeKg: 1920,
+                averageWeightKg: 40,
+                maximumWeightKg: 40,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 1, reps: 12, weightKg: 40 },
+                finalSet: { setNumber: 4, reps: 12, weightKg: 40 },
+                allPlannedSetsReachedUpperRepBound: true,
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 1,
+              },
+              historyFacts: {
+                previousSessionWeightKg: 40,
+                weightDeltaKg: 0,
+                weightDeltaPercent: 0,
+                previousPrescribedSetCompletionRate: 0.75,
+                prescribedSetCompletionRateDelta: 0.25,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.INCREASE_LOAD,
+          loadAdjustmentSteps: 1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
+          secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+          confidence: 0.65,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+        return actual;
+      },
+    },
+    {
+      name: "reps_then_load missing upper-bound signal fails validation instead of producing load increase",
+      input: "the hybrid transition signal is now a required analyzer output",
+      fn: () => {
+        expectValidationError(
+          () =>
+            decideProgression(
+              buildRepsThenLoadInput({
+                analysis: buildAnalysis({
+                  prescription: {
+                    prescribedSets: 4,
+                    prescribedRepLow: 8,
+                    prescribedRepHigh: 12,
+                    prescribedRestSeconds: 90,
+                  },
+                  observedPerformance: {
+                    loggedSetCount: 4,
+                    completedSetCount: 4,
+                    successfulSetCount: 4,
+                    failedSetCount: 0,
+                    totalReps: 48,
+                    totalVolumeKg: 1920,
+                    averageWeightKg: 40,
+                    maximumWeightKg: 40,
+                    minimumWeightKg: 40,
+                    bestSet: { setNumber: 1, reps: 12, weightKg: 40 },
+                    finalSet: { setNumber: 4, reps: 12, weightKg: 40 },
+                    allPlannedSetsReachedUpperRepBound: undefined,
+                    prescribedSetCompletionRate: 1,
+                    targetRepHitRate: 1,
+                  },
+                }),
+              })
+            ),
+          "allPlannedSetsReachedUpperRepBound must be a boolean"
+        );
+      },
+    },
+    {
+      name: "reps_then_load deload still wins over an upper-bound success signal",
+      input: "the new transition signal does not override accepted deload precedence",
+      fn: () => {
+        const actual = decideProgression(
+          buildRepsThenLoadInput({
+            analysis: buildAnalysis({
+              prescription: {
+                prescribedSets: 4,
+                prescribedRepLow: 8,
+                prescribedRepHigh: 12,
+                prescribedRestSeconds: 90,
+              },
+              observedPerformance: {
+                loggedSetCount: 4,
+                completedSetCount: 4,
+                successfulSetCount: 4,
+                failedSetCount: 0,
+                totalReps: 48,
+                totalVolumeKg: 1920,
+                averageWeightKg: 40,
+                maximumWeightKg: 40,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 1, reps: 12, weightKg: 40 },
+                finalSet: { setNumber: 4, reps: 12, weightKg: 40 },
+                allPlannedSetsReachedUpperRepBound: true,
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 1,
+              },
+              historyFacts: {
+                previousSessionWeightKg: 47.5,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.2632,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: -0.3333,
+                consecutiveSuccessfulSessions: 0,
+                consecutiveFailedSessions: 2,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.loadAdjustmentSteps, -1);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        return actual;
+      },
+    },
+    {
+      name: "reps_then_load maintain remains unchanged without positive progression evidence",
+      input: "fully met targets without repeated success or improvement still hold",
+      fn: () => {
+        const actual = decideProgression(
+          buildRepsThenLoadInput({
+            analysis: buildAnalysis({
+              prescription: {
+                prescribedSets: 4,
+                prescribedRepLow: 8,
+                prescribedRepHigh: 12,
+                prescribedRestSeconds: 90,
+              },
+              observedPerformance: {
+                loggedSetCount: 4,
+                completedSetCount: 4,
+                successfulSetCount: 4,
+                failedSetCount: 0,
+                totalReps: 48,
+                totalVolumeKg: 1920,
+                averageWeightKg: 40,
+                maximumWeightKg: 40,
+                minimumWeightKg: 40,
+                bestSet: { setNumber: 1, reps: 12, weightKg: 40 },
+                finalSet: { setNumber: 4, reps: 12, weightKg: 40 },
+                allPlannedSetsReachedUpperRepBound: true,
+                prescribedSetCompletionRate: 1,
+                targetRepHitRate: 1,
+              },
+              historyFacts: {
+                previousSessionWeightKg: 40,
+                weightDeltaKg: 0,
+                weightDeltaPercent: 0,
+                previousPrescribedSetCompletionRate: 1,
+                prescribedSetCompletionRateDelta: 0,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+          })
+        );
+        assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
+        assert.equal(actual.reasonCode, REASON_CODES.TARGETS_FULLY_MET);
         return actual;
       },
     },
@@ -2165,7 +2546,7 @@ async function main() {
       fn: () => {
         assert.equal(Array.isArray(RULE_CATALOG), true);
         assert.equal(RULE_CATALOG.length, 14);
-        assert.equal(PROGRESSION_RULES_VERSION, "progression_decision_rules_v3");
+        assert.equal(PROGRESSION_RULES_VERSION, "progression_decision_rules_v4");
         for (const rule of RULE_CATALOG) {
           assert.equal(typeof rule.id, "string");
           assert.equal(typeof rule.priority, "number");

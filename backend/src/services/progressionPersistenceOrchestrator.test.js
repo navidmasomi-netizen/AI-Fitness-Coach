@@ -358,6 +358,7 @@ function buildAnalysis(overrides = {}) {
       minimumWeightKg: 40,
       bestSet: { setNumber: 3, reps: 8, weightKg: 45 },
       finalSet: { setNumber: 3, reps: 8, weightKg: 45 },
+      allPlannedSetsReachedUpperRepBound: false,
       prescribedSetCompletionRate: 1,
       targetRepHitRate: 1,
     },
@@ -2867,6 +2868,131 @@ async function main() {
           assert.equal(actual.recommendation.recommendedTargetHigh, null);
           assert.equal(actual.recommendation.reasonCode, REASON_CODES.REPEATED_REP_SUCCESS);
           assert.equal(actual.recommendation.confidence, actual.decision.confidence);
+          return actual;
+        } finally {
+          await cleanupUserArtifacts(fixture.user.id);
+        }
+      },
+    },
+    {
+      name: "created -> reps_then_load below upper bound persists increase reps",
+      input: "active policy construction now allows hybrid mode to remain in repetition progression",
+      fn: async () => {
+        const fixture = await createProgramFixture(nextTestSuffix("rtl-reps"));
+        try {
+          const targetExercise = await findTargetExerciseByProgressionType(
+            fixture.program.id,
+            "reps_then_load"
+          );
+          assert.notEqual(targetExercise, null);
+
+          const belowUpperBoundSets = Array.from({ length: targetExercise.sets }, (_, index) => ({
+            setNumber: index + 1,
+            reps:
+              index === targetExercise.sets - 1
+                ? targetExercise.repRangeHigh - 1
+                : targetExercise.repRangeHigh,
+            weightKg: 30,
+          }));
+
+          await createCompletedExerciseSession({
+            userId: fixture.user.id,
+            programId: fixture.program.id,
+            programDayId: targetExercise.programDayId,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-01T09:00:00.000Z"),
+            sets: belowUpperBoundSets,
+          });
+
+          const sourceSession = await createCompletedExerciseSession({
+            userId: fixture.user.id,
+            programId: fixture.program.id,
+            programDayId: targetExercise.programDayId,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-08T09:00:00.000Z"),
+            sets: belowUpperBoundSets,
+          });
+
+          const actual = await orchestrateProgressionPersistence({
+            userId: fixture.user.id,
+            exerciseId: targetExercise.exerciseId,
+            sourceSessionId: sourceSession.id,
+            recoveryConstraint: NEUTRAL_RECOVERY,
+          });
+
+          assert.equal(actual.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
+          assert.equal(actual.decision.decisionType, DECISION_TYPES.INCREASE_REPS);
+          assert.equal(actual.decision.loadAdjustmentSteps, 0);
+          assert.equal(actual.decision.repAdjustment, 1);
+          assert.equal(actual.recommendation.recommendationType, "increase");
+          assert.equal(actual.recommendation.decisionType, DECISION_TYPES.INCREASE_REPS);
+          assert.equal(actual.recommendation.loadAdjustmentSteps, 0);
+          assert.equal(actual.recommendation.repAdjustment, 1);
+          assert.equal(actual.recommendation.setAdjustment, 0);
+          assert.equal(actual.recommendation.durationAdjustmentSteps, 0);
+          assert.equal(actual.recommendation.reasonCode, REASON_CODES.REPEATED_REP_SUCCESS);
+          assert.equal(actual.recommendation.rulesVersion, PROGRESSION_RULES_VERSION);
+          return actual;
+        } finally {
+          await cleanupUserArtifacts(fixture.user.id);
+        }
+      },
+    },
+    {
+      name: "created -> reps_then_load at upper bound persists increase load",
+      input: "active policy construction still allows the hybrid mode to transition into load progression",
+      fn: async () => {
+        const fixture = await createProgramFixture(nextTestSuffix("rtl-load"));
+        try {
+          const targetExercise = await findTargetExerciseByProgressionType(
+            fixture.program.id,
+            "reps_then_load"
+          );
+          assert.notEqual(targetExercise, null);
+
+          const atUpperBoundSets = buildLoggedSets({
+            targetExercise,
+            reps: targetExercise.repRangeHigh,
+            weightKg: 30,
+          });
+
+          await createCompletedExerciseSession({
+            userId: fixture.user.id,
+            programId: fixture.program.id,
+            programDayId: targetExercise.programDayId,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-01T09:00:00.000Z"),
+            sets: atUpperBoundSets,
+          });
+
+          const sourceSession = await createCompletedExerciseSession({
+            userId: fixture.user.id,
+            programId: fixture.program.id,
+            programDayId: targetExercise.programDayId,
+            exerciseId: targetExercise.exerciseId,
+            startedAt: new Date("2026-07-08T09:00:00.000Z"),
+            sets: atUpperBoundSets,
+          });
+
+          const actual = await orchestrateProgressionPersistence({
+            userId: fixture.user.id,
+            exerciseId: targetExercise.exerciseId,
+            sourceSessionId: sourceSession.id,
+            recoveryConstraint: NEUTRAL_RECOVERY,
+          });
+
+          assert.equal(actual.outcome, PROGRESSION_PERSISTENCE_OUTCOMES.CREATED);
+          assert.equal(actual.decision.decisionType, DECISION_TYPES.INCREASE_LOAD);
+          assert.equal(actual.decision.loadAdjustmentSteps, 1);
+          assert.equal(actual.decision.repAdjustment, 0);
+          assert.equal(actual.recommendation.recommendationType, "increase");
+          assert.equal(actual.recommendation.decisionType, DECISION_TYPES.INCREASE_LOAD);
+          assert.equal(actual.recommendation.loadAdjustmentSteps, 1);
+          assert.equal(actual.recommendation.repAdjustment, 0);
+          assert.equal(actual.recommendation.setAdjustment, 0);
+          assert.equal(actual.recommendation.durationAdjustmentSteps, 0);
+          assert.equal(actual.recommendation.reasonCode, REASON_CODES.REPEATED_SUCCESS);
+          assert.equal(actual.recommendation.rulesVersion, PROGRESSION_RULES_VERSION);
           return actual;
         } finally {
           await cleanupUserArtifacts(fixture.user.id);
