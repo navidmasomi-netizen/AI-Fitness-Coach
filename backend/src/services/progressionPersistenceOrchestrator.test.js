@@ -28,6 +28,7 @@ const NEUTRAL_RECOVERY = Object.freeze({
   signalStrength: "moderate",
   reasonCode: null,
 });
+const RUN_SUFFIX = `${process.pid}-${Date.now().toString(36)}`;
 let fixtureSequence = 0;
 
 function serializeForLog(value) {
@@ -50,7 +51,7 @@ function printCaseStart(name, input) {
 
 function nextTestSuffix(prefix) {
   fixtureSequence += 1;
-  return `${prefix}-${fixtureSequence}`;
+  return `${prefix}-${RUN_SUFFIX}-${fixtureSequence}`;
 }
 
 function printCaseResult(passed, actual, error) {
@@ -1700,6 +1701,157 @@ async function main() {
       },
     },
     {
+      name: "mapping -> reps_then_load deload preserves abstract negative load step",
+      input: "hybrid mode deload maps exactly like current production behavior",
+      fn: () => {
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decision: buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE),
+          analysis: buildAnalysis({
+            historyFacts: {
+              previousSessionWeightKg: 42.5,
+              weightDeltaKg: -2.5,
+              weightDeltaPercent: -5.8824,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: -0.3333,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+          prescription: {
+            sets: 3,
+            repRangeLow: 8,
+            repRangeHigh: 12,
+            restSeconds: 90,
+            progressionType: "reps_then_load",
+          },
+          exercise: {
+            id: 15,
+            progressionType: "reps_then_load",
+          },
+          previousRecommendation: null,
+        });
+
+        assert.equal(actual.recommendationType, "deload");
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.loadAdjustmentSteps, -1);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.setAdjustment, 0);
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
+        return actual;
+      },
+    },
+    {
+      name: "mapping -> time-mode deload preserves accepted all-zero abstract payload",
+      input: "time-mode deload stays persistable with zero adjustments",
+      fn: () => {
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 22,
+          sourceSessionId: 722,
+          decision: buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+            exerciseId: 22,
+            sourceSessionId: 722,
+            loadAdjustmentSteps: 0,
+            repAdjustment: 0,
+            setAdjustment: 0,
+            durationAdjustmentSteps: 0,
+            confidence: 0.6,
+          }),
+          analysis: buildAnalysis({
+            exerciseId: 22,
+            sourceSessionId: 722,
+            prescription: {
+              prescribedSets: 3,
+              prescribedRepLow: 20,
+              prescribedRepHigh: 60,
+              prescribedRestSeconds: 30,
+            },
+            historyFacts: {
+              previousSessionWeightKg: null,
+              weightDeltaKg: null,
+              weightDeltaPercent: null,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: -0.3333,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+          prescription: {
+            sets: 3,
+            repRangeLow: 20,
+            repRangeHigh: 60,
+            restSeconds: 30,
+            progressionType: "time",
+          },
+          exercise: {
+            id: 22,
+            progressionType: "time",
+          },
+          previousRecommendation: null,
+        });
+
+        assert.equal(actual.recommendationType, "deload");
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.loadAdjustmentSteps, 0);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.setAdjustment, 0);
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        assert.equal(actual.rulesVersion, PROGRESSION_RULES_VERSION);
+        return actual;
+      },
+    },
+    {
+      name: "mapping -> deload persistence accepts broader abstract negative step magnitudes",
+      input: "load-mode deload with -2 remains accepted unchanged",
+      fn: () => {
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decision: buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+            loadAdjustmentSteps: -2,
+          }),
+          analysis: buildAnalysis({
+            historyFacts: {
+              previousSessionWeightKg: 42.5,
+              weightDeltaKg: -2.5,
+              weightDeltaPercent: -5.8824,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: -0.3333,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+          prescription: {
+            sets: 3,
+            repRangeLow: 8,
+            repRangeHigh: 12,
+            restSeconds: 90,
+            progressionType: "load",
+          },
+          exercise: {
+            id: 15,
+            progressionType: "load",
+          },
+          previousRecommendation: null,
+        });
+
+        assert.equal(actual.recommendationType, "deload");
+        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
+        assert.equal(actual.loadAdjustmentSteps, -2);
+        assert.equal(actual.repAdjustment, 0);
+        assert.equal(actual.setAdjustment, 0);
+        assert.equal(actual.durationAdjustmentSteps, 0);
+        return actual;
+      },
+    },
+    {
       name: "persistability -> increase persists",
       input: "INCREASE_LOAD classification",
       fn: () => {
@@ -2133,6 +2285,82 @@ async function main() {
           /decision\.setAdjustment === 0/
         );
 
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                  loadAdjustmentSteps: 0,
+                })
+              )
+            ),
+          /DELOAD in load or reps_then_load mode requires decision\.loadAdjustmentSteps < 0/
+        );
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                  loadAdjustmentSteps: 1,
+                })
+              )
+            ),
+          /DELOAD in load or reps_then_load mode requires decision\.loadAdjustmentSteps < 0/
+        );
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                  repAdjustment: -1,
+                })
+              )
+            ),
+          /decision\.repAdjustment === 0/
+        );
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                  loadAdjustmentSteps: -1,
+                  repAdjustment: -1,
+                })
+              )
+            ),
+          /decision\.repAdjustment === 0/
+        );
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                  repAdjustment: 0,
+                }),
+                "reps"
+              )
+            ),
+          /decision\.loadAdjustmentSteps === 0/
+        );
+
+        assert.throws(
+          () =>
+            mapDecisionToProgressionRecommendationData(
+              buildInput(
+                buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                  loadAdjustmentSteps: -1,
+                  repAdjustment: -1,
+                }),
+                "reps"
+              )
+            ),
+          /decision\.loadAdjustmentSteps === 0/
+        );
+
         return { error: "validated" };
       },
     },
@@ -2308,6 +2536,50 @@ async function main() {
                   }),
                 }),
               /rulesVersion must be a non-empty string/
+            );
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                    decisionType: null,
+                  }),
+                }),
+              /decision\.decisionType must be a non-empty string/
+            );
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                    loadAdjustmentSteps: Number.NaN,
+                  }),
+                }),
+              /decision\.loadAdjustmentSteps must be a finite integer/
+            );
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                    loadAdjustmentSteps: Number.NEGATIVE_INFINITY,
+                  }),
+                }),
+              /decision\.loadAdjustmentSteps must be a finite integer/
+            );
+
+            assert.throws(
+              () =>
+                mapDecisionToProgressionRecommendationData({
+                  ...baseInput,
+                  decision: buildDecision(DECISION_TYPES.DELOAD, REASON_CODES.REPEATED_FAILURE, {
+                    loadAdjustmentSteps: "-1",
+                  }),
+                }),
+              /decision\.loadAdjustmentSteps must be a finite integer/
             );
           }
         );

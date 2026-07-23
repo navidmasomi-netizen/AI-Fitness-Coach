@@ -249,6 +249,42 @@ function buildTimeInput(overrides = {}) {
   };
 }
 
+function buildRepsThenLoadInput(overrides = {}) {
+  return {
+    analysis: buildAnalysis(),
+    progressionPolicy: {
+      progressionMode: "reps_then_load",
+      allowsLoadAdjustment: true,
+      allowsSetAdjustment: false,
+      allowsRepAdjustment: false,
+      validIncrement: true,
+    },
+    recoveryConstraint: null,
+    previousDecisionContext: null,
+    existingRecommendationContext: null,
+    policyThresholds: {
+      deloadFailureStreak: 2,
+    },
+    ...overrides,
+  };
+}
+
+function assertExactDecisionPayload(actual, expected) {
+  assert.equal(actual.exerciseId, expected.exerciseId);
+  assert.equal(actual.sourceSessionId, expected.sourceSessionId);
+  assert.equal(actual.decisionType, expected.decisionType);
+  assert.equal(actual.loadAdjustmentSteps, expected.loadAdjustmentSteps);
+  assert.equal(actual.setAdjustment, expected.setAdjustment);
+  assert.equal(actual.repAdjustment, expected.repAdjustment);
+  assert.equal(actual.durationAdjustmentSteps, expected.durationAdjustmentSteps);
+  assert.equal(actual.reasonCode, expected.reasonCode);
+  assert.deepEqual(actual.secondaryReasonCodes, expected.secondaryReasonCodes);
+  assert.equal(actual.confidence, expected.confidence);
+  assert.equal(actual.requiresManualReview, expected.requiresManualReview);
+  assert.equal(actual.shouldPersist, expected.shouldPersist);
+  assert.equal(actual.rulesVersion, expected.rulesVersion);
+}
+
 function expectValidationError(fn, messagePart) {
   assert.throws(fn, (error) => {
     assert.equal(error instanceof ProgressionDecisionValidationError, true);
@@ -425,41 +461,137 @@ async function main() {
       name: "reps mode repeated failure deloads without load adjustment",
       input: "repeated failed bodyweight sessions",
       fn: () => {
-        const actual = decideProgression(
-          buildRepsInput({
+        const input = buildRepsInput({
+          analysis: buildRepsAnalysis({
+            observedPerformance: {
+              loggedSetCount: 3,
+              completedSetCount: 3,
+              successfulSetCount: 1,
+              failedSetCount: 2,
+              totalReps: 30,
+              totalVolumeKg: 0,
+              averageWeightKg: null,
+              maximumWeightKg: null,
+              minimumWeightKg: null,
+              bestSet: { setNumber: 1, reps: 12, weightKg: null },
+              finalSet: { setNumber: 3, reps: 8, weightKg: null },
+              prescribedSetCompletionRate: 1,
+              targetRepHitRate: 0.3333,
+            },
+            historyFacts: {
+              previousSessionWeightKg: null,
+              weightDeltaKg: null,
+              weightDeltaPercent: null,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: -0.6667,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+        });
+        const frozenInput = deepFreeze(structuredClone(input));
+        const actual = decideProgression(frozenInput);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 52,
+          sourceSessionId: 552,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: -1,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+        return actual;
+      },
+    },
+    {
+      name: "deload threshold boundaries remain exact at 1, 2, and 3 consecutive failures",
+      input: "otherwise identical load-mode inputs around the accepted threshold",
+      fn: () => {
+        const buildThresholdInput = (consecutiveFailedSessions) =>
+          buildInput({
             analysis: buildRepsAnalysis({
-              observedPerformance: {
-                loggedSetCount: 3,
-                completedSetCount: 3,
-                successfulSetCount: 1,
-                failedSetCount: 2,
-                totalReps: 30,
-                totalVolumeKg: 0,
-                averageWeightKg: null,
-                maximumWeightKg: null,
-                minimumWeightKg: null,
-                bestSet: { setNumber: 1, reps: 12, weightKg: null },
-                finalSet: { setNumber: 3, reps: 8, weightKg: null },
-                prescribedSetCompletionRate: 1,
-                targetRepHitRate: 0.3333,
+              exerciseId: 15,
+              sourceSessionId: 501,
+              prescription: {
+                prescribedSets: 3,
+                prescribedRepLow: 8,
+                prescribedRepHigh: 12,
+                prescribedRestSeconds: 90,
               },
               historyFacts: {
-                previousSessionWeightKg: null,
-                weightDeltaKg: null,
-                weightDeltaPercent: null,
+                previousSessionWeightKg: 47.5,
+                weightDeltaKg: -2.5,
+                weightDeltaPercent: -5.2632,
                 previousPrescribedSetCompletionRate: 1,
-                prescribedSetCompletionRateDelta: -0.6667,
+                prescribedSetCompletionRateDelta: 0,
                 consecutiveSuccessfulSessions: 0,
-                consecutiveFailedSessions: 2,
+                consecutiveFailedSessions,
               },
             }),
-          })
-        );
-        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
-        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
-        assert.equal(actual.loadAdjustmentSteps, 0);
-        assert.equal(actual.repAdjustment, -1);
-        return actual;
+          });
+
+        const belowThreshold = decideProgression(buildThresholdInput(1));
+        assertExactDecisionPayload(belowThreshold, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.MAINTAIN,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.MISSING_LOAD_DATA,
+          secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+          confidence: 0.5,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+
+        const atThreshold = decideProgression(buildThresholdInput(2));
+        assertExactDecisionPayload(atThreshold, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: -1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+
+        const aboveThreshold = decideProgression(buildThresholdInput(3));
+        assertExactDecisionPayload(aboveThreshold, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: -1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+
+        return {
+          belowThreshold,
+          atThreshold,
+          aboveThreshold,
+        };
       },
     },
     {
@@ -827,6 +959,58 @@ async function main() {
       },
     },
     {
+      name: "time mode deload intentionally carries no abstract adjustment",
+      input: "accepted time-mode deload keeps every adjustment field at zero",
+      fn: () => {
+        const input = buildTimeInput({
+          analysis: buildTimeAnalysis({
+            observedPerformance: {
+              loggedSetCount: 3,
+              completedSetCount: 3,
+              successfulSetCount: 1,
+              failedSetCount: 2,
+              totalReps: 75,
+              totalVolumeKg: 0,
+              averageWeightKg: null,
+              maximumWeightKg: null,
+              minimumWeightKg: null,
+              bestSet: { setNumber: 1, reps: 25, weightKg: null },
+              finalSet: { setNumber: 3, reps: 25, weightKg: null },
+              prescribedSetCompletionRate: 1,
+              targetRepHitRate: 0.3333,
+            },
+            historyFacts: {
+              previousSessionWeightKg: null,
+              weightDeltaKg: null,
+              weightDeltaPercent: null,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: -0.6667,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+        });
+        const frozenInput = deepFreeze(structuredClone(input));
+        const actual = decideProgression(frozenInput);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 31,
+          sourceSessionId: 631,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+        return actual;
+      },
+    },
+    {
       name: "reps_then_load mode remains accepted unchanged",
       input: "existing hybrid mode still increases load",
       fn: () => {
@@ -843,6 +1027,43 @@ async function main() {
         );
         assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
         assert.equal(actual.loadAdjustmentSteps, 1);
+        return actual;
+      },
+    },
+    {
+      name: "reps_then_load mode deload uses abstract negative load step",
+      input: "current hybrid mode deload stays on loadAdjustmentSteps",
+      fn: () => {
+        const input = buildRepsThenLoadInput({
+          analysis: buildAnalysis({
+            historyFacts: {
+              previousSessionWeightKg: 47.5,
+              weightDeltaKg: -2.5,
+              weightDeltaPercent: -5.2632,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: -0.3333,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+        });
+        const frozenInput = deepFreeze(structuredClone(input));
+        const actual = decideProgression(frozenInput);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: -1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
         return actual;
       },
     },
@@ -994,39 +1215,103 @@ async function main() {
       name: "repeated failed sessions deload",
       input: "history failure streak meets deload threshold",
       fn: () => {
+        const input = buildInput({
+          analysis: buildAnalysis({
+            observedPerformance: {
+              loggedSetCount: 3,
+              completedSetCount: 3,
+              successfulSetCount: 1,
+              failedSetCount: 2,
+              totalReps: 23,
+              totalVolumeKg: 1010,
+              averageWeightKg: 42.5,
+              maximumWeightKg: 45,
+              minimumWeightKg: 40,
+              bestSet: { setNumber: 3, reps: 5, weightKg: 45 },
+              finalSet: { setNumber: 3, reps: 5, weightKg: 45 },
+              prescribedSetCompletionRate: 1,
+              targetRepHitRate: 0.3333,
+            },
+            historyFacts: {
+              previousSessionWeightKg: 47.5,
+              weightDeltaKg: -2.5,
+              weightDeltaPercent: -5.2632,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: 0,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+        });
+        const frozenInput = deepFreeze(structuredClone(input));
+        const actual = decideProgression(frozenInput);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: -1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+        return actual;
+      },
+    },
+    {
+      name: "repeated failure precedence beats repeated success increase",
+      input: "deload wins when repeated failure threshold and repeated success evidence coexist",
+      fn: () => {
         const actual = decideProgression(
           buildInput({
             analysis: buildAnalysis({
               observedPerformance: {
                 loggedSetCount: 3,
                 completedSetCount: 3,
-                successfulSetCount: 1,
-                failedSetCount: 2,
-                totalReps: 23,
-                totalVolumeKg: 1010,
+                successfulSetCount: 3,
+                failedSetCount: 0,
+                totalReps: 30,
+                totalVolumeKg: 1265,
                 averageWeightKg: 42.5,
                 maximumWeightKg: 45,
                 minimumWeightKg: 40,
-                bestSet: { setNumber: 3, reps: 5, weightKg: 45 },
-                finalSet: { setNumber: 3, reps: 5, weightKg: 45 },
+                bestSet: { setNumber: 3, reps: 8, weightKg: 45 },
+                finalSet: { setNumber: 3, reps: 8, weightKg: 45 },
                 prescribedSetCompletionRate: 1,
-                targetRepHitRate: 0.3333,
+                targetRepHitRate: 1,
               },
               historyFacts: {
-                previousSessionWeightKg: 47.5,
-                weightDeltaKg: -2.5,
-                weightDeltaPercent: -5.2632,
+                previousSessionWeightKg: 42.5,
+                weightDeltaKg: 2.5,
+                weightDeltaPercent: 5.8824,
                 previousPrescribedSetCompletionRate: 1,
                 prescribedSetCompletionRateDelta: 0,
-                consecutiveSuccessfulSessions: 0,
+                consecutiveSuccessfulSessions: 2,
                 consecutiveFailedSessions: 2,
               },
             }),
           })
         );
-        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
-        assert.equal(actual.loadAdjustmentSteps, -1);
-        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: -1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
         return actual;
       },
     },
@@ -1420,8 +1705,21 @@ async function main() {
             }),
           })
         );
-        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
-        assert.equal(actual.reasonCode, REASON_CODES.REPEATED_FAILURE);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: -1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
         return actual;
       },
     },
@@ -1499,10 +1797,21 @@ async function main() {
             }),
           })
         );
-        assert.equal(actual.decisionType, DECISION_TYPES.DELOAD);
-        assert.equal(actual.loadAdjustmentSteps, -1);
-        assert.equal(actual.setAdjustment, 0);
-        assert.equal(actual.repAdjustment, 0);
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.DELOAD,
+          loadAdjustmentSteps: -1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.REPEATED_FAILURE,
+          secondaryReasonCodes: [REASON_CODES.PERFORMANCE_REGRESSED],
+          confidence: 0.6,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
         return actual;
       },
     },
