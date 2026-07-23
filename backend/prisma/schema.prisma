@@ -61,6 +61,15 @@ enum RecommendationType {
   deload
 }
 
+enum RecommendationLifecycleStatus {
+  PENDING
+  APPLIED
+  SUPERSEDED
+  INVALID
+  LEGACY_UNRESOLVABLE
+  IGNORED
+}
+
 model User {
   id                         Int                         @id @default(autoincrement())
   email                      String                      @unique
@@ -109,7 +118,7 @@ model UserProfile {
 }
 
 model Exercise {
-  id                         Int                         @id @default(autoincrement())
+  id                         Int                            @id @default(autoincrement())
   nameFa                     String
   nameEn                     String?
   description                String?
@@ -132,7 +141,8 @@ model Exercise {
   programDayUsage            ProgramDayExercise[]
   setLogs                    SetLog[]
   progressionRecommendations ProgressionRecommendation[]
-  createdAt                  DateTime                    @default(now())
+  workoutSessionTargets      WorkoutSessionExerciseTarget[]
+  createdAt                  DateTime                       @default(now())
 }
 
 model Program {
@@ -157,19 +167,21 @@ model ProgramDay {
 }
 
 model ProgramDayExercise {
-  id                       Int        @id @default(autoincrement())
+  id                       Int                            @id @default(autoincrement())
   programDayId             Int
-  programDay               ProgramDay @relation(fields: [programDayId], references: [id], onDelete: Cascade)
+  programDay               ProgramDay                     @relation(fields: [programDayId], references: [id], onDelete: Cascade)
   exerciseId               Int
-  exercise                 Exercise   @relation(fields: [exerciseId], references: [id])
+  exercise                 Exercise                       @relation(fields: [exerciseId], references: [id])
   order                    Int
   sets                     Int
   repRangeLow              Int
   repRangeHigh             Int
   restSeconds              Int
+  loadIncrementKg          Decimal?                       @db.Decimal(10, 2)
   durationIncrementSeconds Int?
   intensity                String?
   progressionType          String?
+  workoutSessionTargets    WorkoutSessionExerciseTarget[]
 }
 
 model UserProgram {
@@ -196,17 +208,21 @@ model UserProgramProfileSnapshot {
 }
 
 model WorkoutSession {
-  id                         Int                         @id @default(autoincrement())
+  id                         Int                            @id @default(autoincrement())
   userId                     Int
-  user                       User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                       User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
   programId                  Int?
   programDayId               Int?
-  startedAt                  DateTime                    @default(now())
+  startedAt                  DateTime                       @default(now())
   completedAt                DateTime?
-  status                     String                      @default("active")
+  status                     String                         @default("active")
   notes                      String?
   setLogs                    SetLog[]
+  exerciseTargets            WorkoutSessionExerciseTarget[]
+  recommendationApplications RecommendationApplication[]
   progressionRecommendations ProgressionRecommendation[]
+
+  @@index([userId, status, completedAt, id])
 }
 
 model SetLog {
@@ -222,13 +238,13 @@ model SetLog {
 }
 
 model ProgressionRecommendation {
-  id                      Int                @id @default(autoincrement())
+  id                      Int                            @id @default(autoincrement())
   userId                  Int
-  user                    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                    User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
   exerciseId              Int
-  exercise                Exercise           @relation(fields: [exerciseId], references: [id])
+  exercise                Exercise                       @relation(fields: [exerciseId], references: [id])
   sourceSessionId         Int
-  sourceSession           WorkoutSession     @relation(fields: [sourceSessionId], references: [id], onDelete: Cascade)
+  sourceSession           WorkoutSession                 @relation(fields: [sourceSessionId], references: [id], onDelete: Cascade)
   recommendationType      RecommendationType
   decisionType            String?
   previousWeightKg        Float?
@@ -238,18 +254,67 @@ model ProgressionRecommendation {
   recommendedTargetLow    Int?
   recommendedTargetHigh   Int?
   targetSets              Int?
-  loadAdjustmentSteps     Int                @default(0)
-  repAdjustment           Int                @default(0)
-  setAdjustment           Int                @default(0)
-  durationAdjustmentSteps Int                @default(0)
+  loadAdjustmentSteps     Int                            @default(0)
+  repAdjustment           Int                            @default(0)
+  setAdjustment           Int                            @default(0)
+  durationAdjustmentSteps Int                            @default(0)
   confidence              Float?
   reasonCode              String?
   rulesVersion            String?
+  lifecycleStatus         RecommendationLifecycleStatus?
   progressionType         String?
-  consecutiveFailures     Int                @default(0)
+  consecutiveFailures     Int                            @default(0)
   reason                  String
-  status                  String             @default("active")
-  createdAt               DateTime           @default(now())
+  status                  String                         @default("active")
+  createdAt               DateTime                       @default(now())
+  sourceTarget            WorkoutSessionExerciseTarget?
+  application             RecommendationApplication?
 
   @@unique([userId, exerciseId, sourceSessionId])
+  @@index([userId, exerciseId, lifecycleStatus, createdAt])
+}
+
+model WorkoutSessionExerciseTarget {
+  id                        Int                            @id @default(autoincrement())
+  sessionId                 Int
+  session                   WorkoutSession                 @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  programDayExerciseId      Int
+  programDayExercise        ProgramDayExercise             @relation(fields: [programDayExerciseId], references: [id], onDelete: Restrict)
+  exerciseId                Int
+  exercise                  Exercise                       @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  priorTargetId             Int?
+  priorTarget               WorkoutSessionExerciseTarget?  @relation("WorkoutSessionExerciseTargetLineage", fields: [priorTargetId], references: [id], onDelete: Restrict)
+  derivedTargets            WorkoutSessionExerciseTarget[] @relation("WorkoutSessionExerciseTargetLineage")
+  sourceRecommendationId    Int?                           @unique
+  sourceRecommendation      ProgressionRecommendation?     @relation(fields: [sourceRecommendationId], references: [id], onDelete: Restrict)
+  targetSets                Int
+  targetRepRangeLow         Int?
+  targetRepRangeHigh        Int?
+  exactRepTarget            Int?
+  targetLoadKg              Float?
+  targetDurationSeconds     Int?
+  progressionType           String
+  sourceDecisionType        String?
+  sourceRulesVersion        String?
+  createdAt                 DateTime                       @default(now())
+  recommendationApplication RecommendationApplication?
+
+  @@unique([sessionId, programDayExerciseId])
+  @@index([sessionId])
+  @@index([exerciseId, sessionId])
+  @@index([programDayExerciseId, sessionId])
+  @@index([priorTargetId])
+}
+
+model RecommendationApplication {
+  id               Int                          @id @default(autoincrement())
+  recommendationId Int                          @unique
+  recommendation   ProgressionRecommendation    @relation(fields: [recommendationId], references: [id], onDelete: Restrict)
+  workoutSessionId Int
+  workoutSession   WorkoutSession               @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
+  workoutTargetId  Int                          @unique
+  workoutTarget    WorkoutSessionExerciseTarget @relation(fields: [workoutTargetId], references: [id], onDelete: Cascade)
+  appliedAt        DateTime                     @default(now())
+
+  @@index([workoutSessionId])
 }
