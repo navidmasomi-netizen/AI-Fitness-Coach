@@ -194,6 +194,7 @@ model UserProgram {
   currentDayIndex Int                         @default(0)
   activatedAt     DateTime                    @default(now())
   profileSnapshot UserProgramProfileSnapshot?
+  workoutSessions WorkoutSession[]
 }
 
 model UserProgramProfileSnapshot {
@@ -211,8 +212,11 @@ model WorkoutSession {
   id                         Int                            @id @default(autoincrement())
   userId                     Int
   user                       User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userProgramId              Int?
+  userProgram                UserProgram?                   @relation(fields: [userProgramId], references: [id], onDelete: SetNull)
   programId                  Int?
   programDayId               Int?
+  idempotencyKey             String?
   startedAt                  DateTime                       @default(now())
   completedAt                DateTime?
   status                     String                         @default("active")
@@ -222,6 +226,7 @@ model WorkoutSession {
   recommendationApplications RecommendationApplication[]
   progressionRecommendations ProgressionRecommendation[]
 
+  @@unique([userId, idempotencyKey])
   @@index([userId, status, completedAt, id])
 }
 
