@@ -1,6 +1,10 @@
 import { Prisma } from "@prisma/client";
 
 import prisma from "../lib/prisma.js";
+import {
+  createProgressionPersistenceRepository,
+} from "../repositories/progressionPersistenceRepository.js";
+export { isProgressionRecommendationIdempotencyP2002 } from "../repositories/progressionPersistenceRepository.js";
 import { analyzeExercisePerformance } from "./exercisePerformanceAnalyzer.js";
 import {
   DECISION_TYPES,
@@ -30,9 +34,7 @@ const NON_PERSISTABLE_DECISION_TYPES = new Set([
   DECISION_TYPES.MANUAL_REVIEW,
 ]);
 const SUPPORTED_PROGRESSION_MODES = new Set(["load", "time", "reps", "reps_then_load"]);
-const RECOMMENDATION_UNIQUE_INDEX_NAME =
-  "ProgressionRecommendation_userId_exerciseId_sourceSessionId_key";
-const COMPOSITE_TARGET_FIELDS = ["userId", "exerciseId", "sourceSessionId"];
+const progressionPersistenceRepository = createProgressionPersistenceRepository(prisma);
 
 export class ProgressionPersistenceValidationError extends Error {
   constructor(message) {
@@ -77,65 +79,6 @@ function isNonEmptyString(value) {
 
 function isFiniteInteger(value) {
   return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value);
-}
-
-function normalizeTargetComponent(value) {
-  return String(value).replace(/["`]/g, "");
-}
-
-function compareCompositeTargetArray(target) {
-  if (!Array.isArray(target) || target.length !== COMPOSITE_TARGET_FIELDS.length) {
-    return false;
-  }
-
-  const normalizedTarget = target.map(normalizeTargetComponent).sort();
-  const normalizedFields = [...COMPOSITE_TARGET_FIELDS].sort();
-  return normalizedTarget.every((field, index) => field === normalizedFields[index]);
-}
-
-function compareCompositeTargetName(target) {
-  if (typeof target !== "string") {
-    return false;
-  }
-
-  return normalizeTargetComponent(target) === RECOMMENDATION_UNIQUE_INDEX_NAME;
-}
-
-function compareCompositeTargetMessage(message) {
-  if (typeof message !== "string") {
-    return false;
-  }
-
-  const match = message.match(/Unique constraint failed on the fields:\s*\(([^)]+)\)/);
-  if (!match) {
-    return false;
-  }
-
-  const normalizedTarget = match[1]
-    .split(",")
-    .map((component) => normalizeTargetComponent(component).trim())
-    .filter(Boolean)
-    .sort();
-  const normalizedFields = [...COMPOSITE_TARGET_FIELDS].sort();
-
-  if (normalizedTarget.length !== normalizedFields.length) {
-    return false;
-  }
-
-  return normalizedTarget.every((field, index) => field === normalizedFields[index]);
-}
-
-export function isProgressionRecommendationIdempotencyP2002(error) {
-  if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== "P2002") {
-    return false;
-  }
-
-  const target = error.meta?.target;
-  return (
-    compareCompositeTargetArray(target) ||
-    compareCompositeTargetName(target) ||
-    compareCompositeTargetMessage(error.message)
-  );
 }
 
 function validateIdentity(value, label) {
@@ -658,48 +601,29 @@ function buildNotPersistedResult({ decision, sourceSessionId, exerciseId }) {
 }
 
 export async function findExistingProgressionRecommendation(identity) {
-  return prisma.progressionRecommendation.findUnique({
-    where: {
-      userId_exerciseId_sourceSessionId: {
-        userId: identity.userId,
-        exerciseId: identity.exerciseId,
-        sourceSessionId: identity.sourceSessionId,
-      },
-    },
-    include: { exercise: true },
-  });
+  return progressionPersistenceRepository.findExistingProgressionRecommendation(identity);
 }
 
 export async function createOrRecoverProgressionRecommendation({ identity, createData }) {
-  try {
-    const recommendation = await prisma.progressionRecommendation.create({
-      data: createData,
-      include: { exercise: true },
+  const result =
+    await progressionPersistenceRepository.createOrRecoverProgressionRecommendation({
+      identity,
+      createData,
     });
 
+  if (result.outcome === "CREATED") {
     return {
       outcome: PROGRESSION_PERSISTENCE_OUTCOMES.CREATED,
-      recommendation,
+      recommendation: result.recommendation,
       duplicateRecovered: false,
     };
-  } catch (error) {
-    if (!isProgressionRecommendationIdempotencyP2002(error)) {
-      throw error;
-    }
-
-    const existingRecommendation = await findExistingProgressionRecommendation(identity);
-    if (!existingRecommendation) {
-      throw new Error(
-        `Progression recommendation idempotency recovery failed for (${identity.userId}, ${identity.exerciseId}, ${identity.sourceSessionId})`
-      );
-    }
-
-    return {
-      outcome: PROGRESSION_PERSISTENCE_OUTCOMES.ALREADY_EXISTS,
-      recommendation: existingRecommendation,
-      duplicateRecovered: true,
-    };
   }
+
+  return {
+    outcome: PROGRESSION_PERSISTENCE_OUTCOMES.ALREADY_EXISTS,
+    recommendation: result.recommendation,
+    duplicateRecovered: result.duplicateRecovered,
+  };
 }
 
 async function loadSourceSessionContext({ userId, exerciseId, sourceSessionId }) {
