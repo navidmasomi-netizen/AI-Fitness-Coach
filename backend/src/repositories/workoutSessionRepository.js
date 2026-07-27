@@ -138,10 +138,29 @@ export function createWorkoutSessionRepository(db) {
     async findCompletionContext(sessionId) {
       return db.workoutSession.findUnique({
         where: { id: sessionId },
+        include: buildWorkoutSessionTargetsInclude(),
+      });
+    },
+
+    async findPreviousCompletedSessionsForExercise({
+      userId,
+      exerciseId,
+      excludeSessionId,
+    }) {
+      return db.workoutSession.findMany({
+        where: {
+          userId,
+          status: "completed",
+          ...(excludeSessionId ? { id: { not: excludeSessionId } } : {}),
+          setLogs: {
+            some: { exerciseId },
+          },
+        },
+        orderBy: [{ completedAt: "desc" }, { id: "desc" }],
         include: {
           setLogs: {
-            include: { exercise: true },
-            orderBy: SET_LOGS_ORDER_BY,
+            where: { exerciseId },
+            orderBy: [{ setNumber: "asc" }, { id: "asc" }],
           },
         },
       });

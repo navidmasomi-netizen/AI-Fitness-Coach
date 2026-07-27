@@ -12,6 +12,18 @@ const RECOMMENDATION_ORDER_BY_ASC = [{ createdAt: "asc" }, { id: "asc" }];
 
 export function createProgressionRecommendationRepository(db) {
   return {
+    async findLatestForExercise({ userId, exerciseId, excludeSourceSessionId = null }) {
+      return db.progressionRecommendation.findFirst({
+        where: {
+          userId,
+          exerciseId,
+          ...(excludeSourceSessionId ? { sourceSessionId: { not: excludeSourceSessionId } } : {}),
+        },
+        include: PROGRESSION_RECOMMENDATION_INCLUDE,
+        orderBy: RECOMMENDATION_ORDER_BY_DESC,
+      });
+    },
+
     async findEligiblePendingForExerciseIds({ userId, exerciseIds }) {
       return db.progressionRecommendation.findMany({
         where: {

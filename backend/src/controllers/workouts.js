@@ -1,6 +1,6 @@
 import prisma from "../lib/prisma.js";
-import { evaluateSessionProgression } from "../services/progression.js";
 import {
+  WorkoutSessionCompletionError,
   WorkoutSessionStartError,
   workoutSessionService,
 } from "../services/workoutSessionService.js";
@@ -103,84 +103,19 @@ export const completeWorkoutSession = async (req, res) => {
   const normalizedSessionId = Number(sessionId);
 
   try {
-    const session = await prisma.workoutSession.findUnique({
-      where: { id: normalizedSessionId },
-      include: { setLogs: true },
+    const result = await workoutSessionService.completeWorkoutSession({
+      userId,
+      sessionId: normalizedSessionId,
     });
-
-    if (!session || session.userId !== userId) {
-      return res.status(404).json({ success: false, message: "Workout session not found" });
-    }
-
-    if (session.status !== "active") {
-      return res.status(400).json({ success: false, message: "Only an active session can be completed" });
-    }
-
-    if (session.setLogs.length === 0) {
-      return res.status(400).json({ success: false, message: "Log at least one set before completing the workout" });
-    }
-
-    const updatedSession = await prisma.workoutSession.update({
-      where: { id: normalizedSessionId },
-      data: {
-        completedAt: new Date(),
-        status: "completed",
-      },
-      include: {
-        setLogs: {
-          include: { exercise: true },
-        },
-      },
-    });
-
-    let updatedUserProgram = null;
-    let nextProgramDay = null;
-    let warning = null;
-
-    const userProgram = await prisma.userProgram.findFirst({
-      where: { userId, isActive: true },
-    });
-
-    if (!userProgram) {
-      warning = "No active program found; day was not advanced";
-    } else if (session.programId !== userProgram.programId) {
-      warning = "Completed session does not belong to the active program; day was not advanced";
-      updatedUserProgram = userProgram;
-    } else {
-      const programDaysCount = await prisma.programDay.count({
-        where: { programId: userProgram.programId },
-      });
-
-      if (programDaysCount === 0) {
-        warning = "Active program has no days configured; day was not advanced";
-        updatedUserProgram = userProgram;
-      } else {
-        const nextIndex = (userProgram.currentDayIndex + 1) % programDaysCount;
-        updatedUserProgram = await prisma.userProgram.update({
-          where: { id: userProgram.id },
-          data: { currentDayIndex: nextIndex },
-        });
-
-        nextProgramDay = await prisma.programDay.findFirst({
-          where: { programId: userProgram.programId, dayIndex: nextIndex },
-        });
-      }
-    }
-
-    const progressionResult = await evaluateSessionProgression(normalizedSessionId, userId);
 
     res.json({
       success: true,
-      data: {
-        session: updatedSession,
-        updatedUserProgram,
-        nextProgramDay,
-        warning,
-        progressionRecommendations: progressionResult.recommendations,
-        progressionWarning: progressionResult.warning,
-      },
+      data: result,
     });
   } catch (error) {
+    if (error instanceof WorkoutSessionCompletionError) {
+      return res.status(error.statusCode).json({ success: false, message: error.message });
+    }
     res.status(500).json({ success: false, message: "Failed to complete workout session" });
   }
 };

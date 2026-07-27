@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import prisma from "../lib/prisma.js";
 import { startFromActiveProgram, completeWorkoutSession } from "../controllers/workouts.js";
 import { generateProgramForUser } from "./programGenerator.js";
+import { analyzeExercisePerformance } from "./exercisePerformanceAnalyzer.js";
+import { decideProgression } from "./progressionDecisionEngine.js";
 import {
   createProgramDayRepository,
 } from "../repositories/programDayRepository.js";
@@ -22,8 +24,10 @@ import {
   createWorkoutSessionRepository,
 } from "../repositories/workoutSessionRepository.js";
 import {
+  WorkoutSessionCompletionError,
   createWorkoutSessionService,
   WorkoutSessionStartError,
+  workoutSessionService,
 } from "./workoutSessionService.js";
 
 const TEST_EMAIL_DOMAIN = "@example.com";
@@ -252,6 +256,91 @@ async function countUserApplications(userId) {
       },
     },
   });
+}
+
+async function countUserRecommendations(userId) {
+  return prisma.progressionRecommendation.count({
+    where: { userId },
+  });
+}
+
+async function addSetLogsForSession({ sessionId, exerciseId, sets }) {
+  for (const [index, set] of sets.entries()) {
+    await prisma.setLog.create({
+      data: {
+        sessionId,
+        exerciseId,
+        setNumber: index + 1,
+        reps: set.reps,
+        weightKg: set.weightKg,
+      },
+    });
+  }
+}
+
+async function createStartedSession({ userId, idempotencyKey = null }) {
+  return workoutSessionService.startFromActiveProgram({
+    userId,
+    idempotencyKey,
+  });
+}
+
+async function createStartedSessionWithAppliedRecommendation({ userId }) {
+  await generateProgramForUser(userId);
+  const activeUserProgram = await getActiveUserProgram(userId);
+  const programDay = await prisma.programDay.findFirstOrThrow({
+    where: {
+      programId: activeUserProgram.programId,
+      dayIndex: activeUserProgram.currentDayIndex,
+    },
+    include: {
+      exercises: {
+        orderBy: [{ order: "asc" }, { id: "asc" }],
+      },
+    },
+  });
+
+  const targetExercise =
+    programDay.exercises.find((exerciseRow) => exerciseRow.progressionType !== "time") ??
+    programDay.exercises[0];
+
+  const sourceSession = await createCompletedSourceSession({
+    userId,
+    programId: activeUserProgram.programId,
+    programDayId: programDay.id,
+    exerciseId: targetExercise.exerciseId,
+  });
+
+  const sourceRecommendation = await createPendingRecommendation({
+    userId,
+    exerciseId: targetExercise.exerciseId,
+    sourceSessionId: sourceSession.id,
+    decisionType: "INCREASE_REPS",
+    progressionType: targetExercise.progressionType ?? "reps_then_load",
+    repAdjustment: 1,
+  });
+
+  const started = await createStartedSession({ userId });
+
+  return {
+    started,
+    sourceRecommendation,
+    targetExercise,
+  };
+}
+
+function buildPersistableDecision(overrides = {}) {
+  return {
+    decisionType: "MAINTAIN",
+    loadAdjustmentSteps: 0,
+    repAdjustment: 0,
+    setAdjustment: 0,
+    durationAdjustmentSteps: 0,
+    confidence: 0.8,
+    reasonCode: "RULE_V1_TARGETS_FULLY_MET",
+    rulesVersion: "progression_decision_rules_v4",
+    ...overrides,
+  };
 }
 
 async function createPendingRecommendation({
@@ -614,16 +703,399 @@ async function main() {
       },
     },
     {
-      name: "does not affect completion behavior",
-      input: "complete endpoint still delegates to evaluateSessionProgression path",
+      name: "successful completion persists normalized recommendations and advances the active program",
+      input: "completed active session with performed sets and a previously applied recommendation",
       fn: async () => {
-        assert.match(completeWorkoutSession.toString(), /evaluateSessionProgression/);
+        const suffix = `complete-success-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
 
-        return {
-          completionContainsLegacyCall: /evaluateSessionProgression/.test(
-            completeWorkoutSession.toString()
-          ),
-        };
+        try {
+          const { started, sourceRecommendation, targetExercise } =
+            await createStartedSessionWithAppliedRecommendation({ userId: user.id });
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: targetExercise.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 40 },
+              { reps: 10, weightKg: 40 },
+            ],
+          });
+
+          const activeBefore = await getActiveUserProgram(user.id);
+          const recommendationsBefore = await countUserRecommendations(user.id);
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          const completedSession = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const appliedRecommendation = await prisma.progressionRecommendation.findUniqueOrThrow({
+            where: { id: sourceRecommendation.id },
+          });
+          const createdRecommendations = await prisma.progressionRecommendation.findMany({
+            where: {
+              userId: user.id,
+              sourceSessionId: started.session.id,
+            },
+            orderBy: [{ id: "asc" }],
+          });
+
+          assert.equal(completedSession.status, "completed");
+          assert.notEqual(completedSession.completedAt, null);
+          assert.equal(appliedRecommendation.lifecycleStatus, "APPLIED");
+          assert.equal(createdRecommendations.length >= 1, true);
+          assert.notEqual(result.nextProgramDay, null);
+          assert.equal(result.updatedUserProgram.currentDayIndex, result.nextProgramDay.dayIndex);
+          assert.equal(result.updatedUserProgram.currentDayIndex !== activeBefore.currentDayIndex, true);
+          assert.equal(await countUserRecommendations(user.id), recommendationsBefore + createdRecommendations.length);
+
+          return {
+            sessionStatus: completedSession.status,
+            recommendationCount: createdRecommendations.length,
+            sourceRecommendationLifecycleStatus: appliedRecommendation.lifecycleStatus,
+            advancedToDayIndex: result.updatedUserProgram.currentDayIndex,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion invokes analyzer and decision engine once per performed target",
+      input: "service wrappers track analyzer and decision engine calls",
+      fn: async () => {
+        const suffix = `complete-invocation-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 40 },
+              { reps: 10, weightKg: 40 },
+            ],
+          });
+
+          let analyzerCalls = 0;
+          let decisionCalls = 0;
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            analyzeExercisePerformanceImpl(input) {
+              analyzerCalls += 1;
+              return analyzeExercisePerformance(input);
+            },
+            decideProgressionImpl(input) {
+              decisionCalls += 1;
+              decideProgression(input);
+              return buildPersistableDecision();
+            },
+          });
+
+          await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          assert.equal(analyzerCalls, 1);
+          assert.equal(decisionCalls, 1);
+
+          return {
+            analyzerCalls,
+            decisionCalls,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion rolls back when analyzer fails",
+      input: "analyzer throws before recommendation persistence",
+      fn: async () => {
+        const suffix = `complete-analyzer-fail-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const activeBefore = await getActiveUserProgram(user.id);
+          const recommendationsBefore = await countUserRecommendations(user.id);
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            analyzeExercisePerformanceImpl() {
+              throw new Error("synthetic analyzer failure");
+            },
+          });
+
+          let thrown = null;
+          try {
+            await service.completeWorkoutSession({
+              userId: user.id,
+              sessionId: started.session.id,
+            });
+          } catch (error) {
+            thrown = error;
+          }
+
+          const sessionAfter = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const activeAfter = await getActiveUserProgram(user.id);
+
+          assert(thrown instanceof WorkoutSessionCompletionError);
+          assert.equal(sessionAfter.status, "active");
+          assert.equal(sessionAfter.completedAt, null);
+          assert.equal(await countUserRecommendations(user.id), recommendationsBefore);
+          assert.equal(activeAfter.currentDayIndex, activeBefore.currentDayIndex);
+
+          return {
+            errorCode: thrown.code,
+            sessionStatus: sessionAfter.status,
+            currentDayIndex: activeAfter.currentDayIndex,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion rolls back when recommendation persistence fails",
+      input: "repository createNormalizedRecommendations throws inside transaction",
+      fn: async () => {
+        const suffix = `complete-recommendation-fail-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const activeBefore = await getActiveUserProgram(user.id);
+          const recommendationsBefore = await countUserRecommendations(user.id);
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+            createProgressionRecommendationRepositoryImpl(db) {
+              const repository = createProgressionRecommendationRepository(db);
+              return {
+                ...repository,
+                async createNormalizedRecommendations() {
+                  throw new Error("synthetic recommendation persistence failure");
+                },
+              };
+            },
+          });
+
+          let thrown = null;
+          try {
+            await service.completeWorkoutSession({
+              userId: user.id,
+              sessionId: started.session.id,
+            });
+          } catch (error) {
+            thrown = error;
+          }
+
+          const sessionAfter = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const activeAfter = await getActiveUserProgram(user.id);
+
+          assert(thrown instanceof WorkoutSessionCompletionError);
+          assert.equal(sessionAfter.status, "active");
+          assert.equal(await countUserRecommendations(user.id), recommendationsBefore);
+          assert.equal(activeAfter.currentDayIndex, activeBefore.currentDayIndex);
+
+          return {
+            errorCode: thrown.code,
+            sessionStatus: sessionAfter.status,
+            recommendationCount: await countUserRecommendations(user.id),
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion rolls back when later persistence fails after recommendations are staged",
+      input: "user program advancement failure aborts the full transaction",
+      fn: async () => {
+        const suffix = `complete-advance-fail-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const activeBefore = await getActiveUserProgram(user.id);
+          const recommendationsBefore = await countUserRecommendations(user.id);
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+            createUserProgramRepositoryImpl(db) {
+              const repository = createUserProgramRepository(db);
+              return {
+                ...repository,
+                async advanceCurrentDayIndexConditionally() {
+                  return {
+                    matchedCount: 0,
+                    userProgram: null,
+                  };
+                },
+              };
+            },
+          });
+
+          let thrown = null;
+          try {
+            await service.completeWorkoutSession({
+              userId: user.id,
+              sessionId: started.session.id,
+            });
+          } catch (error) {
+            thrown = error;
+          }
+
+          const sessionAfter = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const activeAfter = await getActiveUserProgram(user.id);
+
+          assert(thrown instanceof WorkoutSessionCompletionError);
+          assert.equal(sessionAfter.status, "active");
+          assert.equal(await countUserRecommendations(user.id), recommendationsBefore);
+          assert.equal(activeAfter.currentDayIndex, activeBefore.currentDayIndex);
+
+          return {
+            errorCode: thrown.code,
+            sessionStatus: sessionAfter.status,
+            currentDayIndex: activeAfter.currentDayIndex,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "rejects duplicate completion and preserves HTTP compatibility",
+      input: "same session is completed twice through the controller",
+      fn: async () => {
+        const suffix = `complete-duplicate-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const firstRes = createMockRes();
+          await completeWorkoutSession({
+            userId: user.id,
+            params: { sessionId: String(started.session.id) },
+          }, firstRes);
+
+          const secondRes = createMockRes();
+          await completeWorkoutSession({
+            userId: user.id,
+            params: { sessionId: String(started.session.id) },
+          }, secondRes);
+
+          assert.equal(firstRes.statusCode, 200);
+          assert.equal(firstRes.body.success, true);
+          assert.equal(Array.isArray(firstRes.body.data.progressionRecommendations), true);
+          assert.equal(Object.hasOwn(firstRes.body.data, "progressionWarning"), true);
+          assert.equal(secondRes.statusCode, 400);
+          assert.equal(secondRes.body.success, false);
+
+          return {
+            firstResponseKeys: Object.keys(firstRes.body.data),
+            secondStatusCode: secondRes.statusCode,
+            secondMessage: secondRes.body.message,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
       },
     },
   ];

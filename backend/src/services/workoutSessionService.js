@@ -7,12 +7,24 @@ import { createRecommendationApplicationRepository } from "../repositories/recom
 import { createUserProgramRepository } from "../repositories/userProgramRepository.js";
 import { createWorkoutSessionExerciseTargetRepository } from "../repositories/workoutSessionExerciseTargetRepository.js";
 import { createWorkoutSessionRepository } from "../repositories/workoutSessionRepository.js";
+import { analyzeExercisePerformance } from "./exercisePerformanceAnalyzer.js";
+import {
+  classifyDecisionPersistability,
+  mapDecisionToProgressionRecommendationData,
+} from "./progressionPersistenceOrchestrator.js";
+import {
+  decideProgression,
+} from "./progressionDecisionEngine.js";
+import { computeRecoveryModifier } from "./recoveryEngine.js";
+import { analyzeWorkoutHistory } from "./workoutAnalyzer.js";
 import {
   resolveWorkoutTarget,
   WORKOUT_TARGET_RESOLUTION_REASONS,
 } from "./workoutTargetResolver.js";
 
 const ACTIVE_WORKOUT_SESSION_STATUS = "active";
+const COMPLETED_WORKOUT_SESSION_STATUS = "completed";
+const DEFAULT_RECOVERY_ANALYSIS_WINDOW_DAYS = 28;
 
 export class WorkoutSessionStartError extends Error {
   constructor(message, { statusCode = 500, code = "WORKOUT_SESSION_START_FAILED", cause, details } = {}) {
@@ -25,8 +37,26 @@ export class WorkoutSessionStartError extends Error {
   }
 }
 
+export class WorkoutSessionCompletionError extends Error {
+  constructor(
+    message,
+    { statusCode = 500, code = "WORKOUT_SESSION_COMPLETION_FAILED", cause, details } = {}
+  ) {
+    super(message);
+    this.name = "WorkoutSessionCompletionError";
+    this.statusCode = statusCode;
+    this.code = code;
+    this.cause = cause ?? null;
+    this.details = details ?? null;
+  }
+}
+
 function isPrismaUniqueViolation(error) {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
+}
+
+function isPositiveInteger(value) {
+  return Number.isInteger(value) && value > 0;
 }
 
 function normalizeIdempotencyKey(value) {
@@ -104,6 +134,86 @@ function buildTargetCreateData({ programDayExercise, recommendation, resolvedTar
   };
 }
 
+function buildAnalyzerSet(setLog) {
+  return {
+    setNumber: setLog.setNumber,
+    reps: setLog.reps,
+    weightKg: setLog.weightKg,
+  };
+}
+
+function buildCompletionPrescription(targetSnapshot) {
+  return {
+    prescribedSets: targetSnapshot.targetSets,
+    prescribedRepLow: targetSnapshot.targetRepRangeLow,
+    prescribedRepHigh: targetSnapshot.targetRepRangeHigh,
+    prescribedRestSeconds: targetSnapshot.programDayExercise?.restSeconds ?? null,
+  };
+}
+
+function buildCompletionAnalyzerInput({ sourceSessionId, targetSnapshot, performedSetLogs, previousSessions }) {
+  return {
+    exerciseId: targetSnapshot.exerciseId,
+    sourceSessionId,
+    prescription: buildCompletionPrescription(targetSnapshot),
+    currentSession: {
+      sets: performedSetLogs.map(buildAnalyzerSet),
+    },
+    previousSessions: previousSessions.map((session) => ({
+      sourceSessionId: session.id,
+      sets: session.setLogs.map(buildAnalyzerSet),
+    })),
+  };
+}
+
+function buildCompletionProgressionPolicy(targetSnapshot) {
+  const progressionMode =
+    targetSnapshot.progressionType ||
+    targetSnapshot.programDayExercise?.progressionType ||
+    targetSnapshot.exercise?.progressionType ||
+    "load";
+
+  return {
+    progressionMode,
+    allowsLoadAdjustment: progressionMode === "load" || progressionMode === "reps_then_load",
+    allowsSetAdjustment: false,
+    allowsRepAdjustment: progressionMode === "reps" || progressionMode === "reps_then_load",
+    validIncrement: true,
+  };
+}
+
+function buildCompletionRecoveryConstraint(recoveryResult) {
+  return {
+    recoveryModifier: recoveryResult.recoveryModifier,
+    confidence: recoveryResult.confidence,
+    signalStrength: recoveryResult.signalStrength,
+    reasonCode: null,
+  };
+}
+
+function buildCompletionDecisionInput({
+  analysis,
+  targetSnapshot,
+  previousRecommendation,
+  recoveryResult,
+}) {
+  return {
+    analysis,
+    progressionPolicy: buildCompletionProgressionPolicy(targetSnapshot),
+    recoveryConstraint: buildCompletionRecoveryConstraint(recoveryResult),
+    previousDecisionContext: previousRecommendation
+      ? {
+          previousDecisionType: previousRecommendation.decisionType ?? null,
+          consecutiveFailures: previousRecommendation.consecutiveFailures ?? 0,
+        }
+      : null,
+    existingRecommendationContext: null,
+    policyThresholds: {
+      deloadFailureStreak: 2,
+    },
+  };
+}
+
 async function hydrateStartSessionResponse({
   userId,
   sessionId,
@@ -149,6 +259,41 @@ async function hydrateStartSessionResponse({
   };
 }
 
+async function hydrateCompletionResponse({
+  userId,
+  sessionId,
+  updatedUserProgram,
+  nextProgramDay,
+  warning,
+  progressionRecommendations,
+  repositories,
+}) {
+  const session = await repositories.workoutSessions.findByIdWithTargets(sessionId);
+  if (!session) {
+    throw new WorkoutSessionCompletionError("Workout session not found after completion", {
+      statusCode: 500,
+      code: "WORKOUT_SESSION_NOT_FOUND_AFTER_COMPLETION",
+    });
+  }
+
+  let hydratedUserProgram = updatedUserProgram;
+  if (updatedUserProgram?.id && isPositiveInteger(userId)) {
+    hydratedUserProgram = await repositories.userPrograms.findByIdForUser({
+      userProgramId: updatedUserProgram.id,
+      userId,
+    });
+  }
+
+  return {
+    session,
+    updatedUserProgram: hydratedUserProgram ?? updatedUserProgram ?? null,
+    nextProgramDay: nextProgramDay ?? null,
+    warning: warning ?? null,
+    progressionRecommendations,
+    progressionWarning: null,
+  };
+}
+
 export function createWorkoutSessionService({
   prismaClient = prisma,
   createWorkoutSessionRepositoryImpl = createWorkoutSessionRepository,
@@ -157,6 +302,12 @@ export function createWorkoutSessionService({
   createProgressionRecommendationRepositoryImpl = createProgressionRecommendationRepository,
   createWorkoutSessionExerciseTargetRepositoryImpl = createWorkoutSessionExerciseTargetRepository,
   createRecommendationApplicationRepositoryImpl = createRecommendationApplicationRepository,
+  analyzeExercisePerformanceImpl = analyzeExercisePerformance,
+  decideProgressionImpl = decideProgression,
+  analyzeWorkoutHistoryImpl = analyzeWorkoutHistory,
+  computeRecoveryModifierImpl = computeRecoveryModifier,
+  classifyDecisionPersistabilityImpl = classifyDecisionPersistability,
+  mapDecisionToProgressionRecommendationDataImpl = mapDecisionToProgressionRecommendationData,
   resolveWorkoutTargetImpl = resolveWorkoutTarget,
 } = {}) {
   function createRepositories(db) {
@@ -241,6 +392,198 @@ export function createWorkoutSessionService({
   }
 
   return {
+    async completeWorkoutSession({ userId, sessionId }) {
+      let transactionResult;
+
+      try {
+        transactionResult = await prismaClient.$transaction(async (tx) => {
+          const repositories = createRepositories(tx);
+          const completionContext = await repositories.workoutSessions.findCompletionContext(sessionId);
+
+          if (!completionContext || completionContext.userId !== userId) {
+            throw new WorkoutSessionCompletionError("Workout session not found", {
+              statusCode: 404,
+              code: "WORKOUT_SESSION_NOT_FOUND",
+            });
+          }
+
+          if (completionContext.status !== ACTIVE_WORKOUT_SESSION_STATUS) {
+            throw new WorkoutSessionCompletionError("Only an active session can be completed", {
+              statusCode: 400,
+              code: "WORKOUT_SESSION_NOT_ACTIVE",
+            });
+          }
+
+          if (completionContext.setLogs.length === 0) {
+            throw new WorkoutSessionCompletionError(
+              "Log at least one set before completing the workout",
+              {
+                statusCode: 400,
+                code: "WORKOUT_SESSION_EMPTY",
+              }
+            );
+          }
+
+          const completedAt = new Date();
+          const completionUpdate = await repositories.workoutSessions.markCompletedIfActive({
+            sessionId,
+            completedAt,
+          });
+
+          if (!completionUpdate.found || !completionUpdate.transitioned || !completionUpdate.session) {
+            throw new WorkoutSessionCompletionError("Only an active session can be completed", {
+              statusCode: 400,
+              code: "WORKOUT_SESSION_ALREADY_COMPLETED",
+            });
+          }
+
+          const workoutAnalysis = await analyzeWorkoutHistoryImpl({
+            userId,
+            windowDays: DEFAULT_RECOVERY_ANALYSIS_WINDOW_DAYS,
+          });
+          const recoveryResult = computeRecoveryModifierImpl({ workoutAnalysis });
+
+          const progressionCreateData = [];
+          for (const targetSnapshot of completionContext.exerciseTargets) {
+            const performedSetLogs = completionContext.setLogs.filter(
+              (setLog) => setLog.exerciseId === targetSnapshot.exerciseId
+            );
+
+            if (performedSetLogs.length === 0) {
+              continue;
+            }
+
+            const previousSessions =
+              await repositories.workoutSessions.findPreviousCompletedSessionsForExercise({
+                userId,
+                exerciseId: targetSnapshot.exerciseId,
+                excludeSessionId: sessionId,
+              });
+            const previousRecommendation =
+              await repositories.recommendations.findLatestForExercise({
+                userId,
+                exerciseId: targetSnapshot.exerciseId,
+                excludeSourceSessionId: sessionId,
+              });
+
+            const analysis = analyzeExercisePerformanceImpl(
+              buildCompletionAnalyzerInput({
+                sourceSessionId: sessionId,
+                targetSnapshot,
+                performedSetLogs,
+                previousSessions,
+              })
+            );
+
+            const decision = decideProgressionImpl(
+              buildCompletionDecisionInput({
+                analysis,
+                targetSnapshot,
+                previousRecommendation,
+                recoveryResult,
+              })
+            );
+
+            if (classifyDecisionPersistabilityImpl(decision.decisionType) === "DO_NOT_PERSIST") {
+              continue;
+            }
+
+            progressionCreateData.push(
+              mapDecisionToProgressionDataEntry({
+                userId,
+                sessionId,
+                targetSnapshot,
+                analysis,
+                decision,
+                previousRecommendation,
+                mapDecisionToProgressionRecommendationDataImpl,
+              })
+            );
+          }
+
+          const progressionRecommendations =
+            progressionCreateData.length > 0
+              ? await repositories.recommendations.createNormalizedRecommendations({
+                  data: progressionCreateData,
+                })
+              : [];
+
+          let updatedUserProgram = null;
+          let nextProgramDay = null;
+          let warning = null;
+
+          const activeUserProgram = await repositories.userPrograms.findActiveForUser(userId);
+
+          if (!activeUserProgram) {
+            warning = "No active program found; day was not advanced";
+          } else if (completionContext.programId !== activeUserProgram.programId) {
+            warning = "Completed session does not belong to the active program; day was not advanced";
+            updatedUserProgram = activeUserProgram;
+          } else {
+            const programDaysCount = await repositories.programDays.countByProgramId(
+              activeUserProgram.programId
+            );
+
+            if (programDaysCount === 0) {
+              warning = "Active program has no days configured; day was not advanced";
+              updatedUserProgram = activeUserProgram;
+            } else {
+              const nextDayIndex = (activeUserProgram.currentDayIndex + 1) % programDaysCount;
+              const advancement =
+                await repositories.userPrograms.advanceCurrentDayIndexConditionally({
+                  userProgramId: activeUserProgram.id,
+                  expectedCurrentDayIndex: activeUserProgram.currentDayIndex,
+                  nextDayIndex,
+                });
+
+              if (advancement.matchedCount !== 1 || !advancement.userProgram) {
+                throw new WorkoutSessionCompletionError("Failed to advance active program day", {
+                  statusCode: 500,
+                  code: "USER_PROGRAM_ADVANCEMENT_FAILED",
+                });
+              }
+
+              updatedUserProgram = advancement.userProgram;
+              nextProgramDay =
+                await repositories.programDays.findDayBelongingToUserProgramProgram({
+                  userProgramId: activeUserProgram.id,
+                  dayIndex: nextDayIndex,
+                });
+            }
+          }
+
+          return {
+            sessionId,
+            updatedUserProgram,
+            nextProgramDay,
+            warning,
+            progressionRecommendations,
+          };
+        });
+      } catch (error) {
+        if (error instanceof WorkoutSessionCompletionError) {
+          throw error;
+        }
+
+        throw new WorkoutSessionCompletionError("Failed to complete workout session", {
+          statusCode: 500,
+          code: "WORKOUT_SESSION_COMPLETION_FAILED",
+          cause: error,
+        });
+      }
+
+      const repositories = createRepositories(prismaClient);
+      return hydrateCompletionResponse({
+        userId,
+        sessionId: transactionResult.sessionId,
+        updatedUserProgram: transactionResult.updatedUserProgram,
+        nextProgramDay: transactionResult.nextProgramDay,
+        warning: transactionResult.warning,
+        progressionRecommendations: transactionResult.progressionRecommendations,
+        repositories,
+      });
+    },
+
     async startFromActiveProgram({ userId, idempotencyKey }) {
       const normalizedIdempotencyKey = normalizeIdempotencyKey(idempotencyKey);
       const rootRepositories = createRepositories(prismaClient);
@@ -479,6 +822,35 @@ export function createWorkoutSessionService({
       });
     },
   };
+}
+
+function mapDecisionToProgressionDataEntry({
+  userId,
+  sessionId,
+  targetSnapshot,
+  analysis,
+  decision,
+  previousRecommendation,
+  mapDecisionToProgressionRecommendationDataImpl,
+}) {
+  return mapDecisionToProgressionRecommendationDataImpl({
+    userId,
+    exerciseId: targetSnapshot.exerciseId,
+    sourceSessionId: sessionId,
+    decision,
+    analysis,
+    prescription: {
+      repRangeLow: targetSnapshot.targetRepRangeLow,
+      repRangeHigh: targetSnapshot.targetRepRangeHigh,
+      progressionType:
+        targetSnapshot.progressionType ||
+        targetSnapshot.programDayExercise?.progressionType ||
+        targetSnapshot.exercise?.progressionType ||
+        "load",
+    },
+    exercise: targetSnapshot.exercise,
+    previousRecommendation,
+  });
 }
 
 export const workoutSessionService = createWorkoutSessionService();
