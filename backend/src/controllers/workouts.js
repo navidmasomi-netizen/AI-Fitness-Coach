@@ -1,5 +1,9 @@
 import prisma from "../lib/prisma.js";
 import { evaluateSessionProgression } from "../services/progression.js";
+import {
+  WorkoutSessionStartError,
+  workoutSessionService,
+} from "../services/workoutSessionService.js";
 
 export const createWorkoutSession = async (req, res) => {
   const { userId, programId, programDayId, notes } = req.body;
@@ -233,97 +237,26 @@ export const getUserWorkoutSessions = async (req, res) => {
 
 export const startFromActiveProgram = async (req, res) => {
   const userId = req.userId;
+  const idempotencyKey =
+    req.body?.idempotencyKey ??
+    req.headers?.["idempotency-key"] ??
+    req.headers?.["x-idempotency-key"] ??
+    null;
 
   try {
-    const existingActiveSession = await prisma.workoutSession.findFirst({
-      where: { userId, status: "active" },
-      orderBy: { startedAt: "desc" },
-      include: {
-        setLogs: {
-          include: { exercise: true },
-        },
-      },
-    });
-
-    if (existingActiveSession) {
-      let existingProgram = null;
-      let existingProgramDay = null;
-      if (existingActiveSession.programId) {
-        existingProgram = await prisma.program.findUnique({ where: { id: existingActiveSession.programId } });
-      }
-      if (existingActiveSession.programDayId) {
-        existingProgramDay = await prisma.programDay.findUnique({
-          where: { id: existingActiveSession.programDayId },
-          include: {
-            exercises: {
-              orderBy: { order: "asc" },
-              include: { exercise: true },
-            },
-          },
-        });
-      }
-
-      return res.json({
-        success: true,
-        data: {
-          session: existingActiveSession,
-          program: existingProgram,
-          programDay: existingProgramDay,
-          exercises: existingProgramDay ? existingProgramDay.exercises : [],
-          resumed: true,
-        },
-      });
-    }
-
-    const userProgram = await prisma.userProgram.findFirst({
-      where: { userId, isActive: true },
-    });
-
-    if (!userProgram) {
-      return res.status(404).json({ success: false, message: "No active program found" });
-    }
-
-    const programDay = await prisma.programDay.findFirst({
-      where: {
-        programId: userProgram.programId,
-        dayIndex: userProgram.currentDayIndex,
-      },
-      include: {
-        exercises: {
-          orderBy: { order: "asc" },
-          include: { exercise: true },
-        },
-      },
-    });
-
-    if (!programDay) {
-      return res.status(404).json({ success: false, message: "Program day not found for current index" });
-    }
-
-    const program = await prisma.program.findUnique({
-      where: { id: userProgram.programId },
-    });
-
-    const session = await prisma.workoutSession.create({
-      data: {
-        userId,
-        programId: userProgram.programId,
-        programDayId: programDay.id,
-        status: "active",
-      },
+    const result = await workoutSessionService.startFromActiveProgram({
+      userId,
+      idempotencyKey,
     });
 
     res.json({
       success: true,
-      data: {
-        session: { ...session, setLogs: [] },
-        program,
-        programDay,
-        exercises: programDay.exercises,
-        resumed: false,
-      },
+      data: result,
     });
   } catch (error) {
+    if (error instanceof WorkoutSessionStartError && error.statusCode === 404) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
     res.status(500).json({ success: false, message: "Failed to start workout session" });
   }
 };

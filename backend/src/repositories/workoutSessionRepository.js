@@ -5,6 +5,10 @@ const SET_LOGS_ORDER_BY = [{ loggedAt: "asc" }, { id: "asc" }];
 
 function buildWorkoutSessionTargetsInclude() {
   return {
+    setLogs: {
+      include: { exercise: true },
+      orderBy: SET_LOGS_ORDER_BY,
+    },
     exerciseTargets: {
       include: WORKOUT_SESSION_TARGET_INCLUDE,
       orderBy: WORKOUT_SESSION_TARGETS_ORDER_BY,
@@ -21,6 +25,16 @@ function buildWorkoutSessionTargetsInclude() {
 
 export function createWorkoutSessionRepository(db) {
   return {
+    async findLatestActiveByUser(userId) {
+      return db.workoutSession.findFirst({
+        where: {
+          userId,
+          status: "active",
+        },
+        orderBy: [{ startedAt: "desc" }, { id: "desc" }],
+      });
+    },
+
     async findByUserAndIdempotencyKey({ userId, idempotencyKey }) {
       return db.workoutSession.findUnique({
         where: {
