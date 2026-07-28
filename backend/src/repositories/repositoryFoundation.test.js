@@ -204,6 +204,70 @@ async function createProgramDayExercise({ programDayId, exerciseId, order = 1, p
   });
 }
 
+async function getDifferentSeedExercise(exerciseId) {
+  return prisma.exercise.findFirstOrThrow({
+    where: { id: { not: exerciseId } },
+    orderBy: { id: "asc" },
+  });
+}
+
+async function createHistoricalExposure({
+  userId,
+  userProgramId,
+  programId,
+  programDayId,
+  programDayExerciseId,
+  exerciseId,
+  startedAt,
+  completedAt,
+  status = "completed",
+  setLogs = [],
+}) {
+  const session = await prisma.workoutSession.create({
+    data: {
+      userId,
+      userProgramId,
+      programId,
+      programDayId,
+      startedAt,
+      completedAt,
+      status,
+    },
+  });
+
+  await prisma.workoutSessionExerciseTarget.create({
+    data: {
+      sessionId: session.id,
+      programDayExerciseId,
+      exerciseId,
+      targetSets: 3,
+      targetRepRangeLow: 8,
+      targetRepRangeHigh: 10,
+      exactRepTarget: 8,
+      targetLoadKg: 40,
+      targetDurationSeconds: null,
+      progressionType: "load",
+      sourceDecisionType: null,
+      sourceRulesVersion: null,
+    },
+  });
+
+  if (setLogs.length > 0) {
+    await prisma.setLog.createMany({
+      data: setLogs.map((setLog) => ({
+        sessionId: session.id,
+        exerciseId: setLog.exerciseId ?? exerciseId,
+        setNumber: setLog.setNumber,
+        reps: setLog.reps,
+        weightKg: setLog.weightKg,
+        loggedAt: setLog.loggedAt,
+      })),
+    });
+  }
+
+  return session;
+}
+
 async function main() {
   const workoutSessionRepository = createWorkoutSessionRepository(prisma);
   const userProgramRepository = createUserProgramRepository(prisma);
@@ -936,6 +1000,524 @@ async function main() {
     }
   } finally {
     await cleanupFixture({ userIds: [persistenceUser.id] });
+  }
+
+  const historySuffix = nextSuffix("historical-history");
+  const historyUser = await createUser({ suffix: `${historySuffix}-user` });
+  const historyProgram = await createProgram({ suffix: `${historySuffix}-program` });
+  const historyActiveUserProgram = await createUserProgram({
+    userId: historyUser.id,
+    programId: historyProgram.id,
+    currentDayIndex: 0,
+  });
+  const historyTargetDay = await createProgramDay({
+    programId: historyProgram.id,
+    dayIndex: 0,
+    suffix: `${historySuffix}-target-day`,
+  });
+  const historySingleDay = await createProgramDay({
+    programId: historyProgram.id,
+    dayIndex: 1,
+    suffix: `${historySuffix}-single-day`,
+  });
+  const historyUnusedDay = await createProgramDay({
+    programId: historyProgram.id,
+    dayIndex: 2,
+    suffix: `${historySuffix}-unused-day`,
+  });
+  const historyTargetExercise = await getSeedExercise();
+  const historyOtherExercise = await getDifferentSeedExercise(historyTargetExercise.id);
+  const historyTargetProgramDayExercise = await createProgramDayExercise({
+    programDayId: historyTargetDay.id,
+    exerciseId: historyTargetExercise.id,
+    progressionType: "load",
+  });
+  const historyDifferentProgramDayExercise = await createProgramDayExercise({
+    programDayId: historyTargetDay.id,
+    exerciseId: historyOtherExercise.id,
+    order: 2,
+    progressionType: "load",
+  });
+  const historySingleProgramDayExercise = await createProgramDayExercise({
+    programDayId: historySingleDay.id,
+    exerciseId: historyTargetExercise.id,
+    progressionType: "load",
+  });
+  const historyUnusedProgramDayExercise = await createProgramDayExercise({
+    programDayId: historyUnusedDay.id,
+    exerciseId: historyTargetExercise.id,
+    progressionType: "load",
+  });
+  const historyInactiveProgram = await createProgram({ suffix: `${historySuffix}-inactive-program` });
+  const historyInactiveUserProgram = await prisma.userProgram.create({
+    data: {
+      userId: historyUser.id,
+      programId: historyInactiveProgram.id,
+      isActive: false,
+      currentDayIndex: 0,
+    },
+  });
+  const historyInactiveDay = await createProgramDay({
+    programId: historyInactiveProgram.id,
+    dayIndex: 0,
+    suffix: `${historySuffix}-inactive-day`,
+  });
+  const historyInactiveProgramDayExercise = await createProgramDayExercise({
+    programDayId: historyInactiveDay.id,
+    exerciseId: historyTargetExercise.id,
+    progressionType: "load",
+  });
+  let latestCompletedSession;
+  let tieHigherIdSession;
+  let tieLowerIdSession;
+  let olderCompletedSession;
+  let activeSession;
+  let incompleteCompletedSession;
+  let differentProgramDayExerciseSession;
+  let inactiveUserProgramSession;
+  let singleCompletedSession;
+  try {
+    latestCompletedSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historyTargetDay.id,
+      programDayExerciseId: historyTargetProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-26T09:00:00.000Z"),
+      completedAt: new Date("2026-07-26T09:45:00.000Z"),
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 40,
+          loggedAt: new Date("2026-07-26T09:10:00.000Z"),
+        },
+        {
+          setNumber: 2,
+          reps: 8,
+          weightKg: 42.5,
+          loggedAt: new Date("2026-07-26T09:12:00.000Z"),
+        },
+        {
+          exerciseId: historyOtherExercise.id,
+          setNumber: 3,
+          reps: 12,
+          weightKg: 15,
+          loggedAt: new Date("2026-07-26T09:14:00.000Z"),
+        },
+      ],
+    });
+    tieLowerIdSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historyTargetDay.id,
+      programDayExerciseId: historyTargetProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-19T09:00:00.000Z"),
+      completedAt: new Date("2026-07-19T09:45:00.000Z"),
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 9,
+          weightKg: 40,
+          loggedAt: new Date("2026-07-19T09:10:00.000Z"),
+        },
+      ],
+    });
+    tieHigherIdSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historyTargetDay.id,
+      programDayExerciseId: historyTargetProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-19T09:00:00.000Z"),
+      completedAt: new Date("2026-07-19T09:45:00.000Z"),
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 41.25,
+          loggedAt: new Date("2026-07-19T09:11:00.000Z"),
+        },
+      ],
+    });
+    olderCompletedSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historyTargetDay.id,
+      programDayExerciseId: historyTargetProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-12T09:00:00.000Z"),
+      completedAt: new Date("2026-07-12T09:45:00.000Z"),
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 8,
+          weightKg: 37.5,
+          loggedAt: new Date("2026-07-12T09:10:00.000Z"),
+        },
+      ],
+    });
+    activeSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historyTargetDay.id,
+      programDayExerciseId: historyTargetProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-27T09:00:00.000Z"),
+      completedAt: null,
+      status: "active",
+      setLogs: [],
+    });
+    incompleteCompletedSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historyTargetDay.id,
+      programDayExerciseId: historyTargetProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-18T09:00:00.000Z"),
+      completedAt: null,
+      status: "completed",
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 8,
+          weightKg: 35,
+          loggedAt: new Date("2026-07-18T09:10:00.000Z"),
+        },
+      ],
+    });
+    differentProgramDayExerciseSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historyTargetDay.id,
+      programDayExerciseId: historyDifferentProgramDayExercise.id,
+      exerciseId: historyOtherExercise.id,
+      startedAt: new Date("2026-07-25T09:00:00.000Z"),
+      completedAt: new Date("2026-07-25T09:45:00.000Z"),
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 12,
+          weightKg: 15,
+          loggedAt: new Date("2026-07-25T09:10:00.000Z"),
+        },
+      ],
+    });
+    inactiveUserProgramSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyInactiveUserProgram.id,
+      programId: historyInactiveProgram.id,
+      programDayId: historyInactiveDay.id,
+      programDayExerciseId: historyInactiveProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-24T09:00:00.000Z"),
+      completedAt: new Date("2026-07-24T09:45:00.000Z"),
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 39,
+          loggedAt: new Date("2026-07-24T09:10:00.000Z"),
+        },
+      ],
+    });
+    singleCompletedSession = await createHistoricalExposure({
+      userId: historyUser.id,
+      userProgramId: historyActiveUserProgram.id,
+      programId: historyProgram.id,
+      programDayId: historySingleDay.id,
+      programDayExerciseId: historySingleProgramDayExercise.id,
+      exerciseId: historyTargetExercise.id,
+      startedAt: new Date("2026-07-23T09:00:00.000Z"),
+      completedAt: new Date("2026-07-23T09:45:00.000Z"),
+      setLogs: [
+        {
+          setNumber: 1,
+          reps: 10,
+          weightKg: 38.75,
+          loggedAt: new Date("2026-07-23T09:10:00.000Z"),
+        },
+      ],
+    });
+
+    if (
+      await runCase(
+        "historical completed query returns no history when no matching completed exposures exist",
+        {
+          userProgramId: historyActiveUserProgram.id,
+          programDayExerciseId: historyUnusedProgramDayExercise.id,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historyUnusedProgramDayExercise.id,
+          });
+
+          assert.equal(found.length, 0);
+          return { count: found.length };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "historical completed query returns one completed exposure for a single matching boundary",
+        {
+          userProgramId: historyActiveUserProgram.id,
+          programDayExerciseId: historySingleProgramDayExercise.id,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historySingleProgramDayExercise.id,
+          });
+
+          assert.equal(found.length, 1);
+          assert.equal(found[0].id, singleCompletedSession.id);
+          assert.deepEqual(Object.keys(found[0]).sort(), [
+            "completedAt",
+            "exerciseTargets",
+            "id",
+            "programDayId",
+            "setLogs",
+            "startedAt",
+            "userProgramId",
+          ]);
+          assert.equal(found[0].exerciseTargets.length, 1);
+          assert.deepEqual(Object.keys(found[0].exerciseTargets[0]).sort(), [
+            "exactRepTarget",
+            "exerciseId",
+            "id",
+            "programDayExerciseId",
+            "progressionType",
+            "sourceRecommendation",
+            "targetDurationSeconds",
+            "targetLoadKg",
+            "targetRepRangeHigh",
+            "targetRepRangeLow",
+            "targetSets",
+          ]);
+          assert.deepEqual(Object.keys(found[0].setLogs[0]).sort(), [
+            "exerciseId",
+            "id",
+            "loggedAt",
+            "reps",
+            "setNumber",
+            "weightKg",
+          ]);
+
+          return {
+            count: found.length,
+            sessionId: found[0].id,
+            targetCount: found[0].exerciseTargets.length,
+            setLogCount: found[0].setLogs.length,
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "historical completed query returns multiple completed exposures newest first",
+        {
+          userProgramId: historyActiveUserProgram.id,
+          programDayExerciseId: historyTargetProgramDayExercise.id,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historyTargetProgramDayExercise.id,
+          });
+
+          assert.equal(found.length, 4);
+          assert.deepEqual(
+            found.map((session) => session.id),
+            [
+              latestCompletedSession.id,
+              tieHigherIdSession.id,
+              tieLowerIdSession.id,
+              olderCompletedSession.id,
+            ]
+          );
+
+          return {
+            sessionIds: found.map((session) => session.id),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "historical completed query enforces deterministic ordering with id tie-breaker",
+        {
+          higherId: tieHigherIdSession.id,
+          lowerId: tieLowerIdSession.id,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historyTargetProgramDayExercise.id,
+            limit: 3,
+          });
+
+          assert.equal(found[1].id, tieHigherIdSession.id);
+          assert.equal(found[2].id, tieLowerIdSession.id);
+
+          return {
+            orderedTieIds: [found[1].id, found[2].id],
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "historical completed query respects configurable limit N",
+        {
+          limit: 2,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historyTargetProgramDayExercise.id,
+            limit: 2,
+          });
+
+          assert.equal(found.length, 2);
+          assert.deepEqual(found.map((session) => session.id), [
+            latestCompletedSession.id,
+            tieHigherIdSession.id,
+          ]);
+
+          return {
+            sessionIds: found.map((session) => session.id),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "historical completed query excludes incomplete and active sessions",
+        {
+          excludedSessionIds: [activeSession.id, incompleteCompletedSession.id],
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historyTargetProgramDayExercise.id,
+          });
+
+          const foundIds = new Set(found.map((session) => session.id));
+          assert.equal(foundIds.has(activeSession.id), false);
+          assert.equal(foundIds.has(incompleteCompletedSession.id), false);
+
+          return {
+            foundIds: Array.from(foundIds),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "historical completed query still returns exposures for a since-deactivated UserProgram when explicitly scoped",
+        {
+          userProgramId: historyInactiveUserProgram.id,
+          sessionId: inactiveUserProgramSession.id,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyInactiveUserProgram.id,
+            programDayExerciseId: historyInactiveProgramDayExercise.id,
+          });
+
+          assert.equal(found.length, 1);
+          assert.equal(found[0].id, inactiveUserProgramSession.id);
+          assert.equal(found[0].userProgramId, historyInactiveUserProgram.id);
+
+          return {
+            sessionIds: found.map((session) => session.id),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "historical completed query excludes exposures from a different ProgramDayExercise",
+        {
+          excludedSessionId: differentProgramDayExerciseSession.id,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historyTargetProgramDayExercise.id,
+          });
+
+          assert.equal(
+            found.some((session) => session.id === differentProgramDayExerciseSession.id),
+            false
+          );
+          assert.equal(found[0].setLogs.length, 2);
+          assert.equal(
+            found[0].setLogs.every((setLog) => setLog.exerciseId === historyTargetExercise.id),
+            true
+          );
+
+          return {
+            firstSessionSetLogCount: found[0].setLogs.length,
+            firstSessionExerciseIds: found[0].setLogs.map((setLog) => setLog.exerciseId),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+  } finally {
+    await cleanupFixture({
+      userIds: [historyUser.id],
+      programIds: [historyProgram.id, historyInactiveProgram.id],
+    });
   }
 
   console.log(`SUMMARY: ${passed} passed, ${failed} failed, ${passed + failed} total`);

@@ -2,6 +2,11 @@ import { WORKOUT_SESSION_TARGET_INCLUDE } from "./repositoryShapes.js";
 
 const WORKOUT_SESSION_TARGETS_ORDER_BY = [{ id: "asc" }];
 const SET_LOGS_ORDER_BY = [{ loggedAt: "asc" }, { id: "asc" }];
+const HISTORICAL_WORKOUT_SESSION_ORDER_BY = [
+  { completedAt: "desc" },
+  { startedAt: "desc" },
+  { id: "desc" },
+];
 
 function buildWorkoutSessionTargetsInclude() {
   return {
@@ -161,6 +166,80 @@ export function createWorkoutSessionRepository(db) {
           setLogs: {
             where: { exerciseId },
             orderBy: [{ setNumber: "asc" }, { id: "asc" }],
+          },
+        },
+      });
+    },
+
+    async findCompletedHistoryForUserProgramDayExercise({
+      userProgramId,
+      programDayExerciseId,
+      limit = 5,
+    }) {
+      const programDayExercise = await db.programDayExercise.findUnique({
+        where: { id: programDayExerciseId },
+        select: { exerciseId: true },
+      });
+
+      if (!programDayExercise) {
+        return [];
+      }
+
+      return db.workoutSession.findMany({
+        where: {
+          userProgramId,
+          status: "completed",
+          completedAt: { not: null },
+          exerciseTargets: {
+            some: { programDayExerciseId },
+          },
+        },
+        orderBy: HISTORICAL_WORKOUT_SESSION_ORDER_BY,
+        take: limit,
+        select: {
+          id: true,
+          userProgramId: true,
+          programDayId: true,
+          startedAt: true,
+          completedAt: true,
+          exerciseTargets: {
+            where: { programDayExerciseId },
+            orderBy: [{ id: "desc" }],
+            take: 1,
+            select: {
+              id: true,
+              programDayExerciseId: true,
+              exerciseId: true,
+              targetSets: true,
+              targetRepRangeLow: true,
+              targetRepRangeHigh: true,
+              exactRepTarget: true,
+              targetLoadKg: true,
+              targetDurationSeconds: true,
+              progressionType: true,
+              sourceRecommendation: {
+                select: {
+                  id: true,
+                  recommendationType: true,
+                  decisionType: true,
+                  sourceSessionId: true,
+                },
+              },
+            },
+          },
+          setLogs: {
+            where: {
+              exerciseId: programDayExercise.exerciseId,
+            },
+            orderBy: [{ setNumber: "asc" }, { id: "asc" }],
+            select: {
+              id: true,
+              exerciseId: true,
+              setNumber: true,
+              reps: true,
+              weightKg: true,
+              loggedAt: true,
+            },
           },
         },
       });
