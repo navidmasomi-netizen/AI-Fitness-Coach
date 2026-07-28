@@ -146,6 +146,18 @@ async function main() {
       },
     },
     {
+      name: "neutral signals output is immutable",
+      input: "empty history output cannot be mutated",
+      fn: () => {
+        const actual = deriveHistoricalTrainingSignals([]);
+        assert.throws(() => {
+          actual.loadTrend = "INCREASING";
+        }, TypeError);
+        assert.deepEqual(actual, buildNeutralSignals());
+        return actual;
+      },
+    },
+    {
       name: "non-array input is rejected",
       input: { exposures: [] },
       fn: () => {
