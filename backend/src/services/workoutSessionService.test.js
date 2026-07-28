@@ -264,6 +264,24 @@ async function countUserRecommendations(userId) {
   });
 }
 
+function projectComparableRecommendation(recommendation) {
+  return {
+    recommendationType: recommendation.recommendationType,
+    decisionType: recommendation.decisionType,
+    loadAdjustmentSteps: recommendation.loadAdjustmentSteps,
+    repAdjustment: recommendation.repAdjustment,
+    setAdjustment: recommendation.setAdjustment,
+    durationAdjustmentSteps: recommendation.durationAdjustmentSteps,
+    confidence: recommendation.confidence,
+    reasonCode: recommendation.reasonCode,
+    rulesVersion: recommendation.rulesVersion,
+    progressionType: recommendation.progressionType,
+    consecutiveFailures: recommendation.consecutiveFailures,
+    reason: recommendation.reason,
+    status: recommendation.status,
+  };
+}
+
 async function addSetLogsForSession({ sessionId, exerciseId, sets }) {
   for (const [index, set] of sets.entries()) {
     await prisma.setLog.create({
@@ -703,6 +721,91 @@ async function main() {
       },
     },
     {
+      name: "completion excludes the current session from historical query and invokes aggregation",
+      input: "historical query receives excludeSessionId and limit 5 during completion",
+      fn: async () => {
+        const suffix = `complete-history-context-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 40 },
+              { reps: 10, weightKg: 40 },
+            ],
+          });
+
+          let historicalQueryArgs = null;
+          let aggregationCalls = 0;
+          let aggregationInputLength = null;
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+            createWorkoutSessionRepositoryImpl(db) {
+              const repository = createWorkoutSessionRepository(db);
+              return {
+                ...repository,
+                async findCompletedHistoryForUserProgramDayExercise(params) {
+                  historicalQueryArgs = params;
+                  return [];
+                },
+              };
+            },
+            deriveHistoricalTrainingSignalsImpl(exposures) {
+              aggregationCalls += 1;
+              aggregationInputLength = exposures.length;
+              return {
+                completedExposureCount: 0,
+                averageCompletionRatio: null,
+                averageCompletedSets: null,
+                latestCompletedAt: null,
+                previousCompletedAt: null,
+                loadTrend: "UNKNOWN",
+                repTrend: "UNKNOWN",
+              };
+            },
+          });
+
+          await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          assert.deepEqual(historicalQueryArgs, {
+            userProgramId: started.session.userProgramId,
+            programDayExerciseId: target.programDayExerciseId,
+            limit: 5,
+            excludeSessionId: started.session.id,
+          });
+          assert.equal(aggregationCalls, 1);
+          assert.equal(aggregationInputLength, 0);
+
+          return {
+            historicalQueryArgs,
+            aggregationCalls,
+            aggregationInputLength,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
       name: "successful completion persists normalized recommendations and advances the active program",
       input: "completed active session with performed sets and a previously applied recommendation",
       fn: async () => {
@@ -777,6 +880,71 @@ async function main() {
       },
     },
     {
+      name: "completion continues with neutral historical signals when aggregation fails",
+      input: "historical signal aggregation throws but completion still succeeds",
+      fn: async () => {
+        const suffix = `complete-history-fail-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 40 },
+              { reps: 10, weightKg: 40 },
+            ],
+          });
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+            deriveHistoricalTrainingSignalsImpl() {
+              throw new Error("synthetic historical aggregation failure");
+            },
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          const completedSession = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const createdRecommendations = await prisma.progressionRecommendation.findMany({
+            where: {
+              userId: user.id,
+              sourceSessionId: started.session.id,
+            },
+          });
+
+          assert.equal(completedSession.status, "completed");
+          assert.equal(createdRecommendations.length >= 1, true);
+          assert.equal(Array.isArray(result.progressionRecommendations), true);
+
+          return {
+            sessionStatus: completedSession.status,
+            recommendationCount: createdRecommendations.length,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
       name: "completion invokes analyzer and decision engine once per performed target",
       input: "service wrappers track analyzer and decision engine calls",
       fn: async () => {
@@ -834,6 +1002,110 @@ async function main() {
           };
         } finally {
           await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "historical signal integration preserves recommendation outputs",
+      input: "non-neutral versus failing aggregation yields identical persisted recommendations",
+      fn: async () => {
+        const firstUser = await createTestUser({
+          suffix: `complete-history-equivalence-a-${Date.now()}`,
+          profileData: buildCompleteProfileData(),
+        });
+        const secondUser = await createTestUser({
+          suffix: `complete-history-equivalence-b-${Date.now()}`,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(firstUser.id);
+          await generateProgramForUser(secondUser.id);
+
+          const firstStarted = await createStartedSession({ userId: firstUser.id });
+          const secondStarted = await createStartedSession({ userId: secondUser.id });
+          const firstTarget = firstStarted.session.exerciseTargets[0];
+          const secondTarget = secondStarted.session.exerciseTargets[0];
+
+          await addSetLogsForSession({
+            sessionId: firstStarted.session.id,
+            exerciseId: firstTarget.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+          await addSetLogsForSession({
+            sessionId: secondStarted.session.id,
+            exerciseId: secondTarget.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const firstService = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+            deriveHistoricalTrainingSignalsImpl() {
+              return {
+                completedExposureCount: 5,
+                averageCompletionRatio: 0.8,
+                averageCompletedSets: 2.6,
+                latestCompletedAt: "2026-07-25T10:00:00.000Z",
+                previousCompletedAt: "2026-07-24T10:00:00.000Z",
+                loadTrend: "INCREASING",
+                repTrend: "STABLE",
+              };
+            },
+          });
+          const secondService = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+            deriveHistoricalTrainingSignalsImpl() {
+              throw new Error("synthetic historical aggregation failure");
+            },
+          });
+
+          await firstService.completeWorkoutSession({
+            userId: firstUser.id,
+            sessionId: firstStarted.session.id,
+          });
+          await secondService.completeWorkoutSession({
+            userId: secondUser.id,
+            sessionId: secondStarted.session.id,
+          });
+
+          const firstRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: firstUser.id,
+              sourceSessionId: firstStarted.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+          const secondRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: secondUser.id,
+              sourceSessionId: secondStarted.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+
+          assert.deepEqual(
+            projectComparableRecommendation(firstRecommendation),
+            projectComparableRecommendation(secondRecommendation)
+          );
+
+          return {
+            recommendation: projectComparableRecommendation(firstRecommendation),
+          };
+        } finally {
+          await cleanupUserArtifacts(firstUser.id);
+          await cleanupUserArtifacts(secondUser.id);
         }
       },
     },

@@ -175,6 +175,7 @@ export function createWorkoutSessionRepository(db) {
       userProgramId,
       programDayExerciseId,
       limit = 5,
+      excludeSessionId,
     }) {
       const programDayExercise = await db.programDayExercise.findUnique({
         where: { id: programDayExerciseId },
@@ -190,6 +191,7 @@ export function createWorkoutSessionRepository(db) {
           userProgramId,
           status: "completed",
           completedAt: { not: null },
+          ...(excludeSessionId ? { id: { not: excludeSessionId } } : {}),
           exerciseTargets: {
             some: { programDayExerciseId },
           },

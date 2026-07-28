@@ -12,6 +12,7 @@ import {
   classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationData,
 } from "./progressionPersistenceOrchestrator.js";
+import { deriveHistoricalTrainingSignals } from "./historicalTrainingSignals.js";
 import {
   decideProgression,
 } from "./progressionDecisionEngine.js";
@@ -25,6 +26,15 @@ import {
 const ACTIVE_WORKOUT_SESSION_STATUS = "active";
 const COMPLETED_WORKOUT_SESSION_STATUS = "completed";
 const DEFAULT_RECOVERY_ANALYSIS_WINDOW_DAYS = 28;
+const NEUTRAL_HISTORICAL_TRAINING_SIGNALS = Object.freeze({
+  completedExposureCount: 0,
+  averageCompletionRatio: null,
+  averageCompletedSets: null,
+  latestCompletedAt: null,
+  previousCompletedAt: null,
+  loadTrend: "UNKNOWN",
+  repTrend: "UNKNOWN",
+});
 
 export class WorkoutSessionStartError extends Error {
   constructor(message, { statusCode = 500, code = "WORKOUT_SESSION_START_FAILED", cause, details } = {}) {
@@ -308,6 +318,7 @@ export function createWorkoutSessionService({
   computeRecoveryModifierImpl = computeRecoveryModifier,
   classifyDecisionPersistabilityImpl = classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationDataImpl = mapDecisionToProgressionRecommendationData,
+  deriveHistoricalTrainingSignalsImpl = deriveHistoricalTrainingSignals,
   resolveWorkoutTargetImpl = resolveWorkoutTarget,
 } = {}) {
   function createRepositories(db) {
@@ -465,6 +476,13 @@ export function createWorkoutSessionService({
                 exerciseId: targetSnapshot.exerciseId,
                 excludeSourceSessionId: sessionId,
               });
+            const historicalTrainingSignals = await resolveHistoricalTrainingSignals({
+              completionContext,
+              repositories,
+              sessionId,
+              targetSnapshot,
+              deriveHistoricalTrainingSignalsImpl,
+            });
 
             const analysis = analyzeExercisePerformanceImpl(
               buildCompletionAnalyzerInput({
@@ -478,6 +496,7 @@ export function createWorkoutSessionService({
             const decision = decideProgressionImpl(
               buildCompletionDecisionInput({
                 analysis,
+                historicalTrainingSignals,
                 targetSnapshot,
                 previousRecommendation,
                 recoveryResult,
@@ -851,6 +870,35 @@ function mapDecisionToProgressionDataEntry({
     exercise: targetSnapshot.exercise,
     previousRecommendation,
   });
+}
+
+async function resolveHistoricalTrainingSignals({
+  completionContext,
+  repositories,
+  sessionId,
+  targetSnapshot,
+  deriveHistoricalTrainingSignalsImpl,
+}) {
+  if (
+    !isPositiveInteger(completionContext?.userProgramId) ||
+    !isPositiveInteger(targetSnapshot?.programDayExerciseId)
+  ) {
+    return NEUTRAL_HISTORICAL_TRAINING_SIGNALS;
+  }
+
+  try {
+    const exposures =
+      await repositories.workoutSessions.findCompletedHistoryForUserProgramDayExercise({
+        userProgramId: completionContext.userProgramId,
+        programDayExerciseId: targetSnapshot.programDayExerciseId,
+        limit: 5,
+        excludeSessionId: sessionId,
+      });
+
+    return deriveHistoricalTrainingSignalsImpl(exposures);
+  } catch {
+    return NEUTRAL_HISTORICAL_TRAINING_SIGNALS;
+  }
 }
 
 export const workoutSessionService = createWorkoutSessionService();

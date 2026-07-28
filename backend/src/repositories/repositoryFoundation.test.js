@@ -1427,6 +1427,38 @@ async function main() {
 
     if (
       await runCase(
+        "historical completed query excludes the specified current session before limiting",
+        {
+          excludeSessionId: latestCompletedSession.id,
+          limit: 2,
+        },
+        async () => {
+          const found = await workoutSessionRepository.findCompletedHistoryForUserProgramDayExercise({
+            userProgramId: historyActiveUserProgram.id,
+            programDayExerciseId: historyTargetProgramDayExercise.id,
+            limit: 2,
+            excludeSessionId: latestCompletedSession.id,
+          });
+
+          assert.equal(found.length, 2);
+          assert.deepEqual(found.map((session) => session.id), [
+            tieHigherIdSession.id,
+            tieLowerIdSession.id,
+          ]);
+
+          return {
+            sessionIds: found.map((session) => session.id),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
         "historical completed query excludes incomplete and active sessions",
         {
           excludedSessionIds: [activeSession.id, incompleteCompletedSession.id],
