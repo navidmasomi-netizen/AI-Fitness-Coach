@@ -10,6 +10,7 @@ import {
 } from "./progression.js";
 
 const TEST_EMAIL_DOMAIN = "@example.com";
+const FIXED_ANALYSIS_NOW = new Date("2026-07-18T09:00:00.000Z");
 
 function serializeForLog(value) {
   return JSON.stringify(
@@ -787,7 +788,9 @@ async function main() {
             reps: targetExercise.repRangeHigh,
           });
 
-          const result = await evaluateSessionProgression(targetSession.id, user.id);
+          const result = await evaluateSessionProgression(targetSession.id, user.id, {
+            now: FIXED_ANALYSIS_NOW,
+          });
           const targetEvaluation = result.evaluations.find(
             (entry) => entry.exerciseId === targetExercise.exerciseId
           );
@@ -889,7 +892,9 @@ async function main() {
             where: { userId: user.id, startedAt: new Date("2026-07-11T09:00:00.000Z") },
           });
 
-          const result = await evaluateSessionProgression(targetSession.id, user.id);
+          const result = await evaluateSessionProgression(targetSession.id, user.id, {
+            now: FIXED_ANALYSIS_NOW,
+          });
           const targetEvaluation = result.evaluations.find(
             (entry) => entry.exerciseId === targetExercise.exerciseId
           );
@@ -963,7 +968,9 @@ async function main() {
             where: { userId: user.id, startedAt: new Date("2026-07-11T09:00:00.000Z") },
           });
 
-          const result = await evaluateSessionProgression(targetSession.id, user.id);
+          const result = await evaluateSessionProgression(targetSession.id, user.id, {
+            now: FIXED_ANALYSIS_NOW,
+          });
           const targetEvaluation = result.evaluations.find(
             (entry) => entry.exerciseId === targetExercise.exerciseId
           );
@@ -1045,7 +1052,9 @@ async function main() {
             reps: targetExercise.repRangeHigh,
           });
 
-          const result = await evaluateSessionProgression(targetSession.id, user.id);
+          const result = await evaluateSessionProgression(targetSession.id, user.id, {
+            now: FIXED_ANALYSIS_NOW,
+          });
           const targetEvaluation = result.evaluations.find(
             (entry) => entry.exerciseId === targetExercise.exerciseId
           );

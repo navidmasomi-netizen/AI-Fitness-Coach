@@ -248,7 +248,7 @@ export function __resetComputeRecoveryModifierForTests() {
 }
 
 // TD-S4-001: no idempotency guard for repeated sourceSessionId calls — deferred, see Sprint 4 Phase 2 closure.
-export async function evaluateSessionProgression(sessionId, userId) {
+export async function evaluateSessionProgression(sessionId, userId, { now } = {}) {
   const session = await prisma.workoutSession.findUnique({
     where: { id: sessionId },
   });
@@ -267,7 +267,7 @@ export async function evaluateSessionProgression(sessionId, userId) {
       where: { programDayId: session.programDayId },
       include: { exercise: true },
     }),
-    analyzeWorkoutHistory({ userId, windowDays: DEFAULT_ANALYSIS_WINDOW_DAYS }),
+    analyzeWorkoutHistory({ userId, windowDays: DEFAULT_ANALYSIS_WINDOW_DAYS, now }),
   ]);
   const recoveryResult = computeRecoveryModifierImpl({ workoutAnalysis });
 

@@ -11,6 +11,7 @@ import {
 } from "./workoutAnalyzer.js";
 
 const TEST_EMAIL_DOMAIN = "@example.com";
+const FIXED_ANALYSIS_NOW = new Date("2026-07-18T09:00:00.000Z");
 
 function serializeForLog(value) {
   return JSON.stringify(
@@ -684,7 +685,9 @@ async function main() {
         const suffix = `zero-${Date.now()}`;
         const user = await createTestUser({ profileData: null, suffix });
         try {
+          const invocationStartedAt = Date.now();
           const actual = await analyzeWorkoutHistory({ userId: user.id, windowDays: 28 });
+          const invocationEndedAt = Date.now();
           assert.equal(actual.hasActiveProgram, false);
           assert.deepEqual(actual.exerciseSummaries, []);
           assert.deepEqual(actual.patternSummaries, []);
@@ -694,6 +697,10 @@ async function main() {
             completionRate: null,
             missedSessionGaps: [],
           });
+          assert(actual.windowStart instanceof Date);
+          assert(actual.windowEnd instanceof Date);
+          assert(actual.windowEnd.getTime() >= invocationStartedAt);
+          assert(actual.windowEnd.getTime() <= invocationEndedAt + 1000);
           return actual;
         } finally {
           await cleanupUserArtifacts(user.id);
@@ -760,7 +767,11 @@ async function main() {
             ],
           });
 
-          const actual = await analyzeWorkoutHistory({ userId: user.id, windowDays: 28 });
+          const actual = await analyzeWorkoutHistory({
+            userId: user.id,
+            windowDays: 28,
+            now: FIXED_ANALYSIS_NOW,
+          });
           const summary = actual.exerciseSummaries.find(
             (entry) => entry.exerciseId === firstExercise.exerciseId
           );
@@ -856,7 +867,11 @@ async function main() {
             });
           }
 
-          const actual = await analyzeWorkoutHistory({ userId: user.id, windowDays: 28 });
+          const actual = await analyzeWorkoutHistory({
+            userId: user.id,
+            windowDays: 28,
+            now: FIXED_ANALYSIS_NOW,
+          });
           const summary = actual.exerciseSummaries.find(
             (entry) => entry.exerciseId === firstExercise.exerciseId
           );
@@ -869,6 +884,98 @@ async function main() {
           assert.equal(summary.timesLogged, 4);
           assert.equal(summary.performanceTrend.direction, "increasing");
           assert.equal(summary.performanceTrend.reason, "weight_increase");
+          return actual;
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "integration -> injected now enforces 28-day inclusion, exclusion, and exact cutoff boundary",
+      input: "sessions just outside, exactly on, and inside the injected cutoff",
+      fn: async () => {
+        const suffix = `window-boundary-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: {
+            goal: "hypertrophy",
+            trainingLevel: "beginner",
+            trainingDaysPerWeek: 1,
+            recoveryQuality: "medium",
+            sessionDurationMin: 60,
+            equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
+            injuryFlags: ["none"],
+            wizardCompleted: true,
+            wizardCompletedAt: new Date("2026-07-18T08:00:00.000Z"),
+          },
+        });
+
+        try {
+          const program = await generateProgramForUser(user.id);
+          await updateActiveUserProgram(user.id, {
+            activatedAt: new Date("2026-06-18T09:00:00.000Z"),
+          });
+          const firstDay = program.days[0];
+          const firstExercise = firstDay.exercises[0];
+
+          const sessionInputs = [
+            {
+              startedAt: new Date("2026-06-20T08:59:59.000Z"),
+              completedAt: new Date("2026-06-20T09:44:59.000Z"),
+              weightKg: 40,
+            },
+            {
+              startedAt: new Date("2026-06-20T09:00:00.000Z"),
+              completedAt: new Date("2026-06-20T09:45:00.000Z"),
+              weightKg: 42.5,
+            },
+            {
+              startedAt: new Date("2026-07-11T09:00:00.000Z"),
+              completedAt: new Date("2026-07-11T09:45:00.000Z"),
+              weightKg: 45,
+            },
+          ];
+
+          for (const [index, sessionInput] of sessionInputs.entries()) {
+            const session = await prisma.workoutSession.create({
+              data: {
+                userId: user.id,
+                programId: program.id,
+                programDayId: firstDay.id,
+                startedAt: sessionInput.startedAt,
+                completedAt: sessionInput.completedAt,
+                status: "completed",
+              },
+            });
+
+            await prisma.setLog.create({
+              data: {
+                sessionId: session.id,
+                exerciseId: firstExercise.exerciseId,
+                setNumber: 1,
+                weightKg: sessionInput.weightKg,
+                reps: firstExercise.repRangeHigh,
+                loggedAt: new Date(sessionInput.startedAt.getTime() + (index + 1) * 60000),
+              },
+            });
+          }
+
+          const actual = await analyzeWorkoutHistory({
+            userId: user.id,
+            windowDays: 28,
+            now: FIXED_ANALYSIS_NOW,
+          });
+          const summary = actual.exerciseSummaries.find(
+            (entry) => entry.exerciseId === firstExercise.exerciseId
+          );
+
+          assert.equal(actual.windowStart.toISOString(), "2026-06-20T09:00:00.000Z");
+          assert.equal(actual.windowEnd.toISOString(), "2026-07-18T09:00:00.000Z");
+          assert.equal(actual.sessionConsistency.completedSessions, 2);
+          assert(summary);
+          assert.equal(summary.timesLogged, 2);
+          assert.equal(summary.performanceTrend.reason, "insufficient_sessions");
+
           return actual;
         } finally {
           await cleanupUserArtifacts(user.id);

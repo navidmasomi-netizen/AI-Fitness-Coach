@@ -63,8 +63,8 @@ function daysBetween(laterDate, earlierDate) {
   return (laterDate.getTime() - earlierDate.getTime()) / millisecondsPerDay;
 }
 
-function getWindowBounds(windowDays) {
-  const windowEnd = new Date();
+function getWindowBounds(windowDays, now = new Date()) {
+  const windowEnd = new Date(now);
   const windowStart = new Date(windowEnd);
   windowStart.setDate(windowStart.getDate() - windowDays);
   return { windowStart, windowEnd };
@@ -524,8 +524,8 @@ export function computeSessionConsistency(normalizedHistory) {
   };
 }
 
-export async function analyzeWorkoutHistory({ userId, windowDays = 28 }) {
-  const { windowStart, windowEnd } = getWindowBounds(windowDays);
+export async function analyzeWorkoutHistory({ userId, windowDays = 28, now = new Date() }) {
+  const { windowStart, windowEnd } = getWindowBounds(windowDays, now);
   const rawHistory = await fetchRawHistory({ userId, windowStart, windowEnd });
   const normalizedHistory = normalizeHistory(rawHistory, { windowStart, windowEnd, windowDays });
   const exerciseSummaries = computeExerciseSummaries(normalizedHistory);
