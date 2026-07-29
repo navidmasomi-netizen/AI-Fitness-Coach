@@ -11,7 +11,7 @@ import { analyzeExercisePerformance } from "./exercisePerformanceAnalyzer.js";
 import {
   classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationData,
-} from "./progressionPersistenceOrchestrator.js";
+} from "./progressionDecisionMapping.js";
 import { deriveHistoricalTrainingSignals } from "./historicalTrainingSignals.js";
 import {
   decideProgression,

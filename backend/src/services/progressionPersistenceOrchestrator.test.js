@@ -12,14 +12,16 @@ import {
 import {
   PROGRESSION_PERSISTENCE_OUTCOMES,
   ProgressionPersistenceSourceError,
-  ProgressionPersistenceUnsupportedDecisionError,
-  ProgressionPersistenceValidationError,
-  classifyDecisionPersistability,
   createOrRecoverProgressionRecommendation,
   isProgressionRecommendationIdempotencyP2002,
-  mapDecisionToProgressionRecommendationData,
   orchestrateProgressionPersistence,
 } from "./progressionPersistenceOrchestrator.js";
+import {
+  classifyDecisionPersistability,
+  mapDecisionToProgressionRecommendationData,
+  ProgressionPersistenceUnsupportedDecisionError,
+  ProgressionPersistenceValidationError,
+} from "./progressionDecisionMapping.js";
 
 const TEST_EMAIL_DOMAIN = "@example.com";
 const NEUTRAL_RECOVERY = Object.freeze({
