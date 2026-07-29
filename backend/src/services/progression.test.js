@@ -2,15 +2,9 @@ import assert from "node:assert/strict";
 
 import prisma from "../lib/prisma.js";
 import { generateProgramForUser } from "./programGenerator.js";
-import {
-  evaluateProgression,
-  evaluateSessionProgression,
-  LegacyProgressionEntryPointError,
-} from "./progression.js";
+import { evaluateProgression } from "./progression.js";
 
 const TEST_EMAIL_DOMAIN = "@example.com";
-const FIXED_ANALYSIS_NOW = new Date("2026-07-18T09:00:00.000Z");
-
 function serializeForLog(value) {
   return JSON.stringify(
     value,
@@ -706,108 +700,6 @@ async function main() {
   console.log(`ROW_COUNTS_BEFORE: ${serializeForLog(beforeCounts)}`);
 
   const integrationCases = [
-    {
-      name: "integration -> legacy entry point rejects with dedicated error before Prisma access",
-      input: "blocked entry point never reaches workoutSession lookup",
-      fn: async () => {
-        let findUniqueCalls = 0;
-        const originalFindUnique = prisma.workoutSession.findUnique;
-        prisma.workoutSession.findUnique = async (...args) => {
-          findUniqueCalls += 1;
-          return originalFindUnique.apply(prisma.workoutSession, args);
-        };
-        try {
-          await assert.rejects(
-            () => evaluateSessionProgression(123, 456, { now: FIXED_ANALYSIS_NOW }),
-            LegacyProgressionEntryPointError
-          );
-          assert.equal(findUniqueCalls, 0);
-
-          return {
-            errorClass: "LegacyProgressionEntryPointError",
-            findUniqueCalls,
-          };
-        } finally {
-          prisma.workoutSession.findUnique = originalFindUnique;
-        }
-      },
-    },
-    {
-      name: "integration -> legacy entry point creates no recommendations or applications",
-      input: "blocked invocation leaves persistence counts unchanged",
-      fn: async () => {
-        const suffix = `legacy-blocked-${Date.now()}`;
-        const user = await createTestUser({
-          suffix,
-          profileData: {
-            goal: "hypertrophy",
-            trainingLevel: "beginner",
-            trainingDaysPerWeek: 3,
-            recoveryQuality: "medium",
-            sessionDurationMin: 60,
-            equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
-            injuryFlags: ["none"],
-          },
-        });
-
-        try {
-          const program = await generateProgramForUser(user.id);
-          const firstDay = program.days[0];
-          const targetExercise = firstDay.exercises[0];
-
-          const targetSession = await createCompletedSessionWithOneSet({
-            userId: user.id,
-            programId: program.id,
-            programDayId: firstDay.id,
-            exerciseId: targetExercise.exerciseId,
-            startedAt: new Date("2026-07-11T09:00:00.000Z"),
-            completedAt: new Date("2026-07-11T09:45:00.000Z"),
-            loggedAt: new Date("2026-07-11T09:04:00.000Z"),
-            weightKg: 47.5,
-            reps: targetExercise.repRangeHigh,
-          });
-
-          const beforeRecommendationCount = await prisma.progressionRecommendation.count({
-            where: { userId: user.id },
-          });
-          const beforeApplicationCount = await prisma.recommendationApplication.count({
-            where: {
-              workoutSession: {
-                userId: user.id,
-              },
-            },
-          });
-
-          await assert.rejects(
-            () => evaluateSessionProgression(targetSession.id, user.id, { now: FIXED_ANALYSIS_NOW }),
-            LegacyProgressionEntryPointError
-          );
-
-          const afterRecommendationCount = await prisma.progressionRecommendation.count({
-            where: { userId: user.id },
-          });
-          const afterApplicationCount = await prisma.recommendationApplication.count({
-            where: {
-              workoutSession: {
-                userId: user.id,
-              },
-            },
-          });
-
-          assert.equal(afterRecommendationCount, beforeRecommendationCount);
-          assert.equal(afterApplicationCount, beforeApplicationCount);
-
-          return {
-            beforeRecommendationCount,
-            afterRecommendationCount,
-            beforeApplicationCount,
-            afterApplicationCount,
-          };
-        } finally {
-          await cleanupUserArtifacts(user.id);
-        }
-      },
-    },
     {
       name: "integration -> duplicate invocation returns existing immutable recommendation",
       input: "orchestrator duplicate handling keeps one row and never updates it",

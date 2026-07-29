@@ -1,19 +1,4 @@
-import prisma from "../lib/prisma.js";
-import { computeRecoveryModifier } from "./recoveryEngine.js";
-import { analyzeWorkoutHistory } from "./workoutAnalyzer.js";
-
-const DEFAULT_ANALYSIS_WINDOW_DAYS = 28;
 const LOWER_BODY_PATTERNS = ["squat", "hinge", "lunge", "single_leg"];
-let computeRecoveryModifierImpl = computeRecoveryModifier;
-
-export class LegacyProgressionEntryPointError extends Error {
-  constructor(
-    message = "evaluateSessionProgression is blocked; workoutSessionService.completeWorkoutSession is the authoritative production entry point"
-  ) {
-    super(message);
-    this.name = "LegacyProgressionEntryPointError";
-  }
-}
 
 function roundToQuarter(value) {
   return Math.round(value / 1.25) * 1.25;
@@ -35,24 +20,6 @@ function formatConfidence(confidence) {
 
 function getLatestLoggedWeight(exerciseSummary) {
   return exerciseSummary?.recentSets?.[0]?.weightKg ?? null;
-}
-
-function buildFallbackExerciseSummary(exerciseId, exerciseName, movementPattern) {
-  return {
-    exerciseId,
-    exerciseName,
-    movementPattern,
-    timesPrescribed: 0,
-    timesLogged: 0,
-    adherenceRate: null,
-    performanceTrend: {
-      direction: "insufficient_data",
-      confidence: 0,
-      reason: "insufficient_sessions",
-    },
-    lastLoggedAt: null,
-    recentSets: [],
-  };
 }
 
 /**
@@ -220,50 +187,4 @@ export function evaluateProgression({
     reason,
     trace,
   };
-}
-
-export async function persistProgressionRecommendation({
-  userId,
-  exerciseId,
-  sourceSessionId,
-  evaluation,
-}) {
-  return prisma.progressionRecommendation.create({
-    data: {
-      userId,
-      exerciseId,
-      sourceSessionId,
-      recommendationType: evaluation.recommendationType,
-      previousWeightKg: evaluation.previousWeightKg,
-      recommendedWeightKg: evaluation.recommendedWeightKg,
-      previousTargetLow: evaluation.previousTargetLow,
-      previousTargetHigh: evaluation.previousTargetHigh,
-      recommendedTargetLow: evaluation.recommendedTargetLow,
-      recommendedTargetHigh: evaluation.recommendedTargetHigh,
-      progressionType: evaluation.progressionType,
-      consecutiveFailures: evaluation.consecutiveFailures,
-      reason: evaluation.reason,
-    },
-    include: { exercise: true },
-  });
-}
-
-export function __setComputeRecoveryModifierForTests(overrideFn) {
-  computeRecoveryModifierImpl = overrideFn || computeRecoveryModifier;
-}
-
-export function __resetComputeRecoveryModifierForTests() {
-  computeRecoveryModifierImpl = computeRecoveryModifier;
-}
-
-// Legacy non-production recommendation path retained for test coverage.
-// workoutSessionService.completeWorkoutSession() is the authoritative
-// production owner for progression generation during session completion.
-// TD-S4-001: no idempotency guard for repeated sourceSessionId calls — deferred, see Sprint 4 Phase 2 closure.
-export async function evaluateSessionProgression(sessionId, userId, { now } = {}) {
-  void sessionId;
-  void userId;
-  void now;
-
-  throw new LegacyProgressionEntryPointError();
 }
