@@ -3,7 +3,6 @@ import fs from "node:fs/promises";
 
 import prisma from "../lib/prisma.js";
 import { generateProgramForUser } from "./programGenerator.js";
-import { evaluateSessionProgression } from "./progression.js";
 import {
   evaluateRegenerationEligibility,
   evaluateSustainedProgressionStagnation,
@@ -326,7 +325,15 @@ async function createStagnationHistory({ userId }) {
       },
     });
 
-    await evaluateSessionProgression(session.id, userId);
+    await prisma.progressionRecommendation.create({
+      data: {
+        userId,
+        exerciseId: targetExercise.exerciseId,
+        sourceSessionId: session.id,
+        recommendationType: "maintain",
+        reason: "Legacy stagnation fixture",
+      },
+    });
   }
 
   return program;

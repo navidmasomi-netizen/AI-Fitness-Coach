@@ -3,10 +3,9 @@ import assert from "node:assert/strict";
 import prisma from "../lib/prisma.js";
 import { generateProgramForUser } from "./programGenerator.js";
 import {
-  __resetComputeRecoveryModifierForTests,
-  __setComputeRecoveryModifierForTests,
   evaluateProgression,
   evaluateSessionProgression,
+  LegacyProgressionEntryPointError,
 } from "./progression.js";
 
 const TEST_EMAIL_DOMAIN = "@example.com";
@@ -708,16 +707,42 @@ async function main() {
 
   const integrationCases = [
     {
-      name: "integration -> behavioral caution downgrades increase and computeRecoveryModifier runs once",
-      input: "4-day generated program with increasing trend but low completion rate",
+      name: "integration -> legacy entry point rejects with dedicated error before Prisma access",
+      input: "blocked entry point never reaches workoutSession lookup",
       fn: async () => {
-        const suffix = `behavioral-caution-${Date.now()}`;
+        let findUniqueCalls = 0;
+        const originalFindUnique = prisma.workoutSession.findUnique;
+        prisma.workoutSession.findUnique = async (...args) => {
+          findUniqueCalls += 1;
+          return originalFindUnique.apply(prisma.workoutSession, args);
+        };
+        try {
+          await assert.rejects(
+            () => evaluateSessionProgression(123, 456, { now: FIXED_ANALYSIS_NOW }),
+            LegacyProgressionEntryPointError
+          );
+          assert.equal(findUniqueCalls, 0);
+
+          return {
+            errorClass: "LegacyProgressionEntryPointError",
+            findUniqueCalls,
+          };
+        } finally {
+          prisma.workoutSession.findUnique = originalFindUnique;
+        }
+      },
+    },
+    {
+      name: "integration -> legacy entry point creates no recommendations or applications",
+      input: "blocked invocation leaves persistence counts unchanged",
+      fn: async () => {
+        const suffix = `legacy-blocked-${Date.now()}`;
         const user = await createTestUser({
           suffix,
           profileData: {
             goal: "hypertrophy",
             trainingLevel: "beginner",
-            trainingDaysPerWeek: 4,
+            trainingDaysPerWeek: 3,
             recoveryQuality: "medium",
             sessionDurationMin: 60,
             equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
@@ -727,54 +752,8 @@ async function main() {
 
         try {
           const program = await generateProgramForUser(user.id);
-          await updateActiveUserProgram(user.id, {
-            activatedAt: new Date("2026-06-18T09:00:00.000Z"),
-          });
           const firstDay = program.days[0];
           const targetExercise = firstDay.exercises[0];
-          let recoveryCallCount = 0;
-
-          __setComputeRecoveryModifierForTests((args) => {
-            recoveryCallCount += 1;
-            return {
-              recoveryModifier: "caution",
-              confidence: 0.8,
-              signalStrength: "strong",
-              reason:
-                "Recent training behavior shows low completion consistency; this behavioral caution cannot distinguish fatigue from external factors like travel or schedule disruption.",
-              trace: {
-                decision: "caution",
-                because: [
-                  "completion_rate:0.25",
-                  "missed_session_gap_count:0",
-                  "increasing_exercise_count:1",
-                  "decreasing_exercise_count:0",
-                  "threshold:caution_completion_rate_below_0.5",
-                  "signal_strength:strong",
-                ],
-              },
-            };
-          });
-
-          const historicalSessions = [
-            { startedAt: new Date("2026-06-20T09:00:00.000Z"), completedAt: new Date("2026-06-20T09:45:00.000Z"), weightKg: 40 },
-            { startedAt: new Date("2026-06-27T09:00:00.000Z"), completedAt: new Date("2026-06-27T09:45:00.000Z"), weightKg: 42.5 },
-            { startedAt: new Date("2026-07-04T09:00:00.000Z"), completedAt: new Date("2026-07-04T09:45:00.000Z"), weightKg: 45 },
-          ];
-
-          for (const [index, historical] of historicalSessions.entries()) {
-            await createCompletedSessionWithOneSet({
-              userId: user.id,
-              programId: program.id,
-              programDayId: firstDay.id,
-              exerciseId: targetExercise.exerciseId,
-              startedAt: historical.startedAt,
-              completedAt: historical.completedAt,
-              loggedAt: new Date(historical.startedAt.getTime() + (index + 1) * 60000),
-              weightKg: historical.weightKg,
-              reps: targetExercise.repRangeHigh,
-            });
-          }
 
           const targetSession = await createCompletedSessionWithOneSet({
             userId: user.id,
@@ -788,292 +767,41 @@ async function main() {
             reps: targetExercise.repRangeHigh,
           });
 
-          const result = await evaluateSessionProgression(targetSession.id, user.id, {
-            now: FIXED_ANALYSIS_NOW,
+          const beforeRecommendationCount = await prisma.progressionRecommendation.count({
+            where: { userId: user.id },
           });
-          const targetEvaluation = result.evaluations.find(
-            (entry) => entry.exerciseId === targetExercise.exerciseId
-          );
-          const persisted = await prisma.progressionRecommendation.findFirst({
-            where: { sourceSessionId: targetSession.id, userId: user.id, exerciseId: targetExercise.exerciseId },
-            orderBy: { createdAt: "asc" },
-          });
-
-          assert(result.recommendations.length > 1);
-          assert.equal(recoveryCallCount, 1);
-          assert.equal(result.recoveryResult.recoveryModifier, "caution");
-          assert(targetEvaluation);
-          assert.equal(targetEvaluation.evaluation.recommendationType, "maintain");
-          assert(targetEvaluation.evaluation.trace.because.includes("behavioral_recovery_modifier:caution"));
-          assert(persisted);
-          assert.equal(persisted.recommendationType, "maintain");
-          assert.equal(persisted.reason, "Workout trend is improving, but recent training behavior triggered a conservative hold for the next session.");
-
-          return {
-            recommendationCount: result.recommendations.length,
-            recoveryCallCount,
-            recoveryResult: result.recoveryResult,
-            targetEvaluation,
-            persisted,
-          };
-        } finally {
-          __resetComputeRecoveryModifierForTests();
-          await cleanupUserArtifacts(user.id);
-        }
-      },
-    },
-    {
-      name: "integration -> supportive does not upgrade maintain to increase",
-      input: "1-day generated program with supportive behavior but flat target exercise",
-      fn: async () => {
-        const suffix = `supportive-${Date.now()}`;
-        const user = await createTestUser({
-          suffix,
-          profileData: {
-            goal: "hypertrophy",
-            trainingLevel: "beginner",
-            trainingDaysPerWeek: 1,
-            recoveryQuality: "medium",
-            sessionDurationMin: 60,
-            equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
-            injuryFlags: ["none"],
-          },
-        });
-
-        try {
-          const program = await generateProgramForUser(user.id);
-          await updateActiveUserProgram(user.id, {
-            activatedAt: new Date("2026-06-18T09:00:00.000Z"),
-          });
-          const firstDay = program.days[0];
-          const targetExercise = firstDay.exercises[0];
-          const supportExercise = firstDay.exercises[1];
-
-          for (const [index, day] of [
-            new Date("2026-06-20T09:00:00.000Z"),
-            new Date("2026-06-27T09:00:00.000Z"),
-            new Date("2026-07-04T09:00:00.000Z"),
-            new Date("2026-07-11T09:00:00.000Z"),
-          ].entries()) {
-            const session = await prisma.workoutSession.create({
-              data: {
+          const beforeApplicationCount = await prisma.recommendationApplication.count({
+            where: {
+              workoutSession: {
                 userId: user.id,
-                programId: program.id,
-                programDayId: firstDay.id,
-                startedAt: day,
-                completedAt: new Date(day.getTime() + 45 * 60000),
-                status: "completed",
               },
-            });
-
-            await prisma.setLog.createMany({
-              data: [
-                {
-                  sessionId: session.id,
-                  exerciseId: targetExercise.exerciseId,
-                  setNumber: 1,
-                  weightKg: 30,
-                  reps: targetExercise.repRangeHigh,
-                  loggedAt: new Date(day.getTime() + 5 * 60000),
-                },
-                {
-                  sessionId: session.id,
-                  exerciseId: supportExercise.exerciseId,
-                  setNumber: 1,
-                  weightKg: 20 + index * 2.5,
-                  reps: supportExercise.repRangeHigh,
-                  loggedAt: new Date(day.getTime() + 10 * 60000),
-                },
-              ],
-            });
-          }
-
-          const targetSession = await prisma.workoutSession.findFirstOrThrow({
-            where: { userId: user.id, startedAt: new Date("2026-07-11T09:00:00.000Z") },
+            },
           });
 
-          const result = await evaluateSessionProgression(targetSession.id, user.id, {
-            now: FIXED_ANALYSIS_NOW,
-          });
-          const targetEvaluation = result.evaluations.find(
-            (entry) => entry.exerciseId === targetExercise.exerciseId
+          await assert.rejects(
+            () => evaluateSessionProgression(targetSession.id, user.id, { now: FIXED_ANALYSIS_NOW }),
+            LegacyProgressionEntryPointError
           );
-          const persisted = await prisma.progressionRecommendation.findFirst({
-            where: { sourceSessionId: targetSession.id, userId: user.id, exerciseId: targetExercise.exerciseId },
-            orderBy: { createdAt: "asc" },
+
+          const afterRecommendationCount = await prisma.progressionRecommendation.count({
+            where: { userId: user.id },
+          });
+          const afterApplicationCount = await prisma.recommendationApplication.count({
+            where: {
+              workoutSession: {
+                userId: user.id,
+              },
+            },
           });
 
-          assert.equal(result.recoveryResult.recoveryModifier, "supportive");
-          assert(targetEvaluation);
-          assert.equal(targetEvaluation.evaluation.recommendationType, "maintain");
-          assert(persisted);
-          assert.equal(persisted.recommendationType, "maintain");
+          assert.equal(afterRecommendationCount, beforeRecommendationCount);
+          assert.equal(afterApplicationCount, beforeApplicationCount);
 
           return {
-            recoveryResult: result.recoveryResult,
-            targetEvaluation,
-            persisted,
-          };
-        } finally {
-          await cleanupUserArtifacts(user.id);
-        }
-      },
-    },
-    {
-      name: "integration -> static low with neutral behavioral still downgrades increase",
-      input: "2-day generated program with increasing trend and neutral recovery modifier",
-      fn: async () => {
-        const suffix = `static-low-${Date.now()}`;
-        const user = await createTestUser({
-          suffix,
-          profileData: {
-            goal: "hypertrophy",
-            trainingLevel: "beginner",
-            trainingDaysPerWeek: 2,
-            recoveryQuality: "low",
-            sessionDurationMin: 60,
-            equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
-            injuryFlags: ["none"],
-          },
-        });
-
-        try {
-          const program = await generateProgramForUser(user.id);
-          await updateActiveUserProgram(user.id, {
-            activatedAt: new Date("2026-06-18T09:00:00.000Z"),
-          });
-          const firstDay = program.days[0];
-          const targetExercise = firstDay.exercises[0];
-
-          for (const [index, historical] of [
-            { startedAt: new Date("2026-06-20T09:00:00.000Z"), weightKg: 40 },
-            { startedAt: new Date("2026-06-27T09:00:00.000Z"), weightKg: 42.5 },
-            { startedAt: new Date("2026-07-04T09:00:00.000Z"), weightKg: 45 },
-            { startedAt: new Date("2026-07-11T09:00:00.000Z"), weightKg: 47.5 },
-          ].entries()) {
-            await createCompletedSessionWithOneSet({
-              userId: user.id,
-              programId: program.id,
-              programDayId: firstDay.id,
-              exerciseId: targetExercise.exerciseId,
-              startedAt: historical.startedAt,
-              completedAt: new Date(historical.startedAt.getTime() + 45 * 60000),
-              loggedAt: new Date(historical.startedAt.getTime() + (index + 1) * 60000),
-              weightKg: historical.weightKg,
-              reps: targetExercise.repRangeHigh,
-            });
-          }
-
-          const targetSession = await prisma.workoutSession.findFirstOrThrow({
-            where: { userId: user.id, startedAt: new Date("2026-07-11T09:00:00.000Z") },
-          });
-
-          const result = await evaluateSessionProgression(targetSession.id, user.id, {
-            now: FIXED_ANALYSIS_NOW,
-          });
-          const targetEvaluation = result.evaluations.find(
-            (entry) => entry.exerciseId === targetExercise.exerciseId
-          );
-          const persisted = await prisma.progressionRecommendation.findFirst({
-            where: { sourceSessionId: targetSession.id, userId: user.id, exerciseId: targetExercise.exerciseId },
-            orderBy: { createdAt: "asc" },
-          });
-
-          assert.equal(result.recoveryResult.recoveryModifier, "neutral");
-          assert(targetEvaluation);
-          assert.equal(targetEvaluation.evaluation.recommendationType, "maintain");
-          assert(targetEvaluation.evaluation.trace.because.includes("static_recovery_quality:low"));
-          assert(persisted);
-          assert.equal(persisted.recommendationType, "maintain");
-
-          return {
-            recoveryResult: result.recoveryResult,
-            targetEvaluation,
-            persisted,
-          };
-        } finally {
-          await cleanupUserArtifacts(user.id);
-        }
-      },
-    },
-    {
-      name: "integration -> behavioral caution downgrades despite static high",
-      input: "4-day generated program with increasing trend, high static recovery, caution behavior",
-      fn: async () => {
-        const suffix = `static-high-caution-${Date.now()}`;
-        const user = await createTestUser({
-          suffix,
-          profileData: {
-            goal: "hypertrophy",
-            trainingLevel: "beginner",
-            trainingDaysPerWeek: 4,
-            recoveryQuality: "high",
-            sessionDurationMin: 60,
-            equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
-            injuryFlags: ["none"],
-          },
-        });
-
-        try {
-          const program = await generateProgramForUser(user.id);
-          await updateActiveUserProgram(user.id, {
-            activatedAt: new Date("2026-06-20T09:00:00.000Z"),
-          });
-          const firstDay = program.days[0];
-          const targetExercise = firstDay.exercises[0];
-
-          for (const [index, historical] of [
-            { startedAt: new Date("2026-06-20T09:00:00.000Z"), weightKg: 40 },
-            { startedAt: new Date("2026-06-27T09:00:00.000Z"), weightKg: 42.5 },
-            { startedAt: new Date("2026-07-04T09:00:00.000Z"), weightKg: 45 },
-          ].entries()) {
-            await createCompletedSessionWithOneSet({
-              userId: user.id,
-              programId: program.id,
-              programDayId: firstDay.id,
-              exerciseId: targetExercise.exerciseId,
-              startedAt: historical.startedAt,
-              completedAt: new Date(historical.startedAt.getTime() + 45 * 60000),
-              loggedAt: new Date(historical.startedAt.getTime() + (index + 1) * 60000),
-              weightKg: historical.weightKg,
-              reps: targetExercise.repRangeHigh,
-            });
-          }
-
-          const targetSession = await createCompletedSessionWithOneSet({
-            userId: user.id,
-            programId: program.id,
-            programDayId: firstDay.id,
-            exerciseId: targetExercise.exerciseId,
-            startedAt: new Date("2026-07-11T09:00:00.000Z"),
-            completedAt: new Date("2026-07-11T09:45:00.000Z"),
-            loggedAt: new Date("2026-07-11T09:04:00.000Z"),
-            weightKg: 47.5,
-            reps: targetExercise.repRangeHigh,
-          });
-
-          const result = await evaluateSessionProgression(targetSession.id, user.id, {
-            now: FIXED_ANALYSIS_NOW,
-          });
-          const targetEvaluation = result.evaluations.find(
-            (entry) => entry.exerciseId === targetExercise.exerciseId
-          );
-          const persisted = await prisma.progressionRecommendation.findFirst({
-            where: { sourceSessionId: targetSession.id, userId: user.id, exerciseId: targetExercise.exerciseId },
-            orderBy: { createdAt: "asc" },
-          });
-
-          assert.equal(result.recoveryResult.recoveryModifier, "caution");
-          assert(targetEvaluation);
-          assert.equal(targetEvaluation.evaluation.recommendationType, "maintain");
-          assert(targetEvaluation.evaluation.trace.because.includes("behavioral_recovery_modifier:caution"));
-          assert(persisted);
-          assert.equal(persisted.recommendationType, "maintain");
-
-          return {
-            recoveryResult: result.recoveryResult,
-            targetEvaluation,
-            persisted,
+            beforeRecommendationCount,
+            afterRecommendationCount,
+            beforeApplicationCount,
+            afterApplicationCount,
           };
         } finally {
           await cleanupUserArtifacts(user.id);
@@ -1464,6 +1192,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    __resetComputeRecoveryModifierForTests();
     await prisma.$disconnect();
   });

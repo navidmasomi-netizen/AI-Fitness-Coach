@@ -6,6 +6,15 @@ const DEFAULT_ANALYSIS_WINDOW_DAYS = 28;
 const LOWER_BODY_PATTERNS = ["squat", "hinge", "lunge", "single_leg"];
 let computeRecoveryModifierImpl = computeRecoveryModifier;
 
+export class LegacyProgressionEntryPointError extends Error {
+  constructor(
+    message = "evaluateSessionProgression is blocked; workoutSessionService.completeWorkoutSession is the authoritative production entry point"
+  ) {
+    super(message);
+    this.name = "LegacyProgressionEntryPointError";
+  }
+}
+
 function roundToQuarter(value) {
   return Math.round(value / 1.25) * 1.25;
 }
@@ -252,84 +261,9 @@ export function __resetComputeRecoveryModifierForTests() {
 // production owner for progression generation during session completion.
 // TD-S4-001: no idempotency guard for repeated sourceSessionId calls — deferred, see Sprint 4 Phase 2 closure.
 export async function evaluateSessionProgression(sessionId, userId, { now } = {}) {
-  const session = await prisma.workoutSession.findUnique({
-    where: { id: sessionId },
-  });
+  void sessionId;
+  void userId;
+  void now;
 
-  if (!session || session.userId !== userId) {
-    return { recommendations: [], evaluations: [], warning: "Session not found for this user; no progression evaluated." };
-  }
-
-  if (!session.programDayId) {
-    return { recommendations: [], evaluations: [], warning: "Session has no associated program day; no progression evaluated." };
-  }
-
-  const [userProfile, prescriptions, workoutAnalysis] = await Promise.all([
-    prisma.userProfile.findUnique({ where: { userId } }),
-    prisma.programDayExercise.findMany({
-      where: { programDayId: session.programDayId },
-      include: { exercise: true },
-    }),
-    analyzeWorkoutHistory({ userId, windowDays: DEFAULT_ANALYSIS_WINDOW_DAYS, now }),
-  ]);
-  const recoveryResult = computeRecoveryModifierImpl({ workoutAnalysis });
-
-  const isBeginner = userProfile?.trainingLevel === "beginner";
-  const staticRecoveryQuality = userProfile?.recoveryQuality || "medium";
-  const summariesByExerciseId = new Map(
-    workoutAnalysis.exerciseSummaries.map((summary) => [summary.exerciseId, summary])
-  );
-
-  const recommendations = [];
-  const evaluations = [];
-
-  for (const prescription of prescriptions) {
-    const exerciseId = prescription.exerciseId;
-    const exercise = prescription.exercise;
-    const exerciseSummary =
-      summariesByExerciseId.get(exerciseId) ||
-      buildFallbackExerciseSummary(
-        exerciseId,
-        exercise.nameEn || `Exercise ${exerciseId}`,
-        exercise.movementPattern || null
-      );
-
-    const previousRecommendation = await prisma.progressionRecommendation.findFirst({
-      where: { userId, exerciseId },
-      orderBy: { createdAt: "desc" },
-    });
-
-    const evaluation = evaluateProgression({
-      exerciseSummary,
-      prescription: {
-        repRangeLow: prescription.repRangeLow,
-        repRangeHigh: prescription.repRangeHigh,
-        progressionType: prescription.progressionType,
-      },
-      exercise: {
-        movementPattern: exercise.movementPattern,
-        complexity: exercise.complexity,
-        progressionType: exercise.progressionType,
-      },
-      isBeginner,
-      staticRecoveryQuality,
-      recoveryModifier: recoveryResult.recoveryModifier,
-      previousRecommendation,
-    });
-
-    const created = await persistProgressionRecommendation({
-      userId,
-      exerciseId,
-      sourceSessionId: sessionId,
-      evaluation,
-    });
-
-    recommendations.push(created);
-    evaluations.push({
-      exerciseId,
-      evaluation,
-    });
-  }
-
-  return { recommendations, evaluations, recoveryResult, warning: null };
+  throw new LegacyProgressionEntryPointError();
 }
