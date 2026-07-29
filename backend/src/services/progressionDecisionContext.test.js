@@ -1,0 +1,321 @@
+import assert from "node:assert/strict";
+
+import {
+  createProgressionDecisionContext,
+  ProgressionDecisionContextValidationError,
+  toProgressionDecisionEngineInput,
+} from "./progressionDecisionContext.js";
+import { decideProgression } from "./progressionDecisionEngine.js";
+
+function serializeForLog(value) {
+  return JSON.stringify(value, null, 2);
+}
+
+function printCaseStart(name, input) {
+  console.log(`CASE: ${name}`);
+  console.log(`INPUT: ${serializeForLog(input)}`);
+}
+
+function printCaseResult(passed, actual, error) {
+  if (typeof actual !== "undefined") {
+    console.log(`ACTUAL: ${serializeForLog(actual)}`);
+  }
+  if (error) {
+    console.log(`ERROR: ${error.stack || error.message}`);
+  }
+  console.log(`RESULT: ${passed ? "PASS" : "FAIL"}`);
+  console.log("---");
+}
+
+async function runCase(name, input, fn) {
+  printCaseStart(name, input);
+  try {
+    const actual = await fn();
+    printCaseResult(true, actual);
+    return true;
+  } catch (error) {
+    printCaseResult(false, undefined, error);
+    return false;
+  }
+}
+
+function buildAnalysis(overrides = {}) {
+  return {
+    exerciseId: 15,
+    sourceSessionId: 501,
+    prescription: {
+      prescribedSets: 3,
+      prescribedRepLow: 8,
+      prescribedRepHigh: 12,
+      prescribedRestSeconds: 90,
+    },
+    observedPerformance: {
+      loggedSetCount: 3,
+      completedSetCount: 3,
+      successfulSetCount: 3,
+      failedSetCount: 0,
+      totalReps: 32,
+      totalVolumeKg: 1265,
+      averageWeightKg: 42.17,
+      maximumWeightKg: 45,
+      minimumWeightKg: 40,
+      bestSet: { setNumber: 3, reps: 10, weightKg: 45 },
+      finalSet: { setNumber: 3, reps: 10, weightKg: 45 },
+      allPlannedSetsReachedUpperRepBound: false,
+      prescribedSetCompletionRate: 1,
+      targetRepHitRate: 1,
+    },
+    historyFacts: {
+      previousSessionWeightKg: 42.5,
+      weightDeltaKg: 2.5,
+      weightDeltaPercent: 5.88,
+      previousPrescribedSetCompletionRate: 1,
+      prescribedSetCompletionRateDelta: 0,
+      consecutiveSuccessfulSessions: 2,
+      consecutiveFailedSessions: 0,
+    },
+    hasSufficientData: true,
+    dataQualityFlags: [],
+    ...overrides,
+  };
+}
+
+function buildProgressionPolicy(overrides = {}) {
+  return {
+    progressionMode: "load",
+    allowsLoadAdjustment: true,
+    allowsSetAdjustment: false,
+    allowsRepAdjustment: false,
+    validIncrement: true,
+    ...overrides,
+  };
+}
+
+function buildRecoveryConstraint(overrides = {}) {
+  return {
+    recoveryModifier: "neutral",
+    confidence: 0.4,
+    signalStrength: "moderate",
+    reasonCode: null,
+    ...overrides,
+  };
+}
+
+function buildHistoricalTrainingSignals(overrides = {}) {
+  return {
+    completedExposureCount: 2,
+    averageCompletionRatio: 1,
+    averageCompletedSets: 3,
+    latestCompletedAt: "2026-07-20T10:00:00.000Z",
+    previousCompletedAt: "2026-07-13T10:00:00.000Z",
+    loadTrend: "INCREASING",
+    repTrend: "STABLE",
+    ...overrides,
+  };
+}
+
+function buildContextInput(overrides = {}) {
+  return {
+    analysis: buildAnalysis(),
+    progressionPolicy: buildProgressionPolicy(),
+    recoveryConstraint: buildRecoveryConstraint(),
+    previousDecisionContext: {
+      previousDecisionType: "MAINTAIN",
+      consecutiveFailures: 0,
+    },
+    historicalTrainingSignals: buildHistoricalTrainingSignals(),
+    ...overrides,
+  };
+}
+
+async function main() {
+  let passed = 0;
+  let failed = 0;
+
+  const cases = [
+    {
+      name: "constructs immutable nested decision context",
+      input: "plain facts are copied and deeply frozen",
+      fn: () => {
+        const input = buildContextInput();
+        const snapshot = structuredClone(input);
+        const actual = createProgressionDecisionContext(input);
+
+        assert.deepEqual(actual, snapshot);
+        assert.notEqual(actual, input);
+        assert.notEqual(actual.analysis, input.analysis);
+        assert.notEqual(
+          actual.historicalTrainingSignals,
+          input.historicalTrainingSignals
+        );
+        assert.deepEqual(input, snapshot);
+        return actual;
+      },
+    },
+    {
+      name: "deep freeze protects nested values",
+      input: "nested objects and arrays reject mutation after construction",
+      fn: () => {
+        const actual = createProgressionDecisionContext(
+          buildContextInput({
+            analysis: buildAnalysis({
+              dataQualityFlags: ["missing_previous_session"],
+            }),
+          })
+        );
+
+        assert.equal(Object.isFrozen(actual), true);
+        assert.equal(Object.isFrozen(actual.analysis), true);
+        assert.equal(Object.isFrozen(actual.analysis.dataQualityFlags), true);
+        assert.equal(Object.isFrozen(actual.historicalTrainingSignals), true);
+        assert.throws(() => {
+          actual.analysis.exerciseId = 999;
+        }, TypeError);
+        assert.throws(() => {
+          actual.analysis.dataQualityFlags.push("new_flag");
+        }, TypeError);
+        return actual;
+      },
+    },
+    {
+      name: "validates required sections",
+      input: "missing analysis fails closed",
+      fn: () => {
+        assert.throws(
+          () =>
+            createProgressionDecisionContext(
+              buildContextInput({
+                analysis: null,
+              })
+            ),
+          ProgressionDecisionContextValidationError
+        );
+
+        return {
+          errorClass: "ProgressionDecisionContextValidationError",
+        };
+      },
+    },
+    {
+      name: "validates nullable previous decision context",
+      input: "previousDecisionContext must be null or a plain object",
+      fn: () => {
+        assert.throws(
+          () =>
+            createProgressionDecisionContext(
+              buildContextInput({
+                previousDecisionContext: ["not", "an", "object"],
+              })
+            ),
+          ProgressionDecisionContextValidationError
+        );
+
+        const actual = createProgressionDecisionContext(
+          buildContextInput({
+            previousDecisionContext: null,
+          })
+        );
+        assert.equal(actual.previousDecisionContext, null);
+        return actual;
+      },
+    },
+    {
+      name: "rejects non-serializable values",
+      input: "functions and non-plain objects are blocked during cloning",
+      fn: () => {
+        assert.throws(
+          () =>
+            createProgressionDecisionContext(
+              buildContextInput({
+                analysis: buildAnalysis({
+                  observedPerformance: {
+                    ...buildAnalysis().observedPerformance,
+                    unsupported: () => "nope",
+                  },
+                }),
+              })
+            ),
+          ProgressionDecisionContextValidationError
+        );
+
+        return {
+          errorClass: "ProgressionDecisionContextValidationError",
+        };
+      },
+    },
+    {
+      name: "adapter preserves current engine input contract",
+      input: "historical signals stay in context and remain absent from engine input",
+      fn: () => {
+        const context = createProgressionDecisionContext(buildContextInput());
+        const actual = toProgressionDecisionEngineInput(context);
+
+        assert.deepEqual(actual.analysis, context.analysis);
+        assert.deepEqual(actual.progressionPolicy, context.progressionPolicy);
+        assert.deepEqual(actual.recoveryConstraint, context.recoveryConstraint);
+        assert.deepEqual(
+          actual.previousDecisionContext,
+          context.previousDecisionContext
+        );
+        assert.equal(
+          Object.hasOwn(actual, "historicalTrainingSignals"),
+          false
+        );
+        assert.deepEqual(actual.existingRecommendationContext, null);
+        assert.deepEqual(actual.policyThresholds, {
+          deloadFailureStreak: 2,
+        });
+
+        return actual;
+      },
+    },
+    {
+      name: "adapter preserves decision output parity",
+      input: "same facts yield identical decision output before and after context introduction",
+      fn: () => {
+        const legacyInput = {
+          analysis: buildAnalysis(),
+          progressionPolicy: buildProgressionPolicy(),
+          recoveryConstraint: buildRecoveryConstraint(),
+          previousDecisionContext: {
+            previousDecisionType: "MAINTAIN",
+            consecutiveFailures: 0,
+          },
+          existingRecommendationContext: null,
+          policyThresholds: {
+            deloadFailureStreak: 2,
+          },
+        };
+        const context = createProgressionDecisionContext(
+          buildContextInput({
+            analysis: legacyInput.analysis,
+            progressionPolicy: legacyInput.progressionPolicy,
+            recoveryConstraint: legacyInput.recoveryConstraint,
+            previousDecisionContext: legacyInput.previousDecisionContext,
+          })
+        );
+
+        const first = decideProgression(legacyInput);
+        const second = decideProgression(
+          toProgressionDecisionEngineInput(context)
+        );
+
+        assert.deepEqual(second, first);
+        return second;
+      },
+    },
+  ];
+
+  for (const testCase of cases) {
+    const ok = await runCase(testCase.name, testCase.input, testCase.fn);
+    if (ok) passed += 1;
+    else failed += 1;
+  }
+
+  console.log(`SUMMARY: ${passed} passed, ${failed} failed, ${cases.length} total`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

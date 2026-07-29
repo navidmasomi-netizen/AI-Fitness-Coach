@@ -14,6 +14,10 @@ import {
 } from "./progressionDecisionMapping.js";
 import { deriveHistoricalTrainingSignals } from "./historicalTrainingSignals.js";
 import {
+  createProgressionDecisionContext,
+  toProgressionDecisionEngineInput,
+} from "./progressionDecisionContext.js";
+import {
   decideProgression,
 } from "./progressionDecisionEngine.js";
 import { computeRecoveryModifier } from "./recoveryEngine.js";
@@ -201,13 +205,14 @@ function buildCompletionRecoveryConstraint(recoveryResult) {
   };
 }
 
-function buildCompletionDecisionInput({
+function buildCompletionDecisionContext({
   analysis,
+  historicalTrainingSignals,
   targetSnapshot,
   previousRecommendation,
   recoveryResult,
 }) {
-  return {
+  return createProgressionDecisionContext({
     analysis,
     progressionPolicy: buildCompletionProgressionPolicy(targetSnapshot),
     recoveryConstraint: buildCompletionRecoveryConstraint(recoveryResult),
@@ -217,11 +222,8 @@ function buildCompletionDecisionInput({
           consecutiveFailures: previousRecommendation.consecutiveFailures ?? 0,
         }
       : null,
-    existingRecommendationContext: null,
-    policyThresholds: {
-      deloadFailureStreak: 2,
-    },
-  };
+    historicalTrainingSignals,
+  });
 }
 
 async function hydrateStartSessionResponse({
@@ -495,14 +497,15 @@ export function createWorkoutSessionService({
               })
             );
 
-            const decision = decideProgressionImpl(
-              buildCompletionDecisionInput({
+            const decisionContext = buildCompletionDecisionContext({
                 analysis,
                 historicalTrainingSignals,
                 targetSnapshot,
                 previousRecommendation,
                 recoveryResult,
-              })
+              });
+            const decision = decideProgressionImpl(
+              toProgressionDecisionEngineInput(decisionContext)
             );
 
             if (classifyDecisionPersistabilityImpl(decision.decisionType) === "DO_NOT_PERSIST") {

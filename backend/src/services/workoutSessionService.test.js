@@ -1406,6 +1406,7 @@ async function main() {
 
           let analyzerCalls = 0;
           let decisionCalls = 0;
+          let decisionInput = null;
           const service = createWorkoutSessionService({
             analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
             computeRecoveryModifierImpl: () => ({
@@ -1419,6 +1420,7 @@ async function main() {
             },
             decideProgressionImpl(input) {
               decisionCalls += 1;
+              decisionInput = input;
               decideProgression(input);
               return buildPersistableDecision();
             },
@@ -1431,10 +1433,19 @@ async function main() {
 
           assert.equal(analyzerCalls, 1);
           assert.equal(decisionCalls, 1);
+          assert.equal(
+            Object.hasOwn(decisionInput, "historicalTrainingSignals"),
+            false
+          );
+          assert.deepEqual(decisionInput.existingRecommendationContext, null);
+          assert.deepEqual(decisionInput.policyThresholds, {
+            deloadFailureStreak: 2,
+          });
 
           return {
             analyzerCalls,
             decisionCalls,
+            decisionInput,
           };
         } finally {
           await cleanupUserArtifacts(user.id);
