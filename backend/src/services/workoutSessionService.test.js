@@ -1720,7 +1720,7 @@ async function main() {
       },
     },
     {
-      name: "service completion and standalone orchestrator currently share recommendation ownership by identity",
+      name: "service completion remains the production owner while standalone orchestrator compatibility resolves by identity",
       input: "orchestrator observes already-existing recommendation after completion service persistence",
       fn: async () => {
         const suffix = `complete-history-ownership-${Date.now()}`;

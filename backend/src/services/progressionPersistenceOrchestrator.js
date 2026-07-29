@@ -485,6 +485,9 @@ async function resolveRecoveryConstraint({ userId, recoveryConstraint }) {
   };
 }
 
+// Retained as a non-production compatibility entry point. The
+// authoritative production owner for progression generation is
+// workoutSessionService.completeWorkoutSession().
 export async function orchestrateProgressionPersistence(input) {
   validateOrchestratorInput(input);
 

@@ -247,6 +247,9 @@ export function __resetComputeRecoveryModifierForTests() {
   computeRecoveryModifierImpl = computeRecoveryModifier;
 }
 
+// Legacy non-production recommendation path retained for test coverage.
+// workoutSessionService.completeWorkoutSession() is the authoritative
+// production owner for progression generation during session completion.
 // TD-S4-001: no idempotency guard for repeated sourceSessionId calls — deferred, see Sprint 4 Phase 2 closure.
 export async function evaluateSessionProgression(sessionId, userId, { now } = {}) {
   const session = await prisma.workoutSession.findUnique({

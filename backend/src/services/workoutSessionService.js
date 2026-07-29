@@ -403,6 +403,8 @@ export function createWorkoutSessionService({
   }
 
   return {
+    // Authoritative production entry point for progression generation and
+    // persistence during workout completion.
     async completeWorkoutSession({ userId, sessionId }) {
       let transactionResult;
 
