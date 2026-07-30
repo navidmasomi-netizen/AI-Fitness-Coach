@@ -146,6 +146,57 @@ function buildInput(overrides = {}) {
   };
 }
 
+function buildHistoricalTrainingSignals(overrides = {}) {
+  return {
+    completedExposureCount: 0,
+    averageCompletionRatio: null,
+    averageCompletedSets: null,
+    latestCompletedAt: null,
+    previousCompletedAt: null,
+    loadTrend: "UNKNOWN",
+    repTrend: "UNKNOWN",
+    ...overrides,
+  };
+}
+
+function buildCanonicalR010Input(overrides = {}) {
+  const base = buildInput({
+    analysis: buildAnalysis({
+      historyFacts: {
+        previousSessionWeightKg: 42.5,
+        weightDeltaKg: 2.5,
+        weightDeltaPercent: 5.8824,
+        previousPrescribedSetCompletionRate: 0.6667,
+        prescribedSetCompletionRateDelta: 0.3333,
+        consecutiveSuccessfulSessions: 1,
+        consecutiveFailedSessions: 0,
+      },
+    }),
+    historicalTrainingSignals: buildHistoricalTrainingSignals(),
+  });
+
+  return {
+    ...base,
+    ...overrides,
+    analysis: {
+      ...base.analysis,
+      ...(overrides.analysis ?? {}),
+      prescription: {
+        ...base.analysis.prescription,
+        ...(overrides.analysis?.prescription ?? {}),
+      },
+      observedPerformance: {
+        ...base.analysis.observedPerformance,
+        ...(overrides.analysis?.observedPerformance ?? {}),
+      },
+      historyFacts: {
+        ...base.analysis.historyFacts,
+        ...(overrides.analysis?.historyFacts ?? {}),
+      },
+    },
+  };
+}
+
 function buildRepsAnalysis(overrides = {}) {
   const base = {
     exerciseId: 52,
@@ -370,28 +421,240 @@ async function main() {
       },
     },
     {
-      name: "performance improvement increases load",
-      input: "full success with positive weight delta but without repeated success threshold",
+      name: "canonical R010 performance-improved increase remains fully normalized",
+      input: "full success with positive deltas but below repeated-success threshold",
       fn: () => {
-        const actual = decideProgression(
-          buildInput({
-            analysis: buildAnalysis({
-              historyFacts: {
-                previousSessionWeightKg: 42.5,
-                weightDeltaKg: 2.5,
-                weightDeltaPercent: 5.8824,
-                previousPrescribedSetCompletionRate: 0.6667,
-                prescribedSetCompletionRateDelta: 0.3333,
-                consecutiveSuccessfulSessions: 1,
-                consecutiveFailedSessions: 0,
-              },
-            }),
-          })
-        );
-        assert.equal(actual.decisionType, DECISION_TYPES.INCREASE_LOAD);
-        assert.equal(actual.reasonCode, REASON_CODES.PERFORMANCE_IMPROVED);
-        assert.deepEqual(actual.secondaryReasonCodes, [REASON_CODES.TARGETS_FULLY_MET]);
+        const actual = decideProgression(buildCanonicalR010Input());
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.INCREASE_LOAD,
+          loadAdjustmentSteps: 1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
+          secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+          confidence: 0.65,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
         return actual;
+      },
+    },
+    {
+      name: "historical signal variants remain invariant for canonical R010",
+      input: "only historicalTrainingSignals changes around the future modifier boundary",
+      fn: () => {
+        const baselineInput = buildCanonicalR010Input({
+          historicalTrainingSignals: buildHistoricalTrainingSignals(),
+        });
+        const baseline = decideProgression(baselineInput);
+        const variants = [
+          {
+            name: "neutral-fallback",
+            historicalTrainingSignals: buildHistoricalTrainingSignals(),
+          },
+          {
+            name: "zero-completed-exposures",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 0,
+              averageCompletionRatio: 0,
+              averageCompletedSets: 0,
+            }),
+          },
+          {
+            name: "one-completed-exposure",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 1,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              latestCompletedAt: "2026-07-20T10:00:00.000Z",
+              previousCompletedAt: null,
+            }),
+          },
+          {
+            name: "two-exposures-neutral-trend",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "STABLE",
+              repTrend: "STABLE",
+            }),
+          },
+          {
+            name: "two-exposures-positive-load",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "INCREASING",
+              repTrend: "STABLE",
+            }),
+          },
+          {
+            name: "two-exposures-negative-load",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "DECREASING",
+              repTrend: "STABLE",
+            }),
+          },
+          {
+            name: "two-exposures-positive-rep",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "STABLE",
+              repTrend: "INCREASING",
+            }),
+          },
+          {
+            name: "two-exposures-negative-rep",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "STABLE",
+              repTrend: "DECREASING",
+            }),
+          },
+          {
+            name: "three-or-more-exposures",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 4,
+              averageCompletionRatio: 0.9,
+              averageCompletedSets: 2.75,
+              loadTrend: "STABLE",
+              repTrend: "STABLE",
+            }),
+          },
+          {
+            name: "missing-historical-dates",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              latestCompletedAt: null,
+              previousCompletedAt: null,
+              loadTrend: "STABLE",
+              repTrend: "STABLE",
+            }),
+          },
+          {
+            name: "populated-historical-dates",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              latestCompletedAt: "2026-07-28T10:00:00.000Z",
+              previousCompletedAt: "2026-07-21T10:00:00.000Z",
+              loadTrend: "STABLE",
+              repTrend: "STABLE",
+            }),
+          },
+          {
+            name: "conflicting-load-and-rep-trends",
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "DECREASING",
+              repTrend: "INCREASING",
+            }),
+          },
+        ];
+
+        const results = [];
+        for (const variant of variants) {
+          const input = deepFreeze(
+            buildCanonicalR010Input({
+              historicalTrainingSignals: deepFreeze(variant.historicalTrainingSignals),
+            })
+          );
+          const beforeSignals = serializeForLog(input.historicalTrainingSignals);
+          const actual = decideProgression(input);
+
+          assert.equal(Object.isFrozen(input.historicalTrainingSignals), true);
+          assert.equal(serializeForLog(input.historicalTrainingSignals), beforeSignals);
+          assert.deepEqual(actual, baseline);
+
+          results.push(variant.name);
+        }
+
+        return {
+          baseline,
+          variants: results,
+        };
+      },
+    },
+    {
+      name: "recovery downgrade preserves candidate-selection precedence around canonical R010",
+      input: "performance-improved increase candidate exists first, then caution recovery downgrades it",
+      fn: () => {
+        const candidateInput = buildCanonicalR010Input({
+          recoveryConstraint: {
+            recoveryModifier: "neutral",
+            confidence: 0.5,
+            signalStrength: "moderate",
+            reasonCode: null,
+          },
+        });
+        const downgradeInput = buildCanonicalR010Input({
+          recoveryConstraint: {
+            recoveryModifier: "caution",
+            confidence: 0.8,
+            signalStrength: "strong",
+            reasonCode: "behavioral",
+          },
+        });
+
+        const candidate = decideProgression(candidateInput);
+        const downgraded = decideProgression(downgradeInput);
+
+        assertExactDecisionPayload(candidate, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.INCREASE_LOAD,
+          loadAdjustmentSteps: 1,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
+          secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+          confidence: 0.65,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+        assertExactDecisionPayload(downgraded, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.MAINTAIN,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.RECOVERY_OVERRIDE,
+          secondaryReasonCodes: [
+            REASON_CODES.PERFORMANCE_IMPROVED,
+            REASON_CODES.TARGETS_FULLY_MET,
+          ],
+          confidence: 0.4,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+
+        return {
+          candidate,
+          downgraded,
+        };
       },
     },
     {
@@ -783,6 +1046,133 @@ async function main() {
       },
     },
     {
+      name: "historical signal variants do not alter non-target branches",
+      input: "R009, maintain, deload, and insufficient-data paths stay unchanged",
+      fn: () => {
+        const scenarios = [
+          {
+            name: "R009 repeated-success increase",
+            input: buildInput({
+              historicalTrainingSignals: buildHistoricalTrainingSignals(),
+            }),
+          },
+          {
+            name: "R012 maintain",
+            input: buildRepsInput({
+              analysis: buildRepsAnalysis({
+                historyFacts: {
+                  previousSessionWeightKg: null,
+                  weightDeltaKg: null,
+                  weightDeltaPercent: null,
+                  previousPrescribedSetCompletionRate: 1,
+                  prescribedSetCompletionRateDelta: 0,
+                  consecutiveSuccessfulSessions: 1,
+                  consecutiveFailedSessions: 0,
+                },
+              }),
+              historicalTrainingSignals: buildHistoricalTrainingSignals(),
+            }),
+          },
+          {
+            name: "R006 deload",
+            input: buildRepsInput({
+              analysis: buildRepsAnalysis({
+                observedPerformance: {
+                  loggedSetCount: 3,
+                  completedSetCount: 3,
+                  successfulSetCount: 1,
+                  failedSetCount: 2,
+                  totalReps: 30,
+                  totalVolumeKg: 0,
+                  averageWeightKg: null,
+                  maximumWeightKg: null,
+                  minimumWeightKg: null,
+                  bestSet: { setNumber: 1, reps: 12, weightKg: null },
+                  finalSet: { setNumber: 3, reps: 8, weightKg: null },
+                  prescribedSetCompletionRate: 1,
+                  targetRepHitRate: 0.3333,
+                },
+                historyFacts: {
+                  previousSessionWeightKg: null,
+                  weightDeltaKg: null,
+                  weightDeltaPercent: null,
+                  previousPrescribedSetCompletionRate: 1,
+                  prescribedSetCompletionRateDelta: -0.6667,
+                  consecutiveSuccessfulSessions: 0,
+                  consecutiveFailedSessions: 2,
+                },
+              }),
+              historicalTrainingSignals: buildHistoricalTrainingSignals(),
+            }),
+          },
+          {
+            name: "R004 insufficient data",
+            input: buildRepsInput({
+              analysis: buildRepsAnalysis({
+                hasSufficientData: false,
+                dataQualityFlags: ["missing_previous_history"],
+                historyFacts: {
+                  previousSessionWeightKg: null,
+                  weightDeltaKg: null,
+                  weightDeltaPercent: null,
+                  previousPrescribedSetCompletionRate: null,
+                  prescribedSetCompletionRateDelta: null,
+                  consecutiveSuccessfulSessions: 0,
+                  consecutiveFailedSessions: 0,
+                },
+              }),
+              historicalTrainingSignals: buildHistoricalTrainingSignals(),
+            }),
+          },
+          {
+            name: "R013 recovery override maintain",
+            input: buildRepsInput({
+              recoveryConstraint: {
+                recoveryModifier: "caution",
+                confidence: 0.7,
+                signalStrength: "strong",
+                reasonCode: "behavioral",
+              },
+              historicalTrainingSignals: buildHistoricalTrainingSignals(),
+            }),
+          },
+        ];
+        const variants = [
+          buildHistoricalTrainingSignals(),
+          buildHistoricalTrainingSignals({
+            completedExposureCount: 2,
+            averageCompletionRatio: 1,
+            averageCompletedSets: 3,
+            loadTrend: "DECREASING",
+            repTrend: "INCREASING",
+            latestCompletedAt: "2026-07-28T10:00:00.000Z",
+            previousCompletedAt: "2026-07-21T10:00:00.000Z",
+          }),
+        ];
+
+        const results = [];
+        for (const scenario of scenarios) {
+          const baseline = decideProgression(deepFreeze(scenario.input));
+          for (const variant of variants) {
+            const actual = decideProgression(
+              deepFreeze({
+                ...scenario.input,
+                historicalTrainingSignals: deepFreeze(variant),
+              })
+            );
+            assert.deepEqual(actual, baseline);
+          }
+          results.push({
+            scenario: scenario.name,
+            decisionType: baseline.decisionType,
+            reasonCode: baseline.reasonCode,
+          });
+        }
+
+        return results;
+      },
+    },
+    {
       name: "reps mode insufficient history remains non-persistable",
       input: "valid reps mode with insufficient prior history",
       fn: () => {
@@ -952,6 +1342,21 @@ async function main() {
         const first = decideProgression(input);
         const second = decideProgression(input);
         assert.deepEqual(second, first);
+        return first;
+      },
+    },
+    {
+      name: "canonical R010 output is deterministic across repeated executions",
+      input: "same canonical performance-improved input yields identical full decisions",
+      fn: () => {
+        const input = deepFreeze(buildCanonicalR010Input());
+        const first = decideProgression(input);
+        const second = decideProgression(input);
+        const third = decideProgression(input);
+
+        assert.deepEqual(second, first);
+        assert.deepEqual(third, first);
+
         return first;
       },
     },

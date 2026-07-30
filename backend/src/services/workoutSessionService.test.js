@@ -5,6 +5,7 @@ import { startFromActiveProgram, completeWorkoutSession } from "../controllers/w
 import { generateProgramForUser } from "./programGenerator.js";
 import { analyzeExercisePerformance } from "./exercisePerformanceAnalyzer.js";
 import { decideProgression } from "./progressionDecisionEngine.js";
+import { mapDecisionToProgressionRecommendationData } from "./progressionDecisionMapping.js";
 import {
   orchestrateProgressionPersistence,
   PROGRESSION_PERSISTENCE_OUTCOMES,
@@ -612,6 +613,16 @@ function buildPersistableDecision(overrides = {}) {
     rulesVersion: "progression_decision_rules_v4",
     ...overrides,
   };
+}
+
+function buildCanonicalR010Decision(overrides = {}) {
+  return buildPersistableDecision({
+    decisionType: "INCREASE_LOAD",
+    loadAdjustmentSteps: 1,
+    confidence: 0.6,
+    reasonCode: "RULE_V1_PERFORMANCE_IMPROVED",
+    ...overrides,
+  });
 }
 
 async function createPendingRecommendation({
@@ -1590,6 +1601,173 @@ async function main() {
         } finally {
           await cleanupUserArtifacts(firstUser.id);
           await cleanupUserArtifacts(secondUser.id);
+        }
+      },
+    },
+    {
+      name: "canonical R010 service path preserves mapping, persistence, and response baselines",
+      input: "performance-improved increase is mapped and persisted without application-side leakage",
+      fn: async () => {
+        const suffix = `complete-r010-baseline-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target =
+            started.session.exerciseTargets.find((entry) =>
+              ["load", "reps_then_load"].includes(entry.progressionType ?? "load")
+            ) ?? started.session.exerciseTargets[0];
+
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 42.5 },
+              { reps: 10, weightKg: 45 },
+              { reps: 10, weightKg: 45 },
+            ],
+          });
+
+          const historicalTrainingSignals = deepFreeze({
+            completedExposureCount: 2,
+            averageCompletionRatio: 1,
+            averageCompletedSets: 3,
+            latestCompletedAt: "2026-07-28T10:00:00.000Z",
+            previousCompletedAt: "2026-07-21T10:00:00.000Z",
+            loadTrend: "DECREASING",
+            repTrend: "INCREASING",
+          });
+          const historicalSnapshot = serializeForLog(historicalTrainingSignals);
+          const expectedDecision = buildCanonicalR010Decision();
+          let decisionInput = null;
+          let capturedHistoricalSignals = null;
+          let mappedRecommendationInput = null;
+          const applicationsBefore = await countUserApplications(user.id);
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+              reasonCode: null,
+            }),
+            analyzeExercisePerformanceImpl() {
+              return {
+                exerciseId: target.exerciseId,
+                sourceSessionId: started.session.id,
+                prescription: {
+                  prescribedSets: 3,
+                  prescribedRepLow: target.targetRepRangeLow,
+                  prescribedRepHigh: target.targetRepRangeHigh,
+                  prescribedRestSeconds: 90,
+                },
+                observedPerformance: {
+                  loggedSetCount: 3,
+                  completedSetCount: 3,
+                  successfulSetCount: 3,
+                  failedSetCount: 0,
+                  totalReps: 30,
+                  totalVolumeKg: 132.5,
+                  averageWeightKg: 44.1667,
+                  maximumWeightKg: 45,
+                  minimumWeightKg: 42.5,
+                  bestSet: { setNumber: 2, reps: 10, weightKg: 45 },
+                  finalSet: { setNumber: 3, reps: 10, weightKg: 45 },
+                  allPlannedSetsReachedUpperRepBound: false,
+                  prescribedSetCompletionRate: 1,
+                  targetRepHitRate: 1,
+                },
+                historyFacts: {
+                  previousSessionWeightKg: 42.5,
+                  weightDeltaKg: 2.5,
+                  weightDeltaPercent: 5.8824,
+                  previousPrescribedSetCompletionRate: 0.6667,
+                  prescribedSetCompletionRateDelta: 0.3333,
+                  consecutiveSuccessfulSessions: 1,
+                  consecutiveFailedSessions: 0,
+                },
+                hasSufficientData: true,
+                dataQualityFlags: [],
+              };
+            },
+            deriveHistoricalTrainingSignalsImpl() {
+              return historicalTrainingSignals;
+            },
+            decideProgressionImpl(input) {
+              decisionInput = input;
+              capturedHistoricalSignals = input.historicalTrainingSignals;
+              decideProgression(input);
+              return expectedDecision;
+            },
+            mapDecisionToProgressionRecommendationDataImpl(input) {
+              mappedRecommendationInput = input;
+              return mapDecisionToProgressionRecommendationData(input);
+            },
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          const createdRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: user.id,
+              sourceSessionId: started.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+          const applicationsAfter = await countUserApplications(user.id);
+
+          assert.equal(decisionInput.historicalTrainingSignals, capturedHistoricalSignals);
+          assert.notEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
+          assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
+          assert.deepEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
+          assert.equal(serializeForLog(historicalTrainingSignals), historicalSnapshot);
+          assert.equal(mappedRecommendationInput.decision, expectedDecision);
+          assert.equal(
+            Object.hasOwn(mappedRecommendationInput, "historicalTrainingSignals"),
+            false
+          );
+          assert.deepEqual(projectComparableRecommendation(createdRecommendation), {
+            recommendationType: "increase",
+            decisionType: "INCREASE_LOAD",
+            loadAdjustmentSteps: 1,
+            repAdjustment: 0,
+            setAdjustment: 0,
+            durationAdjustmentSteps: 0,
+            confidence: 0.6,
+            reasonCode: "RULE_V1_PERFORMANCE_IMPROVED",
+            rulesVersion: "progression_decision_rules_v4",
+            progressionType: target.progressionType ?? "load",
+            consecutiveFailures: 0,
+            reason: "Performance improved; load can increase in the next session.",
+            status: "active",
+          });
+          assert.deepEqual(
+            projectComparableRecommendation(result.progressionRecommendations[0]),
+            projectComparableRecommendation(createdRecommendation)
+          );
+          assert.equal(applicationsBefore, 0);
+          assert.equal(applicationsAfter, 0);
+
+          return {
+            decisionInput,
+            mappedRecommendationInput,
+            recommendation: projectComparableRecommendation(createdRecommendation),
+            responseRecommendation: projectComparableRecommendation(
+              result.progressionRecommendations[0]
+            ),
+            applicationsBefore,
+            applicationsAfter,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
         }
       },
     },
