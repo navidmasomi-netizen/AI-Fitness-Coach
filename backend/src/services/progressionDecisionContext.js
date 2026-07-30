@@ -110,6 +110,7 @@ export function toProgressionDecisionEngineInput(context) {
     progressionPolicy: context.progressionPolicy,
     recoveryConstraint: context.recoveryConstraint,
     previousDecisionContext: context.previousDecisionContext,
+    historicalTrainingSignals: context.historicalTrainingSignals,
     existingRecommendationContext: null,
     policyThresholds: {
       deloadFailureStreak: 2,

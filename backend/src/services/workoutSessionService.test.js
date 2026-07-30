@@ -1407,6 +1407,7 @@ async function main() {
           let analyzerCalls = 0;
           let decisionCalls = 0;
           let decisionInput = null;
+          let mappedRecommendationInput = null;
           const service = createWorkoutSessionService({
             analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
             computeRecoveryModifierImpl: () => ({
@@ -1424,28 +1425,64 @@ async function main() {
               decideProgression(input);
               return buildPersistableDecision();
             },
+            mapDecisionToProgressionRecommendationDataImpl(input) {
+              mappedRecommendationInput = input;
+              return {
+                userId: input.userId,
+                exerciseId: input.exerciseId,
+                sourceSessionId: input.sourceSessionId,
+                recommendationType: "maintain",
+                decisionType: "MAINTAIN",
+                previousWeightKg: null,
+                recommendedWeightKg: null,
+                previousTargetLow: 6,
+                previousTargetHigh: 12,
+                recommendedTargetLow: null,
+                recommendedTargetHigh: null,
+                targetSets: null,
+                loadAdjustmentSteps: 0,
+                repAdjustment: 0,
+                setAdjustment: 0,
+                durationAdjustmentSteps: 0,
+                confidence: 0.8,
+                reasonCode: "RULE_V1_TARGETS_FULLY_MET",
+                rulesVersion: "progression_decision_rules_v4",
+                progressionType: "load",
+                consecutiveFailures: 1,
+                reason: "Targets were fully met; load maintained for the next session.",
+                status: "active",
+              };
+            },
           });
 
-          await service.completeWorkoutSession({
+          const result = await service.completeWorkoutSession({
             userId: user.id,
             sessionId: started.session.id,
           });
 
           assert.equal(analyzerCalls, 1);
           assert.equal(decisionCalls, 1);
-          assert.equal(
-            Object.hasOwn(decisionInput, "historicalTrainingSignals"),
-            false
-          );
+          assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), true);
+          assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
           assert.deepEqual(decisionInput.existingRecommendationContext, null);
           assert.deepEqual(decisionInput.policyThresholds, {
             deloadFailureStreak: 2,
           });
+          assert.equal(
+            Object.hasOwn(mappedRecommendationInput, "historicalTrainingSignals"),
+            false
+          );
+          assert.equal(
+            Object.hasOwn(result.progressionRecommendations[0], "historicalTrainingSignals"),
+            false
+          );
 
           return {
             analyzerCalls,
             decisionCalls,
             decisionInput,
+            mappedRecommendationInput,
+            responseRecommendation: result.progressionRecommendations[0],
           };
         } finally {
           await cleanupUserArtifacts(user.id);

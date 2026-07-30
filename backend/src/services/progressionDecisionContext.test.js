@@ -245,7 +245,7 @@ async function main() {
     },
     {
       name: "adapter preserves current engine input contract",
-      input: "historical signals stay in context and remain absent from engine input",
+      input: "historical signals pass through as the exact frozen reference",
       fn: () => {
         const context = createProgressionDecisionContext(buildContextInput());
         const actual = toProgressionDecisionEngineInput(context);
@@ -257,10 +257,12 @@ async function main() {
           actual.previousDecisionContext,
           context.previousDecisionContext
         );
+        assert.equal(Object.hasOwn(actual, "historicalTrainingSignals"), true);
         assert.equal(
-          Object.hasOwn(actual, "historicalTrainingSignals"),
-          false
+          actual.historicalTrainingSignals,
+          context.historicalTrainingSignals
         );
+        assert.equal(Object.isFrozen(actual.historicalTrainingSignals), true);
         assert.deepEqual(actual.existingRecommendationContext, null);
         assert.deepEqual(actual.policyThresholds, {
           deloadFailureStreak: 2,
@@ -270,8 +272,8 @@ async function main() {
       },
     },
     {
-      name: "adapter preserves decision output parity",
-      input: "same facts yield identical decision output before and after context introduction",
+      name: "decision output remains identical across historical signal variants",
+      input: "only historicalTrainingSignals changes while the normalized decision stays identical",
       fn: () => {
         const legacyInput = {
           analysis: buildAnalysis(),
@@ -286,22 +288,116 @@ async function main() {
             deloadFailureStreak: 2,
           },
         };
-        const context = createProgressionDecisionContext(
-          buildContextInput({
-            analysis: legacyInput.analysis,
-            progressionPolicy: legacyInput.progressionPolicy,
-            recoveryConstraint: legacyInput.recoveryConstraint,
-            previousDecisionContext: legacyInput.previousDecisionContext,
-          })
-        );
+        const historicalVariants = [
+          {
+            name: "neutral-fallback",
+            signals: buildHistoricalTrainingSignals({
+              completedExposureCount: 0,
+              averageCompletionRatio: null,
+              averageCompletedSets: null,
+              latestCompletedAt: null,
+              previousCompletedAt: null,
+              loadTrend: "UNKNOWN",
+              repTrend: "UNKNOWN",
+            }),
+          },
+          {
+            name: "zero-completed-exposure",
+            signals: buildHistoricalTrainingSignals({
+              completedExposureCount: 0,
+              averageCompletionRatio: 0,
+              averageCompletedSets: 0,
+              latestCompletedAt: null,
+              previousCompletedAt: null,
+            }),
+          },
+          {
+            name: "one-completed-exposure",
+            signals: buildHistoricalTrainingSignals({
+              completedExposureCount: 1,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              latestCompletedAt: "2026-07-20T10:00:00.000Z",
+              previousCompletedAt: null,
+              loadTrend: "UNKNOWN",
+              repTrend: "UNKNOWN",
+            }),
+          },
+          {
+            name: "positive-load-trend",
+            signals: buildHistoricalTrainingSignals({
+              loadTrend: "INCREASING",
+            }),
+          },
+          {
+            name: "negative-load-trend",
+            signals: buildHistoricalTrainingSignals({
+              loadTrend: "DECREASING",
+            }),
+          },
+          {
+            name: "positive-rep-trend",
+            signals: buildHistoricalTrainingSignals({
+              repTrend: "INCREASING",
+            }),
+          },
+          {
+            name: "negative-rep-trend",
+            signals: buildHistoricalTrainingSignals({
+              repTrend: "DECREASING",
+            }),
+          },
+          {
+            name: "missing-historical-dates",
+            signals: buildHistoricalTrainingSignals({
+              latestCompletedAt: null,
+              previousCompletedAt: null,
+            }),
+          },
+          {
+            name: "populated-historical-dates",
+            signals: buildHistoricalTrainingSignals({
+              latestCompletedAt: "2026-07-28T10:00:00.000Z",
+              previousCompletedAt: "2026-07-21T10:00:00.000Z",
+            }),
+          },
+        ];
 
-        const first = decideProgression(legacyInput);
-        const second = decideProgression(
-          toProgressionDecisionEngineInput(context)
-        );
+        const baseline = decideProgression(legacyInput);
+        const results = [];
 
-        assert.deepEqual(second, first);
-        return second;
+        for (const variant of historicalVariants) {
+          const context = createProgressionDecisionContext(
+            buildContextInput({
+              analysis: legacyInput.analysis,
+              progressionPolicy: legacyInput.progressionPolicy,
+              recoveryConstraint: legacyInput.recoveryConstraint,
+              previousDecisionContext: legacyInput.previousDecisionContext,
+              historicalTrainingSignals: variant.signals,
+            })
+          );
+          const adaptedInput = toProgressionDecisionEngineInput(context);
+          const before = structuredClone(adaptedInput.historicalTrainingSignals);
+          const actual = decideProgression(adaptedInput);
+
+          assert.equal(
+            adaptedInput.historicalTrainingSignals,
+            context.historicalTrainingSignals
+          );
+          assert.equal(Object.isFrozen(adaptedInput.historicalTrainingSignals), true);
+          assert.deepEqual(adaptedInput.historicalTrainingSignals, before);
+          assert.deepEqual(actual, baseline);
+
+          results.push({
+            variant: variant.name,
+            decision: actual,
+          });
+        }
+
+        return {
+          baseline,
+          variants: results.map((result) => result.variant),
+        };
       },
     },
   ];
