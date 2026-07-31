@@ -70,6 +70,31 @@ function validateLegacyTrainingStateInput(input) {
   validateSection(input, "historicalTrainingSignals");
 }
 
+function validateTrainingStateSignalsInput(input) {
+  validateSection(input, "trainingStateSignals");
+
+  if (!isPlainObject(input.trainingStateSignals.fatigue)) {
+    throw new ProgressionDecisionContextValidationError(
+      "trainingStateSignals.fatigue is required"
+    );
+  }
+
+  if (!isPlainObject(input.trainingStateSignals.fatigue.historicalTrainingSignals)) {
+    throw new ProgressionDecisionContextValidationError(
+      "trainingStateSignals.fatigue.historicalTrainingSignals is required"
+    );
+  }
+}
+
+function validateTrainingStateInput(input) {
+  if (isPlainObject(input.trainingStateSignals)) {
+    validateTrainingStateSignalsInput(input);
+    return;
+  }
+
+  validateLegacyTrainingStateInput(input);
+}
+
 function cloneLegacyTrainingStateInput(input) {
   return {
     historicalTrainingSignals: cloneSerializable(
@@ -77,6 +102,19 @@ function cloneLegacyTrainingStateInput(input) {
       "historicalTrainingSignals"
     ),
   };
+}
+
+function cloneTrainingStateInput(input) {
+  if (isPlainObject(input.trainingStateSignals)) {
+    return {
+      historicalTrainingSignals: cloneSerializable(
+        input.trainingStateSignals.fatigue.historicalTrainingSignals,
+        "trainingStateSignals.fatigue.historicalTrainingSignals"
+      ),
+    };
+  }
+
+  return cloneLegacyTrainingStateInput(input);
 }
 
 function adaptLegacyTrainingStateInput(context) {
@@ -93,7 +131,7 @@ function validateInput(input) {
   validateSection(input, "analysis");
   validateSection(input, "progressionPolicy");
   validateSection(input, "recoveryConstraint");
-  validateLegacyTrainingStateInput(input);
+  validateTrainingStateInput(input);
   validatePreviousDecisionContext(input.previousDecisionContext ?? null);
 }
 
@@ -114,7 +152,10 @@ export function createProgressionDecisionContext(input) {
       input.previousDecisionContext ?? null,
       "previousDecisionContext"
     ),
-    ...cloneLegacyTrainingStateInput(input),
+    // Temporary compatibility until Phase 10.4: unwrap the new training-state
+    // contract back to the existing historical signal boundary without changing
+    // any downstream engine inputs.
+    ...cloneTrainingStateInput(input),
   });
 }
 

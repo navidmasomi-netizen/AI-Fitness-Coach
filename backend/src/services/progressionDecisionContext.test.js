@@ -115,6 +115,14 @@ function buildHistoricalTrainingSignals(overrides = {}) {
   };
 }
 
+function buildTrainingStateSignals(signalOverrides = {}) {
+  return createTrainingStateSignals({
+    fatigue: {
+      historicalTrainingSignals: buildHistoricalTrainingSignals(signalOverrides),
+    },
+  });
+}
+
 function buildContextInput(overrides = {}) {
   return {
     analysis: buildAnalysis(),
@@ -124,7 +132,7 @@ function buildContextInput(overrides = {}) {
       previousDecisionType: "MAINTAIN",
       consecutiveFailures: 0,
     },
-    historicalTrainingSignals: buildHistoricalTrainingSignals(),
+    trainingStateSignals: buildTrainingStateSignals(),
     ...overrides,
   };
 }
@@ -135,8 +143,8 @@ async function main() {
 
   const cases = [
     {
-      name: "current decision context shape remains stable before training state migration",
-      input: "legacy context still exposes only the direct historicalTrainingSignals boundary",
+      name: "current decision context shape remains stable during training state migration",
+      input: "public input moves to trainingStateSignals while the context output remains unchanged",
       fn: () => {
         const actual = createProgressionDecisionContext(buildContextInput());
 
@@ -160,12 +168,19 @@ async function main() {
         const snapshot = structuredClone(input);
         const actual = createProgressionDecisionContext(input);
 
-        assert.deepEqual(actual, snapshot);
+        assert.deepEqual(actual, {
+          analysis: snapshot.analysis,
+          progressionPolicy: snapshot.progressionPolicy,
+          recoveryConstraint: snapshot.recoveryConstraint,
+          previousDecisionContext: snapshot.previousDecisionContext,
+          historicalTrainingSignals:
+            snapshot.trainingStateSignals.fatigue.historicalTrainingSignals,
+        });
         assert.notEqual(actual, input);
         assert.notEqual(actual.analysis, input.analysis);
         assert.notEqual(
           actual.historicalTrainingSignals,
-          input.historicalTrainingSignals
+          input.trainingStateSignals.fatigue.historicalTrainingSignals
         );
         assert.deepEqual(input, snapshot);
         return actual;
@@ -198,13 +213,46 @@ async function main() {
     },
     {
       name: "validates required sections",
-      input: "missing analysis fails closed",
+      input: "missing analysis fails closed and trainingStateSignals remain required",
       fn: () => {
         assert.throws(
           () =>
             createProgressionDecisionContext(
               buildContextInput({
                 analysis: null,
+              })
+            ),
+          ProgressionDecisionContextValidationError
+        );
+
+        return {
+          errorClass: "ProgressionDecisionContextValidationError",
+        };
+      },
+    },
+    {
+      name: "validates training state contract boundary",
+      input: "trainingStateSignals must expose fatigue.historicalTrainingSignals",
+      fn: () => {
+        assert.throws(
+          () =>
+            createProgressionDecisionContext(
+              buildContextInput({
+                trainingStateSignals: {
+                  fatigue: null,
+                },
+              })
+            ),
+          ProgressionDecisionContextValidationError
+        );
+
+        assert.throws(
+          () =>
+            createProgressionDecisionContext(
+              buildContextInput({
+                trainingStateSignals: {
+                  fatigue: {},
+                },
               })
             ),
           ProgressionDecisionContextValidationError
@@ -263,8 +311,8 @@ async function main() {
       },
     },
     {
-      name: "adapter output shape remains stable before training state migration",
-      input: "legacy engine input still exposes historicalTrainingSignals directly",
+      name: "adapter output shape remains stable during training state migration",
+      input: "engine input still exposes historicalTrainingSignals directly",
       fn: () => {
         const context = createProgressionDecisionContext(buildContextInput());
         const actual = toProgressionDecisionEngineInput(context);
@@ -285,7 +333,7 @@ async function main() {
     },
     {
       name: "adapter preserves current engine input contract",
-      input: "historical signals pass through as the exact frozen reference",
+      input: "unwrapped historical signals pass through as the exact frozen reference",
       fn: () => {
         const context = createProgressionDecisionContext(buildContextInput());
         const actual = toProgressionDecisionEngineInput(context);
@@ -312,14 +360,10 @@ async function main() {
       },
     },
     {
-      name: "training state contract remains separate from the current decision context boundary",
-      input: "fatigue-domain training state can be constructed without changing legacy context behavior",
+      name: "training state contract is unwrapped without changing decision context outputs",
+      input: "fatigue-domain training state feeds the same legacy engine-facing boundary",
       fn: () => {
-        const trainingStateSignals = createTrainingStateSignals({
-          fatigue: {
-            historicalTrainingSignals: buildHistoricalTrainingSignals(),
-          },
-        });
+        const trainingStateSignals = buildTrainingStateSignals();
         const context = createProgressionDecisionContext(buildContextInput());
         const adaptedInput = toProgressionDecisionEngineInput(context);
 
@@ -339,8 +383,30 @@ async function main() {
       },
     },
     {
+      name: "legacy historical signal input remains temporarily compatible until phase 10.4",
+      input: "current production callers can still pass historicalTrainingSignals without behavior change",
+      fn: () => {
+        const legacyContext = createProgressionDecisionContext({
+          analysis: buildAnalysis(),
+          progressionPolicy: buildProgressionPolicy(),
+          recoveryConstraint: buildRecoveryConstraint(),
+          previousDecisionContext: {
+            previousDecisionType: "MAINTAIN",
+            consecutiveFailures: 0,
+          },
+          historicalTrainingSignals: buildHistoricalTrainingSignals(),
+        });
+        const migratedContext = createProgressionDecisionContext(buildContextInput());
+
+        assert.deepEqual(legacyContext, migratedContext);
+        assert.equal(Object.hasOwn(legacyContext, "trainingStateSignals"), false);
+
+        return legacyContext;
+      },
+    },
+    {
       name: "decision output remains identical across historical signal variants",
-      input: "only historicalTrainingSignals changes while the normalized decision stays identical",
+      input: "only the unwrapped historicalTrainingSignals change while the normalized decision stays identical",
       fn: () => {
         const legacyInput = {
           analysis: buildAnalysis(),
@@ -440,7 +506,7 @@ async function main() {
               progressionPolicy: legacyInput.progressionPolicy,
               recoveryConstraint: legacyInput.recoveryConstraint,
               previousDecisionContext: legacyInput.previousDecisionContext,
-              historicalTrainingSignals: variant.signals,
+              trainingStateSignals: buildTrainingStateSignals(variant.signals),
             })
           );
           const adaptedInput = toProgressionDecisionEngineInput(context);
