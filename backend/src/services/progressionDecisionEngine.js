@@ -1,3 +1,5 @@
+import { applyHistoricalProgressionModifier } from "./progressionHistoricalModifier.js";
+
 export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v4";
 
 export const DECISION_TYPES = Object.freeze({
@@ -468,10 +470,6 @@ function createCandidate({
   };
 }
 
-export function preserveHistoricalCandidate(candidateDecision) {
-  return candidateDecision;
-}
-
 function buildRuleR001(context) {
   const severeFlags = context.analysis.dataQualityFlags.filter(
     (flag) => ANALYSIS_MANUAL_REVIEW_FLAGS.has(flag) && !context.isTimeMode
@@ -821,7 +819,10 @@ function runProgressionRulePipeline(context) {
 
   const selectedCandidate = candidates[0] ?? null;
   if (selectedCandidate) {
-    const candidateAfterHistoricalSeam = preserveHistoricalCandidate(selectedCandidate);
+    const candidateAfterHistoricalSeam = applyHistoricalProgressionModifier({
+      candidateDecision: selectedCandidate,
+      historicalTrainingSignals: context.input.historicalTrainingSignals,
+    });
     return buildRuleR013(context, candidateAfterHistoricalSeam);
   }
 

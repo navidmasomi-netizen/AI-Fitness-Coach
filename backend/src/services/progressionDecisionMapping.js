@@ -95,6 +95,8 @@ function buildCompatibilityReason(decision) {
       return "Performance declined repeatedly; a deload is recommended for the next session.";
     case "RULE_V1_RECOVERY_OVERRIDE":
       return "Performance supported progression, but recovery signals triggered a conservative hold for the next session.";
+    case "RULE_V2_HISTORICAL_TREND_CONFLICT":
+      return "Performance improved, but declining historical trends triggered a conservative hold for the next session.";
     case "RULE_V1_MISSING_LOAD_DATA":
       return "Targets were met, but load data was missing; load maintained for the next session.";
     default:

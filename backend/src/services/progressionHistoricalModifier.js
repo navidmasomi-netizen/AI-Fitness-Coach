@@ -1,11 +1,10 @@
 import {
   DECISION_TYPES,
   ProgressionDecisionValidationError,
-  PROGRESSION_RULES_VERSION,
   REASON_CODES,
 } from "./progressionDecisionEngine.js";
 
-export function deepFreeze(value) {
+function deepFreeze(value) {
   if (!value || typeof value !== "object" || Object.isFrozen(value)) {
     return value;
   }
@@ -25,12 +24,8 @@ function isPositiveInteger(value) {
   return Number.isInteger(value) && value > 0;
 }
 
-function isValidRate(value) {
-  return typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1;
-}
-
-function isStringArray(value) {
-  return Array.isArray(value) && value.every((entry) => typeof entry === "string");
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function uniqueOrdered(values) {
@@ -51,15 +46,9 @@ function validateCandidateDecision(candidateDecision) {
     throw new ProgressionDecisionValidationError("candidateDecision is required");
   }
 
-  if (!isPositiveInteger(candidateDecision.exerciseId)) {
+  if (!isNonEmptyString(candidateDecision.ruleId)) {
     throw new ProgressionDecisionValidationError(
-      "candidateDecision.exerciseId must be a positive integer"
-    );
-  }
-
-  if (!isPositiveInteger(candidateDecision.sourceSessionId)) {
-    throw new ProgressionDecisionValidationError(
-      "candidateDecision.sourceSessionId must be a positive integer"
+      "candidateDecision.ruleId must be a non-empty string"
     );
   }
 
@@ -69,21 +58,26 @@ function validateCandidateDecision(candidateDecision) {
     );
   }
 
-  if (!Object.values(REASON_CODES).includes(candidateDecision.reasonCode)) {
+  if (!Object.values(REASON_CODES).includes(candidateDecision.primaryReasonCode)) {
     throw new ProgressionDecisionValidationError(
-      "candidateDecision.reasonCode must be a known reason code"
+      "candidateDecision.primaryReasonCode must be a known reason code"
     );
   }
 
-  if (!isStringArray(candidateDecision.secondaryReasonCodes)) {
+  if (
+    !Array.isArray(candidateDecision.secondaryReasonCodes) ||
+    !candidateDecision.secondaryReasonCodes.every((entry) =>
+      Object.values(REASON_CODES).includes(entry)
+    )
+  ) {
     throw new ProgressionDecisionValidationError(
       "candidateDecision.secondaryReasonCodes must be an array of strings"
     );
   }
 
-  if (!isValidRate(candidateDecision.confidence)) {
+  if (typeof candidateDecision.terminal !== "boolean") {
     throw new ProgressionDecisionValidationError(
-      "candidateDecision.confidence must be between 0 and 1"
+      "candidateDecision.terminal must be a boolean"
     );
   }
 
@@ -111,15 +105,6 @@ function validateCandidateDecision(candidateDecision) {
       );
     }
   }
-
-  if (
-    typeof candidateDecision.rulesVersion !== "string" ||
-    candidateDecision.rulesVersion.trim().length === 0
-  ) {
-    throw new ProgressionDecisionValidationError(
-      "candidateDecision.rulesVersion must be a non-empty string"
-    );
-  }
 }
 
 function resolveRelevantTrend(historicalTrainingSignals, candidateDecision) {
@@ -136,11 +121,11 @@ function resolveRelevantTrend(historicalTrainingSignals, candidateDecision) {
 
 function isTargetCandidate(candidateDecision) {
   if (candidateDecision.decisionType === DECISION_TYPES.INCREASE_LOAD) {
-    return candidateDecision.reasonCode === REASON_CODES.PERFORMANCE_IMPROVED;
+    return candidateDecision.primaryReasonCode === REASON_CODES.PERFORMANCE_IMPROVED;
   }
 
   if (candidateDecision.decisionType === DECISION_TYPES.INCREASE_REPS) {
-    return candidateDecision.reasonCode === REASON_CODES.REP_PERFORMANCE_IMPROVED;
+    return candidateDecision.primaryReasonCode === REASON_CODES.REP_PERFORMANCE_IMPROVED;
   }
 
   return false;
@@ -162,24 +147,22 @@ function shouldDowngrade({ candidateDecision, historicalTrainingSignals }) {
   return relevantTrend === "DECREASING";
 }
 
-function buildDowngradedDecision(candidateDecision) {
+function buildDowngradedCandidate(candidateDecision) {
   return deepFreeze({
-    exerciseId: candidateDecision.exerciseId,
-    sourceSessionId: candidateDecision.sourceSessionId,
+    ruleId: "R015_HISTORICAL_TREND_CONFLICT_DOWNGRADE",
     decisionType: DECISION_TYPES.MAINTAIN,
+    primaryReasonCode: REASON_CODES.HISTORICAL_TREND_CONFLICT,
+    secondaryReasonCodes: uniqueOrdered([
+      candidateDecision.primaryReasonCode,
+      ...candidateDecision.secondaryReasonCodes,
+    ]),
+    terminal: true,
+    requiresManualReview: candidateDecision.requiresManualReview,
+    shouldPersist: candidateDecision.shouldPersist,
     loadAdjustmentSteps: 0,
     setAdjustment: 0,
     repAdjustment: 0,
     durationAdjustmentSteps: 0,
-    reasonCode: REASON_CODES.HISTORICAL_TREND_CONFLICT,
-    secondaryReasonCodes: uniqueOrdered([
-      candidateDecision.reasonCode,
-      ...candidateDecision.secondaryReasonCodes,
-    ]),
-    confidence: candidateDecision.confidence,
-    requiresManualReview: candidateDecision.requiresManualReview,
-    shouldPersist: candidateDecision.shouldPersist,
-    rulesVersion: candidateDecision.rulesVersion || PROGRESSION_RULES_VERSION,
   });
 }
 
@@ -197,5 +180,5 @@ export function applyHistoricalProgressionModifier({
     return candidateDecision;
   }
 
-  return buildDowngradedDecision(candidateDecision);
+  return buildDowngradedCandidate(candidateDecision);
 }

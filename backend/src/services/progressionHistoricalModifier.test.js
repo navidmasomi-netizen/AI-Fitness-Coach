@@ -6,7 +6,6 @@ import {
 import {
   DECISION_TYPES,
   ProgressionDecisionValidationError,
-  PROGRESSION_RULES_VERSION,
   REASON_CODES,
 } from "./progressionDecisionEngine.js";
 
@@ -56,19 +55,17 @@ function deepFreeze(value) {
 
 function buildCandidateDecision(overrides = {}) {
   return {
-    exerciseId: 15,
-    sourceSessionId: 501,
+    ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
     decisionType: DECISION_TYPES.INCREASE_LOAD,
+    primaryReasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
+    secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+    terminal: false,
+    requiresManualReview: false,
+    shouldPersist: true,
     loadAdjustmentSteps: 1,
     setAdjustment: 0,
     repAdjustment: 0,
     durationAdjustmentSteps: 0,
-    reasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
-    secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
-    confidence: 0.65,
-    requiresManualReview: false,
-    shouldPersist: true,
-    rulesVersion: PROGRESSION_RULES_VERSION,
     ...overrides,
   };
 }
@@ -114,22 +111,20 @@ async function main() {
         assert.notEqual(actual, candidateDecision);
         assert.equal(Object.isFrozen(actual), true);
         assert.deepEqual(actual, {
-          exerciseId: 15,
-          sourceSessionId: 501,
+          ruleId: "R015_HISTORICAL_TREND_CONFLICT_DOWNGRADE",
           decisionType: DECISION_TYPES.MAINTAIN,
-          loadAdjustmentSteps: 0,
-          setAdjustment: 0,
-          repAdjustment: 0,
-          durationAdjustmentSteps: 0,
-          reasonCode: REASON_CODES.HISTORICAL_TREND_CONFLICT,
+          primaryReasonCode: REASON_CODES.HISTORICAL_TREND_CONFLICT,
           secondaryReasonCodes: [
             REASON_CODES.PERFORMANCE_IMPROVED,
             REASON_CODES.TARGETS_FULLY_MET,
           ],
-          confidence: 0.65,
+          terminal: true,
           requiresManualReview: false,
           shouldPersist: true,
-          rulesVersion: PROGRESSION_RULES_VERSION,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
         });
         assert.equal(serializeForLog(candidateDecision), beforeCandidate);
         assert.equal(serializeForLog(historicalTrainingSignals), beforeSignals);
@@ -145,7 +140,7 @@ async function main() {
             decisionType: DECISION_TYPES.INCREASE_REPS,
             loadAdjustmentSteps: 0,
             repAdjustment: 1,
-            reasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
+            primaryReasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
           })
         );
         const actual = applyHistoricalProgressionModifier({
@@ -161,7 +156,7 @@ async function main() {
 
         assert.notEqual(actual, candidateDecision);
         assert.equal(actual.decisionType, DECISION_TYPES.MAINTAIN);
-        assert.equal(actual.reasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
+        assert.equal(actual.primaryReasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
         assert.deepEqual(actual.secondaryReasonCodes, [
           REASON_CODES.REP_PERFORMANCE_IMPROVED,
           REASON_CODES.TARGETS_FULLY_MET,
@@ -184,7 +179,7 @@ async function main() {
           ),
         });
 
-        assert.equal(actual.reasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
+        assert.equal(actual.primaryReasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
         return actual;
       },
     },
@@ -295,7 +290,7 @@ async function main() {
             decisionType: DECISION_TYPES.INCREASE_REPS,
             loadAdjustmentSteps: 0,
             repAdjustment: 1,
-            reasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
+            primaryReasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
           })
         );
 
@@ -330,28 +325,31 @@ async function main() {
         const scenarios = [
           deepFreeze(
             buildCandidateDecision({
-              reasonCode: REASON_CODES.REPEATED_SUCCESS,
+              primaryReasonCode: REASON_CODES.REPEATED_SUCCESS,
             })
           ),
           deepFreeze(
             buildCandidateDecision({
               decisionType: DECISION_TYPES.MAINTAIN,
               loadAdjustmentSteps: 0,
-              reasonCode: REASON_CODES.TARGETS_FULLY_MET,
+              primaryReasonCode: REASON_CODES.TARGETS_FULLY_MET,
+              terminal: true,
             })
           ),
           deepFreeze(
             buildCandidateDecision({
               decisionType: DECISION_TYPES.MAINTAIN,
               loadAdjustmentSteps: 0,
-              reasonCode: REASON_CODES.RECOVERY_OVERRIDE,
+              primaryReasonCode: REASON_CODES.RECOVERY_OVERRIDE,
+              terminal: true,
             })
           ),
           deepFreeze(
             buildCandidateDecision({
               decisionType: DECISION_TYPES.DELOAD,
               loadAdjustmentSteps: -1,
-              reasonCode: REASON_CODES.REPEATED_FAILURE,
+              primaryReasonCode: REASON_CODES.REPEATED_FAILURE,
+              terminal: true,
             })
           ),
           deepFreeze(
@@ -359,16 +357,16 @@ async function main() {
               decisionType: DECISION_TYPES.INCREASE_DURATION,
               loadAdjustmentSteps: 0,
               durationAdjustmentSteps: 1,
-              reasonCode: REASON_CODES.TIME_PERFORMANCE_IMPROVED,
+              primaryReasonCode: REASON_CODES.TIME_PERFORMANCE_IMPROVED,
             })
           ),
           deepFreeze(
             buildCandidateDecision({
               decisionType: DECISION_TYPES.INSUFFICIENT_DATA,
               loadAdjustmentSteps: 0,
-              reasonCode: REASON_CODES.INSUFFICIENT_HISTORY,
+              primaryReasonCode: REASON_CODES.INSUFFICIENT_HISTORY,
+              terminal: true,
               shouldPersist: false,
-              confidence: 0,
             })
           ),
         ];
@@ -460,8 +458,7 @@ async function main() {
           () =>
             applyHistoricalProgressionModifier({
               candidateDecision: {
-                exerciseId: 15,
-                sourceSessionId: 501,
+                ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
               },
               historicalTrainingSignals: buildHistoricalTrainingSignals(),
             }),

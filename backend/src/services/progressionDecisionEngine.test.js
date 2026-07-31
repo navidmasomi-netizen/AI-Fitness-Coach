@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 
 import {
   DECISION_TYPES,
-  preserveHistoricalCandidate,
   PROGRESSION_RULES_VERSION,
   ProgressionDecisionValidationError,
   REASON_CODES,
@@ -195,28 +194,6 @@ function buildCanonicalR010Input(overrides = {}) {
         ...(overrides.analysis?.historyFacts ?? {}),
       },
     },
-  };
-}
-
-function buildCandidateDecisionFixture(overrides = {}) {
-  const base = {
-    ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
-    decisionType: DECISION_TYPES.INCREASE_LOAD,
-    primaryReasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
-    secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
-    terminal: false,
-    requiresManualReview: false,
-    shouldPersist: true,
-    loadAdjustmentSteps: 1,
-    setAdjustment: 0,
-    repAdjustment: 0,
-    durationAdjustmentSteps: 0,
-  };
-
-  return {
-    ...base,
-    ...overrides,
-    secondaryReasonCodes: overrides.secondaryReasonCodes ?? base.secondaryReasonCodes,
   };
 }
 
@@ -467,18 +444,6 @@ async function main() {
       },
     },
     {
-      name: "historical seam preserves strict candidate identity before recovery",
-      input: "selected increase candidate passes through the historical seam unchanged",
-      fn: () => {
-        const candidateDecision = deepFreeze(buildCandidateDecisionFixture());
-        const actual = preserveHistoricalCandidate(candidateDecision);
-
-        assert.equal(actual, candidateDecision);
-
-        return actual;
-      },
-    },
-    {
       name: "historical signal variants remain invariant for canonical R010",
       input: "only historicalTrainingSignals changes around the future modifier boundary",
       fn: () => {
@@ -617,9 +582,37 @@ async function main() {
 
           assert.equal(Object.isFrozen(input.historicalTrainingSignals), true);
           assert.equal(serializeForLog(input.historicalTrainingSignals), beforeSignals);
-          assert.deepEqual(actual, baseline);
-          assert.notEqual(actual.reasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
-          assert.equal(actual.secondaryReasonCodes.includes(REASON_CODES.HISTORICAL_TREND_CONFLICT), false);
+
+          if (
+            variant.name === "two-exposures-negative-load" ||
+            variant.name === "conflicting-load-and-rep-trends"
+          ) {
+            assertExactDecisionPayload(actual, {
+              exerciseId: 15,
+              sourceSessionId: 501,
+              decisionType: DECISION_TYPES.MAINTAIN,
+              loadAdjustmentSteps: 0,
+              setAdjustment: 0,
+              repAdjustment: 0,
+              durationAdjustmentSteps: 0,
+              reasonCode: REASON_CODES.HISTORICAL_TREND_CONFLICT,
+              secondaryReasonCodes: [
+                REASON_CODES.PERFORMANCE_IMPROVED,
+                REASON_CODES.TARGETS_FULLY_MET,
+              ],
+              confidence: 0.5,
+              requiresManualReview: false,
+              shouldPersist: true,
+              rulesVersion: PROGRESSION_RULES_VERSION,
+            });
+          } else {
+            assert.deepEqual(actual, baseline);
+            assert.notEqual(actual.reasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
+            assert.equal(
+              actual.secondaryReasonCodes.includes(REASON_CODES.HISTORICAL_TREND_CONFLICT),
+              false
+            );
+          }
 
           results.push(variant.name);
         }
@@ -628,6 +621,55 @@ async function main() {
           baseline,
           variants: results,
         };
+      },
+    },
+    {
+      name: "reps mode performance-improved increase downgrades on declining rep trend",
+      input: "rep-oriented R010 uses repTrend and emits historical conflict maintain",
+      fn: () => {
+        const actual = decideProgression(
+          buildRepsInput({
+            analysis: buildRepsAnalysis({
+              historyFacts: {
+                previousSessionWeightKg: null,
+                weightDeltaKg: null,
+                weightDeltaPercent: null,
+                previousPrescribedSetCompletionRate: 0.6667,
+                prescribedSetCompletionRateDelta: 0.3333,
+                consecutiveSuccessfulSessions: 1,
+                consecutiveFailedSessions: 0,
+              },
+            }),
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "INCREASING",
+              repTrend: "DECREASING",
+            }),
+          })
+        );
+
+        assertExactDecisionPayload(actual, {
+          exerciseId: 52,
+          sourceSessionId: 552,
+          decisionType: DECISION_TYPES.MAINTAIN,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.HISTORICAL_TREND_CONFLICT,
+          secondaryReasonCodes: [
+            REASON_CODES.REP_PERFORMANCE_IMPROVED,
+            REASON_CODES.TARGETS_FULLY_MET,
+          ],
+          confidence: 0.5,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+
+        return actual;
       },
     },
     {
@@ -694,6 +736,50 @@ async function main() {
           candidate,
           downgraded,
         };
+      },
+    },
+    {
+      name: "historical downgrade precedes recovery when both conditions are true",
+      input: "declining relevant history downgrades the selected R010 candidate before caution recovery applies",
+      fn: () => {
+        const actual = decideProgression(
+          buildCanonicalR010Input({
+            recoveryConstraint: {
+              recoveryModifier: "caution",
+              confidence: 0.8,
+              signalStrength: "strong",
+              reasonCode: "behavioral",
+            },
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              completedExposureCount: 2,
+              averageCompletionRatio: 1,
+              averageCompletedSets: 3,
+              loadTrend: "DECREASING",
+              repTrend: "INCREASING",
+            }),
+          })
+        );
+
+        assertExactDecisionPayload(actual, {
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decisionType: DECISION_TYPES.MAINTAIN,
+          loadAdjustmentSteps: 0,
+          setAdjustment: 0,
+          repAdjustment: 0,
+          durationAdjustmentSteps: 0,
+          reasonCode: REASON_CODES.HISTORICAL_TREND_CONFLICT,
+          secondaryReasonCodes: [
+            REASON_CODES.PERFORMANCE_IMPROVED,
+            REASON_CODES.TARGETS_FULLY_MET,
+          ],
+          confidence: 0.5,
+          requiresManualReview: false,
+          shouldPersist: true,
+          rulesVersion: PROGRESSION_RULES_VERSION,
+        });
+
+        return actual;
       },
     },
     {

@@ -615,14 +615,26 @@ function buildPersistableDecision(overrides = {}) {
   };
 }
 
-function buildCanonicalR010Decision(overrides = {}) {
-  return buildPersistableDecision({
-    decisionType: "INCREASE_LOAD",
-    loadAdjustmentSteps: 1,
-    confidence: 0.6,
-    reasonCode: "RULE_V1_PERFORMANCE_IMPROVED",
+function buildHistoricalConflictDecision(overrides = {}) {
+  return {
+    exerciseId: 15,
+    sourceSessionId: null,
+    decisionType: "MAINTAIN",
+    loadAdjustmentSteps: 0,
+    repAdjustment: 0,
+    setAdjustment: 0,
+    durationAdjustmentSteps: 0,
+    confidence: 0.5,
+    reasonCode: "RULE_V2_HISTORICAL_TREND_CONFLICT",
+    secondaryReasonCodes: [
+      "RULE_V1_PERFORMANCE_IMPROVED",
+      "RULE_V1_TARGETS_FULLY_MET",
+    ],
+    requiresManualReview: false,
+    shouldPersist: true,
+    rulesVersion: "progression_decision_rules_v4",
     ...overrides,
-  });
+  };
 }
 
 async function createPendingRecommendation({
@@ -1606,7 +1618,7 @@ async function main() {
     },
     {
       name: "canonical R010 service path preserves mapping, persistence, and response baselines",
-      input: "performance-improved increase is mapped and persisted without application-side leakage",
+      input: "triggering historical conflict downgrades the canonical R010 path without application-side leakage",
       fn: async () => {
         const suffix = `complete-r010-baseline-${Date.now()}`;
         const user = await createTestUser({
@@ -1642,7 +1654,9 @@ async function main() {
             repTrend: "INCREASING",
           });
           const historicalSnapshot = serializeForLog(historicalTrainingSignals);
-          const expectedDecision = buildCanonicalR010Decision();
+          const expectedDecision = buildHistoricalConflictDecision({
+            sourceSessionId: started.session.id,
+          });
           let decisionInput = null;
           let capturedHistoricalSignals = null;
           let mappedRecommendationInput = null;
@@ -1701,8 +1715,7 @@ async function main() {
             decideProgressionImpl(input) {
               decisionInput = input;
               capturedHistoricalSignals = input.historicalTrainingSignals;
-              decideProgression(input);
-              return expectedDecision;
+              return decideProgression(input);
             },
             mapDecisionToProgressionRecommendationDataImpl(input) {
               mappedRecommendationInput = input;
@@ -1729,24 +1742,24 @@ async function main() {
           assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
           assert.deepEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
           assert.equal(serializeForLog(historicalTrainingSignals), historicalSnapshot);
-          assert.equal(mappedRecommendationInput.decision, expectedDecision);
+          assert.deepEqual(mappedRecommendationInput.decision, expectedDecision);
           assert.equal(
             Object.hasOwn(mappedRecommendationInput, "historicalTrainingSignals"),
             false
           );
           assert.deepEqual(projectComparableRecommendation(createdRecommendation), {
-            recommendationType: "increase",
-            decisionType: "INCREASE_LOAD",
-            loadAdjustmentSteps: 1,
+            recommendationType: "maintain",
+            decisionType: "MAINTAIN",
+            loadAdjustmentSteps: 0,
             repAdjustment: 0,
             setAdjustment: 0,
             durationAdjustmentSteps: 0,
-            confidence: 0.6,
-            reasonCode: "RULE_V1_PERFORMANCE_IMPROVED",
+            confidence: 0.5,
+            reasonCode: "RULE_V2_HISTORICAL_TREND_CONFLICT",
             rulesVersion: "progression_decision_rules_v4",
             progressionType: target.progressionType ?? "load",
             consecutiveFailures: 0,
-            reason: "Performance improved; load can increase in the next session.",
+            reason: "Performance improved, but declining historical trends triggered a conservative hold for the next session.",
             status: "active",
           });
           assert.deepEqual(
