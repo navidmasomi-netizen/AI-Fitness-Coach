@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 
 import {
   DECISION_TYPES,
+  preserveHistoricalCandidate,
   PROGRESSION_RULES_VERSION,
   ProgressionDecisionValidationError,
   REASON_CODES,
@@ -194,6 +195,28 @@ function buildCanonicalR010Input(overrides = {}) {
         ...(overrides.analysis?.historyFacts ?? {}),
       },
     },
+  };
+}
+
+function buildCandidateDecisionFixture(overrides = {}) {
+  const base = {
+    ruleId: "R010_PERFORMANCE_IMPROVED_INCREASE",
+    decisionType: DECISION_TYPES.INCREASE_LOAD,
+    primaryReasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
+    secondaryReasonCodes: [REASON_CODES.TARGETS_FULLY_MET],
+    terminal: false,
+    requiresManualReview: false,
+    shouldPersist: true,
+    loadAdjustmentSteps: 1,
+    setAdjustment: 0,
+    repAdjustment: 0,
+    durationAdjustmentSteps: 0,
+  };
+
+  return {
+    ...base,
+    ...overrides,
+    secondaryReasonCodes: overrides.secondaryReasonCodes ?? base.secondaryReasonCodes,
   };
 }
 
@@ -444,6 +467,18 @@ async function main() {
       },
     },
     {
+      name: "historical seam preserves strict candidate identity before recovery",
+      input: "selected increase candidate passes through the historical seam unchanged",
+      fn: () => {
+        const candidateDecision = deepFreeze(buildCandidateDecisionFixture());
+        const actual = preserveHistoricalCandidate(candidateDecision);
+
+        assert.equal(actual, candidateDecision);
+
+        return actual;
+      },
+    },
+    {
       name: "historical signal variants remain invariant for canonical R010",
       input: "only historicalTrainingSignals changes around the future modifier boundary",
       fn: () => {
@@ -583,6 +618,8 @@ async function main() {
           assert.equal(Object.isFrozen(input.historicalTrainingSignals), true);
           assert.equal(serializeForLog(input.historicalTrainingSignals), beforeSignals);
           assert.deepEqual(actual, baseline);
+          assert.notEqual(actual.reasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
+          assert.equal(actual.secondaryReasonCodes.includes(REASON_CODES.HISTORICAL_TREND_CONFLICT), false);
 
           results.push(variant.name);
         }
@@ -650,6 +687,8 @@ async function main() {
           shouldPersist: true,
           rulesVersion: PROGRESSION_RULES_VERSION,
         });
+        assert.notEqual(downgraded.reasonCode, REASON_CODES.HISTORICAL_TREND_CONFLICT);
+        assert.equal(downgraded.secondaryReasonCodes.includes(REASON_CODES.HISTORICAL_TREND_CONFLICT), false);
 
         return {
           candidate,

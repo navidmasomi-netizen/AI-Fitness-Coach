@@ -468,6 +468,10 @@ function createCandidate({
   };
 }
 
+export function preserveHistoricalCandidate(candidateDecision) {
+  return candidateDecision;
+}
+
 function buildRuleR001(context) {
   const severeFlags = context.analysis.dataQualityFlags.filter(
     (flag) => ANALYSIS_MANUAL_REVIEW_FLAGS.has(flag) && !context.isTimeMode
@@ -817,7 +821,8 @@ function runProgressionRulePipeline(context) {
 
   const selectedCandidate = candidates[0] ?? null;
   if (selectedCandidate) {
-    return buildRuleR013(context, selectedCandidate);
+    const candidateAfterHistoricalSeam = preserveHistoricalCandidate(selectedCandidate);
+    return buildRuleR013(context, candidateAfterHistoricalSeam);
   }
 
   for (const rule of terminalMaintainRules) {
