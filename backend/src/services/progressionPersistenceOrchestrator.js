@@ -17,6 +17,7 @@ import {
   ProgressionPersistenceValidationError,
 } from "./progressionDecisionMapping.js";
 import { computeRecoveryModifier } from "./recoveryEngine.js";
+import { deriveTrainingStateSignalsFromExposures } from "./trainingStateAggregator.js";
 import { analyzeWorkoutHistory } from "./workoutAnalyzer.js";
 
 export const PROGRESSION_PERSISTENCE_OUTCOMES = Object.freeze({
@@ -29,6 +30,7 @@ const COMPLETED_SESSION_STATUS = "completed";
 const DEFAULT_RECOVERY_ANALYSIS_WINDOW_DAYS = 28;
 const SUPPORTED_PROGRESSION_MODES = new Set(["load", "time", "reps", "reps_then_load"]);
 const progressionPersistenceRepository = createProgressionPersistenceRepository(prisma);
+const NEUTRAL_TRAINING_STATE_SIGNALS = deriveTrainingStateSignalsFromExposures([]);
 
 export class ProgressionPersistenceSourceError extends Error {
   constructor(message) {
@@ -272,6 +274,7 @@ function buildDecisionInput({
     }),
     recoveryConstraint: recoveryConstraint ?? null,
     previousDecisionContext: buildPreviousDecisionContext(previousRecommendation),
+    trainingStateSignals: NEUTRAL_TRAINING_STATE_SIGNALS,
     existingRecommendationContext: null,
     policyThresholds: {
       deloadFailureStreak: 2,

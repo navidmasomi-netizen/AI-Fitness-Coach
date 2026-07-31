@@ -127,6 +127,14 @@ function buildAnalysis(overrides = {}) {
 }
 
 function buildInput(overrides = {}) {
+  const historicalTrainingSignals =
+    overrides.historicalTrainingSignals ?? buildHistoricalTrainingSignals();
+  const {
+    historicalTrainingSignals: _legacyHistoricalTrainingSignals,
+    trainingStateSignals,
+    ...rest
+  } = overrides;
+
   return {
     analysis: buildAnalysis(),
     progressionPolicy: {
@@ -138,11 +146,17 @@ function buildInput(overrides = {}) {
     },
     recoveryConstraint: null,
     previousDecisionContext: null,
+    trainingStateSignals:
+      trainingStateSignals ?? {
+        fatigue: {
+          historicalTrainingSignals,
+        },
+      },
     existingRecommendationContext: null,
     policyThresholds: {
       deloadFailureStreak: 2,
     },
-    ...overrides,
+    ...rest,
   };
 }
 
@@ -160,41 +174,38 @@ function buildHistoricalTrainingSignals(overrides = {}) {
 }
 
 function buildCanonicalR010Input(overrides = {}) {
-  const base = buildInput({
-    analysis: buildAnalysis({
-      historyFacts: {
-        previousSessionWeightKg: 42.5,
-        weightDeltaKg: 2.5,
-        weightDeltaPercent: 5.8824,
-        previousPrescribedSetCompletionRate: 0.6667,
-        prescribedSetCompletionRateDelta: 0.3333,
-        consecutiveSuccessfulSessions: 1,
-        consecutiveFailedSessions: 0,
-      },
-    }),
-    historicalTrainingSignals: buildHistoricalTrainingSignals(),
+  const baseAnalysis = buildAnalysis({
+    historyFacts: {
+      previousSessionWeightKg: 42.5,
+      weightDeltaKg: 2.5,
+      weightDeltaPercent: 5.8824,
+      previousPrescribedSetCompletionRate: 0.6667,
+      prescribedSetCompletionRateDelta: 0.3333,
+      consecutiveSuccessfulSessions: 1,
+      consecutiveFailedSessions: 0,
+    },
   });
 
-  return {
-    ...base,
+  return buildInput({
+    historicalTrainingSignals: buildHistoricalTrainingSignals(),
     ...overrides,
     analysis: {
-      ...base.analysis,
+      ...baseAnalysis,
       ...(overrides.analysis ?? {}),
       prescription: {
-        ...base.analysis.prescription,
+        ...baseAnalysis.prescription,
         ...(overrides.analysis?.prescription ?? {}),
       },
       observedPerformance: {
-        ...base.analysis.observedPerformance,
+        ...baseAnalysis.observedPerformance,
         ...(overrides.analysis?.observedPerformance ?? {}),
       },
       historyFacts: {
-        ...base.analysis.historyFacts,
+        ...baseAnalysis.historyFacts,
         ...(overrides.analysis?.historyFacts ?? {}),
       },
     },
-  };
+  });
 }
 
 function buildRepsAnalysis(overrides = {}) {
@@ -255,7 +266,7 @@ function buildRepsAnalysis(overrides = {}) {
 }
 
 function buildRepsInput(overrides = {}) {
-  return {
+  return buildInput({
     analysis: buildRepsAnalysis(),
     progressionPolicy: {
       progressionMode: "reps",
@@ -264,14 +275,8 @@ function buildRepsInput(overrides = {}) {
       allowsRepAdjustment: true,
       validIncrement: true,
     },
-    recoveryConstraint: null,
-    previousDecisionContext: null,
-    existingRecommendationContext: null,
-    policyThresholds: {
-      deloadFailureStreak: 2,
-    },
     ...overrides,
-  };
+  });
 }
 
 function buildTimeAnalysis(overrides = {}) {
@@ -332,7 +337,7 @@ function buildTimeAnalysis(overrides = {}) {
 }
 
 function buildTimeInput(overrides = {}) {
-  return {
+  return buildInput({
     analysis: buildTimeAnalysis(),
     progressionPolicy: {
       progressionMode: "time",
@@ -341,18 +346,12 @@ function buildTimeInput(overrides = {}) {
       allowsRepAdjustment: false,
       validIncrement: true,
     },
-    recoveryConstraint: null,
-    previousDecisionContext: null,
-    existingRecommendationContext: null,
-    policyThresholds: {
-      deloadFailureStreak: 2,
-    },
     ...overrides,
-  };
+  });
 }
 
 function buildRepsThenLoadInput(overrides = {}) {
-  return {
+  return buildInput({
     analysis: buildAnalysis(),
     progressionPolicy: {
       progressionMode: "reps_then_load",
@@ -361,14 +360,8 @@ function buildRepsThenLoadInput(overrides = {}) {
       allowsRepAdjustment: true,
       validIncrement: true,
     },
-    recoveryConstraint: null,
-    previousDecisionContext: null,
-    existingRecommendationContext: null,
-    policyThresholds: {
-      deloadFailureStreak: 2,
-    },
     ...overrides,
-  };
+  });
 }
 
 function assertExactDecisionPayload(actual, expected) {
@@ -577,11 +570,19 @@ async function main() {
               historicalTrainingSignals: deepFreeze(variant.historicalTrainingSignals),
             })
           );
-          const beforeSignals = serializeForLog(input.historicalTrainingSignals);
+          const beforeSignals = serializeForLog(
+            input.trainingStateSignals.fatigue.historicalTrainingSignals
+          );
           const actual = decideProgression(input);
 
-          assert.equal(Object.isFrozen(input.historicalTrainingSignals), true);
-          assert.equal(serializeForLog(input.historicalTrainingSignals), beforeSignals);
+          assert.equal(
+            Object.isFrozen(input.trainingStateSignals.fatigue.historicalTrainingSignals),
+            true
+          );
+          assert.equal(
+            serializeForLog(input.trainingStateSignals.fatigue.historicalTrainingSignals),
+            beforeSignals
+          );
 
           if (
             variant.name === "two-exposures-negative-load" ||

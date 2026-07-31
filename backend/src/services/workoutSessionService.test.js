@@ -1493,9 +1493,15 @@ async function main() {
 
           assert.equal(analyzerCalls, 1);
           assert.equal(decisionCalls, 1);
-          assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), true);
-          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), false);
-          assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
+          assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), false);
+          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), true);
+          assert.equal(Object.isFrozen(decisionInput.trainingStateSignals), true);
+          assert.equal(
+            Object.isFrozen(
+              decisionInput.trainingStateSignals.fatigue.historicalTrainingSignals
+            ),
+            true
+          );
           assert.deepEqual(decisionInput.existingRecommendationContext, null);
           assert.deepEqual(decisionInput.policyThresholds, {
             deloadFailureStreak: 2,
@@ -1723,7 +1729,8 @@ async function main() {
             },
             decideProgressionImpl(input) {
               decisionInput = input;
-              capturedHistoricalSignals = input.historicalTrainingSignals;
+              capturedHistoricalSignals =
+                input.trainingStateSignals.fatigue.historicalTrainingSignals;
               return decideProgression(input);
             },
             mapDecisionToProgressionRecommendationDataImpl(input) {
@@ -1746,11 +1753,27 @@ async function main() {
           });
           const applicationsAfter = await countUserApplications(user.id);
 
-          assert.equal(decisionInput.historicalTrainingSignals, capturedHistoricalSignals);
-          assert.notEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
-          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), false);
-          assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
-          assert.deepEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
+          assert.equal(
+            decisionInput.trainingStateSignals.fatigue.historicalTrainingSignals,
+            capturedHistoricalSignals
+          );
+          assert.notEqual(
+            decisionInput.trainingStateSignals.fatigue.historicalTrainingSignals,
+            historicalTrainingSignals
+          );
+          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), true);
+          assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), false);
+          assert.equal(Object.isFrozen(decisionInput.trainingStateSignals), true);
+          assert.equal(
+            Object.isFrozen(
+              decisionInput.trainingStateSignals.fatigue.historicalTrainingSignals
+            ),
+            true
+          );
+          assert.deepEqual(
+            decisionInput.trainingStateSignals.fatigue.historicalTrainingSignals,
+            historicalTrainingSignals
+          );
           assert.equal(serializeForLog(historicalTrainingSignals), historicalSnapshot);
           assert.deepEqual(mappedRecommendationInput.decision, expectedDecision);
           assert.equal(
@@ -1908,10 +1931,19 @@ async function main() {
             orderBy: { id: "asc" },
           });
 
-          assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), true);
-          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), false);
-          assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
-          assert.deepEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
+          assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), false);
+          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), true);
+          assert.equal(Object.isFrozen(decisionInput.trainingStateSignals), true);
+          assert.equal(
+            Object.isFrozen(
+              decisionInput.trainingStateSignals.fatigue.historicalTrainingSignals
+            ),
+            true
+          );
+          assert.deepEqual(
+            decisionInput.trainingStateSignals.fatigue.historicalTrainingSignals,
+            historicalTrainingSignals
+          );
           assert.equal(serializeForLog(historicalTrainingSignals), historicalSnapshot);
           assert.equal(mappedRecommendationInput.decision.reasonCode, "RULE_V1_RECOVERY_OVERRIDE");
           assert.deepEqual(projectComparableRecommendation(createdRecommendation), {

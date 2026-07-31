@@ -143,8 +143,8 @@ async function main() {
 
   const cases = [
     {
-      name: "current decision context shape remains stable during training state migration",
-      input: "public input moves to trainingStateSignals while the context output remains unchanged",
+      name: "current decision context shape reflects the final training state contract",
+      input: "public input and context output both expose trainingStateSignals",
       fn: () => {
         const actual = createProgressionDecisionContext(buildContextInput());
 
@@ -153,9 +153,9 @@ async function main() {
           "progressionPolicy",
           "recoveryConstraint",
           "previousDecisionContext",
-          "historicalTrainingSignals",
+          "trainingStateSignals",
         ]);
-        assert.equal(Object.hasOwn(actual, "trainingStateSignals"), false);
+        assert.equal(Object.hasOwn(actual, "historicalTrainingSignals"), false);
 
         return actual;
       },
@@ -173,15 +173,11 @@ async function main() {
           progressionPolicy: snapshot.progressionPolicy,
           recoveryConstraint: snapshot.recoveryConstraint,
           previousDecisionContext: snapshot.previousDecisionContext,
-          historicalTrainingSignals:
-            snapshot.trainingStateSignals.fatigue.historicalTrainingSignals,
+          trainingStateSignals: snapshot.trainingStateSignals,
         });
         assert.notEqual(actual, input);
         assert.notEqual(actual.analysis, input.analysis);
-        assert.notEqual(
-          actual.historicalTrainingSignals,
-          input.trainingStateSignals.fatigue.historicalTrainingSignals
-        );
+        assert.notEqual(actual.trainingStateSignals, input.trainingStateSignals);
         assert.deepEqual(input, snapshot);
         return actual;
       },
@@ -201,7 +197,11 @@ async function main() {
         assert.equal(Object.isFrozen(actual), true);
         assert.equal(Object.isFrozen(actual.analysis), true);
         assert.equal(Object.isFrozen(actual.analysis.dataQualityFlags), true);
-        assert.equal(Object.isFrozen(actual.historicalTrainingSignals), true);
+        assert.equal(Object.isFrozen(actual.trainingStateSignals), true);
+        assert.equal(
+          Object.isFrozen(actual.trainingStateSignals.fatigue.historicalTrainingSignals),
+          true
+        );
         assert.throws(() => {
           actual.analysis.exerciseId = 999;
         }, TypeError);
@@ -311,8 +311,8 @@ async function main() {
       },
     },
     {
-      name: "adapter output shape remains stable during training state migration",
-      input: "engine input still exposes historicalTrainingSignals directly",
+      name: "adapter output shape reflects the final engine contract",
+      input: "engine input now exposes trainingStateSignals directly",
       fn: () => {
         const context = createProgressionDecisionContext(buildContextInput());
         const actual = toProgressionDecisionEngineInput(context);
@@ -322,18 +322,18 @@ async function main() {
           "progressionPolicy",
           "recoveryConstraint",
           "previousDecisionContext",
-          "historicalTrainingSignals",
+          "trainingStateSignals",
           "existingRecommendationContext",
           "policyThresholds",
         ]);
-        assert.equal(Object.hasOwn(actual, "trainingStateSignals"), false);
+        assert.equal(Object.hasOwn(actual, "historicalTrainingSignals"), false);
 
         return actual;
       },
     },
     {
-      name: "adapter preserves current engine input contract",
-      input: "unwrapped historical signals pass through as the exact frozen reference",
+      name: "adapter preserves the finalized engine input contract",
+      input: "trainingStateSignals pass through as the exact frozen reference",
       fn: () => {
         const context = createProgressionDecisionContext(buildContextInput());
         const actual = toProgressionDecisionEngineInput(context);
@@ -345,12 +345,9 @@ async function main() {
           actual.previousDecisionContext,
           context.previousDecisionContext
         );
-        assert.equal(Object.hasOwn(actual, "historicalTrainingSignals"), true);
-        assert.equal(
-          actual.historicalTrainingSignals,
-          context.historicalTrainingSignals
-        );
-        assert.equal(Object.isFrozen(actual.historicalTrainingSignals), true);
+        assert.equal(Object.hasOwn(actual, "trainingStateSignals"), true);
+        assert.equal(actual.trainingStateSignals, context.trainingStateSignals);
+        assert.equal(Object.isFrozen(actual.trainingStateSignals), true);
         assert.deepEqual(actual.existingRecommendationContext, null);
         assert.deepEqual(actual.policyThresholds, {
           deloadFailureStreak: 2,
@@ -360,8 +357,8 @@ async function main() {
       },
     },
     {
-      name: "training state contract is unwrapped without changing decision context outputs",
-      input: "fatigue-domain training state feeds the same legacy engine-facing boundary",
+      name: "training state contract stays intact across the decision context boundary",
+      input: "fatigue-domain training state reaches the engine-facing contract unchanged",
       fn: () => {
         const trainingStateSignals = buildTrainingStateSignals();
         const context = createProgressionDecisionContext(buildContextInput());
@@ -372,8 +369,8 @@ async function main() {
             historicalTrainingSignals: buildHistoricalTrainingSignals(),
           },
         });
-        assert.equal(Object.hasOwn(context, "trainingStateSignals"), false);
-        assert.equal(Object.hasOwn(adaptedInput, "trainingStateSignals"), false);
+        assert.equal(Object.hasOwn(context, "trainingStateSignals"), true);
+        assert.equal(Object.hasOwn(adaptedInput, "trainingStateSignals"), true);
 
         return {
           trainingStateSignals,
@@ -383,32 +380,34 @@ async function main() {
       },
     },
     {
-      name: "legacy historical signal input remains temporarily compatible until phase 10.4",
-      input: "current production callers can still pass historicalTrainingSignals without behavior change",
+      name: "legacy historical signal public input is rejected after compatibility cleanup",
+      input: "decision context now requires trainingStateSignals only",
       fn: () => {
-        const legacyContext = createProgressionDecisionContext({
-          analysis: buildAnalysis(),
-          progressionPolicy: buildProgressionPolicy(),
-          recoveryConstraint: buildRecoveryConstraint(),
-          previousDecisionContext: {
-            previousDecisionType: "MAINTAIN",
-            consecutiveFailures: 0,
-          },
-          historicalTrainingSignals: buildHistoricalTrainingSignals(),
-        });
-        const migratedContext = createProgressionDecisionContext(buildContextInput());
+        assert.throws(
+          () =>
+            createProgressionDecisionContext({
+              analysis: buildAnalysis(),
+              progressionPolicy: buildProgressionPolicy(),
+              recoveryConstraint: buildRecoveryConstraint(),
+              previousDecisionContext: {
+                previousDecisionType: "MAINTAIN",
+                consecutiveFailures: 0,
+              },
+              historicalTrainingSignals: buildHistoricalTrainingSignals(),
+            }),
+          ProgressionDecisionContextValidationError
+        );
 
-        assert.deepEqual(legacyContext, migratedContext);
-        assert.equal(Object.hasOwn(legacyContext, "trainingStateSignals"), false);
-
-        return legacyContext;
+        return {
+          errorClass: "ProgressionDecisionContextValidationError",
+        };
       },
     },
     {
       name: "decision output remains identical across historical signal variants",
-      input: "only the unwrapped historicalTrainingSignals change while the normalized decision stays identical",
+      input: "only trainingStateSignals.fatigue.historicalTrainingSignals changes while the normalized decision stays identical",
       fn: () => {
-        const legacyInput = {
+        const directInput = {
           analysis: buildAnalysis(),
           progressionPolicy: buildProgressionPolicy(),
           recoveryConstraint: buildRecoveryConstraint(),
@@ -416,6 +415,7 @@ async function main() {
             previousDecisionType: "MAINTAIN",
             consecutiveFailures: 0,
           },
+          trainingStateSignals: buildTrainingStateSignals(),
           existingRecommendationContext: null,
           policyThresholds: {
             deloadFailureStreak: 2,
@@ -496,29 +496,26 @@ async function main() {
           },
         ];
 
-        const baseline = decideProgression(legacyInput);
+        const baseline = decideProgression(directInput);
         const results = [];
 
         for (const variant of historicalVariants) {
           const context = createProgressionDecisionContext(
             buildContextInput({
-              analysis: legacyInput.analysis,
-              progressionPolicy: legacyInput.progressionPolicy,
-              recoveryConstraint: legacyInput.recoveryConstraint,
-              previousDecisionContext: legacyInput.previousDecisionContext,
+              analysis: directInput.analysis,
+              progressionPolicy: directInput.progressionPolicy,
+              recoveryConstraint: directInput.recoveryConstraint,
+              previousDecisionContext: directInput.previousDecisionContext,
               trainingStateSignals: buildTrainingStateSignals(variant.signals),
             })
           );
           const adaptedInput = toProgressionDecisionEngineInput(context);
-          const before = structuredClone(adaptedInput.historicalTrainingSignals);
+          const before = structuredClone(adaptedInput.trainingStateSignals);
           const actual = decideProgression(adaptedInput);
 
-          assert.equal(
-            adaptedInput.historicalTrainingSignals,
-            context.historicalTrainingSignals
-          );
-          assert.equal(Object.isFrozen(adaptedInput.historicalTrainingSignals), true);
-          assert.deepEqual(adaptedInput.historicalTrainingSignals, before);
+          assert.equal(adaptedInput.trainingStateSignals, context.trainingStateSignals);
+          assert.equal(Object.isFrozen(adaptedInput.trainingStateSignals), true);
+          assert.deepEqual(adaptedInput.trainingStateSignals, before);
           assert.deepEqual(actual, baseline);
 
           results.push({

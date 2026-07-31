@@ -66,10 +66,6 @@ function validatePreviousDecisionContext(previousDecisionContext) {
   }
 }
 
-function validateLegacyTrainingStateInput(input) {
-  validateSection(input, "historicalTrainingSignals");
-}
-
 function validateTrainingStateSignalsInput(input) {
   validateSection(input, "trainingStateSignals");
 
@@ -87,39 +83,15 @@ function validateTrainingStateSignalsInput(input) {
 }
 
 function validateTrainingStateInput(input) {
-  if (isPlainObject(input.trainingStateSignals)) {
-    validateTrainingStateSignalsInput(input);
-    return;
-  }
-
-  validateLegacyTrainingStateInput(input);
-}
-
-function cloneLegacyTrainingStateInput(input) {
-  return {
-    historicalTrainingSignals: cloneSerializable(
-      input.historicalTrainingSignals,
-      "historicalTrainingSignals"
-    ),
-  };
+  validateTrainingStateSignalsInput(input);
 }
 
 function cloneTrainingStateInput(input) {
-  if (isPlainObject(input.trainingStateSignals)) {
-    return {
-      historicalTrainingSignals: cloneSerializable(
-        input.trainingStateSignals.fatigue.historicalTrainingSignals,
-        "trainingStateSignals.fatigue.historicalTrainingSignals"
-      ),
-    };
-  }
-
-  return cloneLegacyTrainingStateInput(input);
-}
-
-function adaptLegacyTrainingStateInput(context) {
   return {
-    historicalTrainingSignals: context.historicalTrainingSignals,
+    trainingStateSignals: cloneSerializable(
+      input.trainingStateSignals,
+      "trainingStateSignals"
+    ),
   };
 }
 
@@ -152,9 +124,6 @@ export function createProgressionDecisionContext(input) {
       input.previousDecisionContext ?? null,
       "previousDecisionContext"
     ),
-    // Temporary compatibility until Phase 10.4: unwrap the new training-state
-    // contract back to the existing historical signal boundary without changing
-    // any downstream engine inputs.
     ...cloneTrainingStateInput(input),
   });
 }
@@ -167,7 +136,7 @@ export function toProgressionDecisionEngineInput(context) {
     progressionPolicy: context.progressionPolicy,
     recoveryConstraint: context.recoveryConstraint,
     previousDecisionContext: context.previousDecisionContext,
-    ...adaptLegacyTrainingStateInput(context),
+    trainingStateSignals: context.trainingStateSignals,
     existingRecommendationContext: null,
     policyThresholds: {
       deloadFailureStreak: 2,

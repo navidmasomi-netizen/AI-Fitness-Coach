@@ -305,6 +305,22 @@ function validatePolicyThresholds(policyThresholds) {
   }
 }
 
+function validateTrainingStateSignals(trainingStateSignals) {
+  if (!isPlainObject(trainingStateSignals)) {
+    throw new ProgressionDecisionValidationError("trainingStateSignals is required");
+  }
+
+  if (!isPlainObject(trainingStateSignals.fatigue)) {
+    throw new ProgressionDecisionValidationError("trainingStateSignals.fatigue is required");
+  }
+
+  if (!isPlainObject(trainingStateSignals.fatigue.historicalTrainingSignals)) {
+    throw new ProgressionDecisionValidationError(
+      "trainingStateSignals.fatigue.historicalTrainingSignals is required"
+    );
+  }
+}
+
 function validateInput(input) {
   if (!isPlainObject(input)) {
     throw new ProgressionDecisionValidationError("input is required");
@@ -314,6 +330,7 @@ function validateInput(input) {
   validateProgressionPolicy(input.progressionPolicy);
   validateRecoveryConstraint(input.recoveryConstraint);
   validatePreviousDecisionContext(input.previousDecisionContext);
+  validateTrainingStateSignals(input.trainingStateSignals);
   validateExistingRecommendationContext(input.existingRecommendationContext);
   validatePolicyThresholds(input.policyThresholds);
 }
@@ -822,7 +839,8 @@ function runProgressionRulePipeline(context) {
   if (selectedCandidate) {
     const candidateAfterHistoricalSeam = applyHistoricalProgressionModifier({
       candidateDecision: selectedCandidate,
-      historicalTrainingSignals: context.input.historicalTrainingSignals,
+      historicalTrainingSignals:
+        context.input.trainingStateSignals.fatigue.historicalTrainingSignals,
     });
     return buildRuleR013(context, candidateAfterHistoricalSeam);
   }
