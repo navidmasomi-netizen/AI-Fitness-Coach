@@ -12,7 +12,6 @@ import {
   classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationData,
 } from "./progressionDecisionMapping.js";
-import { deriveHistoricalTrainingSignals } from "./historicalTrainingSignals.js";
 import {
   createProgressionDecisionContext,
   toProgressionDecisionEngineInput,
@@ -21,6 +20,10 @@ import {
   decideProgression,
 } from "./progressionDecisionEngine.js";
 import { computeRecoveryModifier } from "./recoveryEngine.js";
+import {
+  aggregateTrainingStateSignals,
+  deriveTrainingStateSignalsFromExposures,
+} from "./trainingStateAggregator.js";
 import { analyzeWorkoutHistory } from "./workoutAnalyzer.js";
 import {
   resolveWorkoutTarget,
@@ -38,6 +41,9 @@ const NEUTRAL_HISTORICAL_TRAINING_SIGNALS = Object.freeze({
   previousCompletedAt: null,
   loadTrend: "UNKNOWN",
   repTrend: "UNKNOWN",
+});
+const NEUTRAL_TRAINING_STATE_SIGNALS = aggregateTrainingStateSignals({
+  historicalTrainingSignals: NEUTRAL_HISTORICAL_TRAINING_SIGNALS,
 });
 
 export class WorkoutSessionStartError extends Error {
@@ -207,7 +213,7 @@ function buildCompletionRecoveryConstraint(recoveryResult) {
 
 function buildCompletionDecisionContext({
   analysis,
-  historicalTrainingSignals,
+  trainingStateSignals,
   targetSnapshot,
   previousRecommendation,
   recoveryResult,
@@ -222,7 +228,7 @@ function buildCompletionDecisionContext({
           consecutiveFailures: previousRecommendation.consecutiveFailures ?? 0,
         }
       : null,
-    historicalTrainingSignals,
+    trainingStateSignals,
   });
 }
 
@@ -320,7 +326,7 @@ export function createWorkoutSessionService({
   computeRecoveryModifierImpl = computeRecoveryModifier,
   classifyDecisionPersistabilityImpl = classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationDataImpl = mapDecisionToProgressionRecommendationData,
-  deriveHistoricalTrainingSignalsImpl = deriveHistoricalTrainingSignals,
+  deriveTrainingStateSignalsFromExposuresImpl = deriveTrainingStateSignalsFromExposures,
   resolveWorkoutTargetImpl = resolveWorkoutTarget,
 } = {}) {
   function createRepositories(db) {
@@ -480,12 +486,12 @@ export function createWorkoutSessionService({
                 exerciseId: targetSnapshot.exerciseId,
                 excludeSourceSessionId: sessionId,
               });
-            const historicalTrainingSignals = await resolveHistoricalTrainingSignals({
+            const trainingStateSignals = await resolveTrainingStateSignals({
               completionContext,
               repositories,
               sessionId,
               targetSnapshot,
-              deriveHistoricalTrainingSignalsImpl,
+              deriveTrainingStateSignalsFromExposuresImpl,
             });
 
             const analysis = analyzeExercisePerformanceImpl(
@@ -499,7 +505,7 @@ export function createWorkoutSessionService({
 
             const decisionContext = buildCompletionDecisionContext({
                 analysis,
-                historicalTrainingSignals,
+                trainingStateSignals,
                 targetSnapshot,
                 previousRecommendation,
                 recoveryResult,
@@ -877,18 +883,18 @@ function mapDecisionToProgressionDataEntry({
   });
 }
 
-async function resolveHistoricalTrainingSignals({
+async function resolveTrainingStateSignals({
   completionContext,
   repositories,
   sessionId,
   targetSnapshot,
-  deriveHistoricalTrainingSignalsImpl,
+  deriveTrainingStateSignalsFromExposuresImpl,
 }) {
   if (
     !isPositiveInteger(completionContext?.userProgramId) ||
     !isPositiveInteger(targetSnapshot?.programDayExerciseId)
   ) {
-    return NEUTRAL_HISTORICAL_TRAINING_SIGNALS;
+    return NEUTRAL_TRAINING_STATE_SIGNALS;
   }
 
   try {
@@ -900,9 +906,9 @@ async function resolveHistoricalTrainingSignals({
         excludeSessionId: sessionId,
       });
 
-    return deriveHistoricalTrainingSignalsImpl(exposures);
+    return deriveTrainingStateSignalsFromExposuresImpl(exposures);
   } catch {
-    return NEUTRAL_HISTORICAL_TRAINING_SIGNALS;
+    return NEUTRAL_TRAINING_STATE_SIGNALS;
   }
 }
 

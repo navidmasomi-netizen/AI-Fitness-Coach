@@ -637,6 +637,14 @@ function buildHistoricalConflictDecision(overrides = {}) {
   };
 }
 
+function buildTrainingStateSignals(historicalTrainingSignals) {
+  return {
+    fatigue: {
+      historicalTrainingSignals,
+    },
+  };
+}
+
 async function createPendingRecommendation({
   userId,
   exerciseId,
@@ -1042,10 +1050,10 @@ async function main() {
                 },
               };
             },
-            deriveHistoricalTrainingSignalsImpl(exposures) {
+            deriveTrainingStateSignalsFromExposuresImpl(exposures) {
               aggregationCalls += 1;
               aggregationInputLength = exposures.length;
-              return {
+              return buildTrainingStateSignals({
                 completedExposureCount: 0,
                 averageCompletionRatio: null,
                 averageCompletedSets: null,
@@ -1053,7 +1061,7 @@ async function main() {
                 previousCompletedAt: null,
                 loadTrend: "UNKNOWN",
                 repTrend: "UNKNOWN",
-              };
+              });
             },
           });
 
@@ -1187,7 +1195,7 @@ async function main() {
               signalStrength: "moderate",
             }),
             decideProgressionImpl: () => buildPersistableDecision(),
-            deriveHistoricalTrainingSignalsImpl() {
+            deriveTrainingStateSignalsFromExposuresImpl() {
               throw new Error("synthetic historical aggregation failure");
             },
           });
@@ -1262,9 +1270,9 @@ async function main() {
                 },
               };
             },
-            deriveHistoricalTrainingSignalsImpl() {
+            deriveTrainingStateSignalsFromExposuresImpl() {
               aggregationCalls += 1;
-              return {
+              return buildTrainingStateSignals({
                 completedExposureCount: 0,
                 averageCompletionRatio: null,
                 averageCompletedSets: null,
@@ -1272,7 +1280,7 @@ async function main() {
                 previousCompletedAt: null,
                 loadTrend: "UNKNOWN",
                 repTrend: "UNKNOWN",
-              };
+              });
             },
           });
 
@@ -1370,9 +1378,9 @@ async function main() {
                 },
               };
             },
-            deriveHistoricalTrainingSignalsImpl(exposures) {
+            deriveTrainingStateSignalsFromExposuresImpl(exposures) {
               aggregatorInput = exposures;
-              return {
+              return buildTrainingStateSignals({
                 completedExposureCount: 2,
                 averageCompletionRatio: 1 / 3,
                 averageCompletedSets: 1,
@@ -1380,7 +1388,7 @@ async function main() {
                 previousCompletedAt: "2026-07-23T10:00:00.000Z",
                 loadTrend: "INCREASING",
                 repTrend: "INCREASING",
-              };
+              });
             },
           });
 
@@ -1486,6 +1494,7 @@ async function main() {
           assert.equal(analyzerCalls, 1);
           assert.equal(decisionCalls, 1);
           assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), true);
+          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), false);
           assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
           assert.deepEqual(decisionInput.existingRecommendationContext, null);
           assert.deepEqual(decisionInput.policyThresholds, {
@@ -1553,8 +1562,8 @@ async function main() {
               signalStrength: "moderate",
             }),
             decideProgressionImpl: () => buildPersistableDecision(),
-            deriveHistoricalTrainingSignalsImpl() {
-              return {
+            deriveTrainingStateSignalsFromExposuresImpl() {
+              return buildTrainingStateSignals({
                 completedExposureCount: 5,
                 averageCompletionRatio: 0.8,
                 averageCompletedSets: 2.6,
@@ -1562,7 +1571,7 @@ async function main() {
                 previousCompletedAt: "2026-07-24T10:00:00.000Z",
                 loadTrend: "INCREASING",
                 repTrend: "STABLE",
-              };
+              });
             },
           });
           const secondService = createWorkoutSessionService({
@@ -1573,7 +1582,7 @@ async function main() {
               signalStrength: "moderate",
             }),
             decideProgressionImpl: () => buildPersistableDecision(),
-            deriveHistoricalTrainingSignalsImpl() {
+            deriveTrainingStateSignalsFromExposuresImpl() {
               throw new Error("synthetic historical aggregation failure");
             },
           });
@@ -1709,8 +1718,8 @@ async function main() {
                 dataQualityFlags: [],
               };
             },
-            deriveHistoricalTrainingSignalsImpl() {
-              return historicalTrainingSignals;
+            deriveTrainingStateSignalsFromExposuresImpl() {
+              return buildTrainingStateSignals(historicalTrainingSignals);
             },
             decideProgressionImpl(input) {
               decisionInput = input;
@@ -1739,6 +1748,7 @@ async function main() {
 
           assert.equal(decisionInput.historicalTrainingSignals, capturedHistoricalSignals);
           assert.notEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
+          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), false);
           assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
           assert.deepEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
           assert.equal(serializeForLog(historicalTrainingSignals), historicalSnapshot);
@@ -1778,6 +1788,159 @@ async function main() {
             ),
             applicationsBefore,
             applicationsAfter,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "recovery override path preserves service wiring and downstream baselines",
+      input: "positive historical state remains engine-identical while caution recovery produces the existing override result",
+      fn: async () => {
+        const suffix = `complete-recovery-override-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target =
+            started.session.exerciseTargets.find((entry) =>
+              ["load", "reps_then_load"].includes(entry.progressionType ?? "load")
+            ) ?? started.session.exerciseTargets[0];
+
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 42.5 },
+              { reps: 10, weightKg: 45 },
+              { reps: 10, weightKg: 45 },
+            ],
+          });
+
+          const historicalTrainingSignals = deepFreeze({
+            completedExposureCount: 2,
+            averageCompletionRatio: 1,
+            averageCompletedSets: 3,
+            latestCompletedAt: "2026-07-28T10:00:00.000Z",
+            previousCompletedAt: "2026-07-21T10:00:00.000Z",
+            loadTrend: "INCREASING",
+            repTrend: "STABLE",
+          });
+          const historicalSnapshot = serializeForLog(historicalTrainingSignals);
+          let decisionInput = null;
+          let mappedRecommendationInput = null;
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "caution",
+              confidence: 0.8,
+              signalStrength: "strong",
+              reasonCode: "behavioral",
+            }),
+            analyzeExercisePerformanceImpl() {
+              return {
+                exerciseId: target.exerciseId,
+                sourceSessionId: started.session.id,
+                prescription: {
+                  prescribedSets: 3,
+                  prescribedRepLow: target.targetRepRangeLow,
+                  prescribedRepHigh: target.targetRepRangeHigh,
+                  prescribedRestSeconds: 90,
+                },
+                observedPerformance: {
+                  loggedSetCount: 3,
+                  completedSetCount: 3,
+                  successfulSetCount: 3,
+                  failedSetCount: 0,
+                  totalReps: 30,
+                  totalVolumeKg: 132.5,
+                  averageWeightKg: 44.1667,
+                  maximumWeightKg: 45,
+                  minimumWeightKg: 42.5,
+                  bestSet: { setNumber: 2, reps: 10, weightKg: 45 },
+                  finalSet: { setNumber: 3, reps: 10, weightKg: 45 },
+                  allPlannedSetsReachedUpperRepBound: false,
+                  prescribedSetCompletionRate: 1,
+                  targetRepHitRate: 1,
+                },
+                historyFacts: {
+                  previousSessionWeightKg: 42.5,
+                  weightDeltaKg: 2.5,
+                  weightDeltaPercent: 5.8824,
+                  previousPrescribedSetCompletionRate: 0.6667,
+                  prescribedSetCompletionRateDelta: 0.3333,
+                  consecutiveSuccessfulSessions: 1,
+                  consecutiveFailedSessions: 0,
+                },
+                hasSufficientData: true,
+                dataQualityFlags: [],
+              };
+            },
+            deriveTrainingStateSignalsFromExposuresImpl() {
+              return buildTrainingStateSignals(historicalTrainingSignals);
+            },
+            decideProgressionImpl(input) {
+              decisionInput = input;
+              return decideProgression(input);
+            },
+            mapDecisionToProgressionRecommendationDataImpl(input) {
+              mappedRecommendationInput = input;
+              return mapDecisionToProgressionRecommendationData(input);
+            },
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          const createdRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: user.id,
+              sourceSessionId: started.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+
+          assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), true);
+          assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), false);
+          assert.equal(Object.isFrozen(decisionInput.historicalTrainingSignals), true);
+          assert.deepEqual(decisionInput.historicalTrainingSignals, historicalTrainingSignals);
+          assert.equal(serializeForLog(historicalTrainingSignals), historicalSnapshot);
+          assert.equal(mappedRecommendationInput.decision.reasonCode, "RULE_V1_RECOVERY_OVERRIDE");
+          assert.deepEqual(projectComparableRecommendation(createdRecommendation), {
+            recommendationType: "maintain",
+            decisionType: "MAINTAIN",
+            loadAdjustmentSteps: 0,
+            repAdjustment: 0,
+            setAdjustment: 0,
+            durationAdjustmentSteps: 0,
+            confidence: 0.4,
+            reasonCode: "RULE_V1_RECOVERY_OVERRIDE",
+            rulesVersion: "progression_decision_rules_v5",
+            progressionType: target.progressionType ?? "load",
+            consecutiveFailures: 0,
+            reason: "Performance supported progression, but recovery signals triggered a conservative hold for the next session.",
+            status: "active",
+          });
+          assert.deepEqual(
+            projectComparableRecommendation(result.progressionRecommendations[0]),
+            projectComparableRecommendation(createdRecommendation)
+          );
+
+          return {
+            decisionInput,
+            mappedRecommendationInput,
+            recommendation: projectComparableRecommendation(createdRecommendation),
+            responseRecommendation: projectComparableRecommendation(
+              result.progressionRecommendations[0]
+            ),
           };
         } finally {
           await cleanupUserArtifacts(user.id);
@@ -1827,7 +1990,7 @@ async function main() {
             };
 
             if (scenario === "aggregation-fallback") {
-              serviceConfig.deriveHistoricalTrainingSignalsImpl = () => {
+              serviceConfig.deriveTrainingStateSignalsFromExposuresImpl = () => {
                 throw new Error("synthetic historical aggregation failure");
               };
             } else {
@@ -1921,7 +2084,7 @@ async function main() {
               signalStrength: "moderate",
             }),
             decideProgressionImpl: () => buildPersistableDecision(),
-            deriveHistoricalTrainingSignalsImpl() {
+            deriveTrainingStateSignalsFromExposuresImpl() {
               throw new Error("synthetic historical aggregation failure");
             },
           });
