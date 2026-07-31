@@ -85,12 +85,16 @@ function buildCompatibilityReason(decision) {
       return "Performance improved; load can increase in the next session.";
     case "RULE_V1_REP_PERFORMANCE_IMPROVED":
       return "Performance improved; repetitions can increase in the next session.";
+    case "RULE_V1_TIME_PERFORMANCE_IMPROVED":
+      return "Performance improved; duration can increase in the next session.";
     case "RULE_V1_TARGETS_FULLY_MET":
       return "Targets were fully met; load maintained for the next session.";
     case "RULE_V1_TARGETS_PARTIALLY_MET":
       return "Targets were not fully met; load maintained for the next session.";
     case "RULE_V1_PERFORMANCE_REGRESSED":
       return "Performance regressed; load maintained for the next session.";
+    case "RULE_V1_REPEATED_TIME_SUCCESS":
+      return "Targets were met repeatedly; duration can increase in the next session.";
     case "RULE_V1_REPEATED_FAILURE":
       return "Performance declined repeatedly; a deload is recommended for the next session.";
     case "RULE_V1_RECOVERY_OVERRIDE":

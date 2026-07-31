@@ -1,6 +1,6 @@
 import { applyHistoricalProgressionModifier } from "./progressionHistoricalModifier.js";
 
-export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v4";
+export const PROGRESSION_RULES_VERSION = "progression_decision_rules_v5";
 
 export const DECISION_TYPES = Object.freeze({
   INCREASE_LOAD: "INCREASE_LOAD",
@@ -418,6 +418,7 @@ export const RULE_CATALOG = Object.freeze([
   Object.freeze({ id: "R010_PERFORMANCE_IMPROVED_INCREASE", priority: 55, terminal: false }),
   Object.freeze({ id: "R011_PERFORMANCE_REGRESSED_HOLD", priority: 50, terminal: true }),
   Object.freeze({ id: "R012_TARGETS_FULLY_MET_HOLD", priority: 45, terminal: true }),
+  Object.freeze({ id: "R015_HISTORICAL_TREND_CONFLICT_DOWNGRADE", priority: 42, terminal: true }),
   Object.freeze({ id: "R013_RECOVERY_DOWNGRADE", priority: 40, terminal: true }),
   Object.freeze({ id: "R014_FALLBACK_MAINTAIN", priority: 10, terminal: true }),
 ]);

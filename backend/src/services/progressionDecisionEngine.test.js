@@ -444,8 +444,8 @@ async function main() {
       },
     },
     {
-      name: "historical signal variants remain invariant for canonical R010",
-      input: "only historicalTrainingSignals changes around the future modifier boundary",
+      name: "historical signal variants preserve the activated R010 characterization baseline",
+      input: "only historicalTrainingSignals changes around the active historical modifier boundary",
       fn: () => {
         const baselineInput = buildCanonicalR010Input({
           historicalTrainingSignals: buildHistoricalTrainingSignals(),
@@ -3075,13 +3075,21 @@ async function main() {
       input: "rule metadata has ids, priorities, and terminal flags",
       fn: () => {
         assert.equal(Array.isArray(RULE_CATALOG), true);
-        assert.equal(RULE_CATALOG.length, 14);
-        assert.equal(PROGRESSION_RULES_VERSION, "progression_decision_rules_v4");
+        assert.equal(RULE_CATALOG.length, 15);
+        assert.equal(PROGRESSION_RULES_VERSION, "progression_decision_rules_v5");
         for (const rule of RULE_CATALOG) {
           assert.equal(typeof rule.id, "string");
           assert.equal(typeof rule.priority, "number");
           assert.equal(typeof rule.terminal, "boolean");
         }
+        assert.deepEqual(
+          RULE_CATALOG.find((rule) => rule.id === "R015_HISTORICAL_TREND_CONFLICT_DOWNGRADE"),
+          {
+            id: "R015_HISTORICAL_TREND_CONFLICT_DOWNGRADE",
+            priority: 42,
+            terminal: true,
+          }
+        );
         return RULE_CATALOG;
       },
     },

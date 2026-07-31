@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   mapDecisionToProgressionRecommendationData,
 } from "./progressionDecisionMapping.js";
+import { PROGRESSION_RULES_VERSION } from "./progressionDecisionEngine.js";
 
 function serializeForLog(value) {
   return JSON.stringify(value, null, 2);
@@ -74,7 +75,7 @@ function buildDecision(overrides = {}) {
     durationAdjustmentSteps: 0,
     confidence: 0.5,
     reasonCode: "RULE_V2_HISTORICAL_TREND_CONFLICT",
-    rulesVersion: "progression_decision_rules_v4",
+    rulesVersion: PROGRESSION_RULES_VERSION,
     ...overrides,
   };
 }
@@ -133,6 +134,89 @@ async function main() {
         assert.equal(
           actual.reason,
           "Performance improved; load can increase in the next session."
+        );
+
+        return actual;
+      },
+    },
+    {
+      name: "maps time performance improved to an explicit compatibility reason",
+      input: "increase-duration decision with RULE_V1_TIME_PERFORMANCE_IMPROVED",
+      fn: () => {
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decision: buildDecision({
+            decisionType: "INCREASE_DURATION",
+            durationAdjustmentSteps: 1,
+            confidence: 0.6,
+            reasonCode: "RULE_V1_TIME_PERFORMANCE_IMPROVED",
+          }),
+          analysis: buildAnalysis(),
+          prescription: buildPrescription(),
+          exercise: buildExercise(),
+          previousRecommendation: null,
+        });
+
+        assert.equal(actual.recommendationType, "increase");
+        assert.equal(
+          actual.reason,
+          "Performance improved; duration can increase in the next session."
+        );
+
+        return actual;
+      },
+    },
+    {
+      name: "maps repeated time success to an explicit compatibility reason",
+      input: "increase-duration decision with RULE_V1_REPEATED_TIME_SUCCESS",
+      fn: () => {
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decision: buildDecision({
+            decisionType: "INCREASE_DURATION",
+            durationAdjustmentSteps: 1,
+            confidence: 0.6,
+            reasonCode: "RULE_V1_REPEATED_TIME_SUCCESS",
+          }),
+          analysis: buildAnalysis(),
+          prescription: buildPrescription(),
+          exercise: buildExercise(),
+          previousRecommendation: null,
+        });
+
+        assert.equal(actual.recommendationType, "increase");
+        assert.equal(
+          actual.reason,
+          "Targets were met repeatedly; duration can increase in the next session."
+        );
+
+        return actual;
+      },
+    },
+    {
+      name: "unknown reason codes still use the generic compatibility fallback",
+      input: "maintain decision with an unmapped reason code",
+      fn: () => {
+        const actual = mapDecisionToProgressionRecommendationData({
+          userId: 1,
+          exerciseId: 15,
+          sourceSessionId: 501,
+          decision: buildDecision({
+            reasonCode: "RULE_UNMAPPED_TEST_REASON",
+          }),
+          analysis: buildAnalysis(),
+          prescription: buildPrescription(),
+          exercise: buildExercise(),
+          previousRecommendation: null,
+        });
+
+        assert.equal(
+          actual.reason,
+          "Progression decision recorded for the next session."
         );
 
         return actual;

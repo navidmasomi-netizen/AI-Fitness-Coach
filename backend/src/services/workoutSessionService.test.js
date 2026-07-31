@@ -610,7 +610,7 @@ function buildPersistableDecision(overrides = {}) {
     durationAdjustmentSteps: 0,
     confidence: 0.8,
     reasonCode: "RULE_V1_TARGETS_FULLY_MET",
-    rulesVersion: "progression_decision_rules_v4",
+    rulesVersion: "progression_decision_rules_v5",
     ...overrides,
   };
 }
@@ -632,7 +632,7 @@ function buildHistoricalConflictDecision(overrides = {}) {
     ],
     requiresManualReview: false,
     shouldPersist: true,
-    rulesVersion: "progression_decision_rules_v4",
+    rulesVersion: "progression_decision_rules_v5",
     ...overrides,
   };
 }
@@ -658,7 +658,7 @@ async function createPendingRecommendation({
       repAdjustment,
       setAdjustment: 0,
       durationAdjustmentSteps,
-      rulesVersion: "progression_decision_rules_v4",
+      rulesVersion: "progression_decision_rules_v5",
       lifecycleStatus: "PENDING",
       progressionType,
       reason: "Progression decision recorded for the next session.",
@@ -1303,7 +1303,7 @@ async function main() {
             durationAdjustmentSteps: 0,
             confidence: 0.8,
             reasonCode: "RULE_V1_TARGETS_FULLY_MET",
-            rulesVersion: "progression_decision_rules_v4",
+            rulesVersion: "progression_decision_rules_v5",
             progressionType: "load",
             consecutiveFailures: 1,
             reason: "Targets were fully met; load maintained for the next session.",
@@ -1469,7 +1469,7 @@ async function main() {
                 durationAdjustmentSteps: 0,
                 confidence: 0.8,
                 reasonCode: "RULE_V1_TARGETS_FULLY_MET",
-                rulesVersion: "progression_decision_rules_v4",
+                rulesVersion: "progression_decision_rules_v5",
                 progressionType: "load",
                 consecutiveFailures: 1,
                 reason: "Targets were fully met; load maintained for the next session.",
@@ -1756,7 +1756,7 @@ async function main() {
             durationAdjustmentSteps: 0,
             confidence: 0.5,
             reasonCode: "RULE_V2_HISTORICAL_TREND_CONFLICT",
-            rulesVersion: "progression_decision_rules_v4",
+            rulesVersion: "progression_decision_rules_v5",
             progressionType: target.progressionType ?? "load",
             consecutiveFailures: 0,
             reason: "Performance improved, but declining historical trends triggered a conservative hold for the next session.",
