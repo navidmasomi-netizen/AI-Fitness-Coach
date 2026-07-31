@@ -66,6 +66,25 @@ function validatePreviousDecisionContext(previousDecisionContext) {
   }
 }
 
+function validateLegacyTrainingStateInput(input) {
+  validateSection(input, "historicalTrainingSignals");
+}
+
+function cloneLegacyTrainingStateInput(input) {
+  return {
+    historicalTrainingSignals: cloneSerializable(
+      input.historicalTrainingSignals,
+      "historicalTrainingSignals"
+    ),
+  };
+}
+
+function adaptLegacyTrainingStateInput(context) {
+  return {
+    historicalTrainingSignals: context.historicalTrainingSignals,
+  };
+}
+
 function validateInput(input) {
   if (!isPlainObject(input)) {
     throw new ProgressionDecisionContextValidationError("decision context input is required");
@@ -74,7 +93,7 @@ function validateInput(input) {
   validateSection(input, "analysis");
   validateSection(input, "progressionPolicy");
   validateSection(input, "recoveryConstraint");
-  validateSection(input, "historicalTrainingSignals");
+  validateLegacyTrainingStateInput(input);
   validatePreviousDecisionContext(input.previousDecisionContext ?? null);
 }
 
@@ -95,10 +114,7 @@ export function createProgressionDecisionContext(input) {
       input.previousDecisionContext ?? null,
       "previousDecisionContext"
     ),
-    historicalTrainingSignals: cloneSerializable(
-      input.historicalTrainingSignals,
-      "historicalTrainingSignals"
-    ),
+    ...cloneLegacyTrainingStateInput(input),
   });
 }
 
@@ -110,7 +126,7 @@ export function toProgressionDecisionEngineInput(context) {
     progressionPolicy: context.progressionPolicy,
     recoveryConstraint: context.recoveryConstraint,
     previousDecisionContext: context.previousDecisionContext,
-    historicalTrainingSignals: context.historicalTrainingSignals,
+    ...adaptLegacyTrainingStateInput(context),
     existingRecommendationContext: null,
     policyThresholds: {
       deloadFailureStreak: 2,

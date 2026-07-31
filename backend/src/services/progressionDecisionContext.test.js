@@ -6,6 +6,7 @@ import {
   toProgressionDecisionEngineInput,
 } from "./progressionDecisionContext.js";
 import { decideProgression } from "./progressionDecisionEngine.js";
+import { createTrainingStateSignals } from "./trainingStateSignals.js";
 
 function serializeForLog(value) {
   return JSON.stringify(value, null, 2);
@@ -134,6 +135,24 @@ async function main() {
 
   const cases = [
     {
+      name: "current decision context shape remains stable before training state migration",
+      input: "legacy context still exposes only the direct historicalTrainingSignals boundary",
+      fn: () => {
+        const actual = createProgressionDecisionContext(buildContextInput());
+
+        assert.deepEqual(Object.keys(actual), [
+          "analysis",
+          "progressionPolicy",
+          "recoveryConstraint",
+          "previousDecisionContext",
+          "historicalTrainingSignals",
+        ]);
+        assert.equal(Object.hasOwn(actual, "trainingStateSignals"), false);
+
+        return actual;
+      },
+    },
+    {
       name: "constructs immutable nested decision context",
       input: "plain facts are copied and deeply frozen",
       fn: () => {
@@ -244,6 +263,27 @@ async function main() {
       },
     },
     {
+      name: "adapter output shape remains stable before training state migration",
+      input: "legacy engine input still exposes historicalTrainingSignals directly",
+      fn: () => {
+        const context = createProgressionDecisionContext(buildContextInput());
+        const actual = toProgressionDecisionEngineInput(context);
+
+        assert.deepEqual(Object.keys(actual), [
+          "analysis",
+          "progressionPolicy",
+          "recoveryConstraint",
+          "previousDecisionContext",
+          "historicalTrainingSignals",
+          "existingRecommendationContext",
+          "policyThresholds",
+        ]);
+        assert.equal(Object.hasOwn(actual, "trainingStateSignals"), false);
+
+        return actual;
+      },
+    },
+    {
       name: "adapter preserves current engine input contract",
       input: "historical signals pass through as the exact frozen reference",
       fn: () => {
@@ -269,6 +309,33 @@ async function main() {
         });
 
         return actual;
+      },
+    },
+    {
+      name: "training state contract remains separate from the current decision context boundary",
+      input: "fatigue-domain training state can be constructed without changing legacy context behavior",
+      fn: () => {
+        const trainingStateSignals = createTrainingStateSignals({
+          fatigue: {
+            historicalTrainingSignals: buildHistoricalTrainingSignals(),
+          },
+        });
+        const context = createProgressionDecisionContext(buildContextInput());
+        const adaptedInput = toProgressionDecisionEngineInput(context);
+
+        assert.deepEqual(trainingStateSignals, {
+          fatigue: {
+            historicalTrainingSignals: buildHistoricalTrainingSignals(),
+          },
+        });
+        assert.equal(Object.hasOwn(context, "trainingStateSignals"), false);
+        assert.equal(Object.hasOwn(adaptedInput, "trainingStateSignals"), false);
+
+        return {
+          trainingStateSignals,
+          contextKeys: Object.keys(context),
+          adaptedInputKeys: Object.keys(adaptedInput),
+        };
       },
     },
     {
