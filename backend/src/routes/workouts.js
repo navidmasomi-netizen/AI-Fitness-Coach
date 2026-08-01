@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.post("/", createWorkoutSession);
+router.post("/", requireAuth, createWorkoutSession);
 router.post("/startFromActiveProgram", requireAuth, startFromActiveProgram);
 router.post("/:sessionId/set-logs", requireAuth, addSetLog);
 router.patch("/:sessionId/complete", requireAuth, completeWorkoutSession);

@@ -5,23 +5,61 @@ import {
   workoutSessionService,
 } from "../services/workoutSessionService.js";
 
+function hasOwn(input, key) {
+  return Object.prototype.hasOwnProperty.call(input, key);
+}
+
+function resolveStartIdempotencyKey(req) {
+  return (
+    req.body?.idempotencyKey ??
+    req.headers?.["idempotency-key"] ??
+    req.headers?.["x-idempotency-key"] ??
+    null
+  );
+}
+
 export const createWorkoutSession = async (req, res) => {
-  const { userId, programId, programDayId, notes } = req.body;
-  if (!userId) {
-    return res.status(400).json({ success: false, message: "userId is required" });
-  }
   try {
-    const session = await prisma.workoutSession.create({
-      data: {
-        userId: Number(userId),
-        programId: programId ? Number(programId) : null,
-        programDayId: programDayId ? Number(programDayId) : null,
-        notes: notes || null,
-      },
+    const body =
+      req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? req.body
+        : {};
+    const authenticatedUserId = req.userId;
+    const suppliedUserId = body.userId == null ? null : Number(body.userId);
+
+    if (hasOwn(body, "programId") || hasOwn(body, "programDayId") || hasOwn(body, "notes")) {
+      return res.status(400).json({
+        success: false,
+        message: "programId, programDayId, and notes are not supported on this endpoint",
+      });
+    }
+
+    if (
+      hasOwn(body, "userId") &&
+      (!Number.isInteger(suppliedUserId) || suppliedUserId <= 0 || suppliedUserId !== authenticatedUserId)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Cannot create a session for another user",
+      });
+    }
+
+    const result = await workoutSessionService.startFromActiveProgram({
+      userId: authenticatedUserId,
+      idempotencyKey: resolveStartIdempotencyKey(req),
     });
-    res.json({ success: true, data: session });
+
+    return res.json({ success: true, data: result.session });
   } catch (error) {
-    res.status(400).json({ success: false, message: "Failed to create workout session" });
+    if (error instanceof WorkoutSessionStartError) {
+      return res.status(error.statusCode).json({
+        success: false,
+        message: error.message,
+        code: error.code,
+      });
+    }
+
+    return res.status(500).json({ success: false, message: "Failed to create workout session" });
   }
 };
 

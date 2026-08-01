@@ -12,11 +12,6 @@ function signToken(user) {
   );
 }
 
-export const getUsers = async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json({ success: true, data: users.map(sanitizeUser) });
-};
-
 export const createUser = async (req, res) => {
   const { email, name, password } = req.body;
 
@@ -69,12 +64,4 @@ export const loginUser = async (req, res) => {
 
   const accessToken = signToken(user);
   res.json({ success: true, data: { user: sanitizeUser(user), accessToken } });
-};
-
-export const getUserById = async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: Number(req.params.id) },
-  });
-  if (!user) return res.status(404).json({ success: false, message: "User not found" });
-  res.json({ success: true, data: sanitizeUser(user) });
 };
