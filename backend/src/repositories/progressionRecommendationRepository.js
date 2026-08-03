@@ -9,6 +9,7 @@ const ELIGIBLE_PENDING_RECOMMENDATION_WHERE = {
 
 const RECOMMENDATION_ORDER_BY_DESC = [{ createdAt: "desc" }, { id: "desc" }];
 const RECOMMENDATION_ORDER_BY_ASC = [{ createdAt: "asc" }, { id: "asc" }];
+const APPLIED_DELOAD_HISTORY_ORDER_BY_DESC = [{ appliedAt: "desc" }, { id: "desc" }];
 
 export function createProgressionRecommendationRepository(db) {
   return {
@@ -100,6 +101,50 @@ export function createProgressionRecommendationRepository(db) {
         },
         include: PROGRESSION_RECOMMENDATION_INCLUDE,
         orderBy: RECOMMENDATION_ORDER_BY_ASC,
+      });
+    },
+
+    async findAppliedDeloadHistoryRows({
+      userProgramId,
+      excludeSourceSessionId = null,
+    }) {
+      return db.recommendationApplication.findMany({
+        where: {
+          recommendation: {
+            decisionType: "DELOAD",
+            recommendationType: "deload",
+            sourceSession: {
+              userProgramId,
+            },
+            ...(excludeSourceSessionId
+              ? { sourceSessionId: { not: excludeSourceSessionId } }
+              : {}),
+          },
+        },
+        orderBy: APPLIED_DELOAD_HISTORY_ORDER_BY_DESC,
+        select: {
+          id: true,
+          recommendationId: true,
+          appliedAt: true,
+          workoutSession: {
+            select: {
+              userProgramId: true,
+            },
+          },
+          recommendation: {
+            select: {
+              id: true,
+              decisionType: true,
+              recommendationType: true,
+              sourceSessionId: true,
+              sourceSession: {
+                select: {
+                  userProgramId: true,
+                },
+              },
+            },
+          },
+        },
       });
     },
   };

@@ -159,12 +159,17 @@ async function createProgram({ suffix }) {
   });
 }
 
-async function createUserProgram({ userId, programId, currentDayIndex = 0 }) {
+async function createUserProgram({
+  userId,
+  programId,
+  currentDayIndex = 0,
+  isActive = true,
+}) {
   return prisma.userProgram.create({
     data: {
       userId,
       programId,
-      isActive: true,
+      isActive,
       currentDayIndex,
     },
   });
@@ -266,6 +271,99 @@ async function createHistoricalExposure({
   }
 
   return session;
+}
+
+async function createRecommendationWithOptionalApplication({
+  userId,
+  userProgramId,
+  programId,
+  programDayId,
+  programDayExerciseId,
+  exerciseId,
+  sourceStartedAt,
+  sourceCompletedAt,
+  recommendationType,
+  decisionType,
+  applyRecommendation = true,
+  appliedSessionStartedAt = null,
+  appliedSessionCompletedAt = null,
+  appliedAt = null,
+}) {
+  const sourceSession = await prisma.workoutSession.create({
+    data: {
+      userId,
+      userProgramId,
+      programId,
+      programDayId,
+      startedAt: sourceStartedAt,
+      completedAt: sourceCompletedAt,
+      status: "completed",
+    },
+  });
+
+  const recommendation = await prisma.progressionRecommendation.create({
+    data: {
+      userId,
+      exerciseId,
+      sourceSessionId: sourceSession.id,
+      recommendationType,
+      decisionType,
+      loadAdjustmentSteps: decisionType === "DELOAD" ? -1 : 0,
+      repAdjustment: 0,
+      setAdjustment: 0,
+      durationAdjustmentSteps: 0,
+      rulesVersion: "progression_decision_rules_v5",
+      lifecycleStatus: applyRecommendation ? "APPLIED" : "PENDING",
+      progressionType: "load",
+      reason: "Progression decision recorded for the next session.",
+      status: "active",
+    },
+  });
+
+  if (!applyRecommendation) {
+    return {
+      sourceSession,
+      recommendation,
+      application: null,
+      appliedSession: null,
+      workoutTarget: null,
+    };
+  }
+
+  const workoutTarget = await prisma.workoutSessionExerciseTarget.create({
+    data: {
+      sessionId: sourceSession.id,
+      programDayExerciseId,
+      exerciseId,
+      sourceRecommendationId: recommendation.id,
+      targetSets: 2,
+      targetRepRangeLow: 6,
+      targetRepRangeHigh: 8,
+      exactRepTarget: 6,
+      targetLoadKg: 35,
+      targetDurationSeconds: null,
+      progressionType: "load",
+      sourceDecisionType: recommendation.decisionType,
+      sourceRulesVersion: recommendation.rulesVersion,
+    },
+  });
+
+  const application = await prisma.recommendationApplication.create({
+    data: {
+      recommendationId: recommendation.id,
+      workoutSessionId: sourceSession.id,
+      workoutTargetId: workoutTarget.id,
+      ...(appliedAt ? { appliedAt } : {}),
+    },
+  });
+
+  return {
+    sourceSession,
+    recommendation,
+    application,
+    appliedSession: sourceSession,
+    workoutTarget,
+  };
 }
 
 async function main() {
@@ -871,6 +969,265 @@ async function main() {
     await cleanupFixture({
       userIds: [applicationUser.id],
       programIds: [applicationProgram.id],
+    });
+  }
+
+  const deloadHistorySuffix = nextSuffix("deload-history");
+  const deloadHistoryUser = await createUser({ suffix: `${deloadHistorySuffix}-user` });
+  const deloadHistoryProgram = await createProgram({
+    suffix: `${deloadHistorySuffix}-program`,
+  });
+  const deloadHistoryCurrentUserProgram = await createUserProgram({
+    userId: deloadHistoryUser.id,
+    programId: deloadHistoryProgram.id,
+  });
+  const deloadHistoryPreviousUserProgram = await createUserProgram({
+    userId: deloadHistoryUser.id,
+    programId: deloadHistoryProgram.id,
+    isActive: false,
+  });
+  const deloadHistoryInactiveUserProgram = await createUserProgram({
+    userId: deloadHistoryUser.id,
+    programId: deloadHistoryProgram.id,
+    isActive: false,
+  });
+  const deloadHistoryDay = await createProgramDay({
+    programId: deloadHistoryProgram.id,
+    dayIndex: 0,
+    suffix: deloadHistorySuffix,
+  });
+  const deloadHistoryExercise = await getSeedExercise();
+  const deloadHistoryProgramDayExercise = await createProgramDayExercise({
+    programDayId: deloadHistoryDay.id,
+    exerciseId: deloadHistoryExercise.id,
+  });
+  const appliedCurrentDeload = await createRecommendationWithOptionalApplication({
+    userId: deloadHistoryUser.id,
+    userProgramId: deloadHistoryCurrentUserProgram.id,
+    programId: deloadHistoryProgram.id,
+    programDayId: deloadHistoryDay.id,
+    programDayExerciseId: deloadHistoryProgramDayExercise.id,
+    exerciseId: deloadHistoryExercise.id,
+    sourceStartedAt: new Date("2026-07-10T08:00:00.000Z"),
+    sourceCompletedAt: new Date("2026-07-10T08:45:00.000Z"),
+    recommendationType: "deload",
+    decisionType: "DELOAD",
+    appliedSessionStartedAt: new Date("2026-07-11T08:00:00.000Z"),
+    appliedAt: new Date("2026-07-11T08:05:00.000Z"),
+  });
+  const excludedCurrentSessionDeload =
+    await createRecommendationWithOptionalApplication({
+      userId: deloadHistoryUser.id,
+      userProgramId: deloadHistoryCurrentUserProgram.id,
+      programId: deloadHistoryProgram.id,
+      programDayId: deloadHistoryDay.id,
+      programDayExerciseId: deloadHistoryProgramDayExercise.id,
+      exerciseId: deloadHistoryExercise.id,
+      sourceStartedAt: new Date("2026-07-12T08:00:00.000Z"),
+      sourceCompletedAt: new Date("2026-07-12T08:45:00.000Z"),
+      recommendationType: "deload",
+      decisionType: "DELOAD",
+      appliedSessionStartedAt: new Date("2026-07-13T08:00:00.000Z"),
+      appliedAt: new Date("2026-07-13T08:05:00.000Z"),
+    });
+  await createRecommendationWithOptionalApplication({
+    userId: deloadHistoryUser.id,
+    userProgramId: deloadHistoryCurrentUserProgram.id,
+    programId: deloadHistoryProgram.id,
+    programDayId: deloadHistoryDay.id,
+    programDayExerciseId: deloadHistoryProgramDayExercise.id,
+    exerciseId: deloadHistoryExercise.id,
+    sourceStartedAt: new Date("2026-07-14T08:00:00.000Z"),
+    sourceCompletedAt: new Date("2026-07-14T08:45:00.000Z"),
+    recommendationType: "deload",
+    decisionType: "DELOAD",
+    applyRecommendation: false,
+  });
+  await createRecommendationWithOptionalApplication({
+    userId: deloadHistoryUser.id,
+    userProgramId: deloadHistoryCurrentUserProgram.id,
+    programId: deloadHistoryProgram.id,
+    programDayId: deloadHistoryDay.id,
+    programDayExerciseId: deloadHistoryProgramDayExercise.id,
+    exerciseId: deloadHistoryExercise.id,
+    sourceStartedAt: new Date("2026-07-15T08:00:00.000Z"),
+    sourceCompletedAt: new Date("2026-07-15T08:45:00.000Z"),
+    recommendationType: "maintain",
+    decisionType: "MAINTAIN",
+    appliedSessionStartedAt: new Date("2026-07-16T08:00:00.000Z"),
+    appliedAt: new Date("2026-07-16T08:05:00.000Z"),
+  });
+  await createRecommendationWithOptionalApplication({
+    userId: deloadHistoryUser.id,
+    userProgramId: deloadHistoryPreviousUserProgram.id,
+    programId: deloadHistoryProgram.id,
+    programDayId: deloadHistoryDay.id,
+    programDayExerciseId: deloadHistoryProgramDayExercise.id,
+    exerciseId: deloadHistoryExercise.id,
+    sourceStartedAt: new Date("2026-07-17T08:00:00.000Z"),
+    sourceCompletedAt: new Date("2026-07-17T08:45:00.000Z"),
+    recommendationType: "deload",
+    decisionType: "DELOAD",
+    appliedSessionStartedAt: new Date("2026-07-18T08:00:00.000Z"),
+    appliedAt: new Date("2026-07-18T08:05:00.000Z"),
+  });
+  const appliedInactiveDeload = await createRecommendationWithOptionalApplication({
+    userId: deloadHistoryUser.id,
+    userProgramId: deloadHistoryInactiveUserProgram.id,
+    programId: deloadHistoryProgram.id,
+    programDayId: deloadHistoryDay.id,
+    programDayExerciseId: deloadHistoryProgramDayExercise.id,
+    exerciseId: deloadHistoryExercise.id,
+    sourceStartedAt: new Date("2026-07-19T08:00:00.000Z"),
+    sourceCompletedAt: new Date("2026-07-19T08:45:00.000Z"),
+    recommendationType: "deload",
+    decisionType: "DELOAD",
+    appliedSessionStartedAt: new Date("2026-07-20T08:00:00.000Z"),
+    appliedAt: new Date("2026-07-20T08:05:00.000Z"),
+  });
+  try {
+    if (
+      await runCase(
+        "applied deload history query returns only applied deload rows for the current UserProgram",
+        { userProgramId: deloadHistoryCurrentUserProgram.id },
+        async () => {
+          const found =
+            await progressionRecommendationRepository.findAppliedDeloadHistoryRows({
+              userProgramId: deloadHistoryCurrentUserProgram.id,
+            });
+
+          assert.equal(found.length, 2);
+          assert.deepEqual(
+            found.map((entry) => entry.recommendationId),
+            [
+              excludedCurrentSessionDeload.recommendation.id,
+              appliedCurrentDeload.recommendation.id,
+            ]
+          );
+          assert.deepEqual(Object.keys(found[0]).sort(), [
+            "appliedAt",
+            "id",
+            "recommendation",
+            "recommendationId",
+            "workoutSession",
+          ]);
+          assert.deepEqual(Object.keys(found[0].recommendation).sort(), [
+            "decisionType",
+            "id",
+            "recommendationType",
+            "sourceSession",
+            "sourceSessionId",
+          ]);
+          assert.deepEqual(Object.keys(found[0].recommendation.sourceSession), [
+            "userProgramId",
+          ]);
+          assert.deepEqual(Object.keys(found[0].workoutSession), ["userProgramId"]);
+
+          return {
+            recommendationIds: found.map((entry) => entry.recommendationId),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "applied deload history query excludes the current source session deterministically",
+        { excludedSourceSessionId: excludedCurrentSessionDeload.sourceSession.id },
+        async () => {
+          const found =
+            await progressionRecommendationRepository.findAppliedDeloadHistoryRows({
+              userProgramId: deloadHistoryCurrentUserProgram.id,
+              excludeSourceSessionId: excludedCurrentSessionDeload.sourceSession.id,
+            });
+
+          assert.equal(found.length, 1);
+          assert.equal(
+            found[0].recommendationId,
+            appliedCurrentDeload.recommendation.id
+          );
+          assert.equal(
+            found.some(
+              (entry) =>
+                entry.recommendation.sourceSessionId ===
+                excludedCurrentSessionDeload.sourceSession.id
+            ),
+            false
+          );
+
+          return {
+            recommendationIds: found.map((entry) => entry.recommendationId),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "applied deload history query retains explicitly scoped inactive UserProgram history",
+        { userProgramId: deloadHistoryInactiveUserProgram.id },
+        async () => {
+          const found =
+            await progressionRecommendationRepository.findAppliedDeloadHistoryRows({
+              userProgramId: deloadHistoryInactiveUserProgram.id,
+            });
+
+          assert.equal(found.length, 1);
+          assert.equal(found[0].recommendationId, appliedInactiveDeload.recommendation.id);
+          assert.equal(
+            found[0].recommendation.sourceSession.userProgramId,
+            deloadHistoryInactiveUserProgram.id
+          );
+          assert.equal(
+            found[0].workoutSession.userProgramId,
+            deloadHistoryInactiveUserProgram.id
+          );
+
+          return {
+            recommendationIds: found.map((entry) => entry.recommendationId),
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+
+    if (
+      await runCase(
+        "applied deload history query returns empty when no applied deload exists for the requested UserProgram",
+        { userProgramId: 99999999 },
+        async () => {
+          const found =
+            await progressionRecommendationRepository.findAppliedDeloadHistoryRows({
+              userProgramId: 99999999,
+            });
+
+          assert.deepEqual(found, []);
+
+          return {
+            count: found.length,
+          };
+        }
+      )
+    ) {
+      passed += 1;
+    } else {
+      failed += 1;
+    }
+  } finally {
+    await cleanupFixture({
+      userIds: [deloadHistoryUser.id],
+      programIds: [deloadHistoryProgram.id],
     });
   }
 
