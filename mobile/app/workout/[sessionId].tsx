@@ -107,8 +107,9 @@ export default function WorkoutSessionScreen() {
 
   const finishMutation = useMutation({
     mutationFn: () => completeSession(numericSessionId),
-    onSuccess: () => {
+    onSuccess: (data) => {
       clearRestTimer();
+      queryClient.setQueryData(["freshCompletionResult", numericSessionId], data);
       queryClient.invalidateQueries({ queryKey: ["completedSessions"] });
       queryClient.invalidateQueries({ queryKey: ["myProgram"] });
       queryClient.invalidateQueries({ queryKey: ["activeSession"] });

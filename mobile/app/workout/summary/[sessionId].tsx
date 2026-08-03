@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, ActivityIndicator, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useQuery } from "@tanstack/react-query";
-import { getSession } from "../../../src/api/sessions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { CompleteSessionResponse, getSession } from "../../../src/api/sessions";
 import { getSessionProgressions } from "../../../src/api/progressions";
 import { ProgressionRecommendation, RecommendationType } from "../../../src/types/progression";
 import { getMyCompletedSessions } from "../../../src/api/sessions";
@@ -62,8 +62,11 @@ function buildInsight(recommendations: ProgressionRecommendation[]): string {
 export default function WorkoutSummaryScreen() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const numericSessionId = Number(sessionId);
   const user = useAuthStore((s) => s.user);
+  const freshCompletionResult =
+    queryClient.getQueryData<CompleteSessionResponse>(["freshCompletionResult", numericSessionId]) ?? null;
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["sessionSummary", numericSessionId],
@@ -88,6 +91,7 @@ export default function WorkoutSummaryScreen() {
   });
 
   const previousSession = findPreviousSession(completedSessions, numericSessionId);
+  const displayedProgressions = freshCompletionResult?.progressionRecommendations ?? progressions ?? [];
 
   if (isLoading) {
     return (
@@ -119,6 +123,21 @@ export default function WorkoutSummaryScreen() {
 
   const totalExercisesLogged = Object.keys(byExercise).length;
   const totalSets = setLogs.length;
+  const workoutNameExercises: Parameters<typeof buildWorkoutName>[0] =
+    Object.values(byExercise).length > 0
+      ? setLogs.reduce<Parameters<typeof buildWorkoutName>[0]>((accumulator, log, index, array) => {
+          if (array.findIndex((entry) => entry.exerciseId === log.exerciseId) !== index) {
+            return accumulator;
+          }
+
+          if (!log.exercise) {
+            return accumulator;
+          }
+
+          accumulator.push({ exercise: log.exercise });
+          return accumulator;
+        }, [])
+      : [];
 
   return (
     <ScrollView style={{ flex: 1, padding: 20, paddingTop: 60 }}>
@@ -128,13 +147,7 @@ export default function WorkoutSummaryScreen() {
 
       <Text style={{ fontSize: 22, fontWeight: "bold" }}>Workout Summary</Text>
       <Text style={{ fontSize: 15, color: "#555" }}>
-        {programDay?.name || ""} {programDay ? `\u2014` : ""} {buildWorkoutName(
-          Object.values(byExercise).length > 0
-            ? setLogs
-                .filter((log, idx, arr) => arr.findIndex((l) => l.exerciseId === log.exerciseId) === idx)
-                .map((log) => ({ exercise: log.exercise }))
-            : []
-        )}
+        {programDay?.name || ""} {programDay ? `\u2014` : ""} {buildWorkoutName(workoutNameExercises)}
       </Text>
       <Text style={{ fontSize: 12, color: "#999" }}>Session #{session.id}</Text>
       <Text>Status: {session.status}</Text>
@@ -143,9 +156,9 @@ export default function WorkoutSummaryScreen() {
       {programDay && <Text>Day: {programDay.name}</Text>}
 
       {/* Progress insight — deterministic one-liner */}
-      {!isProgressionsLoading && !isProgressionsError && progressions && (
+      {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length > 0 && (
         <View style={{ backgroundColor: "#eef6ff", borderRadius: 8, padding: 12, marginTop: 14 }}>
-          <Text style={{ fontSize: 13, color: "#1565c0" }}>{buildInsight(progressions)}</Text>
+          <Text style={{ fontSize: 13, color: "#1565c0" }}>{buildInsight(displayedProgressions)}</Text>
         </View>
       )}
 
@@ -181,13 +194,17 @@ export default function WorkoutSummaryScreen() {
         {isProgressionsError && (
           <Text style={{ fontSize: 13, color: "#c62828" }}>Could not load recommendations.</Text>
         )}
-        {!isProgressionsLoading && !isProgressionsError && (!progressions || progressions.length === 0) && (
+        {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length === 0 && (
           <Text style={{ fontSize: 13, color: "#999" }}>No recommendations yet</Text>
         )}
 
-        {progressions && progressions.length > 0 && progressions.map((rec) => {
+        {displayedProgressions.map((rec) => {
           const colors = recommendationColor(rec.recommendationType);
           const context = contextLine(rec);
+          const explanationText =
+            rec.explanation && typeof rec.explanation.userSummary === "string" && rec.explanation.userSummary.length > 0
+              ? rec.explanation.userSummary
+              : null;
           return (
             <View
               key={rec.id}
@@ -224,7 +241,11 @@ export default function WorkoutSummaryScreen() {
                   </Text>
                 );
               })()}
-              <Text style={{ fontSize: 12, color: "#777", marginTop: 4 }}>{rec.reason}</Text>
+              {explanationText ? (
+                <Text style={{ fontSize: 12, color: "#444", marginTop: 6 }}>{explanationText}</Text>
+              ) : (
+                <Text style={{ fontSize: 12, color: "#777", marginTop: 4 }}>{rec.reason}</Text>
+              )}
             </View>
           );
         })}

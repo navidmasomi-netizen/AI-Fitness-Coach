@@ -1,6 +1,8 @@
 import { apiRequest } from "./client";
 import { WorkoutSession, SetLog } from "../types/session";
 import { Program, ProgramDay } from "../types/program";
+import { UserProgram } from "./userPrograms";
+import { ProgressionRecommendation } from "../types/progression";
 
 export function createSession(params: {
   userId: number;
@@ -18,8 +20,17 @@ export function addSetLog(
   return apiRequest<SetLog>(`/sessions/${sessionId}/set-logs`, { method: "POST", body: params });
 }
 
-export function completeSession(sessionId: number): Promise<WorkoutSession> {
-  return apiRequest<WorkoutSession>(`/sessions/${sessionId}/complete`, { method: "PATCH" });
+export interface CompleteSessionResponse {
+  session: WorkoutSession;
+  updatedUserProgram: UserProgram | null;
+  nextProgramDay: ProgramDay | null;
+  warning: string | null;
+  progressionRecommendations: ProgressionRecommendation[];
+  progressionWarning: null;
+}
+
+export function completeSession(sessionId: number): Promise<CompleteSessionResponse> {
+  return apiRequest<CompleteSessionResponse>(`/sessions/${sessionId}/complete`, { method: "PATCH" });
 }
 
 export function getUserSessions(userId: number): Promise<WorkoutSession[]> {

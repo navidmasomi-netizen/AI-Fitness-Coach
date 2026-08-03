@@ -2,6 +2,11 @@ import { Exercise } from "./exercise";
 
 export type RecommendationType = "increase" | "maintain" | "deload";
 
+export interface PublicProgressionExplanation {
+  messageKey: string;
+  userSummary: string;
+}
+
 export interface ProgressionRecommendation {
   id: number;
   userId: number;
@@ -20,4 +25,5 @@ export interface ProgressionRecommendation {
   status: string;
   createdAt: string;
   exercise: Exercise;
+  explanation?: PublicProgressionExplanation;
 }
