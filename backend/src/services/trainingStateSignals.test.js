@@ -59,6 +59,43 @@ function buildTrainingStateInput(overrides = {}) {
   };
 }
 
+function buildConsistency(overrides = {}) {
+  return {
+    exerciseAdherence: {
+      timesPrescribed: 4,
+      timesLogged: 3,
+      adherenceRate: 0.75,
+    },
+    missedSessions: {
+      completionRate: 0.75,
+      missedSessionGapCount: 1,
+      largestMissedSessionGapDays: 3.5,
+    },
+    sessionDensity: {
+      sessionsPerWeek: 2.5,
+      averageGapDays: 2.8,
+      recentGapDays: 3,
+    },
+    ...overrides,
+  };
+}
+
+function buildAdaptation(overrides = {}) {
+  return {
+    plateauDetection: {
+      status: "POSSIBLE",
+      basedOnStableTrend: true,
+      basedOnRepeatedMaintains: false,
+    },
+    deloadHistory: {
+      recentDeloadCount: 1,
+      mostRecentDeloadAt: "2026-07-20T10:00:00.000Z",
+      hasRecentDeload: true,
+    },
+    ...overrides,
+  };
+}
+
 async function main() {
   let passed = 0;
   let failed = 0;
@@ -88,8 +125,96 @@ async function main() {
       },
     },
     {
-      name: "rejects missing or unknown domains",
-      input: "only the fatigue domain is currently supported",
+      name: "backward compatible fatigue-only input remains valid",
+      input: "existing fatigue-only callers construct the same immutable contract",
+      fn: () => {
+        const actual = createTrainingStateSignals(buildTrainingStateInput());
+
+        assert.deepEqual(Object.keys(actual), ["fatigue"]);
+        assert.equal(Object.hasOwn(actual, "consistency"), false);
+        assert.equal(Object.hasOwn(actual, "adaptation"), false);
+
+        return actual;
+      },
+    },
+    {
+      name: "constructs immutable optional consistency and adaptation domains",
+      input: "approved optional domains are copied and deeply frozen",
+      fn: () => {
+        const input = buildTrainingStateInput({
+          consistency: buildConsistency(),
+          adaptation: buildAdaptation(),
+        });
+        const snapshot = structuredClone(input);
+        const actual = createTrainingStateSignals(input);
+
+        assert.deepEqual(actual, snapshot);
+        assert.notEqual(actual.consistency, input.consistency);
+        assert.notEqual(actual.adaptation, input.adaptation);
+        assert.equal(Object.isFrozen(actual.consistency), true);
+        assert.equal(Object.isFrozen(actual.adaptation), true);
+        assert.equal(Object.isFrozen(actual.consistency.exerciseAdherence), true);
+        assert.equal(Object.isFrozen(actual.adaptation.plateauDetection), true);
+
+        assert.throws(() => {
+          actual.consistency.exerciseAdherence.timesLogged = 99;
+        }, TypeError);
+        assert.throws(() => {
+          actual.adaptation.deloadHistory.hasRecentDeload = false;
+        }, TypeError);
+
+        return actual;
+      },
+    },
+    {
+      name: "deterministic repeated input yields equivalent output",
+      input: "same signal facts produce deep-equal immutable contracts",
+      fn: () => {
+        const input = buildTrainingStateInput({
+          fatigue: {
+            historicalTrainingSignals: buildHistoricalTrainingSignals({
+              loadTrend: "DECREASING",
+            }),
+          },
+          consistency: buildConsistency(),
+          adaptation: buildAdaptation(),
+        });
+        const first = createTrainingStateSignals(input);
+        const second = createTrainingStateSignals(input);
+
+        assert.deepEqual(first, second);
+        assert.notEqual(first, second);
+
+        return { first, second };
+      },
+    },
+    {
+      name: "serializes deterministically with optional domains",
+      input: "all approved fields survive JSON serialization without shape changes",
+      fn: () => {
+        const actual = createTrainingStateSignals(
+          buildTrainingStateInput({
+            consistency: buildConsistency(),
+            adaptation: buildAdaptation(),
+          })
+        );
+        const serialized = JSON.stringify(actual);
+        const reparsed = JSON.parse(serialized);
+
+        assert.deepEqual(reparsed, {
+          fatigue: {
+            historicalTrainingSignals: buildHistoricalTrainingSignals(),
+          },
+          consistency: buildConsistency(),
+          adaptation: buildAdaptation(),
+        });
+
+        return reparsed;
+      },
+    },
+    {
+      name: "rejects unknown domains",
+      input: "only fatigue consistency and adaptation are supported",
       fn: () => {
         assert.throws(
           () => createTrainingStateSignals({}),
@@ -152,23 +277,92 @@ async function main() {
       },
     },
     {
-      name: "deterministic repeated input yields equivalent output",
-      input: "same fatigue facts produce deep-equal immutable contracts",
+      name: "rejects malformed consistency domain",
+      input: "consistency must provide all approved signal objects with valid shapes",
       fn: () => {
-        const input = buildTrainingStateInput({
-          fatigue: {
-            historicalTrainingSignals: buildHistoricalTrainingSignals({
-              loadTrend: "DECREASING",
-            }),
-          },
-        });
-        const first = createTrainingStateSignals(input);
-        const second = createTrainingStateSignals(input);
+        assert.throws(
+          () =>
+            createTrainingStateSignals(
+              buildTrainingStateInput({
+                consistency: {
+                  exerciseAdherence: {
+                    timesPrescribed: 4,
+                    timesLogged: 3,
+                    adherenceRate: 0.75,
+                  },
+                  missedSessions: {
+                    completionRate: 0.75,
+                    missedSessionGapCount: -1,
+                    largestMissedSessionGapDays: 3.5,
+                  },
+                  sessionDensity: {
+                    sessionsPerWeek: 2.5,
+                    averageGapDays: 2.8,
+                    recentGapDays: 3,
+                  },
+                },
+              })
+            ),
+          TrainingStateSignalsValidationError
+        );
+        assert.throws(
+          () =>
+            createTrainingStateSignals(
+              buildTrainingStateInput({
+                consistency: {
+                  ...buildConsistency(),
+                  unexpected: {},
+                },
+              })
+            ),
+          TrainingStateSignalsValidationError
+        );
 
-        assert.deepEqual(first, second);
-        assert.notEqual(first, second);
+        return {
+          errorClass: "TrainingStateSignalsValidationError",
+        };
+      },
+    },
+    {
+      name: "rejects malformed adaptation domain",
+      input: "adaptation must provide all approved signal objects with valid shapes",
+      fn: () => {
+        assert.throws(
+          () =>
+            createTrainingStateSignals(
+              buildTrainingStateInput({
+                adaptation: {
+                  plateauDetection: {
+                    status: "MAYBE",
+                    basedOnStableTrend: true,
+                    basedOnRepeatedMaintains: false,
+                  },
+                  deloadHistory: buildAdaptation().deloadHistory,
+                },
+              })
+            ),
+          TrainingStateSignalsValidationError
+        );
+        assert.throws(
+          () =>
+            createTrainingStateSignals(
+              buildTrainingStateInput({
+                adaptation: {
+                  plateauDetection: buildAdaptation().plateauDetection,
+                  deloadHistory: {
+                    recentDeloadCount: 1,
+                    mostRecentDeloadAt: null,
+                    hasRecentDeload: "yes",
+                  },
+                },
+              })
+            ),
+          TrainingStateSignalsValidationError
+        );
 
-        return { first, second };
+        return {
+          errorClass: "TrainingStateSignalsValidationError",
+        };
       },
     },
   ];
