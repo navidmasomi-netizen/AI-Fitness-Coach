@@ -14,6 +14,7 @@ const ALLOWED_CONSISTENCY_KEYS = Object.freeze([
 const ALLOWED_ADAPTATION_KEYS = Object.freeze([
   "plateauDetection",
   "deloadHistory",
+  "sessionDensity",
 ]);
 const PLATEAU_STATUSES = new Set(["NONE", "POSSIBLE", "CONFIRMED"]);
 
@@ -197,7 +198,7 @@ function validateConsistencyDomain(consistency) {
 function validatePlateauDetection(value) {
   if (!isPlainObject(value)) {
     throw new TrainingStateSignalsValidationError(
-      "adaptation.plateauDetection is required when adaptation is provided"
+      "adaptation.plateauDetection must be an object when provided"
     );
   }
 
@@ -225,7 +226,7 @@ function validatePlateauDetection(value) {
 function validateDeloadHistory(value) {
   if (!isPlainObject(value)) {
     throw new TrainingStateSignalsValidationError(
-      "adaptation.deloadHistory is required when adaptation is provided"
+      "adaptation.deloadHistory must be an object when provided"
     );
   }
 
@@ -262,8 +263,27 @@ function validateAdaptationDomain(adaptation) {
   }
 
   validateAllowedKeys(adaptation, "adaptation", ALLOWED_ADAPTATION_KEYS);
-  validatePlateauDetection(adaptation.plateauDetection);
-  validateDeloadHistory(adaptation.deloadHistory);
+
+  const presentSignalKeys = ALLOWED_ADAPTATION_KEYS.filter(
+    (key) => adaptation[key] !== undefined
+  );
+  if (presentSignalKeys.length === 0) {
+    throw new TrainingStateSignalsValidationError(
+      "adaptation must include at least one supported signal when provided"
+    );
+  }
+
+  if (adaptation.plateauDetection !== undefined) {
+    validatePlateauDetection(adaptation.plateauDetection);
+  }
+
+  if (adaptation.deloadHistory !== undefined) {
+    validateDeloadHistory(adaptation.deloadHistory);
+  }
+
+  if (adaptation.sessionDensity !== undefined) {
+    validateSessionDensity(adaptation.sessionDensity);
+  }
 }
 
 export function createTrainingStateSignals(input) {

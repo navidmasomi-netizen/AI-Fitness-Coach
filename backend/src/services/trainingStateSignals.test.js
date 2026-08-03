@@ -92,6 +92,11 @@ function buildAdaptation(overrides = {}) {
       mostRecentDeloadAt: "2026-07-20T10:00:00.000Z",
       hasRecentDeload: true,
     },
+    sessionDensity: {
+      sessionsPerWeek: 2.5,
+      averageGapDays: 2.8,
+      recentGapDays: 3,
+    },
     ...overrides,
   };
 }
@@ -155,6 +160,7 @@ async function main() {
         assert.equal(Object.isFrozen(actual.adaptation), true);
         assert.equal(Object.isFrozen(actual.consistency.exerciseAdherence), true);
         assert.equal(Object.isFrozen(actual.adaptation.plateauDetection), true);
+        assert.equal(Object.isFrozen(actual.adaptation.sessionDensity), true);
 
         assert.throws(() => {
           actual.consistency.exerciseAdherence.timesLogged = 99;
@@ -210,6 +216,98 @@ async function main() {
         });
 
         return reparsed;
+      },
+    },
+    {
+      name: "accepts adaptation with deloadHistory only",
+      input: "deloadHistory may exist independently without plateauDetection or sessionDensity",
+      fn: () => {
+        const input = buildTrainingStateInput({
+          adaptation: {
+            deloadHistory: buildAdaptation().deloadHistory,
+          },
+        });
+        const snapshot = structuredClone(input);
+        const actual = createTrainingStateSignals(input);
+
+        assert.deepEqual(actual, snapshot);
+        assert.deepEqual(actual.adaptation, {
+          deloadHistory: buildAdaptation().deloadHistory,
+        });
+        assert.equal(Object.hasOwn(actual.adaptation, "plateauDetection"), false);
+        assert.equal(Object.hasOwn(actual.adaptation, "sessionDensity"), false);
+        assert.equal(Object.isFrozen(actual.adaptation.deloadHistory), true);
+        assert.deepEqual(input, snapshot);
+
+        return actual;
+      },
+    },
+    {
+      name: "accepts adaptation with plateauDetection only",
+      input: "plateauDetection may exist independently without deloadHistory or sessionDensity",
+      fn: () => {
+        const input = buildTrainingStateInput({
+          adaptation: {
+            plateauDetection: buildAdaptation().plateauDetection,
+          },
+        });
+        const snapshot = structuredClone(input);
+        const actual = createTrainingStateSignals(input);
+
+        assert.deepEqual(actual, snapshot);
+        assert.deepEqual(actual.adaptation, {
+          plateauDetection: buildAdaptation().plateauDetection,
+        });
+        assert.equal(Object.hasOwn(actual.adaptation, "deloadHistory"), false);
+        assert.equal(Object.hasOwn(actual.adaptation, "sessionDensity"), false);
+        assert.equal(Object.isFrozen(actual.adaptation.plateauDetection), true);
+        assert.deepEqual(input, snapshot);
+
+        return actual;
+      },
+    },
+    {
+      name: "accepts adaptation with sessionDensity only",
+      input: "sessionDensity may exist independently without plateauDetection or deloadHistory",
+      fn: () => {
+        const input = buildTrainingStateInput({
+          adaptation: {
+            sessionDensity: buildAdaptation().sessionDensity,
+          },
+        });
+        const snapshot = structuredClone(input);
+        const actual = createTrainingStateSignals(input);
+
+        assert.deepEqual(actual, snapshot);
+        assert.deepEqual(actual.adaptation, {
+          sessionDensity: buildAdaptation().sessionDensity,
+        });
+        assert.equal(Object.hasOwn(actual.adaptation, "plateauDetection"), false);
+        assert.equal(Object.hasOwn(actual.adaptation, "deloadHistory"), false);
+        assert.equal(Object.isFrozen(actual.adaptation.sessionDensity), true);
+        assert.deepEqual(input, snapshot);
+
+        return actual;
+      },
+    },
+    {
+      name: "accepts adaptation with multiple independently supplied signals",
+      input: "adaptation may include any non-empty subset of approved signals",
+      fn: () => {
+        const input = buildTrainingStateInput({
+          adaptation: {
+            deloadHistory: buildAdaptation().deloadHistory,
+            plateauDetection: buildAdaptation().plateauDetection,
+          },
+        });
+        const snapshot = structuredClone(input);
+        const actual = createTrainingStateSignals(input);
+
+        assert.deepEqual(actual, snapshot);
+        assert.equal(Object.hasOwn(actual.adaptation, "sessionDensity"), false);
+        assert.deepEqual(input, snapshot);
+
+        return actual;
       },
     },
     {
@@ -325,8 +423,17 @@ async function main() {
     },
     {
       name: "rejects malformed adaptation domain",
-      input: "adaptation must provide all approved signal objects with valid shapes",
+      input: "adaptation must be non-empty and every supplied signal must keep its exact contract",
       fn: () => {
+        assert.throws(
+          () =>
+            createTrainingStateSignals(
+              buildTrainingStateInput({
+                adaptation: {},
+              })
+            ),
+          TrainingStateSignalsValidationError
+        );
         assert.throws(
           () =>
             createTrainingStateSignals(
@@ -337,7 +444,6 @@ async function main() {
                     basedOnStableTrend: true,
                     basedOnRepeatedMaintains: false,
                   },
-                  deloadHistory: buildAdaptation().deloadHistory,
                 },
               })
             ),
@@ -348,11 +454,25 @@ async function main() {
             createTrainingStateSignals(
               buildTrainingStateInput({
                 adaptation: {
-                  plateauDetection: buildAdaptation().plateauDetection,
                   deloadHistory: {
                     recentDeloadCount: 1,
                     mostRecentDeloadAt: null,
                     hasRecentDeload: "yes",
+                  },
+                },
+              })
+            ),
+          TrainingStateSignalsValidationError
+        );
+        assert.throws(
+          () =>
+            createTrainingStateSignals(
+              buildTrainingStateInput({
+                adaptation: {
+                  sessionDensity: {
+                    sessionsPerWeek: 2.5,
+                    averageGapDays: "slow",
+                    recentGapDays: 3,
                   },
                 },
               })
