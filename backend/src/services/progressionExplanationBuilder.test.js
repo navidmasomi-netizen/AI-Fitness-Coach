@@ -117,56 +117,52 @@ const REASON_EXPECTATIONS = [
   {
     reasonCode: REASON_CODES.PERFORMANCE_IMPROVED,
     decisionType: DECISION_TYPES.INCREASE_LOAD,
-    userSummary:
-      "Performance improved, so the next session increases the challenge.",
+    userSummary: "Performance improved, so the next session increases.",
     classification: "precise",
   },
   {
     reasonCode: REASON_CODES.REP_PERFORMANCE_IMPROVED,
     decisionType: DECISION_TYPES.INCREASE_REPS,
-    userSummary:
-      "Repetition performance improved, so the next session increases the challenge.",
+    userSummary: "Performance improved, so the next session increases repetitions.",
     classification: "precise",
   },
   {
     reasonCode: REASON_CODES.TIME_PERFORMANCE_IMPROVED,
     decisionType: DECISION_TYPES.INCREASE_DURATION,
-    userSummary:
-      "Duration performance improved, so the next session increases the challenge.",
+    userSummary: "Performance improved, so the next session increases duration.",
     classification: "precise",
   },
   {
     reasonCode: REASON_CODES.PERFORMANCE_REGRESSED,
     decisionType: DECISION_TYPES.MAINTAIN,
-    userSummary: "Performance regressed, so the next session stays the same.",
+    userSummary: "Performance dropped, so the next session stays the same.",
     classification: "precise",
   },
   {
     reasonCode: REASON_CODES.REPEATED_SUCCESS,
     decisionType: DECISION_TYPES.INCREASE_LOAD,
-    userSummary:
-      "Repeated success supported a progression for the next session.",
+    userSummary: "Repeated success supported an increase for the next session.",
     classification: "precise",
   },
   {
     reasonCode: REASON_CODES.REPEATED_REP_SUCCESS,
     decisionType: DECISION_TYPES.INCREASE_REPS,
     userSummary:
-      "Repeated success supported a repetition increase for the next session.",
+      "Repeated success supported an increase in repetitions for the next session.",
     classification: "precise",
   },
   {
     reasonCode: REASON_CODES.REPEATED_TIME_SUCCESS,
     decisionType: DECISION_TYPES.INCREASE_DURATION,
     userSummary:
-      "Repeated success supported a duration increase for the next session.",
+      "Repeated success supported an increase in duration for the next session.",
     classification: "precise",
   },
   {
     reasonCode: REASON_CODES.REPEATED_FAILURE,
     decisionType: DECISION_TYPES.DELOAD,
     userSummary:
-      "Repeated failed attempts led to a deload for the next session.",
+      "Repeated missed targets led to a deload for the next session.",
     classification: "precise",
   },
   {

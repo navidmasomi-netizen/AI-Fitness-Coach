@@ -40,35 +40,35 @@ const EXPLANATION_TEMPLATES = Object.freeze({
     classification: "precise",
   }),
   RULE_V1_PERFORMANCE_IMPROVED: Object.freeze({
-    userSummary: "Performance improved, so the next session increases the challenge.",
+    userSummary: "Performance improved, so the next session increases.",
     classification: "precise",
   }),
   RULE_V1_REP_PERFORMANCE_IMPROVED: Object.freeze({
-    userSummary: "Repetition performance improved, so the next session increases the challenge.",
+    userSummary: "Performance improved, so the next session increases repetitions.",
     classification: "precise",
   }),
   RULE_V1_TIME_PERFORMANCE_IMPROVED: Object.freeze({
-    userSummary: "Duration performance improved, so the next session increases the challenge.",
+    userSummary: "Performance improved, so the next session increases duration.",
     classification: "precise",
   }),
   RULE_V1_PERFORMANCE_REGRESSED: Object.freeze({
-    userSummary: "Performance regressed, so the next session stays the same.",
+    userSummary: "Performance dropped, so the next session stays the same.",
     classification: "precise",
   }),
   RULE_V1_REPEATED_SUCCESS: Object.freeze({
-    userSummary: "Repeated success supported a progression for the next session.",
+    userSummary: "Repeated success supported an increase for the next session.",
     classification: "precise",
   }),
   RULE_V1_REPEATED_REP_SUCCESS: Object.freeze({
-    userSummary: "Repeated success supported a repetition increase for the next session.",
+    userSummary: "Repeated success supported an increase in repetitions for the next session.",
     classification: "precise",
   }),
   RULE_V1_REPEATED_TIME_SUCCESS: Object.freeze({
-    userSummary: "Repeated success supported a duration increase for the next session.",
+    userSummary: "Repeated success supported an increase in duration for the next session.",
     classification: "precise",
   }),
   RULE_V1_REPEATED_FAILURE: Object.freeze({
-    userSummary: "Repeated failed attempts led to a deload for the next session.",
+    userSummary: "Repeated missed targets led to a deload for the next session.",
     classification: "precise",
   }),
   RULE_V1_RECOVERY_OVERRIDE: Object.freeze({

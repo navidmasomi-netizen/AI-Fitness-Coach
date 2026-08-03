@@ -655,6 +655,9 @@ export function createWorkoutSessionService({
         updatedUserProgram: transactionResult.updatedUserProgram,
         nextProgramDay: transactionResult.nextProgramDay,
         warning: transactionResult.warning,
+        // Explanations are attached only on fresh completion results. Persisted
+        // historical recommendations may not retain complete secondaryReasonCodes,
+        // so historical explanations must not be reconstructed by inventing facts.
         progressionRecommendations: transactionResult.progressionRecommendations.map((entry) =>
           attachFreshExplanationToRecommendation({
             recommendation: entry.recommendation,

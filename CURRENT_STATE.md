@@ -37,6 +37,29 @@ Completed core areas:
 - guided workout start UX
 - first-time clarity intro screen
 
+## Explainable Progression — Current State
+
+Explainable Progression is now available end to end for fresh workout completion. When a workout is completed, each fresh persisted progression recommendation may include a public explanation DTO with:
+
+- `messageKey`
+- `userSummary`
+
+Explanation text is derived on demand from the authoritative normalized progression decision and is not persisted. The public API excludes developer-only fields such as `developerSummary`, `primaryReason`, and `secondaryReasons`.
+
+Current scope and limitations:
+
+- Explanations are available on fresh workout completion responses.
+- History and session-detail endpoints do not currently reconstruct explanations.
+- Persisted historical recommendation records do not retain enough data to faithfully rebuild every explanation, because complete `secondaryReasonCodes` are not stored.
+- Mobile displays fresh explanations on the workout summary screen after completion.
+- The mobile explanation is transient client state and may be unavailable after app restart.
+- No mobile screen-level test framework is currently configured in the repository.
+- Current mobile validation is TypeScript type-checking plus backend and route coverage.
+
+Release note:
+
+Explainable Progression now surfaces `messageKey` and `userSummary` on fresh progression recommendations after workout completion, and the mobile workout summary screen displays `userSummary` without moving any decision logic to the client. Explanation wording is not persisted, historical explanations are not yet reconstructed, and developer-only diagnostic fields do not cross the public API boundary.
+
 ---
 
 ## Current Repository Structure
