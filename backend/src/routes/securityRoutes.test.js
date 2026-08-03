@@ -196,6 +196,20 @@ async function cleanupUserArtifacts(userId) {
   await prisma.user.deleteMany({ where: { id: userId } });
 }
 
+async function addSetLogsForSession({ sessionId, exerciseId, sets }) {
+  for (const [index, set] of sets.entries()) {
+    await prisma.setLog.create({
+      data: {
+        sessionId,
+        exerciseId,
+        setNumber: index + 1,
+        reps: set.reps,
+        weightKg: set.weightKg,
+      },
+    });
+  }
+}
+
 function buildBaseUrl(server) {
   const address = server.address();
 
@@ -404,6 +418,74 @@ async function main() {
       return {
         first: first.body.data.id,
         second: second.body.data.id,
+      };
+    });
+
+    await test("PATCH /api/sessions/:sessionId/complete exposes additive public explanations only on fresh completion", {}, async () => {
+      const user = await createTestUser({
+        suffix: `complete-${Date.now()}`,
+        profileData: buildCompleteProfileData(),
+      });
+      createdUserIds.add(user.id);
+      await generateProgramForUser(user.id);
+
+      const startResponse = await requestJson(baseUrl, "/api/sessions", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${createToken(user)}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+
+      assert.equal(startResponse.status, 200);
+
+      const [firstTarget, secondTarget] = startResponse.body.data.exerciseTargets.slice(0, 2);
+      await addSetLogsForSession({
+        sessionId: startResponse.body.data.id,
+        exerciseId: firstTarget.exerciseId,
+        sets: [{ reps: 10, weightKg: 40 }],
+      });
+      await addSetLogsForSession({
+        sessionId: startResponse.body.data.id,
+        exerciseId: secondTarget.exerciseId,
+        sets: [{ reps: 12, weightKg: 0 }],
+      });
+
+      const completeResponse = await requestJson(
+        baseUrl,
+        `/api/sessions/${startResponse.body.data.id}/complete`,
+        {
+          method: "PATCH",
+          headers: {
+            authorization: `Bearer ${createToken(user)}`,
+          },
+        }
+      );
+
+      assert.equal(completeResponse.status, 200);
+      assert.equal(completeResponse.body.success, true);
+      assert.equal(Array.isArray(completeResponse.body.data.progressionRecommendations), true);
+      assert.equal(Object.hasOwn(completeResponse.body.data, "progressionWarning"), true);
+
+      for (const recommendation of completeResponse.body.data.progressionRecommendations) {
+        assert.equal(typeof recommendation.explanation?.messageKey, "string");
+        assert.equal(typeof recommendation.explanation?.userSummary, "string");
+        assert.equal(Object.hasOwn(recommendation.explanation, "developerSummary"), false);
+        assert.equal(Object.hasOwn(recommendation.explanation, "primaryReason"), false);
+        assert.equal(Object.hasOwn(recommendation.explanation, "secondaryReasons"), false);
+        assert.equal(Object.hasOwn(recommendation, "programDayExerciseId"), false);
+      }
+
+      return {
+        responseKeys: Object.keys(completeResponse.body.data),
+        recommendationSummaries: completeResponse.body.data.progressionRecommendations.map(
+          (recommendation) => ({
+            exerciseId: recommendation.exerciseId,
+            reasonCode: recommendation.reasonCode,
+            explanation: recommendation.explanation,
+          })
+        ),
       };
     });
 

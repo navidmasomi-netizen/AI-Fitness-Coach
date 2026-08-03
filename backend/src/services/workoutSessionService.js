@@ -313,6 +313,36 @@ async function hydrateCompletionResponse({
   };
 }
 
+function toPublicProgressionExplanationDTO(explanation) {
+  if (!explanation || typeof explanation !== "object") {
+    throw new Error("explanation must be an object");
+  }
+
+  if (typeof explanation.messageKey !== "string" || explanation.messageKey.length === 0) {
+    throw new Error("explanation.messageKey must be a non-empty string");
+  }
+
+  if (typeof explanation.userSummary !== "string" || explanation.userSummary.length === 0) {
+    throw new Error("explanation.userSummary must be a non-empty string");
+  }
+
+  return Object.freeze({
+    messageKey: explanation.messageKey,
+    userSummary: explanation.userSummary,
+  });
+}
+
+function attachFreshExplanationToRecommendation({ recommendation, explanation }) {
+  try {
+    return {
+      ...recommendation,
+      explanation: toPublicProgressionExplanationDTO(explanation),
+    };
+  } catch {
+    return recommendation;
+  }
+}
+
 export function createWorkoutSessionService({
   prismaClient = prisma,
   createWorkoutSessionRepositoryImpl = createWorkoutSessionRepository,
@@ -466,8 +496,7 @@ export function createWorkoutSessionService({
           });
           const recoveryResult = computeRecoveryModifierImpl({ workoutAnalysis });
 
-          const progressionCreateData = [];
-          const progressionExplanationArtifacts = [];
+          const progressionUnits = [];
           for (const targetSnapshot of completionContext.exerciseTargets) {
             const performedSetLogs = completionContext.setLogs.filter(
               (setLog) => setLog.exerciseId === targetSnapshot.exerciseId
@@ -522,32 +551,38 @@ export function createWorkoutSessionService({
             }
 
             const explanation = buildProgressionExplanationImpl({ decision });
-            progressionExplanationArtifacts.push(
+            progressionUnits.push(
               Object.freeze({
-                exerciseId: targetSnapshot.exerciseId,
+                programDayExerciseId: targetSnapshot.programDayExerciseId,
+                recommendationData: mapDecisionToProgressionDataEntry({
+                  userId,
+                  sessionId,
+                  targetSnapshot,
+                  analysis,
+                  decision,
+                  previousRecommendation,
+                  mapDecisionToProgressionRecommendationDataImpl,
+                }),
                 explanation,
-              })
-            );
-
-            progressionCreateData.push(
-              mapDecisionToProgressionDataEntry({
-                userId,
-                sessionId,
-                targetSnapshot,
-                analysis,
-                decision,
-                previousRecommendation,
-                mapDecisionToProgressionRecommendationDataImpl,
               })
             );
           }
 
-          const progressionRecommendations =
-            progressionCreateData.length > 0
-              ? await repositories.recommendations.createNormalizedRecommendations({
-                  data: progressionCreateData,
-                })
-              : [];
+          const progressionRecommendations = [];
+          for (const unit of progressionUnits) {
+            const [createdRecommendation] =
+              await repositories.recommendations.createNormalizedRecommendations({
+                data: [unit.recommendationData],
+              });
+
+            progressionRecommendations.push(
+              Object.freeze({
+                programDayExerciseId: unit.programDayExerciseId,
+                recommendation: createdRecommendation,
+                explanation: unit.explanation,
+              })
+            );
+          }
 
           let updatedUserProgram = null;
           let nextProgramDay = null;
@@ -598,7 +633,6 @@ export function createWorkoutSessionService({
             updatedUserProgram,
             nextProgramDay,
             warning,
-            progressionExplanationArtifacts,
             progressionRecommendations,
           };
         });
@@ -621,7 +655,12 @@ export function createWorkoutSessionService({
         updatedUserProgram: transactionResult.updatedUserProgram,
         nextProgramDay: transactionResult.nextProgramDay,
         warning: transactionResult.warning,
-        progressionRecommendations: transactionResult.progressionRecommendations,
+        progressionRecommendations: transactionResult.progressionRecommendations.map((entry) =>
+          attachFreshExplanationToRecommendation({
+            recommendation: entry.recommendation,
+            explanation: entry.explanation,
+          })
+        ),
         repositories,
       });
     },

@@ -300,6 +300,17 @@ function projectComparableRecommendation(recommendation) {
   };
 }
 
+function projectPublicExplanation(explanation) {
+  if (!explanation) {
+    return null;
+  }
+
+  return {
+    messageKey: explanation.messageKey,
+    userSummary: explanation.userSummary,
+  };
+}
+
 function buildHistoricalExposureRecord({
   sessionId,
   userProgramId,
@@ -1529,8 +1540,18 @@ async function main() {
             Object.hasOwn(result.progressionRecommendations[0], "historicalTrainingSignals"),
             false
           );
-          assert.equal(Object.hasOwn(result.progressionRecommendations[0], "explanation"), false);
-          assert.equal(Object.hasOwn(result.progressionRecommendations[0], "messageKey"), false);
+          assert.deepEqual(
+            result.progressionRecommendations[0].explanation,
+            projectPublicExplanation(generatedExplanation)
+          );
+          assert.equal(
+            Object.hasOwn(result.progressionRecommendations[0].explanation, "developerSummary"),
+            false
+          );
+          assert.equal(
+            Object.hasOwn(result.progressionRecommendations[0], "programDayExerciseId"),
+            false
+          );
 
           return {
             analyzerCalls,
@@ -1538,7 +1559,7 @@ async function main() {
             explanationCalls,
             decisionInput,
             explainedDecision,
-            generatedExplanation,
+            generatedExplanation: projectPublicExplanation(generatedExplanation),
             mappedRecommendationInput,
             responseRecommendation: result.progressionRecommendations[0],
           };
@@ -2067,12 +2088,194 @@ async function main() {
             "Progression decision recorded for the next session."
           );
           assert.equal(Object.hasOwn(createdRecommendation, "explanation"), false);
-          assert.equal(Object.hasOwn(result.progressionRecommendations[0], "explanation"), false);
+          assert.deepEqual(
+            result.progressionRecommendations[0].explanation,
+            projectPublicExplanation(generatedExplanation)
+          );
+          assert.equal(
+            Object.hasOwn(result.progressionRecommendations[0].explanation, "developerSummary"),
+            false
+          );
 
           return {
             explanationCalls,
-            explanation: generatedExplanation,
+            explanation: projectPublicExplanation(generatedExplanation),
             recommendation: projectComparableRecommendation(createdRecommendation),
+            responseRecommendation: projectComparableRecommendation(
+              result.progressionRecommendations[0]
+            ),
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "multiple fresh recommendations keep explanations aligned by internal programDayExerciseId",
+      input: "two persisted recommendations expose the correct public explanation DTO without leaking the internal key",
+      fn: async () => {
+        const suffix = `complete-multi-explanation-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const [firstTarget, secondTarget] = started.session.exerciseTargets.slice(0, 2);
+
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: firstTarget.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: secondTarget.exerciseId,
+            sets: [{ reps: 12, weightKg: 0 }],
+          });
+
+          const decisionsByProgramDayExerciseId = new Map([
+            [
+              firstTarget.programDayExerciseId,
+              buildPersistableDecision({
+                decisionType: "MAINTAIN",
+                reasonCode: "RULE_V1_TARGETS_FULLY_MET",
+              }),
+            ],
+            [
+              secondTarget.programDayExerciseId,
+              buildPersistableDecision({
+                decisionType: "MAINTAIN",
+                reasonCode: "RULE_V1_RECOVERY_OVERRIDE",
+              }),
+            ],
+          ]);
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl(input) {
+              const programDayExerciseId =
+                started.session.exerciseTargets.find(
+                  (target) => target.exerciseId === input.analysis.exerciseId
+                )?.programDayExerciseId ?? null;
+
+              const decision = decisionsByProgramDayExerciseId.get(programDayExerciseId);
+              if (!decision) {
+                throw new Error("Missing synthetic decision for target");
+              }
+
+              return decision;
+            },
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          assert.equal(result.progressionRecommendations.length, 2);
+
+          const byExerciseId = new Map(
+            result.progressionRecommendations.map((recommendation) => [
+              recommendation.exerciseId,
+              recommendation,
+            ])
+          );
+
+          const firstRecommendation = byExerciseId.get(firstTarget.exerciseId);
+          const secondRecommendation = byExerciseId.get(secondTarget.exerciseId);
+
+          assert(firstRecommendation);
+          assert(secondRecommendation);
+          assert.deepEqual(firstRecommendation.explanation, {
+            messageKey: "progression_explanation.rule_v1_targets_fully_met",
+            userSummary: "Targets were fully met, so the next session stays the same.",
+          });
+          assert.deepEqual(secondRecommendation.explanation, {
+            messageKey: "progression_explanation.rule_v1_recovery_override",
+            userSummary:
+              "Recovery constraints led to a more conservative recommendation for the next session.",
+          });
+          assert.equal(Object.hasOwn(firstRecommendation, "programDayExerciseId"), false);
+          assert.equal(Object.hasOwn(secondRecommendation, "programDayExerciseId"), false);
+          assert.equal(Object.hasOwn(firstRecommendation.explanation, "developerSummary"), false);
+          assert.equal(Object.hasOwn(secondRecommendation.explanation, "developerSummary"), false);
+
+          return {
+            recommendations: result.progressionRecommendations.map((recommendation) => ({
+              exerciseId: recommendation.exerciseId,
+              reasonCode: recommendation.reasonCode,
+              explanation: recommendation.explanation,
+            })),
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "public explanation attachment failure omits only the explanation field",
+      input: "DTO serialization defect leaves the successful fresh recommendation payload otherwise unchanged",
+      fn: async () => {
+        const suffix = `complete-attachment-omit-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+            buildProgressionExplanationImpl() {
+              return Object.freeze({
+                messageKey: "",
+                userSummary: "",
+              });
+            },
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          const createdRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: user.id,
+              sourceSessionId: started.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+
+          assert.equal(Object.hasOwn(result.progressionRecommendations[0], "explanation"), false);
+          assert.deepEqual(
+            projectComparableRecommendation(result.progressionRecommendations[0]),
+            projectComparableRecommendation(createdRecommendation)
+          );
+
+          return {
             responseRecommendation: projectComparableRecommendation(
               result.progressionRecommendations[0]
             ),
