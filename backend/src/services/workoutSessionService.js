@@ -12,6 +12,7 @@ import {
   classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationData,
 } from "./progressionDecisionMapping.js";
+import { buildProgressionExplanation } from "./progressionExplanationBuilder.js";
 import {
   createProgressionDecisionContext,
   toProgressionDecisionEngineInput,
@@ -326,6 +327,7 @@ export function createWorkoutSessionService({
   computeRecoveryModifierImpl = computeRecoveryModifier,
   classifyDecisionPersistabilityImpl = classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationDataImpl = mapDecisionToProgressionRecommendationData,
+  buildProgressionExplanationImpl = buildProgressionExplanation,
   deriveTrainingStateSignalsFromExposuresImpl = deriveTrainingStateSignalsFromExposures,
   resolveWorkoutTargetImpl = resolveWorkoutTarget,
 } = {}) {
@@ -465,6 +467,7 @@ export function createWorkoutSessionService({
           const recoveryResult = computeRecoveryModifierImpl({ workoutAnalysis });
 
           const progressionCreateData = [];
+          const progressionExplanationArtifacts = [];
           for (const targetSnapshot of completionContext.exerciseTargets) {
             const performedSetLogs = completionContext.setLogs.filter(
               (setLog) => setLog.exerciseId === targetSnapshot.exerciseId
@@ -517,6 +520,14 @@ export function createWorkoutSessionService({
             if (classifyDecisionPersistabilityImpl(decision.decisionType) === "DO_NOT_PERSIST") {
               continue;
             }
+
+            const explanation = buildProgressionExplanationImpl({ decision });
+            progressionExplanationArtifacts.push(
+              Object.freeze({
+                exerciseId: targetSnapshot.exerciseId,
+                explanation,
+              })
+            );
 
             progressionCreateData.push(
               mapDecisionToProgressionDataEntry({
@@ -587,6 +598,7 @@ export function createWorkoutSessionService({
             updatedUserProgram,
             nextProgramDay,
             warning,
+            progressionExplanationArtifacts,
             progressionRecommendations,
           };
         });

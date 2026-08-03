@@ -6,6 +6,7 @@ import { generateProgramForUser } from "./programGenerator.js";
 import { analyzeExercisePerformance } from "./exercisePerformanceAnalyzer.js";
 import { decideProgression } from "./progressionDecisionEngine.js";
 import { mapDecisionToProgressionRecommendationData } from "./progressionDecisionMapping.js";
+import { buildProgressionExplanation } from "./progressionExplanationBuilder.js";
 import {
   orchestrateProgressionPersistence,
   PROGRESSION_PERSISTENCE_OUTCOMES,
@@ -610,6 +611,9 @@ function buildPersistableDecision(overrides = {}) {
     durationAdjustmentSteps: 0,
     confidence: 0.8,
     reasonCode: "RULE_V1_TARGETS_FULLY_MET",
+    secondaryReasonCodes: [],
+    requiresManualReview: false,
+    shouldPersist: true,
     rulesVersion: "progression_decision_rules_v5",
     ...overrides,
   };
@@ -1438,6 +1442,9 @@ async function main() {
           let analyzerCalls = 0;
           let decisionCalls = 0;
           let decisionInput = null;
+          let explanationCalls = 0;
+          let explainedDecision = null;
+          let generatedExplanation = null;
           let mappedRecommendationInput = null;
           const service = createWorkoutSessionService({
             analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
@@ -1455,6 +1462,12 @@ async function main() {
               decisionInput = input;
               decideProgression(input);
               return buildPersistableDecision();
+            },
+            buildProgressionExplanationImpl({ decision }) {
+              explanationCalls += 1;
+              explainedDecision = decision;
+              generatedExplanation = buildProgressionExplanation({ decision });
+              return generatedExplanation;
             },
             mapDecisionToProgressionRecommendationDataImpl(input) {
               mappedRecommendationInput = input;
@@ -1493,6 +1506,8 @@ async function main() {
 
           assert.equal(analyzerCalls, 1);
           assert.equal(decisionCalls, 1);
+          assert.equal(explanationCalls, 1);
+          assert.equal(explainedDecision, mappedRecommendationInput.decision);
           assert.equal(Object.hasOwn(decisionInput, "historicalTrainingSignals"), false);
           assert.equal(Object.hasOwn(decisionInput, "trainingStateSignals"), true);
           assert.equal(Object.isFrozen(decisionInput.trainingStateSignals), true);
@@ -1514,11 +1529,16 @@ async function main() {
             Object.hasOwn(result.progressionRecommendations[0], "historicalTrainingSignals"),
             false
           );
+          assert.equal(Object.hasOwn(result.progressionRecommendations[0], "explanation"), false);
+          assert.equal(Object.hasOwn(result.progressionRecommendations[0], "messageKey"), false);
 
           return {
             analyzerCalls,
             decisionCalls,
+            explanationCalls,
             decisionInput,
+            explainedDecision,
+            generatedExplanation,
             mappedRecommendationInput,
             responseRecommendation: result.progressionRecommendations[0],
           };
@@ -1980,6 +2000,89 @@ async function main() {
       },
     },
     {
+      name: "unknown valid reasons continue through completion with internal generic-safe explanations only",
+      input: "fresh persisted recommendation keeps its payload while the internal explanation falls back safely",
+      fn: async () => {
+        const suffix = `complete-unknown-explanation-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          let explanationCalls = 0;
+          let generatedExplanation = null;
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () =>
+              buildPersistableDecision({
+                reasonCode: "RULE_V9_UNKNOWN_INTEGRATION_REASON",
+              }),
+            buildProgressionExplanationImpl({ decision }) {
+              explanationCalls += 1;
+              generatedExplanation = buildProgressionExplanation({ decision });
+              return generatedExplanation;
+            },
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          const createdRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: user.id,
+              sourceSessionId: started.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+
+          assert.equal(explanationCalls, 1);
+          assert.equal(
+            generatedExplanation.messageKey,
+            "progression_explanation.rule_v9_unknown_integration_reason"
+          );
+          assert.equal(
+            generatedExplanation.userSummary,
+            "Progression decision recorded for the next session."
+          );
+          assert.equal(createdRecommendation.reasonCode, "RULE_V9_UNKNOWN_INTEGRATION_REASON");
+          assert.equal(
+            createdRecommendation.reason,
+            "Progression decision recorded for the next session."
+          );
+          assert.equal(Object.hasOwn(createdRecommendation, "explanation"), false);
+          assert.equal(Object.hasOwn(result.progressionRecommendations[0], "explanation"), false);
+
+          return {
+            explanationCalls,
+            explanation: generatedExplanation,
+            recommendation: projectComparableRecommendation(createdRecommendation),
+            responseRecommendation: projectComparableRecommendation(
+              result.progressionRecommendations[0]
+            ),
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
       name: "historical signal integration preserves recommendation outputs across deterministic history scenarios",
       input: "no history, insufficient history, trend variants, and aggregation fallback all yield identical recommendation fields",
       fn: async () => {
@@ -2346,6 +2449,72 @@ async function main() {
             errorCode: thrown.code,
             sessionStatus: sessionAfter.status,
             recommendationCount: await countUserRecommendations(user.id),
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion rolls back when the explanation builder rejects a malformed persisted decision",
+      input: "builder validation failure aborts the transaction before recommendation persistence",
+      fn: async () => {
+        const suffix = `complete-explanation-fail-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const activeBefore = await getActiveUserProgram(user.id);
+          const recommendationsBefore = await countUserRecommendations(user.id);
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => ({
+              ...buildPersistableDecision(),
+              secondaryReasonCodes: "not-an-array",
+            }),
+          });
+
+          let thrown = null;
+          try {
+            await service.completeWorkoutSession({
+              userId: user.id,
+              sessionId: started.session.id,
+            });
+          } catch (error) {
+            thrown = error;
+          }
+
+          const sessionAfter = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const activeAfter = await getActiveUserProgram(user.id);
+
+          assert(thrown instanceof WorkoutSessionCompletionError);
+          assert.equal(sessionAfter.status, "active");
+          assert.equal(await countUserRecommendations(user.id), recommendationsBefore);
+          assert.equal(activeAfter.currentDayIndex, activeBefore.currentDayIndex);
+
+          return {
+            errorCode: thrown.code,
+            sessionStatus: sessionAfter.status,
+            recommendationCount: await countUserRecommendations(user.id),
+            currentDayIndex: activeAfter.currentDayIndex,
           };
         } finally {
           await cleanupUserArtifacts(user.id);
