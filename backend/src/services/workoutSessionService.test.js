@@ -652,11 +652,51 @@ function buildHistoricalConflictDecision(overrides = {}) {
   };
 }
 
-function buildTrainingStateSignals(historicalTrainingSignals) {
+function buildDeloadHistory(overrides = {}) {
+  return {
+    recentDeloadCount: 1,
+    mostRecentDeloadAt: "2026-07-20T10:00:00.000Z",
+    hasRecentDeload: true,
+    ...overrides,
+  };
+}
+
+function buildAppliedDeloadHistoryRow(overrides = {}) {
+  const recommendation = {
+    id: 101,
+    decisionType: "DELOAD",
+    recommendationType: "deload",
+    sourceSessionId: 7001,
+    sourceSession: {
+      userProgramId: 501,
+    },
+    ...(overrides.recommendation ?? {}),
+  };
+  const { recommendation: _ignoredRecommendationOverride, ...rowOverrides } = overrides;
+  const row = {
+    id: 9001,
+    recommendationId: recommendation.id,
+    appliedAt: "2026-07-20T10:00:00.000Z",
+    workoutSession: {
+      userProgramId: 501,
+    },
+    recommendation,
+    ...rowOverrides,
+  };
+
+  if (rowOverrides.recommendationId === undefined) {
+    row.recommendationId = recommendation.id;
+  }
+
+  return row;
+}
+
+function buildTrainingStateSignals(historicalTrainingSignals, overrides = {}) {
   return {
     fatigue: {
       historicalTrainingSignals,
     },
+    ...overrides,
   };
 }
 
@@ -1044,8 +1084,17 @@ async function main() {
           });
 
           let historicalQueryArgs = null;
+          let appliedDeloadHistoryQueryArgs = null;
+          let appliedDeloadHistoryQueryCalls = 0;
+          let deriveDeloadHistoryCalls = 0;
           let aggregationCalls = 0;
           let aggregationInputLength = null;
+          let decisionInput = null;
+          const neutralDeloadHistory = buildDeloadHistory({
+            recentDeloadCount: 0,
+            mostRecentDeloadAt: null,
+            hasRecentDeload: false,
+          });
 
           const service = createWorkoutSessionService({
             analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
@@ -1054,7 +1103,10 @@ async function main() {
               confidence: 0.5,
               signalStrength: "moderate",
             }),
-            decideProgressionImpl: () => buildPersistableDecision(),
+            decideProgressionImpl(input) {
+              decisionInput = input;
+              return buildPersistableDecision();
+            },
             createWorkoutSessionRepositoryImpl(db) {
               const repository = createWorkoutSessionRepository(db);
               return {
@@ -1065,7 +1117,24 @@ async function main() {
                 },
               };
             },
-            deriveTrainingStateSignalsFromExposuresImpl(exposures) {
+            createProgressionRecommendationRepositoryImpl(db) {
+              const repository = createProgressionRecommendationRepository(db);
+              return {
+                ...repository,
+                async findAppliedDeloadHistoryRows(params) {
+                  appliedDeloadHistoryQueryCalls += 1;
+                  appliedDeloadHistoryQueryArgs = params;
+                  return [];
+                },
+              };
+            },
+            deriveDeloadHistoryImpl({ appliedDeloadRows, currentUserProgramId }) {
+              deriveDeloadHistoryCalls += 1;
+              assert.deepEqual(appliedDeloadRows, []);
+              assert.equal(currentUserProgramId, started.session.userProgramId);
+              return neutralDeloadHistory;
+            },
+            deriveTrainingStateSignalsFromExposuresImpl(exposures, { deloadHistory }) {
               aggregationCalls += 1;
               aggregationInputLength = exposures.length;
               return buildTrainingStateSignals({
@@ -1076,6 +1145,10 @@ async function main() {
                 previousCompletedAt: null,
                 loadTrend: "UNKNOWN",
                 repTrend: "UNKNOWN",
+              }, {
+                adaptation: {
+                  deloadHistory,
+                },
               });
             },
           });
@@ -1085,6 +1158,12 @@ async function main() {
             sessionId: started.session.id,
           });
 
+          assert.deepEqual(appliedDeloadHistoryQueryArgs, {
+            userProgramId: started.session.userProgramId,
+            excludeSourceSessionId: started.session.id,
+          });
+          assert.equal(appliedDeloadHistoryQueryCalls, 1);
+          assert.equal(deriveDeloadHistoryCalls, 1);
           assert.deepEqual(historicalQueryArgs, {
             userProgramId: started.session.userProgramId,
             programDayExerciseId: target.programDayExerciseId,
@@ -1093,11 +1172,187 @@ async function main() {
           });
           assert.equal(aggregationCalls, 1);
           assert.equal(aggregationInputLength, 0);
+          assert.deepEqual(decisionInput.trainingStateSignals.adaptation, {
+            deloadHistory: neutralDeloadHistory,
+          });
+          assert.equal(
+            Object.hasOwn(decisionInput.trainingStateSignals.adaptation, "plateauDetection"),
+            false
+          );
 
           return {
+            appliedDeloadHistoryQueryArgs,
+            appliedDeloadHistoryQueryCalls,
+            deriveDeloadHistoryCalls,
             historicalQueryArgs,
             aggregationCalls,
             aggregationInputLength,
+            deloadHistory: decisionInput.trainingStateSignals.adaptation.deloadHistory,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion transports one applied deload fact without changing recommendation behavior",
+      input: "applied deload history is queried once, derived once, and passed unchanged into decision context",
+      fn: async () => {
+        const suffix = `complete-deload-transport-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          let appliedDeloadHistoryQueryCalls = 0;
+          let deriveDeloadHistoryCalls = 0;
+          let decisionInput = null;
+          const deloadHistory = buildDeloadHistory();
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl(input) {
+              decisionInput = input;
+              return buildPersistableDecision();
+            },
+            createProgressionRecommendationRepositoryImpl(db) {
+              const repository = createProgressionRecommendationRepository(db);
+              return {
+                ...repository,
+                async findAppliedDeloadHistoryRows(params) {
+                  appliedDeloadHistoryQueryCalls += 1;
+                  assert.deepEqual(params, {
+                    userProgramId: started.session.userProgramId,
+                    excludeSourceSessionId: started.session.id,
+                  });
+                  return [buildAppliedDeloadHistoryRow()];
+                },
+              };
+            },
+            deriveDeloadHistoryImpl({ appliedDeloadRows, currentUserProgramId }) {
+              deriveDeloadHistoryCalls += 1;
+              assert.equal(appliedDeloadRows.length, 1);
+              assert.equal(currentUserProgramId, started.session.userProgramId);
+              return deloadHistory;
+            },
+          });
+
+          const result = await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          assert.equal(appliedDeloadHistoryQueryCalls, 1);
+          assert.equal(deriveDeloadHistoryCalls, 1);
+          assert.deepEqual(decisionInput.trainingStateSignals.adaptation, {
+            deloadHistory,
+          });
+          assert.equal(
+            Object.hasOwn(decisionInput.trainingStateSignals.adaptation, "plateauDetection"),
+            false
+          );
+          assert.equal(result.progressionRecommendations[0].decisionType, "MAINTAIN");
+          assert.equal(result.progressionRecommendations[0].reasonCode, "RULE_V1_TARGETS_FULLY_MET");
+
+          return {
+            appliedDeloadHistoryQueryCalls,
+            deriveDeloadHistoryCalls,
+            deloadHistory: decisionInput.trainingStateSignals.adaptation.deloadHistory,
+            decisionType: result.progressionRecommendations[0].decisionType,
+            reasonCode: result.progressionRecommendations[0].reasonCode,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion transports multiple applied deloads unchanged",
+      input: "derived multi-row deload history reaches decision context without synthesis",
+      fn: async () => {
+        const suffix = `complete-deload-multiple-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          let decisionInput = null;
+          const deloadHistory = buildDeloadHistory({
+            recentDeloadCount: 2,
+            mostRecentDeloadAt: "2026-07-22T10:00:00.000Z",
+            hasRecentDeload: true,
+          });
+
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl(input) {
+              decisionInput = input;
+              return buildPersistableDecision();
+            },
+            createProgressionRecommendationRepositoryImpl(db) {
+              const repository = createProgressionRecommendationRepository(db);
+              return {
+                ...repository,
+                async findAppliedDeloadHistoryRows() {
+                  return [
+                    buildAppliedDeloadHistoryRow({
+                      id: 9002,
+                      appliedAt: "2026-07-22T10:00:00.000Z",
+                      recommendation: { id: 102, sourceSessionId: 7002 },
+                    }),
+                    buildAppliedDeloadHistoryRow(),
+                  ];
+                },
+              };
+            },
+            deriveDeloadHistoryImpl({ appliedDeloadRows, currentUserProgramId }) {
+              assert.equal(appliedDeloadRows.length, 2);
+              assert.equal(currentUserProgramId, started.session.userProgramId);
+              return deloadHistory;
+            },
+          });
+
+          await service.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          assert.deepEqual(decisionInput.trainingStateSignals.adaptation, {
+            deloadHistory,
+          });
+
+          return {
+            deloadHistory: decisionInput.trainingStateSignals.adaptation.deloadHistory,
           };
         } finally {
           await cleanupUserArtifacts(user.id);
@@ -2522,6 +2777,161 @@ async function main() {
       },
     },
     {
+      name: "completion rolls back when applied deload history query fails",
+      input: "applied deload history repository failure aborts the completion transaction",
+      fn: async () => {
+        const suffix = `complete-deload-query-fail-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const activeBefore = await getActiveUserProgram(user.id);
+          const recommendationsBefore = await countUserRecommendations(user.id);
+          const applicationsBefore = await countUserApplications(user.id);
+          const targetCountBefore = await countUserTargets(user.id);
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            createProgressionRecommendationRepositoryImpl(db) {
+              const repository = createProgressionRecommendationRepository(db);
+              return {
+                ...repository,
+                async findAppliedDeloadHistoryRows() {
+                  throw new Error("synthetic applied deload history query failure");
+                },
+              };
+            },
+          });
+
+          let thrown = null;
+          try {
+            await service.completeWorkoutSession({
+              userId: user.id,
+              sessionId: started.session.id,
+            });
+          } catch (error) {
+            thrown = error;
+          }
+
+          const sessionAfter = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const activeAfter = await getActiveUserProgram(user.id);
+
+          assert(thrown instanceof WorkoutSessionCompletionError);
+          assert.equal(sessionAfter.status, "active");
+          assert.equal(sessionAfter.completedAt, null);
+          assert.equal(await countUserRecommendations(user.id), recommendationsBefore);
+          assert.equal(await countUserApplications(user.id), applicationsBefore);
+          assert.equal(await countUserTargets(user.id), targetCountBefore);
+          assert.equal(activeAfter.currentDayIndex, activeBefore.currentDayIndex);
+
+          return {
+            errorCode: thrown.code,
+            sessionStatus: sessionAfter.status,
+            recommendationCount: await countUserRecommendations(user.id),
+            applicationCount: await countUserApplications(user.id),
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "completion rolls back when applied deload history derivation fails",
+      input: "pure deload history derivation failure aborts the completion transaction",
+      fn: async () => {
+        const suffix = `complete-deload-derive-fail-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const activeBefore = await getActiveUserProgram(user.id);
+          const recommendationsBefore = await countUserRecommendations(user.id);
+          const applicationsBefore = await countUserApplications(user.id);
+          const targetCountBefore = await countUserTargets(user.id);
+          const service = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            createProgressionRecommendationRepositoryImpl(db) {
+              const repository = createProgressionRecommendationRepository(db);
+              return {
+                ...repository,
+                async findAppliedDeloadHistoryRows() {
+                  return [buildAppliedDeloadHistoryRow()];
+                },
+              };
+            },
+            deriveDeloadHistoryImpl() {
+              throw new Error("synthetic applied deload derivation failure");
+            },
+          });
+
+          let thrown = null;
+          try {
+            await service.completeWorkoutSession({
+              userId: user.id,
+              sessionId: started.session.id,
+            });
+          } catch (error) {
+            thrown = error;
+          }
+
+          const sessionAfter = await prisma.workoutSession.findUniqueOrThrow({
+            where: { id: started.session.id },
+          });
+          const activeAfter = await getActiveUserProgram(user.id);
+
+          assert(thrown instanceof WorkoutSessionCompletionError);
+          assert.equal(sessionAfter.status, "active");
+          assert.equal(sessionAfter.completedAt, null);
+          assert.equal(await countUserRecommendations(user.id), recommendationsBefore);
+          assert.equal(await countUserApplications(user.id), applicationsBefore);
+          assert.equal(await countUserTargets(user.id), targetCountBefore);
+          assert.equal(activeAfter.currentDayIndex, activeBefore.currentDayIndex);
+
+          return {
+            errorCode: thrown.code,
+            sessionStatus: sessionAfter.status,
+            recommendationCount: await countUserRecommendations(user.id),
+            applicationCount: await countUserApplications(user.id),
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
       name: "completion rolls back when analyzer fails",
       input: "analyzer throws before recommendation persistence",
       fn: async () => {
@@ -2793,6 +3203,77 @@ async function main() {
             errorCode: thrown.code,
             sessionStatus: sessionAfter.status,
             currentDayIndex: activeAfter.currentDayIndex,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "already-completed completion path skips applied deload history query",
+      input: "second completion attempt fails before deload-history wiring runs",
+      fn: async () => {
+        const suffix = `complete-deload-skip-${Date.now()}`;
+        const user = await createTestUser({
+          suffix,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(user.id);
+          const started = await createStartedSession({ userId: user.id });
+          const target = started.session.exerciseTargets[0];
+          await addSetLogsForSession({
+            sessionId: started.session.id,
+            exerciseId: target.exerciseId,
+            sets: [{ reps: 10, weightKg: 40 }],
+          });
+
+          const firstService = createWorkoutSessionService({
+            analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+            computeRecoveryModifierImpl: () => ({
+              recoveryModifier: "neutral",
+              confidence: 0.5,
+              signalStrength: "moderate",
+            }),
+            decideProgressionImpl: () => buildPersistableDecision(),
+          });
+          await firstService.completeWorkoutSession({
+            userId: user.id,
+            sessionId: started.session.id,
+          });
+
+          let appliedDeloadHistoryQueryCalls = 0;
+          const secondService = createWorkoutSessionService({
+            createProgressionRecommendationRepositoryImpl(db) {
+              const repository = createProgressionRecommendationRepository(db);
+              return {
+                ...repository,
+                async findAppliedDeloadHistoryRows(...args) {
+                  appliedDeloadHistoryQueryCalls += 1;
+                  return repository.findAppliedDeloadHistoryRows(...args);
+                },
+              };
+            },
+          });
+
+          let thrown = null;
+          try {
+            await secondService.completeWorkoutSession({
+              userId: user.id,
+              sessionId: started.session.id,
+            });
+          } catch (error) {
+            thrown = error;
+          }
+
+          assert(thrown instanceof WorkoutSessionCompletionError);
+          assert.equal(thrown.code, "WORKOUT_SESSION_NOT_ACTIVE");
+          assert.equal(appliedDeloadHistoryQueryCalls, 0);
+
+          return {
+            errorCode: thrown.code,
+            appliedDeloadHistoryQueryCalls,
           };
         } finally {
           await cleanupUserArtifacts(user.id);

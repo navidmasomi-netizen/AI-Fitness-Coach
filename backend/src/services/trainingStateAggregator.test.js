@@ -51,6 +51,15 @@ function buildHistoricalTrainingSignals(overrides = {}) {
   };
 }
 
+function buildDeloadHistory(overrides = {}) {
+  return {
+    recentDeloadCount: 1,
+    mostRecentDeloadAt: "2026-07-20T10:00:00.000Z",
+    hasRecentDeload: true,
+    ...overrides,
+  };
+}
+
 function buildExposure({
   id,
   completedAt,
@@ -101,6 +110,33 @@ async function main() {
         assert.equal(Object.isFrozen(actual), true);
         assert.equal(Object.isFrozen(actual.fatigue), true);
         assert.equal(Object.isFrozen(actual.fatigue.historicalTrainingSignals), true);
+
+        return actual;
+      },
+    },
+    {
+      name: "aggregates optional deloadHistory without synthesizing sibling adaptation signals",
+      input: "precomputed historical signals plus a passive deloadHistory fact",
+      fn: () => {
+        const historicalTrainingSignals = buildHistoricalTrainingSignals();
+        const deloadHistory = buildDeloadHistory();
+        const actual = aggregateTrainingStateSignals({
+          historicalTrainingSignals,
+          deloadHistory,
+        });
+
+        assert.deepEqual(actual, {
+          fatigue: {
+            historicalTrainingSignals,
+          },
+          adaptation: {
+            deloadHistory,
+          },
+        });
+        assert.equal(Object.hasOwn(actual.adaptation, "plateauDetection"), false);
+        assert.equal(Object.hasOwn(actual.adaptation, "sessionDensity"), false);
+        assert.equal(Object.isFrozen(actual.adaptation), true);
+        assert.equal(Object.isFrozen(actual.adaptation.deloadHistory), true);
 
         return actual;
       },
@@ -178,6 +214,40 @@ async function main() {
       },
     },
     {
+      name: "exposure-derived aggregation composes deloadHistory unchanged",
+      input: "derived historical signals plus a supplied passive deloadHistory fact",
+      fn: () => {
+        const exposures = [
+          buildExposure({
+            id: 8,
+            startedAt: "2026-07-13T09:00:00.000Z",
+            completedAt: "2026-07-13T09:30:00.000Z",
+            setLogs: [{ exerciseId: 15, setNumber: 1, reps: 8, weightKg: 40 }],
+          }),
+        ];
+        const deloadHistory = buildDeloadHistory({
+          recentDeloadCount: 0,
+          mostRecentDeloadAt: null,
+          hasRecentDeload: false,
+        });
+
+        const actual = deriveTrainingStateSignalsFromExposures(exposures, {
+          deloadHistory,
+        });
+
+        assert.deepEqual(actual, {
+          fatigue: {
+            historicalTrainingSignals: deriveHistoricalTrainingSignals(exposures),
+          },
+          adaptation: {
+            deloadHistory,
+          },
+        });
+
+        return actual;
+      },
+    },
+    {
       name: "aggregator does not mutate exposure input",
       input: "frozen exposures remain unchanged after derivation",
       fn: () => {
@@ -199,6 +269,28 @@ async function main() {
 
         assert.deepEqual(exposures, before);
         return actual;
+      },
+    },
+    {
+      name: "malformed deloadHistory fails through contract validation",
+      input: "aggregator does not repair malformed passive adaptation facts",
+      fn: () => {
+        assert.throws(
+          () =>
+            aggregateTrainingStateSignals({
+              historicalTrainingSignals: buildHistoricalTrainingSignals(),
+              deloadHistory: {
+                recentDeloadCount: 1,
+                mostRecentDeloadAt: null,
+                hasRecentDeload: "yes",
+              },
+            }),
+          Error
+        );
+
+        return {
+          errorClass: "TrainingStateSignalsValidationError",
+        };
       },
     },
   ];

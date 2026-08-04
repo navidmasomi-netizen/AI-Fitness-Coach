@@ -115,11 +115,21 @@ function buildHistoricalTrainingSignals(overrides = {}) {
   };
 }
 
-function buildTrainingStateSignals(signalOverrides = {}) {
+function buildDeloadHistory(overrides = {}) {
+  return {
+    recentDeloadCount: 1,
+    mostRecentDeloadAt: "2026-07-20T10:00:00.000Z",
+    hasRecentDeload: true,
+    ...overrides,
+  };
+}
+
+function buildTrainingStateSignals(signalOverrides = {}, overrides = {}) {
   return createTrainingStateSignals({
     fatigue: {
       historicalTrainingSignals: buildHistoricalTrainingSignals(signalOverrides),
     },
+    ...overrides,
   });
 }
 
@@ -377,6 +387,38 @@ async function main() {
           contextKeys: Object.keys(context),
           adaptedInputKeys: Object.keys(adaptedInput),
         };
+      },
+    },
+    {
+      name: "adaptation.deloadHistory survives the decision context boundary unchanged",
+      input: "passive adaptation facts are cloned, frozen, and transported without interpretation",
+      fn: () => {
+        const trainingStateSignals = buildTrainingStateSignals({}, {
+          adaptation: {
+            deloadHistory: buildDeloadHistory(),
+          },
+        });
+        const context = createProgressionDecisionContext(
+          buildContextInput({
+            trainingStateSignals,
+          })
+        );
+        const adaptedInput = toProgressionDecisionEngineInput(context);
+
+        assert.deepEqual(context.trainingStateSignals, trainingStateSignals);
+        assert.deepEqual(adaptedInput.trainingStateSignals, trainingStateSignals);
+        assert.equal(
+          adaptedInput.trainingStateSignals.adaptation.deloadHistory.recentDeloadCount,
+          1
+        );
+        assert.equal(Object.hasOwn(adaptedInput.trainingStateSignals.adaptation, "plateauDetection"), false);
+        assert.equal(Object.isFrozen(adaptedInput.trainingStateSignals.adaptation), true);
+        assert.equal(
+          Object.isFrozen(adaptedInput.trainingStateSignals.adaptation.deloadHistory),
+          true
+        );
+
+        return adaptedInput.trainingStateSignals;
       },
     },
     {

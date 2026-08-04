@@ -21,6 +21,7 @@ import {
   decideProgression,
 } from "./progressionDecisionEngine.js";
 import { computeRecoveryModifier } from "./recoveryEngine.js";
+import { deriveDeloadHistory } from "./deloadHistorySignals.js";
 import {
   aggregateTrainingStateSignals,
   deriveTrainingStateSignalsFromExposures,
@@ -358,6 +359,8 @@ export function createWorkoutSessionService({
   classifyDecisionPersistabilityImpl = classifyDecisionPersistability,
   mapDecisionToProgressionRecommendationDataImpl = mapDecisionToProgressionRecommendationData,
   buildProgressionExplanationImpl = buildProgressionExplanation,
+  deriveDeloadHistoryImpl = deriveDeloadHistory,
+  aggregateTrainingStateSignalsImpl = aggregateTrainingStateSignals,
   deriveTrainingStateSignalsFromExposuresImpl = deriveTrainingStateSignalsFromExposures,
   resolveWorkoutTargetImpl = resolveWorkoutTarget,
 } = {}) {
@@ -490,6 +493,19 @@ export function createWorkoutSessionService({
             });
           }
 
+          let deloadHistory;
+          if (isPositiveInteger(completionContext.userProgramId)) {
+            const appliedDeloadRows =
+              await repositories.recommendations.findAppliedDeloadHistoryRows({
+                userProgramId: completionContext.userProgramId,
+                excludeSourceSessionId: sessionId,
+              });
+            deloadHistory = deriveDeloadHistoryImpl({
+              appliedDeloadRows,
+              currentUserProgramId: completionContext.userProgramId,
+            });
+          }
+
           const workoutAnalysis = await analyzeWorkoutHistoryImpl({
             userId,
             windowDays: DEFAULT_RECOVERY_ANALYSIS_WINDOW_DAYS,
@@ -523,6 +539,8 @@ export function createWorkoutSessionService({
               repositories,
               sessionId,
               targetSnapshot,
+              deloadHistory,
+              aggregateTrainingStateSignalsImpl,
               deriveTrainingStateSignalsFromExposuresImpl,
             });
 
@@ -942,13 +960,22 @@ async function resolveTrainingStateSignals({
   repositories,
   sessionId,
   targetSnapshot,
+  deloadHistory,
+  aggregateTrainingStateSignalsImpl,
   deriveTrainingStateSignalsFromExposuresImpl,
 }) {
   if (
     !isPositiveInteger(completionContext?.userProgramId) ||
     !isPositiveInteger(targetSnapshot?.programDayExerciseId)
   ) {
-    return NEUTRAL_TRAINING_STATE_SIGNALS;
+    if (deloadHistory === undefined) {
+      return NEUTRAL_TRAINING_STATE_SIGNALS;
+    }
+
+    return aggregateTrainingStateSignalsImpl({
+      historicalTrainingSignals: NEUTRAL_HISTORICAL_TRAINING_SIGNALS,
+      deloadHistory,
+    });
   }
 
   try {
@@ -960,9 +987,16 @@ async function resolveTrainingStateSignals({
         excludeSessionId: sessionId,
       });
 
-    return deriveTrainingStateSignalsFromExposuresImpl(exposures);
+    return deriveTrainingStateSignalsFromExposuresImpl(exposures, { deloadHistory });
   } catch {
-    return NEUTRAL_TRAINING_STATE_SIGNALS;
+    if (deloadHistory === undefined) {
+      return NEUTRAL_TRAINING_STATE_SIGNALS;
+    }
+
+    return aggregateTrainingStateSignalsImpl({
+      historicalTrainingSignals: NEUTRAL_HISTORICAL_TRAINING_SIGNALS,
+      deloadHistory,
+    });
   }
 }
 
