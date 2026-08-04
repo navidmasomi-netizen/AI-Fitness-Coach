@@ -1842,8 +1842,14 @@ async function main() {
 
           const firstStarted = await createStartedSession({ userId: firstUser.id });
           const secondStarted = await createStartedSession({ userId: secondUser.id });
-          const firstTarget = firstStarted.session.exerciseTargets[0];
-          const secondTarget = secondStarted.session.exerciseTargets[0];
+          const firstTarget =
+            firstStarted.session.exerciseTargets.find((entry) =>
+              ["load", "reps_then_load"].includes(entry.progressionType ?? "load")
+            ) ?? firstStarted.session.exerciseTargets[0];
+          const secondTarget =
+            secondStarted.session.exerciseTargets.find((entry) =>
+              ["load", "reps_then_load"].includes(entry.progressionType ?? "load")
+            ) ?? secondStarted.session.exerciseTargets[0];
 
           await addSetLogsForSession({
             sessionId: firstStarted.session.id,
@@ -2272,6 +2278,212 @@ async function main() {
           };
         } finally {
           await cleanupUserArtifacts(user.id);
+        }
+      },
+    },
+    {
+      name: "deload history variants preserve canonical R010 service outputs",
+      input: "neutral versus populated applied-deload history yields identical persistence, explanation, and response payloads",
+      fn: async () => {
+        const firstUser = await createTestUser({
+          suffix: `complete-deload-passive-a-${Date.now()}`,
+          profileData: buildCompleteProfileData(),
+        });
+        const secondUser = await createTestUser({
+          suffix: `complete-deload-passive-b-${Date.now()}`,
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          await generateProgramForUser(firstUser.id);
+          await generateProgramForUser(secondUser.id);
+
+          const firstStarted = await createStartedSession({ userId: firstUser.id });
+          const secondStarted = await createStartedSession({ userId: secondUser.id });
+          const firstTarget =
+            firstStarted.session.exerciseTargets.find((entry) =>
+              ["load", "reps_then_load"].includes(entry.progressionType ?? "load")
+            ) ?? firstStarted.session.exerciseTargets[0];
+          const secondTarget =
+            secondStarted.session.exerciseTargets.find((entry) =>
+              ["load", "reps_then_load"].includes(entry.progressionType ?? "load")
+            ) ?? secondStarted.session.exerciseTargets[0];
+
+          await addSetLogsForSession({
+            sessionId: firstStarted.session.id,
+            exerciseId: firstTarget.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 42.5 },
+              { reps: 10, weightKg: 45 },
+              { reps: 10, weightKg: 45 },
+            ],
+          });
+          await addSetLogsForSession({
+            sessionId: secondStarted.session.id,
+            exerciseId: secondTarget.exerciseId,
+            sets: [
+              { reps: 10, weightKg: 42.5 },
+              { reps: 10, weightKg: 45 },
+              { reps: 10, weightKg: 45 },
+            ],
+          });
+
+          const historicalTrainingSignals = deepFreeze({
+            completedExposureCount: 2,
+            averageCompletionRatio: 1,
+            averageCompletedSets: 3,
+            latestCompletedAt: "2026-07-28T10:00:00.000Z",
+            previousCompletedAt: "2026-07-21T10:00:00.000Z",
+            loadTrend: "DECREASING",
+            repTrend: "INCREASING",
+          });
+          const neutralDeloadHistory = buildDeloadHistory({
+            recentDeloadCount: 0,
+            mostRecentDeloadAt: null,
+            hasRecentDeload: false,
+          });
+          const populatedDeloadHistory = buildDeloadHistory({
+            recentDeloadCount: 2,
+            mostRecentDeloadAt: "2026-07-22T10:00:00.000Z",
+            hasRecentDeload: true,
+          });
+
+          let firstDecisionInput = null;
+          let secondDecisionInput = null;
+
+          function buildService({ deloadHistory, started }) {
+            return createWorkoutSessionService({
+              analyzeWorkoutHistoryImpl: async () => ({ exerciseSummaries: [], completionRate: null }),
+              computeRecoveryModifierImpl: () => ({
+                recoveryModifier: "neutral",
+                confidence: 0.5,
+                signalStrength: "moderate",
+                reasonCode: null,
+              }),
+              analyzeExercisePerformanceImpl() {
+                return {
+                  exerciseId: started.session.id === firstStarted.session.id
+                    ? firstTarget.exerciseId
+                    : secondTarget.exerciseId,
+                  sourceSessionId: started.session.id,
+                  prescription: {
+                    prescribedSets: 3,
+                    prescribedRepLow:
+                      started.session.id === firstStarted.session.id
+                        ? firstTarget.targetRepRangeLow
+                        : secondTarget.targetRepRangeLow,
+                    prescribedRepHigh:
+                      started.session.id === firstStarted.session.id
+                        ? firstTarget.targetRepRangeHigh
+                        : secondTarget.targetRepRangeHigh,
+                    prescribedRestSeconds: 90,
+                  },
+                  observedPerformance: {
+                    loggedSetCount: 3,
+                    completedSetCount: 3,
+                    successfulSetCount: 3,
+                    failedSetCount: 0,
+                    totalReps: 30,
+                    totalVolumeKg: 132.5,
+                    averageWeightKg: 44.1667,
+                    maximumWeightKg: 45,
+                    minimumWeightKg: 42.5,
+                    bestSet: { setNumber: 2, reps: 10, weightKg: 45 },
+                    finalSet: { setNumber: 3, reps: 10, weightKg: 45 },
+                    allPlannedSetsReachedUpperRepBound: false,
+                    prescribedSetCompletionRate: 1,
+                    targetRepHitRate: 1,
+                  },
+                  historyFacts: {
+                    previousSessionWeightKg: 42.5,
+                    weightDeltaKg: 2.5,
+                    weightDeltaPercent: 5.8824,
+                    previousPrescribedSetCompletionRate: 0.6667,
+                    prescribedSetCompletionRateDelta: 0.3333,
+                    consecutiveSuccessfulSessions: 1,
+                    consecutiveFailedSessions: 0,
+                  },
+                  hasSufficientData: true,
+                  dataQualityFlags: [],
+                };
+              },
+              deriveTrainingStateSignalsFromExposuresImpl() {
+                return buildTrainingStateSignals(historicalTrainingSignals, {
+                  adaptation: {
+                    deloadHistory,
+                  },
+                });
+              },
+              decideProgressionImpl(input) {
+                if (started.session.id === firstStarted.session.id) {
+                  firstDecisionInput = input;
+                } else {
+                  secondDecisionInput = input;
+                }
+                return decideProgression(input);
+              },
+            });
+          }
+
+          const firstResult = await buildService({
+            deloadHistory: neutralDeloadHistory,
+            started: firstStarted,
+          }).completeWorkoutSession({
+            userId: firstUser.id,
+            sessionId: firstStarted.session.id,
+          });
+          const secondResult = await buildService({
+            deloadHistory: populatedDeloadHistory,
+            started: secondStarted,
+          }).completeWorkoutSession({
+            userId: secondUser.id,
+            sessionId: secondStarted.session.id,
+          });
+
+          const firstRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: firstUser.id,
+              sourceSessionId: firstStarted.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+          const secondRecommendation = await prisma.progressionRecommendation.findFirstOrThrow({
+            where: {
+              userId: secondUser.id,
+              sourceSessionId: secondStarted.session.id,
+            },
+            orderBy: { id: "asc" },
+          });
+
+          assert.deepEqual(firstDecisionInput.trainingStateSignals.adaptation, {
+            deloadHistory: neutralDeloadHistory,
+          });
+          assert.deepEqual(secondDecisionInput.trainingStateSignals.adaptation, {
+            deloadHistory: populatedDeloadHistory,
+          });
+          assert.deepEqual(
+            projectComparableRecommendation(firstRecommendation),
+            projectComparableRecommendation(secondRecommendation)
+          );
+          assert.deepEqual(
+            projectComparableRecommendation(firstResult.progressionRecommendations[0]),
+            projectComparableRecommendation(secondResult.progressionRecommendations[0])
+          );
+          assert.deepEqual(
+            firstResult.progressionRecommendations[0].explanation,
+            secondResult.progressionRecommendations[0].explanation
+          );
+
+          return {
+            neutralDeloadHistory: firstDecisionInput.trainingStateSignals.adaptation.deloadHistory,
+            populatedDeloadHistory:
+              secondDecisionInput.trainingStateSignals.adaptation.deloadHistory,
+            recommendation: projectComparableRecommendation(firstRecommendation),
+            explanation: firstResult.progressionRecommendations[0].explanation,
+          };
+        } finally {
+          await cleanupUserArtifacts(firstUser.id);
+          await cleanupUserArtifacts(secondUser.id);
         }
       },
     },

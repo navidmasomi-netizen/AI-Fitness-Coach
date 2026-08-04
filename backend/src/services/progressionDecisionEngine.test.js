@@ -147,11 +147,10 @@ function buildInput(overrides = {}) {
     recoveryConstraint: null,
     previousDecisionContext: null,
     trainingStateSignals:
-      trainingStateSignals ?? {
-        fatigue: {
-          historicalTrainingSignals,
-        },
-      },
+      trainingStateSignals ??
+      buildTrainingStateSignals({
+        historicalTrainingSignals,
+      }),
     existingRecommendationContext: null,
     policyThresholds: {
       deloadFailureStreak: 2,
@@ -170,6 +169,33 @@ function buildHistoricalTrainingSignals(overrides = {}) {
     loadTrend: "UNKNOWN",
     repTrend: "UNKNOWN",
     ...overrides,
+  };
+}
+
+function buildDeloadHistory(overrides = {}) {
+  return {
+    recentDeloadCount: 1,
+    mostRecentDeloadAt: "2026-07-20T10:00:00.000Z",
+    hasRecentDeload: true,
+    ...overrides,
+  };
+}
+
+function buildTrainingStateSignals({
+  historicalTrainingSignals = buildHistoricalTrainingSignals(),
+  deloadHistory,
+} = {}) {
+  return {
+    fatigue: {
+      historicalTrainingSignals,
+    },
+    ...(deloadHistory !== undefined
+      ? {
+          adaptation: {
+            deloadHistory,
+          },
+        }
+      : {}),
   };
 }
 
@@ -621,6 +647,149 @@ async function main() {
         return {
           baseline,
           variants: results,
+        };
+      },
+    },
+    {
+      name: "deload history variants remain behaviorally inert across representative decision families",
+      input: "adaptation.deloadHistory changes while final decision output remains identical",
+      fn: () => {
+        const maintainInput = buildInput({
+          analysis: buildAnalysis({
+            historyFacts: {
+              previousSessionWeightKg: 42.5,
+              weightDeltaKg: 0,
+              weightDeltaPercent: 0,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: 0,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 0,
+            },
+          }),
+        });
+        const historicalConflictInput = buildCanonicalR010Input({
+          historicalTrainingSignals: buildHistoricalTrainingSignals({
+            completedExposureCount: 2,
+            averageCompletionRatio: 1,
+            averageCompletedSets: 3,
+            loadTrend: "DECREASING",
+            repTrend: "STABLE",
+          }),
+        });
+        const recoveryOverrideInput = buildCanonicalR010Input({
+          recoveryConstraint: {
+            recoveryModifier: "caution",
+            confidence: 0.8,
+            signalStrength: "strong",
+            reasonCode: null,
+          },
+        });
+        const deloadCandidateInput = buildInput({
+          analysis: buildAnalysis({
+            observedPerformance: {
+              completedSetCount: 2,
+              successfulSetCount: 1,
+              failedSetCount: 2,
+              totalReps: 18,
+              totalVolumeKg: 720,
+              averageWeightKg: 40,
+              maximumWeightKg: 40,
+              minimumWeightKg: 40,
+              bestSet: { setNumber: 1, reps: 10, weightKg: 40 },
+              finalSet: { setNumber: 3, reps: 4, weightKg: 40 },
+              allPlannedSetsReachedUpperRepBound: false,
+              prescribedSetCompletionRate: 0.6667,
+              targetRepHitRate: 0.3333,
+            },
+            historyFacts: {
+              previousSessionWeightKg: 42.5,
+              weightDeltaKg: -2.5,
+              weightDeltaPercent: -5.8824,
+              previousPrescribedSetCompletionRate: 1,
+              prescribedSetCompletionRateDelta: -0.3333,
+              consecutiveSuccessfulSessions: 0,
+              consecutiveFailedSessions: 2,
+            },
+          }),
+        });
+        const doNotPersistInput = buildInput({
+          analysis: buildAnalysis({
+            hasSufficientData: false,
+          }),
+        });
+
+        const scenarios = [
+          { name: "increase-candidate", input: buildCanonicalR010Input() },
+          { name: "maintain-candidate", input: maintainInput },
+          { name: "historical-conflict-downgrade", input: historicalConflictInput },
+          { name: "recovery-override", input: recoveryOverrideInput },
+          { name: "existing-deload-candidate", input: deloadCandidateInput },
+          { name: "do-not-persist-candidate", input: doNotPersistInput },
+        ];
+
+        const deloadHistoryVariants = [
+          {
+            name: "neutral-deload-history",
+            deloadHistory: buildDeloadHistory({
+              recentDeloadCount: 0,
+              mostRecentDeloadAt: null,
+              hasRecentDeload: false,
+            }),
+          },
+          {
+            name: "one-applied-deload",
+            deloadHistory: buildDeloadHistory(),
+          },
+          {
+            name: "multiple-applied-deloads-different-timestamps",
+            deloadHistory: buildDeloadHistory({
+              recentDeloadCount: 2,
+              mostRecentDeloadAt: "2026-07-22T10:00:00.000Z",
+              hasRecentDeload: true,
+            }),
+          },
+          {
+            name: "multiple-applied-deloads-equal-most-recent-timestamp",
+            deloadHistory: buildDeloadHistory({
+              recentDeloadCount: 3,
+              mostRecentDeloadAt: "2026-07-20T10:00:00.000Z",
+              hasRecentDeload: true,
+            }),
+          },
+          {
+            name: "older-applied-deload",
+            deloadHistory: buildDeloadHistory({
+              recentDeloadCount: 1,
+              mostRecentDeloadAt: "2024-01-01T10:00:00.000Z",
+              hasRecentDeload: true,
+            }),
+          },
+        ];
+
+        for (const scenario of scenarios) {
+          const baseline = decideProgression(scenario.input);
+
+          for (const variant of deloadHistoryVariants) {
+            const actual = decideProgression({
+              ...scenario.input,
+              trainingStateSignals: buildTrainingStateSignals({
+                historicalTrainingSignals:
+                  scenario.input.trainingStateSignals.fatigue.historicalTrainingSignals,
+                deloadHistory: variant.deloadHistory,
+              }),
+            });
+
+            assert.deepEqual(
+              actual,
+              baseline,
+              `${scenario.name} changed under ${variant.name}`
+            );
+          }
+        }
+
+        return {
+          scenarios: scenarios.map((scenario) => scenario.name),
+          variants: deloadHistoryVariants.map((variant) => variant.name),
         };
       },
     },

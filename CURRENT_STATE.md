@@ -60,6 +60,25 @@ Release note:
 
 Explainable Progression now surfaces `messageKey` and `userSummary` on fresh progression recommendations after workout completion, and the mobile workout summary screen displays `userSummary` without moving any decision logic to the client. Explanation wording is not persisted, historical explanations are not yet reconstructed, and developer-only diagnostic fields do not cross the public API boundary.
 
+## Applied Deload History — Current State
+
+Applied Deload History is now available as passive internal context during fresh workout completion.
+
+- The signal is populated at `trainingStateSignals.adaptation.deloadHistory`.
+- Current fields are:
+  - `recentDeloadCount`
+  - `mostRecentDeloadAt`
+  - `hasRecentDeload`
+- These fields represent **applied** deload history only. Recommendation-only rows do not count.
+- The derivation boundary is the current `UserProgram`.
+- The current source session is excluded from history.
+- The word `recent` is a legacy field name only:
+  - no calendar window is applied
+  - no session-distance window is applied
+  - no exposure-distance window is applied
+- No Decision Engine rule currently consumes Deload History.
+- Any future activation requires a product-approved definition of sufficient distance since an applied deload. Valid future distance candidates include completed sessions, exposures, and elapsed time, but none is currently approved.
+
 ---
 
 ## Current Repository Structure
