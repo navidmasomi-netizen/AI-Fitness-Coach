@@ -55,6 +55,60 @@ enum MovementPattern {
   anti_extension
 }
 
+enum DnaMovementPattern {
+  squat
+  hinge
+  lunge
+  single_leg
+  horizontal_press
+  vertical_press
+  horizontal_pull
+  vertical_pull
+  knee_extension
+  knee_flexion
+  hip_extension
+  shoulder_abduction
+  elbow_flexion
+  elbow_extension
+  trunk_flexion
+  anti_extension
+  anti_rotation
+}
+
+enum CatalogEquipment {
+  bodyweight
+  dumbbell
+  barbell
+  bench
+  rack
+  cable
+  selectorized_machine
+  leg_press_machine
+  pull_up_bar
+  step_platform
+}
+
+enum StabilityDemand {
+  LOW
+  MODERATE
+  HIGH
+}
+
+enum AxialLoading {
+  NONE
+  LOW
+  HIGH
+}
+
+enum ExerciseCatalogLifecycle {
+  DRAFT
+  CURATED
+  APPROVED
+  ACTIVE
+  DEPRECATED
+  REJECTED
+}
+
 enum RecommendationType {
   increase
   maintain
@@ -121,14 +175,19 @@ model Exercise {
   id                         Int                            @id @default(autoincrement())
   nameFa                     String
   nameEn                     String?
+  slug                       String?                        @unique
   description                String?
   icon                       String?
   primaryMuscles             String[]
   secondaryMuscles           String[]
   movementPattern            MovementPattern?
+  dnaMovementPattern         DnaMovementPattern?
   equipment                  Equipment?
+  requiredEquipment          CatalogEquipment[]
   difficulty                 Difficulty?
   complexity                 Complexity?
+  stabilityDemand            StabilityDemand?
+  axialLoading               AxialLoading?
   suitableGoals              Goal[]
   contraindications          String[]
   jointStressFlags           String[]
@@ -138,6 +197,9 @@ model Exercise {
   defaultRestSecondsLow      Int?
   defaultRestSecondsHigh     Int?
   progressionType            String?
+  catalogLifecycle           ExerciseCatalogLifecycle      @default(DRAFT)
+  catalogSource              String?
+  catalogCurationVersion     Int?
   programDayUsage            ProgramDayExercise[]
   setLogs                    SetLog[]
   progressionRecommendations ProgressionRecommendation[]

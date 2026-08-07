@@ -1,0 +1,327 @@
+export const EXERCISE_CATALOG_CURATION_SOURCE = "seed_curated_v1";
+export const EXERCISE_CATALOG_CURATION_VERSION = 1;
+
+export const EXERCISE_CATALOG_METADATA_BY_NAME_EN = Object.freeze({
+  "Back Squat": {
+    dnaMovementPattern: "squat",
+    requiredEquipment: ["barbell", "rack"],
+    stabilityDemand: "HIGH",
+    axialLoading: "HIGH",
+    catalogLifecycle: "ACTIVE",
+  },
+  Deadlift: {
+    dnaMovementPattern: "hinge",
+    requiredEquipment: ["barbell"],
+    stabilityDemand: "HIGH",
+    axialLoading: "HIGH",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Bench Press": {
+    dnaMovementPattern: "horizontal_press",
+    requiredEquipment: ["barbell", "bench", "rack"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Pull-Up": {
+    dnaMovementPattern: "vertical_pull",
+    requiredEquipment: ["pull_up_bar"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Overhead Press": {
+    dnaMovementPattern: "vertical_press",
+    requiredEquipment: ["barbell"],
+    stabilityDemand: "HIGH",
+    axialLoading: "HIGH",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dumbbell Curl": {
+    dnaMovementPattern: "elbow_flexion",
+    requiredEquipment: ["dumbbell"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Cable Pushdown": {
+    dnaMovementPattern: "elbow_extension",
+    requiredEquipment: ["cable"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  Lunge: {
+    dnaMovementPattern: "lunge",
+    requiredEquipment: ["dumbbell"],
+    stabilityDemand: "HIGH",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  Crunch: {
+    dnaMovementPattern: "trunk_flexion",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  Plank: {
+    dnaMovementPattern: "anti_extension",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Romanian Deadlift": {
+    dnaMovementPattern: "hinge",
+    requiredEquipment: ["barbell"],
+    stabilityDemand: "HIGH",
+    axialLoading: "HIGH",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Leg Press": {
+    dnaMovementPattern: "squat",
+    requiredEquipment: ["leg_press_machine"],
+    stabilityDemand: "LOW",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Bodyweight Inverted Row": {
+    dnaMovementPattern: "horizontal_pull",
+    requiredEquipment: [],
+    stabilityDemand: null,
+    axialLoading: null,
+    catalogLifecycle: "CURATED",
+  },
+  "Dumbbell Row": {
+    dnaMovementPattern: "horizontal_pull",
+    requiredEquipment: [],
+    stabilityDemand: null,
+    axialLoading: null,
+    catalogLifecycle: "CURATED",
+  },
+  "Cable Row": {
+    dnaMovementPattern: "horizontal_pull",
+    requiredEquipment: ["cable"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Barbell Row": {
+    dnaMovementPattern: "horizontal_pull",
+    requiredEquipment: ["barbell"],
+    stabilityDemand: "HIGH",
+    axialLoading: "HIGH",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Bodyweight Reverse Lunge": {
+    dnaMovementPattern: "lunge",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "HIGH",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dumbbell Reverse Lunge": {
+    dnaMovementPattern: "lunge",
+    requiredEquipment: ["dumbbell"],
+    stabilityDemand: "HIGH",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Glute Bridge": {
+    dnaMovementPattern: "hip_extension",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dumbbell Romanian Deadlift": {
+    dnaMovementPattern: "hinge",
+    requiredEquipment: ["dumbbell"],
+    stabilityDemand: "HIGH",
+    axialLoading: "HIGH",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Hip Thrust": {
+    dnaMovementPattern: "hip_extension",
+    requiredEquipment: ["barbell", "bench"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Step-Up": {
+    dnaMovementPattern: "single_leg",
+    requiredEquipment: ["step_platform"],
+    stabilityDemand: "HIGH",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dumbbell Step-Up": {
+    dnaMovementPattern: "single_leg",
+    requiredEquipment: ["dumbbell", "step_platform"],
+    stabilityDemand: "HIGH",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Push-Up": {
+    dnaMovementPattern: "horizontal_press",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dumbbell Bench Press": {
+    dnaMovementPattern: "horizontal_press",
+    requiredEquipment: ["dumbbell", "bench"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Machine Chest Press": {
+    dnaMovementPattern: "horizontal_press",
+    requiredEquipment: ["selectorized_machine"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dumbbell Shoulder Press": {
+    dnaMovementPattern: "vertical_press",
+    requiredEquipment: ["dumbbell"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Machine Shoulder Press": {
+    dnaMovementPattern: "vertical_press",
+    requiredEquipment: ["selectorized_machine"],
+    stabilityDemand: "LOW",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Pike Push-Up": {
+    dnaMovementPattern: "vertical_press",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "HIGH",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Lat Pulldown": {
+    dnaMovementPattern: "vertical_pull",
+    requiredEquipment: ["selectorized_machine"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Cable Pulldown": {
+    dnaMovementPattern: "vertical_pull",
+    requiredEquipment: ["cable"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Weighted Pull-Up": {
+    dnaMovementPattern: "vertical_pull",
+    requiredEquipment: [],
+    stabilityDemand: null,
+    axialLoading: null,
+    catalogLifecycle: "CURATED",
+  },
+  "Cable Curl": {
+    dnaMovementPattern: "elbow_flexion",
+    requiredEquipment: ["cable"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dumbbell Overhead Triceps Extension": {
+    dnaMovementPattern: "elbow_extension",
+    requiredEquipment: ["dumbbell"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "LOW",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Bench Dip": {
+    dnaMovementPattern: "elbow_extension",
+    requiredEquipment: ["bench"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Cable Crunch": {
+    dnaMovementPattern: "trunk_flexion",
+    requiredEquipment: ["cable"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Dead Bug": {
+    dnaMovementPattern: "anti_extension",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Machine Leg Curl": {
+    dnaMovementPattern: "knee_flexion",
+    requiredEquipment: ["selectorized_machine"],
+    stabilityDemand: "LOW",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Front Squat": {
+    dnaMovementPattern: "squat",
+    requiredEquipment: ["barbell", "rack"],
+    stabilityDemand: "HIGH",
+    axialLoading: "HIGH",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Bodyweight Squat (Controlled Range)": {
+    dnaMovementPattern: "squat",
+    requiredEquipment: ["bodyweight"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Cable Single-Leg Hip Extension": {
+    dnaMovementPattern: "hip_extension",
+    requiredEquipment: ["cable"],
+    stabilityDemand: "HIGH",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+  "Cable Pallof Press": {
+    dnaMovementPattern: "anti_rotation",
+    requiredEquipment: ["cable"],
+    stabilityDemand: "MODERATE",
+    axialLoading: "NONE",
+    catalogLifecycle: "ACTIVE",
+  },
+});
+
+export const EXERCISE_CATALOG_PARTIAL_ROW_NAMES = Object.freeze([
+  "Bodyweight Inverted Row",
+  "Dumbbell Row",
+  "Weighted Pull-Up",
+]);
+
+export function getExerciseCatalogCurationByName(nameEn) {
+  return EXERCISE_CATALOG_METADATA_BY_NAME_EN[nameEn] ?? null;
+}
+
+export function buildCuratedExerciseCatalogFields({ nameEn, slug }) {
+  const metadata = getExerciseCatalogCurationByName(nameEn);
+  if (!metadata) {
+    throw new Error(`Missing exercise catalog curation metadata for "${nameEn}".`);
+  }
+
+  return {
+    slug,
+    dnaMovementPattern: metadata.dnaMovementPattern,
+    requiredEquipment: [...metadata.requiredEquipment],
+    stabilityDemand: metadata.stabilityDemand,
+    axialLoading: metadata.axialLoading,
+    catalogLifecycle: metadata.catalogLifecycle,
+    catalogSource: EXERCISE_CATALOG_CURATION_SOURCE,
+    catalogCurationVersion: EXERCISE_CATALOG_CURATION_VERSION,
+  };
+}

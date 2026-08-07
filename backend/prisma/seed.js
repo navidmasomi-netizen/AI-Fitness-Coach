@@ -1,6 +1,14 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import {
+  EXERCISE_CATALOG_METADATA_BY_NAME_EN,
+  buildCuratedExerciseCatalogFields,
+} from "../src/services/exerciseCatalogCuration.js";
+import {
+  buildUniqueExerciseCatalogSlugs,
+  validateExerciseCatalogMetadataSet,
+} from "../src/services/exerciseCatalogValidation.js";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
@@ -478,30 +486,45 @@ async function seedExercises() {
 
   const created = {};
   const unmapped = [];
+  const slugByNameEn = buildUniqueExerciseCatalogSlugs(RAW_EXERCISES);
+  const catalogMetadataRecords = [];
 
   for (const ex of RAW_EXERCISES) {
     const equipment = equipmentMap[ex.equipment];
     const difficulty = difficultyMap[ex.difficulty];
     const movementPattern = movementPatternMap[ex.movement_pattern];
+    const catalogMetadata = EXERCISE_CATALOG_METADATA_BY_NAME_EN[ex.name_en];
 
     if (!equipment) unmapped.push(`equipment: "${ex.equipment}" (${ex.name_fa})`);
     if (!difficulty) unmapped.push(`difficulty: "${ex.difficulty}" (${ex.name_fa})`);
     if (!movementPattern) unmapped.push(`movement_pattern: "${ex.movement_pattern}" (${ex.name_fa})`);
+    if (!catalogMetadata) unmapped.push(`catalog_metadata: missing (${ex.name_en})`);
 
     const repRange = parseRange(ex.default_rep_range);
     const restRange = parseRange(ex.default_rest_range);
+    const slug = slugByNameEn.get(ex.name_en);
+
+    const curatedCatalogFields = buildCuratedExerciseCatalogFields({
+      nameEn: ex.name_en,
+      slug: slug || null,
+    });
 
     const exerciseData = {
       nameFa: ex.name_fa,
       nameEn: ex.name_en || null,
+      slug: curatedCatalogFields.slug,
       description: ex.desc || null,
       icon: ex.gif || null,
       primaryMuscles: ex.primary_muscles || [],
       secondaryMuscles: ex.secondary_muscles || [],
       movementPattern: movementPattern || null,
+      dnaMovementPattern: curatedCatalogFields.dnaMovementPattern,
       equipment: equipment || null,
+      requiredEquipment: curatedCatalogFields.requiredEquipment,
       difficulty: difficulty || null,
       complexity: ex.complexity || null,
+      stabilityDemand: curatedCatalogFields.stabilityDemand,
+      axialLoading: curatedCatalogFields.axialLoading,
       suitableGoals: ex.suitable_goals || [],
       contraindications: ex.contraindications || [],
       jointStressFlags: ex.joint_stress_flags || [],
@@ -511,7 +534,20 @@ async function seedExercises() {
       defaultRestSecondsLow: restRange.low,
       defaultRestSecondsHigh: restRange.high,
       progressionType: ex.progression_type || null,
+      catalogLifecycle: curatedCatalogFields.catalogLifecycle,
+      catalogSource: curatedCatalogFields.catalogSource,
+      catalogCurationVersion: curatedCatalogFields.catalogCurationVersion,
     };
+
+    catalogMetadataRecords.push({
+      nameEn: ex.name_en,
+      slug: exerciseData.slug,
+      dnaMovementPattern: exerciseData.dnaMovementPattern,
+      requiredEquipment: exerciseData.requiredEquipment,
+      stabilityDemand: exerciseData.stabilityDemand,
+      axialLoading: exerciseData.axialLoading,
+      catalogLifecycle: exerciseData.catalogLifecycle,
+    });
 
     const existingExercise = await prisma.exercise.findFirst({
       where: { nameFa: ex.name_fa },
@@ -540,14 +576,20 @@ async function seedExercises() {
     console.log("No unmapped exercise values.");
   }
 
+  const catalogValidationErrors = validateExerciseCatalogMetadataSet(catalogMetadataRecords);
+  if (catalogValidationErrors.length > 0) {
+    throw new Error(
+      `Exercise catalog seed metadata validation failed:\n${catalogValidationErrors
+        .map((error) => ` - ${error}`)
+        .join("\n")}`
+    );
+  }
+
   return created;
 }
 
 async function seedPrograms(exerciseByName) {
-  console.log("Clearing existing Program records...");
-  await prisma.programDayExercise.deleteMany({});
-  await prisma.programDay.deleteMany({});
-  await prisma.program.deleteMany({});
+  console.log("Upserting static Program records...");
 
   const missingRefs = [];
   let programCount = 0;
@@ -557,26 +599,55 @@ async function seedPrograms(exerciseByName) {
   for (const prog of RAW_PROGRAMS) {
     const splitFamily = splitFamilyForProgram(prog.goal_key, prog.days.length);
 
-    const programRow = await prisma.program.create({
-      data: {
-        name: prog.name,
-        splitFamily,
-        goal: prog.goal_key,
-        isStatic: true,
-      },
+    const existingProgram = await prisma.program.findFirst({
+      where: { name: prog.name, isStatic: true },
+      select: { id: true },
     });
-    programCount += 1;
+
+    const programRow = existingProgram
+      ? await prisma.program.update({
+          where: { id: existingProgram.id },
+          data: {
+            splitFamily,
+            goal: prog.goal_key,
+            isStatic: true,
+          },
+        })
+      : await prisma.program.create({
+          data: {
+            name: prog.name,
+            splitFamily,
+            goal: prog.goal_key,
+            isStatic: true,
+          },
+        });
+    programCount += existingProgram ? 0 : 1;
 
     for (let dayIndex = 0; dayIndex < prog.days.length; dayIndex++) {
       const day = prog.days[dayIndex];
-      const dayRow = await prisma.programDay.create({
-        data: {
+      const existingDay = await prisma.programDay.findFirst({
+        where: {
           programId: programRow.id,
           dayIndex,
-          name: day.day,
         },
+        select: { id: true },
       });
-      dayCount += 1;
+
+      const dayRow = existingDay
+        ? await prisma.programDay.update({
+            where: { id: existingDay.id },
+            data: {
+              name: day.day,
+            },
+          })
+        : await prisma.programDay.create({
+            data: {
+              programId: programRow.id,
+              dayIndex,
+              name: day.day,
+            },
+          });
+      dayCount += existingDay ? 0 : 1;
 
       for (let order = 0; order < day.exercises.length; order++) {
         const exerciseName = day.exercises[order];
@@ -585,21 +656,39 @@ async function seedPrograms(exerciseByName) {
           missingRefs.push(`"${exerciseName}" referenced in program "${prog.name}" / day "${day.day}" not found in Exercise table`);
           continue;
         }
-        await prisma.programDayExercise.create({
-          data: {
+
+        const existingProgramDayExercise = await prisma.programDayExercise.findFirst({
+          where: {
             programDayId: dayRow.id,
-            exerciseId: exerciseRow.id,
             order,
-            sets: setsForComplexity(exerciseRow.complexity),
-            repRangeLow: exerciseRow.defaultRepRangeLow ?? 0,
-            repRangeHigh: exerciseRow.defaultRepRangeHigh ?? 0,
-            restSeconds: exerciseRow.defaultRestSecondsLow ?? 60,
-            durationIncrementSeconds: exerciseRow.durationIncrementSeconds,
-            intensity: null,
-            progressionType: exerciseRow.progressionType || null,
           },
+          select: { id: true },
         });
-        dayExerciseCount += 1;
+
+        const programDayExerciseData = {
+          programDayId: dayRow.id,
+          exerciseId: exerciseRow.id,
+          order,
+          sets: setsForComplexity(exerciseRow.complexity),
+          repRangeLow: exerciseRow.defaultRepRangeLow ?? 0,
+          repRangeHigh: exerciseRow.defaultRepRangeHigh ?? 0,
+          restSeconds: exerciseRow.defaultRestSecondsLow ?? 60,
+          durationIncrementSeconds: exerciseRow.durationIncrementSeconds,
+          intensity: null,
+          progressionType: exerciseRow.progressionType || null,
+        };
+
+        if (existingProgramDayExercise) {
+          await prisma.programDayExercise.update({
+            where: { id: existingProgramDayExercise.id },
+            data: programDayExerciseData,
+          });
+        } else {
+          await prisma.programDayExercise.create({
+            data: programDayExerciseData,
+          });
+          dayExerciseCount += 1;
+        }
       }
     }
   }
