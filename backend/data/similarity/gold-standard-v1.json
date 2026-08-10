@@ -1,0 +1,1745 @@
+{
+  "version": "gold-standard-v1.1",
+  "createdAt": "2026-08-09",
+  "updatedAt": "2026-08-09",
+  "maintainer": "AI Fitness Coach Validation Engineering",
+  "categoryDefinitions": {
+    "VERY_HIGH": "Exercises are extremely similar across their intrinsic facts and differ only in narrow implementation details.",
+    "HIGH": "Exercises share a clearly similar training role across multiple intrinsic facts, with meaningful but non-dominant differences.",
+    "MEDIUM": "Exercises share some intrinsic facts, but the differences materially reduce semantic similarity.",
+    "LOW": "Exercises have limited intrinsic overlap and are not close semantic matches.",
+    "VERY_LOW": "Exercises are mostly unrelated across their intrinsic facts.",
+    "UNAVAILABLE": "The current Exercise DNA is insufficient to evaluate semantic similarity."
+  },
+  "pairs": [
+    {
+      "id": "gsv1-001",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Front Squat",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same movement pattern; same class; strong lower-body overlap.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-002",
+      "exerciseA": "Bench Press",
+      "exerciseB": "Dumbbell Bench Press",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same horizontal press role; same class; strong muscle overlap.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-003",
+      "exerciseA": "Pull-Up",
+      "exerciseB": "Chin-Up (Synthetic)",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "HIGH",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Same vertical pull family; same class; strong back and arm overlap.",
+      "tags": [
+        "mixed",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-004",
+      "exerciseA": "Lat Pulldown",
+      "exerciseB": "Cable Pulldown",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same vertical pull pattern; same class; very similar musculature.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-005",
+      "exerciseA": "Cable Curl",
+      "exerciseB": "Dumbbell Curl",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same elbow flexion role; same class; same primary target.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-006",
+      "exerciseA": "Farmer Carry (Synthetic)",
+      "exerciseB": "Suitcase Carry (Synthetic)",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "HIGH",
+      "source": "SYNTHETIC",
+      "activeForCalibration": true,
+      "rationale": "Same carry family; same class; strong trunk and grip demand overlap.",
+      "tags": [
+        "synthetic",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal",
+        "demand-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-007",
+      "exerciseA": "Overhead Press",
+      "exerciseB": "Dumbbell Shoulder Press",
+      "expectedCategory": "HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same vertical press role; same class; strong shoulder and triceps overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-008",
+      "exerciseA": "Machine Shoulder Press",
+      "exerciseB": "Dumbbell Shoulder Press",
+      "expectedCategory": "HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same vertical press role; same class; same primary target.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-009",
+      "exerciseA": "Bench Press",
+      "exerciseB": "Machine Chest Press",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same horizontal press role; same class; same primary and secondary targets.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-010",
+      "exerciseA": "Bodyweight Reverse Lunge",
+      "exerciseB": "Dumbbell Reverse Lunge",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same lunge variation; same class; same target pattern.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-011",
+      "exerciseA": "Step-Up",
+      "exerciseB": "Dumbbell Step-Up",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same step-up variation; same class; same target pattern.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-012",
+      "exerciseA": "Romanian Deadlift",
+      "exerciseB": "Dumbbell Romanian Deadlift",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same hinge pattern; same class; same posterior-chain emphasis.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-013",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Goblet Squat (Synthetic)",
+      "expectedCategory": "HIGH",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Same squat pattern; same class; meaningful muscle overlap.",
+      "tags": [
+        "mixed",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-014",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Leg Press",
+      "expectedCategory": "HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same squat pattern; same class; similar lower-body role.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-015",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Bodyweight Squat (Controlled Range)",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same squat pattern; same class; similar lower-body role.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-016",
+      "exerciseA": "Deadlift",
+      "exerciseB": "Romanian Deadlift",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same hinge family; same class; posterior-chain overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-017",
+      "exerciseA": "Deadlift",
+      "exerciseB": "Dumbbell Romanian Deadlift",
+      "expectedCategory": "HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same hinge family; same class; posterior-chain overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-018",
+      "exerciseA": "Hip Thrust",
+      "exerciseB": "Glute Bridge",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same hip extension family; same class; strong glute emphasis overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-019",
+      "exerciseA": "Lunge",
+      "exerciseB": "Bodyweight Reverse Lunge",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same lunge family; same class; similar lower-body role.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-020",
+      "exerciseA": "Lunge",
+      "exerciseB": "Dumbbell Reverse Lunge",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same lunge family; same class; similar lower-body role.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-021",
+      "exerciseA": "Lunge",
+      "exerciseB": "Step-Up",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Related single-leg lower-body role; same class; meaningful muscle overlap.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-022",
+      "exerciseA": "Bench Press",
+      "exerciseB": "Push-Up",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same horizontal press role; same class; strong chest and triceps overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-023",
+      "exerciseA": "Dumbbell Bench Press",
+      "exerciseB": "Push-Up",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same horizontal press role; same class; strong chest and triceps overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-024",
+      "exerciseA": "Machine Chest Press",
+      "exerciseB": "Push-Up",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same horizontal press role; same class; same primary target.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-025",
+      "exerciseA": "Overhead Press",
+      "exerciseB": "Pike Push-Up",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same vertical press role; same class; shoulder and triceps overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-026",
+      "exerciseA": "Overhead Press",
+      "exerciseB": "Machine Shoulder Press",
+      "expectedCategory": "HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same vertical press role; same class; same primary target.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-027",
+      "exerciseA": "Pull-Up",
+      "exerciseB": "Lat Pulldown",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same vertical pull role; same class; strong back overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-028",
+      "exerciseA": "Pull-Up",
+      "exerciseB": "Cable Pulldown",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same vertical pull role; same class; strong back overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-029",
+      "exerciseA": "Barbell Row",
+      "exerciseB": "Cable Row",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same horizontal pull role; same class; strong back overlap.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-030",
+      "exerciseA": "Barbell Row",
+      "exerciseB": "Chest-Supported Dumbbell Row (Synthetic)",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Same horizontal pull role; same class; strong back overlap.",
+      "tags": [
+        "mixed",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-031",
+      "exerciseA": "Bodyweight Inverted Row",
+      "exerciseB": "Chest-Supported Dumbbell Row (Synthetic)",
+      "expectedCategory": "HIGH",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": false,
+      "rationale": "Same horizontal pull role; same class; strong back overlap.",
+      "tags": [
+        "mixed",
+        "high",
+        "inactive-calibration",
+        "class-signal",
+        "muscle-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-032",
+      "exerciseA": "Crunch",
+      "exerciseB": "Cable Crunch",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same trunk flexion role; same class; same primary target.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-033",
+      "exerciseA": "Plank",
+      "exerciseB": "Dead Bug",
+      "expectedCategory": "VERY_HIGH",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same anti-extension family; same class; core-focused role.",
+      "tags": [
+        "catalog",
+        "very_high",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-034",
+      "exerciseA": "Cable Pallof Press",
+      "exerciseB": "Plank",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Similar trunk stability role; same class; core emphasis.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "demand-signal"
+      ]
+    },
+    {
+      "id": "gsv1-035",
+      "exerciseA": "Cable Single-Leg Hip Extension",
+      "exerciseB": "Hip Thrust",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same hip-extension family; same class; strong glute overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-036",
+      "exerciseA": "Cable Single-Leg Hip Extension",
+      "exerciseB": "Glute Bridge",
+      "expectedCategory": "HIGH",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same hip-extension family; same class; strong glute overlap.",
+      "tags": [
+        "catalog",
+        "high",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-037",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Deadlift",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same class; shared demand traits; different movement patterns.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "demand-signal"
+      ]
+    },
+    {
+      "id": "gsv1-038",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Lunge",
+      "expectedCategory": "MEDIUM",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared lower-body role; same class; different movement patterns.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-039",
+      "exerciseA": "Front Squat",
+      "exerciseB": "Leg Press",
+      "expectedCategory": "MEDIUM",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared lower-body role; same class; different demand profile.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "demand-signal"
+      ]
+    },
+    {
+      "id": "gsv1-040",
+      "exerciseA": "Goblet Squat (Synthetic)",
+      "exerciseB": "Lunge",
+      "expectedCategory": "MEDIUM",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Shared lower-body role; same class; different movement patterns.",
+      "tags": [
+        "mixed",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-041",
+      "exerciseA": "Deadlift",
+      "exerciseB": "Hip Thrust",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Posterior-chain overlap; same class; different movement patterns.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-042",
+      "exerciseA": "Romanian Deadlift",
+      "exerciseB": "Hip Thrust",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Posterior-chain overlap; same class; different movement patterns.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-043",
+      "exerciseA": "Dumbbell Romanian Deadlift",
+      "exerciseB": "Glute Bridge",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Posterior-chain overlap; same class; different loading structure.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-044",
+      "exerciseA": "Leg Press",
+      "exerciseB": "Dumbbell Step-Up",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared lower-body role; same class; different movement patterns.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-045",
+      "exerciseA": "Step-Up",
+      "exerciseB": "Bodyweight Reverse Lunge",
+      "expectedCategory": "MEDIUM",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared single-leg role; same class; different movement patterns.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-046",
+      "exerciseA": "Bench Press",
+      "exerciseB": "Overhead Press",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared upper-body press role; same class; different movement patterns.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-047",
+      "exerciseA": "Dumbbell Bench Press",
+      "exerciseB": "Machine Shoulder Press",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared upper-body press role; same class; different primary targets.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-048",
+      "exerciseA": "Push-Up",
+      "exerciseB": "Pike Push-Up",
+      "expectedCategory": "MEDIUM",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Bodyweight pressing role; same class; different movement patterns.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-049",
+      "exerciseA": "Pull-Up",
+      "exerciseB": "Barbell Row",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared back emphasis; same class; different pull plane.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-050",
+      "exerciseA": "Lat Pulldown",
+      "exerciseB": "Cable Row",
+      "expectedCategory": "MEDIUM",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared back emphasis; same class; different pull plane.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-051",
+      "exerciseA": "Cable Pulldown",
+      "exerciseB": "Barbell Row",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared back emphasis; same class; different pull plane.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal"
+      ]
+    },
+    {
+      "id": "gsv1-052",
+      "exerciseA": "Chest-Supported Dumbbell Row (Synthetic)",
+      "exerciseB": "Dumbbell Row",
+      "expectedCategory": "MEDIUM",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": false,
+      "rationale": "Same broad row family; same class; current catalog row remains partially ambiguous.",
+      "tags": [
+        "mixed",
+        "medium",
+        "inactive-calibration",
+        "class-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-053",
+      "exerciseA": "Crunch",
+      "exerciseB": "Plank",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same trunk region; same class; different movement families.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-054",
+      "exerciseA": "Cable Crunch",
+      "exerciseB": "Dead Bug",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same trunk region; same class; different movement families.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-055",
+      "exerciseA": "Cable Pallof Press",
+      "exerciseB": "Dead Bug",
+      "expectedCategory": "MEDIUM",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same trunk stability region; same class; different movement families.",
+      "tags": [
+        "catalog",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "demand-signal"
+      ]
+    },
+    {
+      "id": "gsv1-056",
+      "exerciseA": "Farmer Carry (Synthetic)",
+      "exerciseB": "Back Squat",
+      "expectedCategory": "LOW",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Shared trunk and lower-body demand; same class; different movement families.",
+      "tags": [
+        "mixed",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "demand-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-057",
+      "exerciseA": "Farmer Carry (Synthetic)",
+      "exerciseB": "Barbell Row",
+      "expectedCategory": "MEDIUM",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Shared trunk and back demand; same class; different movement families.",
+      "tags": [
+        "mixed",
+        "medium",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "demand-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-058",
+      "exerciseA": "Lateral Raise (Synthetic)",
+      "exerciseB": "Machine Shoulder Press",
+      "expectedCategory": "LOW",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Shared shoulder emphasis; different class and movement; not a close match.",
+      "tags": [
+        "mixed",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-059",
+      "exerciseA": "Machine Leg Curl",
+      "exerciseB": "Romanian Deadlift",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared hamstring involvement; different class and movement; posterior-chain overlap only.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-060",
+      "exerciseA": "Leg Extension (Synthetic)",
+      "exerciseB": "Goblet Squat (Synthetic)",
+      "expectedCategory": "LOW",
+      "confidence": "LOW",
+      "source": "SYNTHETIC",
+      "activeForCalibration": true,
+      "rationale": "Shared quadriceps involvement; different class and movement; lower-body role only.",
+      "tags": [
+        "synthetic",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-061",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Machine Leg Curl",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Limited lower-body overlap; different movement; different class.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-062",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Cable Single-Leg Hip Extension",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Some glute overlap; different movement; different equipment and demand.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "movement-signal",
+        "muscle-signal",
+        "equipment-signal",
+        "demand-signal"
+      ]
+    },
+    {
+      "id": "gsv1-063",
+      "exerciseA": "Deadlift",
+      "exerciseB": "Pull-Up",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared broad back involvement; different movement families; different equipment.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "movement-signal",
+        "equipment-signal"
+      ]
+    },
+    {
+      "id": "gsv1-064",
+      "exerciseA": "Deadlift",
+      "exerciseB": "Cable Row",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Shared broad back involvement; different movement families; different equipment and class emphasis.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "movement-signal",
+        "equipment-signal"
+      ]
+    },
+    {
+      "id": "gsv1-065",
+      "exerciseA": "Hip Thrust",
+      "exerciseB": "Bench Press",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Different regions; different movement families; same class only.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-066",
+      "exerciseA": "Lunge",
+      "exerciseB": "Bench Press",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Different regions; different movement families; same class only.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-067",
+      "exerciseA": "Step-Up",
+      "exerciseB": "Pull-Up",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Different regions; different movement families; same class only.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-068",
+      "exerciseA": "Bench Press",
+      "exerciseB": "Barbell Row",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same class; upper-body compound role; opposite movement family.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-069",
+      "exerciseA": "Overhead Press",
+      "exerciseB": "Pull-Up",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same class; upper-body compound role; different movement family.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-070",
+      "exerciseA": "Pull-Up",
+      "exerciseB": "Push-Up",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same class; bodyweight compound role; different movement family.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-071",
+      "exerciseA": "Barbell Row",
+      "exerciseB": "Cable Pushdown",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Limited arm overlap; different class; different movement family.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-072",
+      "exerciseA": "Cable Row",
+      "exerciseB": "Bench Dip",
+      "expectedCategory": "LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Limited arm overlap; different class; different movement family.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-073",
+      "exerciseA": "Cable Curl",
+      "exerciseB": "Bench Dip",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Arm-focused but opposite elbow role; same class; different equipment.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "equipment-signal"
+      ]
+    },
+    {
+      "id": "gsv1-074",
+      "exerciseA": "Machine Leg Curl",
+      "exerciseB": "Leg Press",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same broad region; different class; different movement family.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-075",
+      "exerciseA": "Machine Leg Curl",
+      "exerciseB": "Cable Single-Leg Hip Extension",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "MEDIUM",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Posterior-chain overlap; different class; different movement family.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal"
+      ]
+    },
+    {
+      "id": "gsv1-076",
+      "exerciseA": "Leg Extension (Synthetic)",
+      "exerciseB": "Cable Crunch",
+      "expectedCategory": "LOW",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Different regions; same class only; different movement family.",
+      "tags": [
+        "mixed",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-077",
+      "exerciseA": "Crunch",
+      "exerciseB": "Dumbbell Curl",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Different regions; same class only; different movement family.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-078",
+      "exerciseA": "Dead Bug",
+      "exerciseB": "Cable Curl",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Different regions; same class only; different movement family.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal"
+      ]
+    },
+    {
+      "id": "gsv1-079",
+      "exerciseA": "Cable Pallof Press",
+      "exerciseB": "Cable Pushdown",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Same equipment; same class; different exercise role.",
+      "tags": [
+        "catalog",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "equipment-signal"
+      ]
+    },
+    {
+      "id": "gsv1-080",
+      "exerciseA": "Farmer Carry (Synthetic)",
+      "exerciseB": "Dumbbell Bench Press",
+      "expectedCategory": "LOW",
+      "confidence": "HIGH",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Same class; some dumbbell overlap; different movement family.",
+      "tags": [
+        "mixed",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-081",
+      "exerciseA": "Suitcase Carry (Synthetic)",
+      "exerciseB": "Push-Up",
+      "expectedCategory": "LOW",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Same class; different regions and movement family.",
+      "tags": [
+        "mixed",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-082",
+      "exerciseA": "Lateral Raise (Synthetic)",
+      "exerciseB": "Bench Press",
+      "expectedCategory": "LOW",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Some shoulder overlap; different class; different movement family.",
+      "tags": [
+        "mixed",
+        "low",
+        "active-calibration",
+        "class-signal",
+        "movement-signal",
+        "muscle-signal",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-083",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Cable Curl",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-084",
+      "exerciseA": "Back Squat",
+      "exerciseB": "Cable Pushdown",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-085",
+      "exerciseA": "Bench Press",
+      "exerciseB": "Machine Leg Curl",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-086",
+      "exerciseA": "Pull-Up",
+      "exerciseB": "Crunch",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-087",
+      "exerciseA": "Cable Pulldown",
+      "exerciseB": "Bench Dip",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-088",
+      "exerciseA": "Barbell Row",
+      "exerciseB": "Cable Crunch",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-089",
+      "exerciseA": "Overhead Press",
+      "exerciseB": "Cable Curl",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-090",
+      "exerciseA": "Pike Push-Up",
+      "exerciseB": "Machine Leg Curl",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-091",
+      "exerciseA": "Leg Press",
+      "exerciseB": "Cable Pushdown",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-092",
+      "exerciseA": "Glute Bridge",
+      "exerciseB": "Cable Curl",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-093",
+      "exerciseA": "Lunge",
+      "exerciseB": "Dumbbell Curl",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-094",
+      "exerciseA": "Cable Pallof Press",
+      "exerciseB": "Bench Press",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "HIGH",
+      "source": "CATALOG",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "catalog",
+        "very_low",
+        "active-calibration"
+      ]
+    },
+    {
+      "id": "gsv1-095",
+      "exerciseA": "Lateral Raise (Synthetic)",
+      "exerciseB": "Deadlift",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "mixed",
+        "very_low",
+        "active-calibration",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-096",
+      "exerciseA": "Farmer Carry (Synthetic)",
+      "exerciseB": "Cable Crunch",
+      "expectedCategory": "VERY_LOW",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "Mostly unrelated exercise facts.",
+      "tags": [
+        "mixed",
+        "very_low",
+        "active-calibration",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-097",
+      "exerciseA": "Unknown Mobility Drill (Synthetic Partial)",
+      "exerciseB": "Unknown Isometric Hold (Synthetic Partial)",
+      "expectedCategory": "UNAVAILABLE",
+      "confidence": "LOW",
+      "source": "SYNTHETIC",
+      "activeForCalibration": true,
+      "rationale": "Both fixtures intentionally lack comparable DNA.",
+      "tags": [
+        "synthetic",
+        "unavailable",
+        "active-calibration",
+        "missing-dna",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-098",
+      "exerciseA": "Unknown Mobility Drill (Synthetic Partial)",
+      "exerciseB": "Weighted Pull-Up",
+      "expectedCategory": "UNAVAILABLE",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": false,
+      "rationale": "Insufficient DNA on one side plus partial real catalog row.",
+      "tags": [
+        "mixed",
+        "unavailable",
+        "inactive-calibration",
+        "missing-dna",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-099",
+      "exerciseA": "Unknown Mobility Drill (Synthetic Partial)",
+      "exerciseB": "Bodyweight Inverted Row",
+      "expectedCategory": "UNAVAILABLE",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": false,
+      "rationale": "Insufficient DNA on one side plus partial real catalog row.",
+      "tags": [
+        "mixed",
+        "unavailable",
+        "inactive-calibration",
+        "missing-dna",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-100",
+      "exerciseA": "Unknown Isometric Hold (Synthetic Partial)",
+      "exerciseB": "Dumbbell Row",
+      "expectedCategory": "UNAVAILABLE",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": false,
+      "rationale": "Insufficient DNA on one side plus partial real catalog row.",
+      "tags": [
+        "mixed",
+        "unavailable",
+        "inactive-calibration",
+        "missing-dna",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-101",
+      "exerciseA": "Unknown Isometric Hold (Synthetic Partial)",
+      "exerciseB": "Weighted Pull-Up",
+      "expectedCategory": "UNAVAILABLE",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": false,
+      "rationale": "Insufficient DNA on one side plus partial real catalog row.",
+      "tags": [
+        "mixed",
+        "unavailable",
+        "inactive-calibration",
+        "missing-dna",
+        "synthetic-fixture"
+      ]
+    },
+    {
+      "id": "gsv1-102",
+      "exerciseA": "Unknown Mobility Drill (Synthetic Partial)",
+      "exerciseB": "Crunch",
+      "expectedCategory": "UNAVAILABLE",
+      "confidence": "LOW",
+      "source": "MIXED",
+      "activeForCalibration": true,
+      "rationale": "One fixture lacks all comparable DNA.",
+      "tags": [
+        "mixed",
+        "unavailable",
+        "active-calibration",
+        "missing-dna",
+        "synthetic-fixture"
+      ]
+    }
+  ]
+}

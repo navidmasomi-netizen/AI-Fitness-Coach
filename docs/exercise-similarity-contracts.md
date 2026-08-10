@@ -218,6 +218,117 @@ Comparator results always include:
 - `dimension`
 - `status`
 - `score`
+
+## Validation
+
+Similarity V1 also has a repository-owned validation layer. It is separate
+from product behavior and exists only to measure semantic quality.
+
+Validation assets:
+
+- `backend/data/similarity/gold-standard-v1.json`
+- calibration fixtures under `backend/src/services/exerciseSimilarity/`
+- a pure calibration runner and report generator
+
+### Gold Dataset Governance
+
+The gold dataset is a versioned product asset. It is governed independently
+from the Similarity Engine and can be corrected without changing product
+similarity behavior.
+
+Top-level dataset metadata:
+
+- `version`
+- `createdAt`
+- `updatedAt`
+- `maintainer`
+
+Each pair record includes:
+
+- `id`
+- `exerciseA`
+- `exerciseB`
+- `expectedCategory`
+- `confidence`
+- `source`
+- `activeForCalibration`
+- `rationale`
+- `tags`
+
+Pair metadata semantics:
+
+- `confidence`
+  - `HIGH`
+  - `MEDIUM`
+  - `LOW`
+- `source`
+  - `CATALOG`
+  - `SYNTHETIC`
+  - `MIXED`
+
+`confidence` reflects label trust, not engine confidence and not replacement
+eligibility.
+
+`activeForCalibration` controls whether a pair participates in aggregate
+calibration metrics. Pairs that depend on unresolved catalog rows stay in the
+dataset for traceability, but they are excluded from `ACTIVE_ONLY` and
+`HIGH_CONFIDENCE_ONLY` report modes.
+
+Dataset lifecycle:
+
+1. add or revise pairs with rationale and metadata
+2. validate schema and fixture linkage
+3. run calibration
+4. audit mismatches
+5. correct gold labels before any policy tuning
+
+Gold dataset changes must not be used to smuggle in policy tuning. Rule 26
+remains locked: policy changes require validated gold-standard evidence.
+
+Validation-only semantic categories:
+
+- `VERY_HIGH`
+- `HIGH`
+- `MEDIUM`
+- `LOW`
+- `VERY_LOW`
+- `UNAVAILABLE`
+
+Validation report filter modes:
+
+- `ALL`
+  - includes every pair in the dataset
+- `ACTIVE_ONLY`
+  - excludes pairs with `activeForCalibration: false`
+- `HIGH_CONFIDENCE_ONLY`
+  - includes only `activeForCalibration: true` pairs with `confidence: HIGH`
+
+These filter modes are for measurement only. They do not affect product
+similarity scoring.
+
+Validation-only thresholds:
+
+- `>= 0.85` => `VERY_HIGH`
+- `>= 0.70` => `HIGH`
+- `>= 0.45` => `MEDIUM`
+- `>= 0.20` => `LOW`
+- `< 0.20` => `VERY_LOW`
+- engine `UNAVAILABLE` => validation `UNAVAILABLE`
+
+These thresholds are not product behavior and do not change Similarity Policy
+weights or comparator formulas by themselves.
+
+Calibration reports must include:
+
+- overall counts
+- category distributions
+- confusion matrix
+- false-high and false-low mismatches
+- largest mismatches
+- top ambiguous cases near category thresholds
+- comparator breakdowns for outliers
+
+Calibration is diagnostic only. It does not tune the policy automatically.
 - `reasons`
 - optional machine-readable `evidence`
 
