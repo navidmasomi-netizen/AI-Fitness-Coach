@@ -644,3 +644,63 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Context`
 - `rationale`: Missing or explicitly unknown replacement reason must not silently become an implicit policy override.
 - `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 65
+
+- `id`: `RULE_065`
+- `title`: `Context Policy Consumes Core Decision Evidence`
+- `statement`: Context-aware policy consumes Core Decision output. It does not recompute Similarity, Candidate, Ranking, Workout Integrity, or Core Replacement Decision.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Contextual policy must stay downstream of the intrinsic engine stack and preserve ownership boundaries.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 66
+
+- `id`: `RULE_066`
+- `title`: `Equipment Unavailability Is Contextual`
+- `statement`: Equipment unavailability may contextually disqualify a recommendation without changing intrinsic Candidate eligibility.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Runtime equipment feasibility is a contextual execution constraint, not an intrinsic exercise similarity or eligibility fact.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 67
+
+- `id`: `RULE_067`
+- `title`: `Intent Requires Explicit Policy Rules`
+- `statement`: Replacement Intent may affect contextual decision behavior only through explicit intent-specific rules.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Intent should never create hidden policy effects without a declared rule contract.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 68
+
+- `id`: `RULE_068`
+- `title`: `Discomfort Remains Non-Medical In Context Policy`
+- `statement`: `DISCOMFORT` remains non-medical in Context-Aware Policy V1. It must not create injury diagnosis, contraindication logic, or medical recommendations.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Contextual discomfort reporting is still not a medical inference engine.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 69
+
+- `id`: `RULE_069`
+- `title`: `Unknown Context Preserves Core Behavior`
+- `statement`: Unknown context preserves Core behavior and must not introduce hidden constraints.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Missing context is not negative context and must not silently filter otherwise valid recommendations.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 70
+
+- `id`: `RULE_070`
+- `title`: `Context Rejection Is Separate From Intrinsic Eligibility`
+- `statement`: Contextual rejection and intrinsic Candidate eligibility are separate evidence domains.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Downstream contextual feasibility must not rewrite upstream eligibility evidence.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
