@@ -1,4 +1,5 @@
 import { CATALOG_EQUIPMENT_VALUES } from "../exerciseCatalogValidation.js";
+import { buildReplacementIntentV1 } from "./replacementIntent.js";
 
 export const REPLACEMENT_CONTEXT_V1_VERSION = "replacement-context-v1";
 
@@ -79,7 +80,7 @@ function normalizeReplacementIntent(replacementIntent) {
     return null;
   }
 
-  throw new Error("replacementIntent is reserved and must be null in replacement-context-v1.");
+  return buildReplacementIntentV1(replacementIntent);
 }
 
 export function buildReplacementContextV1(rawContext) {

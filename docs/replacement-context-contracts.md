@@ -16,7 +16,10 @@ replacement ranking, workout integrity, or final recommendation decisions.
   equipmentContext: {
     availableEquipment: ["barbell", "rack"]
   } | null,
-  replacementIntent: null
+  replacementIntent: {
+    version: "replacement-intent-v1",
+    type: "UNKNOWN"
+  } | null
 }
 ```
 
@@ -31,7 +34,9 @@ In V1:
 - missing `equipmentContext` => `equipmentContext: null`
 - explicit `equipmentContext: null` => still unknown, not unavailable
 - missing `replacementIntent` => `replacementIntent: null`
-- explicit `replacementIntent: null` => reserved placeholder only
+- explicit `replacementIntent: null` => no intent object provided
+- explicit `replacementIntent.type = "UNKNOWN"` => intent object exists, but
+  the explicit reason is unknown
 
 `null` does not mean:
 
@@ -81,13 +86,23 @@ Equipment Availability continues to own:
 V1 context normalization validates canonical `CatalogEquipment` values and
 deduplicates them deterministically, but it does not evaluate feasibility.
 
-## Deferred Replacement Intent
+## Replacement Intent Boundary
 
-`replacementIntent` is reserved but intentionally not implemented in V1.
+Replacement Context may now carry either:
 
-Only `null` is accepted.
+- `replacementIntent: null`
+- a validated `replacement-intent-v1` object
 
-No intent values are introduced in this sprint.
+Replacement Context does not define intent semantics itself. Those are owned by
+the dedicated Replacement Intent contract.
+
+Replacement Context also does not infer intent from:
+
+- equipment availability
+- exercise facts
+- similarity
+- ranking
+- integrity
 
 ## Locale Decision
 

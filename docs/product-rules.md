@@ -604,3 +604,43 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Decision`
 - `rationale`: Decision orchestration must stay aligned with current upstream engine semantics until context-aware policy is explicitly added.
 - `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 61
+
+- `id`: `RULE_061`
+- `title`: `Replacement Intent Is Explicit`
+- `statement`: Replacement Intent is explicit contextual input and must not be inferred from Exercise facts.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Replacement reason is a user or runtime context fact, not an intrinsic exercise property.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 62
+
+- `id`: `RULE_062`
+- `title`: `Replacement Intent Is Finite Versioned And Validated`
+- `statement`: Replacement Intent values must be finite, versioned, machine-readable, and validated.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Contextual policy inputs need a bounded stable contract rather than free-form text or hidden enums.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 63
+
+- `id`: `RULE_063`
+- `title`: `Discomfort Is Not Medical Logic`
+- `statement`: `DISCOMFORT` represents a user-reported replacement reason only. It is not injury diagnosis, medical classification, medical recommendation, or a contraindication engine.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: User discomfort reporting must remain separate from medical or safety inference until an explicit product policy exists.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 64
+
+- `id`: `RULE_064`
+- `title`: `Unknown Intent Remains Unknown`
+- `statement`: Unknown intent remains unknown and must not trigger hidden decision policy.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Missing or explicitly unknown replacement reason must not silently become an implicit policy override.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
