@@ -284,3 +284,63 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Calibration / Governance`
 - `rationale`: Ambiguous catalog rows contaminate calibration signals and hide root-cause ownership.
 - `affected future engines`: `Calibration / Governance`, `Candidate Engine`
+
+### Rule 29
+
+- `id`: `RULE_029`
+- `title`: `Deterministic Candidate Eligibility`
+- `statement`: Candidate eligibility is determined by deterministic product rules before ranking.
+- `status`: `LOCKED`
+- `owning domain`: `Candidate Engine`
+- `rationale`: Ranking must not be responsible for discovering whether a candidate is even allowed into consideration.
+- `affected future engines`: `Candidate Engine`, `Replacement Engine`
+
+### Rule 30
+
+- `id`: `RULE_030`
+- `title`: `Similarity Alone Never Qualifies A Candidate`
+- `statement`: Similarity score alone can never qualify an exercise as a replacement candidate.
+- `status`: `LOCKED`
+- `owning domain`: `Candidate Engine`
+- `rationale`: An exercise may be similar in some dimensions while still violating deterministic product eligibility rules.
+- `affected future engines`: `Candidate Engine`, `Replacement Engine`
+
+### Rule 31
+
+- `id`: `RULE_031`
+- `title`: `Ranking Cannot Override Eligibility`
+- `statement`: Ranking can only order eligible candidates and cannot override eligibility.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Ranking is downstream ordering logic, not a permission system.
+- `affected future engines`: `Replacement Engine`
+
+### Rule 32
+
+- `id`: `RULE_032`
+- `title`: `Eligibility Must Be Explainable`
+- `statement`: Eligibility decisions must be explainable with explicit machine-readable rule outcomes.
+- `status`: `LOCKED`
+- `owning domain`: `Candidate Engine`
+- `rationale`: Downstream systems and audits must understand why a candidate passed or failed without reverse-engineering hidden logic.
+- `affected future engines`: `Candidate Engine`, `Replacement Engine`
+
+### Rule 33
+
+- `id`: `RULE_033`
+- `title`: `Candidate V1 Preserves Exercise Class`
+- `statement`: Candidate V1 preserves intrinsic exercise class, so `source.complexity` must equal `candidate.complexity`.
+- `status`: `LOCKED`
+- `owning domain`: `Candidate Engine`
+- `rationale`: `compound` vs `isolation` is a first-class gate and must be preserved before ranking.
+- `affected future engines`: `Candidate Engine`, `Replacement Engine`
+
+### Rule 34
+
+- `id`: `RULE_034`
+- `title`: `Candidate V1 Preserves Exact Movement Pattern`
+- `statement`: Candidate V1 requires exact `dnaMovementPattern` equality until an approved movement relationship policy exists.
+- `status`: `LOCKED`
+- `owning domain`: `Candidate Engine`
+- `rationale`: Conservative exact-pattern gating prevents speculative movement-family substitutions before that policy is explicitly designed.
+- `affected future engines`: `Candidate Engine`, `Replacement Engine`
