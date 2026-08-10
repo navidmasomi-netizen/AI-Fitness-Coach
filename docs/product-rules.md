@@ -434,3 +434,43 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Engine`
 - `rationale`: Ranking should score directional preservation directly instead of re-weighting upstream semantic aggregates that already encode overlapping facts.
 - `affected future engines`: `Replacement Engine`
+
+### Rule 44
+
+- `id`: `RULE_044`
+- `title`: `Workout Integrity Evaluates After Ranking`
+- `statement`: Workout Integrity is evaluated after Ranking.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Integrity depends on hypothetical workout outcomes and must consume already-ranked candidate outputs rather than redefining upstream scoring.
+- `affected future engines`: `Workout Integrity Engine`, `Replacement Decision Engine`
+
+### Rule 45
+
+- `id`: `RULE_045`
+- `title`: `Workout Integrity Cannot Redefine Upstream Semantics`
+- `statement`: Workout Integrity may reject or penalize a ranked candidate, but cannot redefine Candidate eligibility or Similarity semantics.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Candidate eligibility, Similarity, Ranking, and Workout Integrity are separate layers with separate responsibilities.
+- `affected future engines`: `Workout Integrity Engine`, `Replacement Decision Engine`
+
+### Rule 46
+
+- `id`: `RULE_046`
+- `title`: `Exact Workout Duplicates Block By Default`
+- `statement`: Exact duplicate exercises inside one workout are blocked by default unless a future explicit policy allows them.
+- `status`: `LOCKED`
+- `owning domain`: `Workout Integrity`
+- `rationale`: Duplicate exercise rows in a single workout are a deterministic structural conflict that should not pass silently.
+- `affected future engines`: `Workout Integrity Engine`, `Replacement Decision Engine`
+
+### Rule 47
+
+- `id`: `RULE_047`
+- `title`: `Workout Integrity Evaluates The Resulting Workout`
+- `statement`: Workout Integrity evaluates the resulting workout after hypothetical replacement, not the source/candidate pair in isolation.
+- `status`: `LOCKED`
+- `owning domain`: `Workout Integrity`
+- `rationale`: Workout-level constraints require seeing the candidate in the full workout context rather than only as a pairwise substitution.
+- `affected future engines`: `Workout Integrity Engine`, `Replacement Decision Engine`
