@@ -384,3 +384,53 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Engine`
 - `rationale`: A high ranking score cannot promote a blocked candidate into consideration.
 - `affected future engines`: `Replacement Engine`
+
+### Rule 39
+
+- `id`: `RULE_039`
+- `title`: `Ranking Scores Preservation Not Eligibility`
+- `statement`: Ranking V1 scores semantic preservation among already-eligible candidates and does not decide eligibility.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Eligibility is a deterministic gate owned by Candidate Engine; ranking is downstream ordering only.
+- `affected future engines`: `Replacement Engine`
+
+### Rule 40
+
+- `id`: `RULE_040`
+- `title`: `Ranking Must Not Duplicate Candidate Hard Gates`
+- `statement`: Ranking dimensions must not duplicate Candidate hard gates such as exact movement-pattern preservation and exercise-class preservation.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Candidate and ranking layers must not double-count the same product fact.
+- `affected future engines`: `Replacement Engine`
+
+### Rule 41
+
+- `id`: `RULE_041`
+- `title`: `Ranking Missing Dimensions Are Renormalized`
+- `statement`: Unavailable ranking dimensions are excluded from both numerator and denominator and remain visible in the ranking breakdown.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Missing ranking metadata must not create hidden penalty or reward.
+- `affected future engines`: `Replacement Engine`
+
+### Rule 42
+
+- `id`: `RULE_042`
+- `title`: `Ranking Scores Are Directional Preservation Signals`
+- `statement`: Ranking scores are directional semantic-preservation signals, not probabilities.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Ranking preserves the role of a specific source exercise and must not be interpreted as statistical confidence.
+- `affected future engines`: `Replacement Engine`
+
+### Rule 43
+
+- `id`: `RULE_043`
+- `title`: `No Ranking Signal Double-Counting`
+- `statement`: Replacement Ranking must not double-count factual signals already represented by other ranking dimensions. Similarity may be preserved as evidence without automatically contributing to ranking score.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Ranking should score directional preservation directly instead of re-weighting upstream semantic aggregates that already encode overlapping facts.
+- `affected future engines`: `Replacement Engine`

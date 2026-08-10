@@ -1,4 +1,6 @@
-export const REPLACEMENT_RANKING_ENGINE_V1_VERSION = "replacement-ranking-contract-v1";
+export const REPLACEMENT_RANKING_ENGINE_V1_VERSION = "replacement-ranking-v1";
+export const REPLACEMENT_RANKING_POLICY_V1_VERSION = "replacement-ranking-v1";
+export const REPLACEMENT_RANKING_SCORE_PRECISION_DECIMALS = 4;
 
 export const RANKING_RESULT_STATUSES = Object.freeze({
   AVAILABLE: "AVAILABLE",
@@ -6,16 +8,59 @@ export const RANKING_RESULT_STATUSES = Object.freeze({
 });
 
 export const RANKING_POLICY_DIMENSIONS = Object.freeze({
-  SEMANTIC_SIMILARITY: "semantic_similarity",
-  MUSCLE_PRESERVATION: "muscle_preservation",
-  EQUIPMENT_DELTA: "equipment_delta",
-  DEMAND_DELTA: "demand_delta",
+  MUSCLE_PRESERVATION: "musclePreservation",
+  EQUIPMENT_PRESERVATION: "equipmentPreservation",
+  DEMAND_PRESERVATION: "demandPreservation",
 });
 
 export const RANKING_REASON_CODES = Object.freeze({
-  EVALUATED: "RANKING_EVALUATED",
-  UNAVAILABLE: "RANKING_UNAVAILABLE",
+  MUSCLE_FULL_PRIMARY_PRESERVATION: "RANKING_MUSCLE_FULL_PRIMARY_PRESERVATION",
+  MUSCLE_PARTIAL_PRIMARY_PRESERVATION: "RANKING_MUSCLE_PARTIAL_PRIMARY_PRESERVATION",
+  MUSCLE_SECONDARY_PRESERVATION: "RANKING_MUSCLE_SECONDARY_PRESERVATION",
+  MUSCLE_SOURCE_MUSCLE_MISSING: "RANKING_MUSCLE_SOURCE_MUSCLE_MISSING",
+  MUSCLE_METADATA_UNAVAILABLE: "RANKING_MUSCLE_METADATA_UNAVAILABLE",
+  EQUIPMENT_SOURCE_SETUP_PRESERVED: "RANKING_EQUIPMENT_SOURCE_SETUP_PRESERVED",
+  EQUIPMENT_SOURCE_SETUP_PARTIAL: "RANKING_EQUIPMENT_SOURCE_SETUP_PARTIAL",
+  EQUIPMENT_SOURCE_SETUP_NOT_PRESERVED: "RANKING_EQUIPMENT_SOURCE_SETUP_NOT_PRESERVED",
+  EQUIPMENT_METADATA_UNAVAILABLE: "RANKING_EQUIPMENT_METADATA_UNAVAILABLE",
+  DEMAND_PRESERVED: "RANKING_DEMAND_PRESERVED",
+  DEMAND_CHANGED: "RANKING_DEMAND_CHANGED",
+  DEMAND_METADATA_UNAVAILABLE: "RANKING_DEMAND_METADATA_UNAVAILABLE",
+  NO_AVAILABLE_DIMENSIONS: "RANKING_NO_AVAILABLE_DIMENSIONS",
   TIE_BROKEN_BY_EXERCISE_ID: "RANKING_TIE_BROKEN_BY_EXERCISE_ID",
+});
+
+export const RANKING_MUSCLE_SOURCE_PRIMARY_WEIGHT = 1.0;
+export const RANKING_MUSCLE_SOURCE_SECONDARY_WEIGHT = 0.5;
+export const RANKING_MUSCLE_PRIMARY_TO_PRIMARY_CREDIT = 1.0;
+export const RANKING_MUSCLE_PRIMARY_TO_SECONDARY_CREDIT = 0.5;
+export const RANKING_MUSCLE_SECONDARY_TO_PRIMARY_CREDIT = 1.0;
+export const RANKING_MUSCLE_SECONDARY_TO_SECONDARY_CREDIT = 1.0;
+
+export const STABILITY_DEMAND_ORDER = Object.freeze({
+  LOW: 0,
+  MODERATE: 1,
+  HIGH: 2,
+});
+
+export const AXIAL_LOADING_ORDER = Object.freeze({
+  NONE: 0,
+  LOW: 1,
+  HIGH: 2,
+});
+
+export const DEFAULT_REPLACEMENT_RANKING_POLICY_V1 = Object.freeze({
+  version: REPLACEMENT_RANKING_POLICY_V1_VERSION,
+  enabledDimensions: Object.freeze([
+    RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION,
+    RANKING_POLICY_DIMENSIONS.EQUIPMENT_PRESERVATION,
+    RANKING_POLICY_DIMENSIONS.DEMAND_PRESERVATION,
+  ]),
+  weights: Object.freeze({
+    [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION]: 0.5,
+    [RANKING_POLICY_DIMENSIONS.EQUIPMENT_PRESERVATION]: 0.25,
+    [RANKING_POLICY_DIMENSIONS.DEMAND_PRESERVATION]: 0.25,
+  }),
 });
 
 function isPlainObject(value) {
@@ -39,7 +84,7 @@ function cloneJson(value) {
 }
 
 function roundScore(value) {
-  return Number(value.toFixed(4));
+  return Number(value.toFixed(REPLACEMENT_RANKING_SCORE_PRECISION_DECIMALS));
 }
 
 function assertExerciseLike(exercise, fieldName) {
@@ -53,7 +98,15 @@ function assertExerciseLike(exercise, fieldName) {
   }
 }
 
-function assertMachineReadableReason(reason, fieldName) {
+function normalizeStringArray(values) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  return [...new Set(values.filter((value) => typeof value === "string" && value.length > 0))].sort();
+}
+
+function normalizeReason(reason, fieldName = "reason") {
   if (!isPlainObject(reason)) {
     throw new Error(`${fieldName} must be a plain object.`);
   }
@@ -61,10 +114,7 @@ function assertMachineReadableReason(reason, fieldName) {
   if (typeof reason.code !== "string" || reason.code.length === 0) {
     throw new Error(`${fieldName}.code must be a non-empty string.`);
   }
-}
 
-function normalizeReason(reason) {
-  assertMachineReadableReason(reason, "reason");
   return deepFreeze({
     code: reason.code,
     data: reason.data ?? null,
@@ -98,17 +148,15 @@ function normalizeBreakdownDimension(dimensionResult, policy) {
     throw new Error("ranking breakdown dimension score must be null when unavailable.");
   }
 
-  if (!Array.isArray(dimensionResult.reasons)) {
-    throw new Error("ranking breakdown dimension reasons must be an array.");
+  if (!Array.isArray(dimensionResult.reasons) || dimensionResult.reasons.length === 0) {
+    throw new Error("ranking breakdown dimension reasons must be a non-empty array.");
   }
 
   return deepFreeze({
     dimension: dimensionResult.dimension,
     status: dimensionResult.status,
     score:
-      dimensionResult.status === RANKING_RESULT_STATUSES.AVAILABLE
-        ? roundScore(dimensionResult.score)
-        : null,
+      dimensionResult.status === RANKING_RESULT_STATUSES.AVAILABLE ? roundScore(dimensionResult.score) : null,
     reasons: dimensionResult.reasons.map((reason) => normalizeReason(reason)),
     evidence: dimensionResult.evidence ?? null,
   });
@@ -134,8 +182,8 @@ function validateRankingEvaluationResult(result, policy) {
     throw new Error("ranking evaluation result score must be null when unavailable.");
   }
 
-  if (!Array.isArray(result.breakdown)) {
-    throw new Error("ranking evaluation result breakdown must be an array.");
+  if (!Array.isArray(result.breakdown) || result.breakdown.length === 0) {
+    throw new Error("ranking evaluation result breakdown must be a non-empty array.");
   }
 
   if (!Array.isArray(result.reasons) || result.reasons.length === 0) {
@@ -188,8 +236,12 @@ function validateEligibleCandidateEntry(entry, index) {
     throw new Error(`eligibleCandidates[${index}] must contain similarity breakdown evidence.`);
   }
 
-  if (typeof entry.candidateResult.similarityStatus !== "string" || entry.candidateResult.similarityStatus.length === 0) {
-    throw new Error(`eligibleCandidates[${index}] must contain similarity status.`);
+  if (entry.candidateResult.similarityStatus !== RANKING_RESULT_STATUSES.AVAILABLE) {
+    throw new Error(`eligibleCandidates[${index}] must have AVAILABLE similarity status.`);
+  }
+
+  if (typeof entry.candidateResult.similarityScore !== "number" || !Number.isFinite(entry.candidateResult.similarityScore)) {
+    throw new Error(`eligibleCandidates[${index}] must have a finite similarity score.`);
   }
 
   return candidateExerciseId;
@@ -331,9 +383,7 @@ function appendTieBreakReasons(rankedCandidates) {
         updatedCandidates[groupIndex].rankingReasons.push(
           deepFreeze({
             code: RANKING_REASON_CODES.TIE_BROKEN_BY_EXERCISE_ID,
-            data: {
-              exerciseId: updatedCandidates[groupIndex].exerciseId,
-            },
+            data: { exerciseId: updatedCandidates[groupIndex].exerciseId },
           })
         );
       }
@@ -348,6 +398,363 @@ function appendTieBreakReasons(rankedCandidates) {
       rankingReasons: candidate.rankingReasons,
     })
   );
+}
+
+function buildRoleWeightMap(exercise) {
+  const weights = new Map();
+
+  for (const muscle of normalizeStringArray(exercise.primaryMuscles)) {
+    weights.set(muscle, RANKING_MUSCLE_SOURCE_PRIMARY_WEIGHT);
+  }
+
+  for (const muscle of normalizeStringArray(exercise.secondaryMuscles)) {
+    if (!weights.has(muscle)) {
+      weights.set(muscle, RANKING_MUSCLE_SOURCE_SECONDARY_WEIGHT);
+    }
+  }
+
+  return weights;
+}
+
+function buildRoleSet(exercise, fieldName) {
+  return new Set(normalizeStringArray(exercise[fieldName]));
+}
+
+function createAvailableDimension(dimension, score, reasons, evidence) {
+  return deepFreeze({
+    dimension,
+    status: RANKING_RESULT_STATUSES.AVAILABLE,
+    score: roundScore(score),
+    reasons: reasons.map((reason) => normalizeReason(reason)),
+    evidence: evidence ?? null,
+  });
+}
+
+function createUnavailableDimension(dimension, reasons, evidence) {
+  return deepFreeze({
+    dimension,
+    status: RANKING_RESULT_STATUSES.UNAVAILABLE,
+    score: null,
+    reasons: reasons.map((reason) => normalizeReason(reason)),
+    evidence: evidence ?? null,
+  });
+}
+
+function evaluateMusclePreservation(sourceExercise, candidateExercise) {
+  const sourceWeights = buildRoleWeightMap(sourceExercise);
+  const candidatePrimary = buildRoleSet(candidateExercise, "primaryMuscles");
+  const candidateSecondary = buildRoleSet(candidateExercise, "secondaryMuscles");
+
+  if (sourceWeights.size === 0) {
+    return createUnavailableDimension(
+      RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION,
+      [
+        {
+          code: RANKING_REASON_CODES.MUSCLE_METADATA_UNAVAILABLE,
+          data: {
+            missingOn: ["source"],
+            missingFacts: ["primaryMuscles", "secondaryMuscles"],
+          },
+        },
+      ],
+      {
+        sourcePrimary: normalizeStringArray(sourceExercise.primaryMuscles),
+        sourceSecondary: normalizeStringArray(sourceExercise.secondaryMuscles),
+        candidatePrimary: normalizeStringArray(candidateExercise.primaryMuscles),
+        candidateSecondary: normalizeStringArray(candidateExercise.secondaryMuscles),
+      }
+    );
+  }
+
+  if (candidatePrimary.size === 0 && candidateSecondary.size === 0) {
+    return createUnavailableDimension(
+      RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION,
+      [
+        {
+          code: RANKING_REASON_CODES.MUSCLE_METADATA_UNAVAILABLE,
+          data: {
+            missingOn: ["candidate"],
+            missingFacts: ["primaryMuscles", "secondaryMuscles"],
+          },
+        },
+      ],
+      {
+        sourcePrimary: normalizeStringArray(sourceExercise.primaryMuscles),
+        sourceSecondary: normalizeStringArray(sourceExercise.secondaryMuscles),
+        candidatePrimary: normalizeStringArray(candidateExercise.primaryMuscles),
+        candidateSecondary: normalizeStringArray(candidateExercise.secondaryMuscles),
+      }
+    );
+  }
+
+  let totalWeight = 0;
+  let preservedWeight = 0;
+
+  const fullPrimary = [];
+  const partialPrimary = [];
+  const preservedSecondary = [];
+  const missingSourceMuscles = [];
+
+  const sourcePrimary = buildRoleSet(sourceExercise, "primaryMuscles");
+  const sourceSecondary = buildRoleSet(sourceExercise, "secondaryMuscles");
+
+  for (const [muscle, baseWeight] of sourceWeights.entries()) {
+    totalWeight += baseWeight;
+
+    if (sourcePrimary.has(muscle)) {
+      if (candidatePrimary.has(muscle)) {
+        preservedWeight += baseWeight * RANKING_MUSCLE_PRIMARY_TO_PRIMARY_CREDIT;
+        fullPrimary.push(muscle);
+      } else if (candidateSecondary.has(muscle)) {
+        preservedWeight += baseWeight * RANKING_MUSCLE_PRIMARY_TO_SECONDARY_CREDIT;
+        partialPrimary.push(muscle);
+      } else {
+        missingSourceMuscles.push(muscle);
+      }
+      continue;
+    }
+
+    if (sourceSecondary.has(muscle) && (candidatePrimary.has(muscle) || candidateSecondary.has(muscle))) {
+      preservedWeight +=
+        baseWeight *
+        (candidatePrimary.has(muscle)
+          ? RANKING_MUSCLE_SECONDARY_TO_PRIMARY_CREDIT
+          : RANKING_MUSCLE_SECONDARY_TO_SECONDARY_CREDIT);
+      preservedSecondary.push(muscle);
+    } else {
+      missingSourceMuscles.push(muscle);
+    }
+  }
+
+  const reasons = [];
+  if (fullPrimary.length > 0) {
+    reasons.push({
+      code: RANKING_REASON_CODES.MUSCLE_FULL_PRIMARY_PRESERVATION,
+      data: { muscles: fullPrimary },
+    });
+  }
+  if (partialPrimary.length > 0) {
+    reasons.push({
+      code: RANKING_REASON_CODES.MUSCLE_PARTIAL_PRIMARY_PRESERVATION,
+      data: { muscles: partialPrimary },
+    });
+  }
+  if (preservedSecondary.length > 0) {
+    reasons.push({
+      code: RANKING_REASON_CODES.MUSCLE_SECONDARY_PRESERVATION,
+      data: { muscles: preservedSecondary },
+    });
+  }
+  if (missingSourceMuscles.length > 0) {
+    reasons.push({
+      code: RANKING_REASON_CODES.MUSCLE_SOURCE_MUSCLE_MISSING,
+      data: { muscles: missingSourceMuscles },
+    });
+  }
+
+  return createAvailableDimension(
+    RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION,
+    totalWeight === 0 ? 0 : preservedWeight / totalWeight,
+    reasons,
+    {
+      sourcePrimary: [...sourcePrimary].sort(),
+      sourceSecondary: [...sourceSecondary].sort(),
+      candidatePrimary: [...candidatePrimary].sort(),
+      candidateSecondary: [...candidateSecondary].sort(),
+      preservedWeight,
+      totalWeight,
+      fullPrimary,
+      partialPrimary,
+      preservedSecondary,
+      missingSourceMuscles,
+    }
+  );
+}
+
+function evaluateEquipmentPreservation(sourceExercise, candidateExercise) {
+  const sourceRequired = normalizeStringArray(sourceExercise.requiredEquipment);
+  const candidateRequired = normalizeStringArray(candidateExercise.requiredEquipment);
+
+  if (sourceRequired.length === 0 || candidateRequired.length === 0) {
+    return createUnavailableDimension(
+      RANKING_POLICY_DIMENSIONS.EQUIPMENT_PRESERVATION,
+      [
+        {
+          code: RANKING_REASON_CODES.EQUIPMENT_METADATA_UNAVAILABLE,
+          data: {
+            missingOn: [
+              ...(sourceRequired.length === 0 ? ["source"] : []),
+              ...(candidateRequired.length === 0 ? ["candidate"] : []),
+            ],
+            missingFacts: ["requiredEquipment"],
+          },
+        },
+      ],
+      {
+        sourceRequired,
+        candidateRequired,
+      }
+    );
+  }
+
+  const candidateSet = new Set(candidateRequired);
+  const shared = sourceRequired.filter((item) => candidateSet.has(item));
+  const missingFromCandidate = sourceRequired.filter((item) => !candidateSet.has(item));
+  const score = shared.length / sourceRequired.length;
+
+  let code = RANKING_REASON_CODES.EQUIPMENT_SOURCE_SETUP_NOT_PRESERVED;
+  if (score === 1) {
+    code = RANKING_REASON_CODES.EQUIPMENT_SOURCE_SETUP_PRESERVED;
+  } else if (score > 0) {
+    code = RANKING_REASON_CODES.EQUIPMENT_SOURCE_SETUP_PARTIAL;
+  }
+
+  return createAvailableDimension(
+    RANKING_POLICY_DIMENSIONS.EQUIPMENT_PRESERVATION,
+    score,
+    [
+      {
+        code,
+        data: {
+          shared,
+          missingFromCandidate,
+          sourceRequired,
+        },
+      },
+    ],
+    {
+      sourceRequired,
+      candidateRequired,
+      shared,
+      missingFromCandidate,
+      preservedCount: shared.length,
+      sourceRequiredCount: sourceRequired.length,
+    }
+  );
+}
+
+function computeOrdinalPreservation(valueA, valueB, orderMap) {
+  if (!valueA || !valueB) {
+    return null;
+  }
+
+  const distance = Math.abs(orderMap[valueA] - orderMap[valueB]);
+  const maxDistance = Math.max(...Object.values(orderMap));
+  return 1 - distance / maxDistance;
+}
+
+function evaluateDemandPreservation(sourceExercise, candidateExercise) {
+  const stabilityScore = computeOrdinalPreservation(
+    sourceExercise.stabilityDemand ?? null,
+    candidateExercise.stabilityDemand ?? null,
+    STABILITY_DEMAND_ORDER
+  );
+
+  const axialScore = computeOrdinalPreservation(
+    sourceExercise.axialLoading ?? null,
+    candidateExercise.axialLoading ?? null,
+    AXIAL_LOADING_ORDER
+  );
+
+  if (stabilityScore === null && axialScore === null) {
+    return createUnavailableDimension(
+      RANKING_POLICY_DIMENSIONS.DEMAND_PRESERVATION,
+      [
+        {
+          code: RANKING_REASON_CODES.DEMAND_METADATA_UNAVAILABLE,
+          data: {
+            missingFacts: ["stabilityDemand", "axialLoading"],
+          },
+        },
+      ],
+      {
+        stability: {
+          source: sourceExercise.stabilityDemand ?? null,
+          candidate: candidateExercise.stabilityDemand ?? null,
+          score: null,
+        },
+        axialLoading: {
+          source: sourceExercise.axialLoading ?? null,
+          candidate: candidateExercise.axialLoading ?? null,
+          score: null,
+        },
+      }
+    );
+  }
+
+  const availableScores = [stabilityScore, axialScore].filter((value) => value !== null);
+  const score = availableScores.reduce((sum, value) => sum + value, 0) / availableScores.length;
+
+  return createAvailableDimension(
+    RANKING_POLICY_DIMENSIONS.DEMAND_PRESERVATION,
+    score,
+    [
+      {
+        code: score === 1 ? RANKING_REASON_CODES.DEMAND_PRESERVED : RANKING_REASON_CODES.DEMAND_CHANGED,
+        data: {
+          stabilityScore: stabilityScore === null ? null : roundScore(stabilityScore),
+          axialLoadingScore: axialScore === null ? null : roundScore(axialScore),
+        },
+      },
+    ],
+    {
+      stability: {
+        source: sourceExercise.stabilityDemand ?? null,
+        candidate: candidateExercise.stabilityDemand ?? null,
+        score: stabilityScore === null ? null : roundScore(stabilityScore),
+      },
+      axialLoading: {
+        source: sourceExercise.axialLoading ?? null,
+        candidate: candidateExercise.axialLoading ?? null,
+        score: axialScore === null ? null : roundScore(axialScore),
+      },
+    }
+  );
+}
+
+export function evaluateReplacementRankingV1({ sourceExercise, candidateExercise, candidateResult, policy }) {
+  const validatedPolicy = validateReplacementRankingPolicy(policy);
+
+  const allDimensions = [
+    evaluateMusclePreservation(sourceExercise, candidateExercise),
+    evaluateEquipmentPreservation(sourceExercise, candidateExercise),
+    evaluateDemandPreservation(sourceExercise, candidateExercise),
+  ];
+  const breakdown = allDimensions.filter((dimension) => validatedPolicy.enabledDimensions.includes(dimension.dimension));
+
+  const availableDimensions = breakdown.filter((dimension) => dimension.status === RANKING_RESULT_STATUSES.AVAILABLE);
+
+  if (availableDimensions.length === 0) {
+    return deepFreeze({
+      status: RANKING_RESULT_STATUSES.UNAVAILABLE,
+      score: null,
+      breakdown,
+      reasons: [
+        normalizeReason({
+          code: RANKING_REASON_CODES.NO_AVAILABLE_DIMENSIONS,
+          data: {
+            enabledDimensions: validatedPolicy.enabledDimensions,
+          },
+        }),
+      ],
+    });
+  }
+
+  const numerator = availableDimensions.reduce(
+    (sum, dimension) => sum + dimension.score * validatedPolicy.weights[dimension.dimension],
+    0
+  );
+  const denominator = availableDimensions.reduce(
+    (sum, dimension) => sum + validatedPolicy.weights[dimension.dimension],
+    0
+  );
+
+  return deepFreeze({
+    status: RANKING_RESULT_STATUSES.AVAILABLE,
+    score: roundScore(numerator / denominator),
+    breakdown,
+    reasons: availableDimensions.flatMap((dimension) => dimension.reasons),
+  });
 }
 
 export function rankEligibleCandidatesV1(
@@ -395,5 +802,12 @@ export function rankEligibleCandidatesV1(
     sourceExerciseId,
     totalRanked: sortedCandidates.length,
     rankedCandidates: sortedCandidates,
+  });
+}
+
+export function rankReplacementCandidatesV1(sourceExercise, eligibleCandidates) {
+  return rankEligibleCandidatesV1(sourceExercise, eligibleCandidates, {
+    policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+    evaluateCandidateRanking: evaluateReplacementRankingV1,
   });
 }

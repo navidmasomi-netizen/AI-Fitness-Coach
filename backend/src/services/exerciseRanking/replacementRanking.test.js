@@ -1,11 +1,24 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
+  AXIAL_LOADING_ORDER,
+  DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+  evaluateReplacementRankingV1,
+  RANKING_MUSCLE_PRIMARY_TO_PRIMARY_CREDIT,
+  RANKING_MUSCLE_PRIMARY_TO_SECONDARY_CREDIT,
+  RANKING_MUSCLE_SECONDARY_TO_PRIMARY_CREDIT,
+  RANKING_MUSCLE_SECONDARY_TO_SECONDARY_CREDIT,
+  RANKING_MUSCLE_SOURCE_PRIMARY_WEIGHT,
+  RANKING_MUSCLE_SOURCE_SECONDARY_WEIGHT,
   RANKING_POLICY_DIMENSIONS,
   RANKING_REASON_CODES,
   RANKING_RESULT_STATUSES,
-  REPLACEMENT_RANKING_ENGINE_V1_VERSION,
   rankEligibleCandidatesV1,
+  rankReplacementCandidatesV1,
+  REPLACEMENT_RANKING_ENGINE_V1_VERSION,
+  REPLACEMENT_RANKING_POLICY_V1_VERSION,
+  REPLACEMENT_RANKING_SCORE_PRECISION_DECIMALS,
+  STABILITY_DEMAND_ORDER,
   validateReplacementRankingPolicy,
 } from "./index.js";
 
@@ -44,7 +57,7 @@ function buildEligibleCandidateResult(overrides = {}) {
   return {
     exerciseId: 52,
     similarityScore: 0.8333,
-    similarityStatus: "AVAILABLE",
+    similarityStatus: RANKING_RESULT_STATUSES.AVAILABLE,
     similarityBreakdown: [
       {
         dimension: "movement",
@@ -52,6 +65,13 @@ function buildEligibleCandidateResult(overrides = {}) {
         score: 1,
         reasons: [{ code: "SIMILARITY_MOVEMENT_SAME_PATTERN" }],
         evidence: { patternA: "squat", patternB: "squat" },
+      },
+      {
+        dimension: "exerciseClass",
+        status: "AVAILABLE",
+        score: 1,
+        reasons: [{ code: "SIMILARITY_EXERCISE_CLASS_SAME_CLASS" }],
+        evidence: { classA: "compound", classB: "compound" },
       },
     ],
     eligibility: true,
@@ -69,221 +89,515 @@ function buildEligibleCandidateResult(overrides = {}) {
   };
 }
 
-function buildEligibleCandidateEntry(overrides = {}) {
+function buildEligibleCandidateEntry(candidateExerciseOverrides = {}, candidateResultOverrides = {}) {
   const candidateExercise = buildExercise({
     exerciseId: 52,
     slug: "front-squat",
     nameEn: "Front Squat",
+    primaryMuscles: ["quadriceps"],
+    secondaryMuscles: ["glutes", "core"],
+    ...candidateExerciseOverrides,
   });
 
   return {
     candidateExercise,
     candidateResult: buildEligibleCandidateResult({
       exerciseId: candidateExercise.exerciseId,
+      ...candidateResultOverrides,
     }),
-    ...overrides,
   };
 }
 
-const TEST_ONLY_POLICY_V1 = Object.freeze({
-  version: "test-only-replacement-ranking-policy-v1",
-  enabledDimensions: Object.freeze([
-    RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY,
-    RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION,
-    RANKING_POLICY_DIMENSIONS.EQUIPMENT_DELTA,
-    RANKING_POLICY_DIMENSIONS.DEMAND_DELTA,
-  ]),
-  weights: Object.freeze({
-    [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY]: 1,
-    [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION]: 1,
-    [RANKING_POLICY_DIMENSIONS.EQUIPMENT_DELTA]: 1,
-    [RANKING_POLICY_DIMENSIONS.DEMAND_DELTA]: 1,
-  }),
-});
-
-const TEST_ONLY_AVAILABLE_EVALUATION = Object.freeze({
-  status: RANKING_RESULT_STATUSES.AVAILABLE,
-  score: 0.8,
-  breakdown: [
-    {
-      dimension: RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY,
-      status: RANKING_RESULT_STATUSES.AVAILABLE,
-      score: 0.8,
-      reasons: [{ code: RANKING_REASON_CODES.EVALUATED }],
-      evidence: { similarityScore: 0.8333 },
-    },
-  ],
-  reasons: [{ code: RANKING_REASON_CODES.EVALUATED }],
-});
-
 const cases = [
   {
-    name: "1. only eligible candidates are accepted into ranking input",
-    input: { candidateCount: 1 },
+    name: "1. production policy v1 and scoring precision are explicit and frozen",
+    input: { policyVersion: REPLACEMENT_RANKING_POLICY_V1_VERSION },
+    run: () => ({
+      policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+      precision: REPLACEMENT_RANKING_SCORE_PRECISION_DECIMALS,
+      stabilityOrder: STABILITY_DEMAND_ORDER,
+      axialOrder: AXIAL_LOADING_ORDER,
+    }),
+    assertResult: (actual) => {
+      assert.equal(actual.policy.version, REPLACEMENT_RANKING_POLICY_V1_VERSION);
+      assert.deepEqual(actual.policy.enabledDimensions, [
+        "musclePreservation",
+        "equipmentPreservation",
+        "demandPreservation",
+      ]);
+      assert.deepEqual(actual.policy.weights, {
+        musclePreservation: 0.5,
+        equipmentPreservation: 0.25,
+        demandPreservation: 0.25,
+      });
+      assert.equal(actual.precision, 4);
+      assert.deepEqual(actual.stabilityOrder, { LOW: 0, MODERATE: 1, HIGH: 2 });
+      assert.deepEqual(actual.axialOrder, { NONE: 0, LOW: 1, HIGH: 2 });
+    },
+  },
+  {
+    name: "2. ranking policy validation rejects malformed weight contracts while preserving the product policy",
+    input: { validation: "policy" },
+    run: () => ({
+      valid: validateReplacementRankingPolicy(DEFAULT_REPLACEMENT_RANKING_POLICY_V1),
+      invalidUnknown: () =>
+        validateReplacementRankingPolicy({
+          version: "bad-policy",
+          enabledDimensions: ["unknown"],
+          weights: { unknown: 1 },
+        }),
+      invalidNegative: () =>
+        validateReplacementRankingPolicy({
+          version: "bad-policy",
+          enabledDimensions: [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION],
+          weights: { [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION]: -1 },
+        }),
+      invalidAllZero: () =>
+        validateReplacementRankingPolicy({
+          version: "bad-policy",
+          enabledDimensions: [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION],
+          weights: { [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION]: 0 },
+        }),
+      invalidInfinity: () =>
+        validateReplacementRankingPolicy({
+          version: "bad-policy",
+          enabledDimensions: [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION],
+          weights: { [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION]: Number.POSITIVE_INFINITY },
+        }),
+    }),
+    assertResult: (actual) => {
+      assert.equal(actual.valid.version, REPLACEMENT_RANKING_POLICY_V1_VERSION);
+      assert.throws(actual.invalidUnknown, /unknown dimension/i);
+      assert.throws(actual.invalidNegative, /must not be negative/i);
+      assert.throws(actual.invalidAllZero, /at least one positive weight/i);
+      assert.throws(actual.invalidInfinity, /must be finite/i);
+    },
+  },
+  {
+    name: "3. ranking v1 contains only directional preservation dimensions and keeps similarity as evidence only",
+    input: { similarityScoreA: 0.9167, similarityScoreB: 0.2 },
+    run: () => {
+      const candidateExercise = buildExercise({ exerciseId: 52, slug: "front-squat" });
+      const candidateResultA = buildEligibleCandidateResult({ exerciseId: 52, similarityScore: 0.9167 });
+      const candidateResultB = buildEligibleCandidateResult({ exerciseId: 52, similarityScore: 0.2 });
+
+      const first = rankEligibleCandidatesV1(
+        buildExercise(),
+        [{ candidateExercise, candidateResult: candidateResultA }],
+        {
+          policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+          evaluateCandidateRanking: evaluateReplacementRankingV1,
+        }
+      );
+
+      const second = rankEligibleCandidatesV1(
+        buildExercise(),
+        [{ candidateExercise, candidateResult: candidateResultB }],
+        {
+          policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+          evaluateCandidateRanking: evaluateReplacementRankingV1,
+        }
+      );
+
+      return { first, second, candidateResultA };
+    },
+    assertResult: (actual) => {
+      const dimensions = actual.first.rankedCandidates[0].rankingBreakdown.map((dimension) => dimension.dimension);
+      assert.deepEqual(dimensions, [
+        RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION,
+        RANKING_POLICY_DIMENSIONS.EQUIPMENT_PRESERVATION,
+        RANKING_POLICY_DIMENSIONS.DEMAND_PRESERVATION,
+      ]);
+      assert.equal(dimensions.includes("semanticPreservation"), false);
+      assert.equal(actual.first.rankedCandidates[0].rankingScore, actual.second.rankedCandidates[0].rankingScore);
+      assert.deepEqual(
+        actual.first.rankedCandidates[0].similarityEvidence,
+        {
+          similarityScore: 0.9167,
+          similarityStatus: "AVAILABLE",
+          similarityBreakdown: actual.candidateResultA.similarityBreakdown,
+        }
+      );
+      assert.equal(actual.second.rankedCandidates[0].similarityEvidence.similarityScore, 0.2);
+    },
+  },
+  {
+    name: "4. directional muscle preservation uses weighted source-role coverage rather than symmetric overlap",
+    input: {
+      sourceWeights: {
+        primary: RANKING_MUSCLE_SOURCE_PRIMARY_WEIGHT,
+        secondary: RANKING_MUSCLE_SOURCE_SECONDARY_WEIGHT,
+      },
+      candidateCredits: {
+        primaryToPrimary: RANKING_MUSCLE_PRIMARY_TO_PRIMARY_CREDIT,
+        primaryToSecondary: RANKING_MUSCLE_PRIMARY_TO_SECONDARY_CREDIT,
+        secondaryToPrimary: RANKING_MUSCLE_SECONDARY_TO_PRIMARY_CREDIT,
+        secondaryToSecondary: RANKING_MUSCLE_SECONDARY_TO_SECONDARY_CREDIT,
+      },
+    },
     run: () =>
-      rankEligibleCandidatesV1(buildExercise(), [buildEligibleCandidateEntry()], {
-        policy: TEST_ONLY_POLICY_V1,
-        evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
+      evaluateReplacementRankingV1({
+        sourceExercise: buildExercise({
+          primaryMuscles: ["quadriceps", "glutes"],
+          secondaryMuscles: ["hamstrings", "core"],
+        }),
+        candidateExercise: buildExercise({
+          exerciseId: 60,
+          slug: "partial-muscle-preserver",
+          primaryMuscles: ["quadriceps", "core"],
+          secondaryMuscles: ["glutes"],
+        }),
+        candidateResult: buildEligibleCandidateResult({ exerciseId: 60, similarityScore: 0.8 }),
+        policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
       }),
     assertResult: (actual) => {
+      const muscle = actual.breakdown.find(
+        (dimension) => dimension.dimension === RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION
+      );
+      assert.equal(actual.score, 0.8334);
+      assert.equal(muscle.score, 0.6667);
+      assert.deepEqual(
+        muscle.reasons.map((reason) => reason.code),
+        [
+          RANKING_REASON_CODES.MUSCLE_FULL_PRIMARY_PRESERVATION,
+          RANKING_REASON_CODES.MUSCLE_PARTIAL_PRIMARY_PRESERVATION,
+          RANKING_REASON_CODES.MUSCLE_SECONDARY_PRESERVATION,
+          RANKING_REASON_CODES.MUSCLE_SOURCE_MUSCLE_MISSING,
+        ]
+      );
+      assert.deepEqual(muscle.evidence.fullPrimary, ["quadriceps"]);
+      assert.deepEqual(muscle.evidence.partialPrimary, ["glutes"]);
+      assert.deepEqual(muscle.evidence.preservedSecondary, ["core"]);
+      assert.deepEqual(muscle.evidence.missingSourceMuscles, ["hamstrings"]);
+      assert.equal(muscle.evidence.preservedWeight, 2);
+      assert.equal(muscle.evidence.totalWeight, 3);
+    },
+  },
+  {
+    name: "5. directional equipment preservation uses recall against source required equipment only",
+    input: { sourceRequired: ["barbell", "bench", "rack"], candidateRequired: ["dumbbell", "bench"] },
+    run: () =>
+      evaluateReplacementRankingV1({
+        sourceExercise: buildExercise({
+          requiredEquipment: ["barbell", "bench", "rack"],
+        }),
+        candidateExercise: buildExercise({
+          exerciseId: 61,
+          slug: "dumbbell-bench-press",
+          requiredEquipment: ["dumbbell", "bench"],
+        }),
+        candidateResult: buildEligibleCandidateResult({ exerciseId: 61, similarityScore: 0.85 }),
+        policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+      }),
+    assertResult: (actual) => {
+      const equipment = actual.breakdown.find(
+        (dimension) => dimension.dimension === RANKING_POLICY_DIMENSIONS.EQUIPMENT_PRESERVATION
+      );
+      assert.equal(actual.score, 0.8333);
+      assert.equal(equipment.score, 0.3333);
+      assert.equal(equipment.reasons[0].code, RANKING_REASON_CODES.EQUIPMENT_SOURCE_SETUP_PARTIAL);
+      assert.deepEqual(equipment.evidence.shared, ["bench"]);
+      assert.deepEqual(equipment.evidence.missingFromCandidate, ["barbell", "rack"]);
+    },
+  },
+  {
+    name: "6. demand preservation uses source-owned ordinal preservation and averages available components only",
+    input: { stability: ["HIGH", "MODERATE"], axial: ["HIGH", "LOW"] },
+    run: () =>
+      evaluateReplacementRankingV1({
+        sourceExercise: buildExercise({
+          stabilityDemand: "HIGH",
+          axialLoading: "HIGH",
+        }),
+        candidateExercise: buildExercise({
+          exerciseId: 62,
+          slug: "lighter-squat",
+          stabilityDemand: "MODERATE",
+          axialLoading: "LOW",
+        }),
+        candidateResult: buildEligibleCandidateResult({ exerciseId: 62, similarityScore: 0.8 }),
+        policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+      }),
+    assertResult: (actual) => {
+      const demand = actual.breakdown.find(
+        (dimension) => dimension.dimension === RANKING_POLICY_DIMENSIONS.DEMAND_PRESERVATION
+      );
+      assert.equal(actual.score, 0.875);
+      assert.equal(demand.score, 0.5);
+      assert.equal(demand.reasons[0].code, RANKING_REASON_CODES.DEMAND_CHANGED);
+      assert.equal(demand.evidence.stability.score, 0.5);
+      assert.equal(demand.evidence.axialLoading.score, 0.5);
+    },
+  },
+  {
+    name: "7. missing ranking dimensions are renormalized over available dimensions only",
+    input: { unavailableDimensions: ["equipmentPreservation", "demandPreservation"] },
+    run: () =>
+      evaluateReplacementRankingV1({
+        sourceExercise: buildExercise({
+          requiredEquipment: ["barbell", "rack"],
+          stabilityDemand: "HIGH",
+          axialLoading: "HIGH",
+        }),
+        candidateExercise: buildExercise({
+          exerciseId: 63,
+          slug: "partial-dna-candidate",
+          primaryMuscles: ["quadriceps"],
+          secondaryMuscles: ["glutes", "core"],
+          requiredEquipment: [],
+          stabilityDemand: null,
+          axialLoading: null,
+        }),
+        candidateResult: buildEligibleCandidateResult({ exerciseId: 63, similarityScore: 0.9 }),
+        policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+      }),
+    assertResult: (actual) => {
+      assert.equal(actual.status, RANKING_RESULT_STATUSES.AVAILABLE);
+      assert.equal(actual.score, 0.6667);
+      const unavailable = actual.breakdown
+        .filter((dimension) => dimension.status === RANKING_RESULT_STATUSES.UNAVAILABLE)
+        .map((dimension) => dimension.dimension);
+      assert.deepEqual(unavailable, ["equipmentPreservation", "demandPreservation"]);
+    },
+  },
+  {
+    name: "8. all unavailable ranking dimensions return unavailable ranking status and null score",
+    input: { noAvailableDimensions: true },
+    run: () =>
+      evaluateReplacementRankingV1({
+        sourceExercise: buildExercise({
+          primaryMuscles: [],
+          secondaryMuscles: [],
+          requiredEquipment: [],
+          stabilityDemand: null,
+          axialLoading: null,
+        }),
+        candidateExercise: buildExercise({
+          exerciseId: 64,
+          slug: "empty-candidate",
+          primaryMuscles: [],
+          secondaryMuscles: [],
+          requiredEquipment: [],
+          stabilityDemand: null,
+          axialLoading: null,
+        }),
+        candidateResult: buildEligibleCandidateResult({ exerciseId: 64, similarityScore: 0, similarityBreakdown: [] }),
+        policy: {
+          version: "test-unavailable-policy",
+          enabledDimensions: [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION],
+          weights: { [RANKING_POLICY_DIMENSIONS.MUSCLE_PRESERVATION]: 1 },
+        },
+      }),
+    assertResult: (actual) => {
+      assert.equal(actual.status, RANKING_RESULT_STATUSES.UNAVAILABLE);
+      assert.equal(actual.score, null);
+      assert.equal(actual.reasons[0].code, RANKING_REASON_CODES.NO_AVAILABLE_DIMENSIONS);
+    },
+  },
+  {
+    name: "9. default production entry point ranks eligible candidates deterministically with the production policy",
+    input: { source: "Back Squat" },
+    run: () =>
+      rankReplacementCandidatesV1(buildExercise(), [
+        buildEligibleCandidateEntry(
+          {
+            exerciseId: 70,
+            slug: "front-squat",
+            nameEn: "Front Squat",
+            primaryMuscles: ["quadriceps"],
+            secondaryMuscles: ["glutes", "core"],
+          },
+          { exerciseId: 70, similarityScore: 0.9167 }
+        ),
+        buildEligibleCandidateEntry(
+          {
+            exerciseId: 71,
+            slug: "goblet-squat",
+            nameEn: "Goblet Squat",
+            primaryMuscles: ["quadriceps", "glutes"],
+            secondaryMuscles: ["core"],
+            requiredEquipment: ["dumbbell"],
+            stabilityDemand: "MODERATE",
+            axialLoading: "LOW",
+          },
+          { exerciseId: 71, similarityScore: 0.5964 }
+        ),
+      ]),
+    assertResult: (actual) => {
       assert.equal(actual.version, REPLACEMENT_RANKING_ENGINE_V1_VERSION);
-      assert.equal(actual.policyVersion, TEST_ONLY_POLICY_V1.version);
-      assert.equal(actual.totalRanked, 1);
-      assert.equal(actual.rankedCandidates[0].exerciseId, 52);
-      assert.equal(actual.rankedCandidates[0].rankingStatus, RANKING_RESULT_STATUSES.AVAILABLE);
+      assert.equal(actual.policyVersion, REPLACEMENT_RANKING_POLICY_V1_VERSION);
+      assert.deepEqual(
+        actual.rankedCandidates.map((candidate) => candidate.exerciseId),
+        [70, 71]
+      );
+      assert.equal(actual.rankedCandidates[0].rankingScore, 0.8334);
+      assert.equal(actual.rankedCandidates[1].rankingScore, 0.5416);
     },
   },
   {
-    name: "2. blocked candidates fail loudly instead of being silently filtered",
-    input: { blockedRules: ["CANDIDATE_RULE_COMPLETE_DNA"] },
+    name: "10. bench press ranking remains directional with equipment differences affecting rank but not blocking eligibility",
+    input: { source: "Bench Press" },
     run: () =>
-      rankEligibleCandidatesV1(
-        buildExercise(),
+      rankReplacementCandidatesV1(
+        buildExercise({
+          exerciseId: 15,
+          slug: "bench-press",
+          nameEn: "Bench Press",
+          dnaMovementPattern: "horizontal_press",
+          primaryMuscles: ["chest"],
+          secondaryMuscles: ["shoulders", "triceps"],
+          requiredEquipment: ["barbell", "bench", "rack"],
+          stabilityDemand: "MODERATE",
+          axialLoading: "NONE",
+        }),
         [
-          buildEligibleCandidateEntry({
-            candidateResult: buildEligibleCandidateResult({
-              eligibility: false,
-              blockedRules: ["CANDIDATE_RULE_COMPLETE_DNA"],
-              passedRules: [],
-            }),
-          }),
-        ],
-        {
-          policy: TEST_ONLY_POLICY_V1,
-          evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
-        }
-      ),
-    assertError: (error) => {
-      assert.match(error.message, /must already be marked eligible/i);
-    },
-  },
-  {
-    name: "3. missing eligibility fails loudly",
-    input: { eligibility: "missing" },
-    run: () =>
-      rankEligibleCandidatesV1(
-        buildExercise(),
-        [
-          buildEligibleCandidateEntry({
-            candidateResult: {
-              ...buildEligibleCandidateResult(),
-              eligibility: undefined,
-            },
-          }),
-        ],
-        {
-          policy: TEST_ONLY_POLICY_V1,
-          evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
-        }
-      ),
-    assertError: (error) => {
-      assert.match(error.message, /must already be marked eligible/i);
-    },
-  },
-  {
-    name: "4. deterministic ordering is higher score first",
-    input: { scores: [0.6, 0.9, 0.7] },
-    run: () => {
-      const entries = [
-        buildEligibleCandidateEntry({
-          candidateExercise: buildExercise({ exerciseId: 70, slug: "front-squat-a" }),
-          candidateResult: buildEligibleCandidateResult({ exerciseId: 70 }),
-        }),
-        buildEligibleCandidateEntry({
-          candidateExercise: buildExercise({ exerciseId: 71, slug: "front-squat-b" }),
-          candidateResult: buildEligibleCandidateResult({ exerciseId: 71 }),
-        }),
-        buildEligibleCandidateEntry({
-          candidateExercise: buildExercise({ exerciseId: 72, slug: "front-squat-c" }),
-          candidateResult: buildEligibleCandidateResult({ exerciseId: 72 }),
-        }),
-      ];
-      const scores = new Map([
-        [70, 0.6],
-        [71, 0.9],
-        [72, 0.7],
-      ]);
-
-      return rankEligibleCandidatesV1(buildExercise(), entries, {
-        policy: TEST_ONLY_POLICY_V1,
-        evaluateCandidateRanking: ({ candidateExercise }) => ({
-          ...TEST_ONLY_AVAILABLE_EVALUATION,
-          score: scores.get(candidateExercise.exerciseId),
-          breakdown: [
+          buildEligibleCandidateEntry(
             {
-              dimension: RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY,
-              status: RANKING_RESULT_STATUSES.AVAILABLE,
-              score: scores.get(candidateExercise.exerciseId),
-              reasons: [{ code: RANKING_REASON_CODES.EVALUATED }],
+              exerciseId: 72,
+              slug: "dumbbell-bench-press",
+              nameEn: "Dumbbell Bench Press",
+              dnaMovementPattern: "horizontal_press",
+              primaryMuscles: ["chest"],
+              secondaryMuscles: ["shoulders", "triceps"],
+              requiredEquipment: ["dumbbell", "bench"],
+              stabilityDemand: "MODERATE",
+              axialLoading: "NONE",
             },
-          ],
-        }),
-      });
-    },
+            { exerciseId: 72, similarityScore: 0.8875 }
+          ),
+          buildEligibleCandidateEntry(
+            {
+              exerciseId: 73,
+              slug: "machine-chest-press",
+              nameEn: "Machine Chest Press",
+              dnaMovementPattern: "horizontal_press",
+              primaryMuscles: ["chest"],
+              secondaryMuscles: ["shoulders", "triceps"],
+              requiredEquipment: ["selectorized_machine"],
+              stabilityDemand: "LOW",
+              axialLoading: "NONE",
+            },
+            { exerciseId: 73, similarityScore: 0.8125 }
+          ),
+        ]
+      ),
     assertResult: (actual) => {
       assert.deepEqual(
         actual.rankedCandidates.map((candidate) => candidate.exerciseId),
-        [71, 72, 70]
+        [72, 73]
       );
-      assert.deepEqual(
-        actual.rankedCandidates.map((candidate) => candidate.rank),
-        [1, 2, 3]
+      assert.equal(actual.rankedCandidates[0].rankingScore, 0.8333);
+      assert.equal(actual.rankedCandidates[1].rankingScore, 0.6875);
+      assert.equal(actual.rankedCandidates[0].eligibilityEvidence.eligibility, true);
+      assert.equal(actual.rankedCandidates[1].eligibilityEvidence.eligibility, true);
+    },
+  },
+  {
+    name: "11. directional muscle preservation ranks stronger source-primary preservation above weaker overlap",
+    input: { directionality: "source muscle preservation" },
+    run: () =>
+      rankReplacementCandidatesV1(
+        buildExercise({
+          primaryMuscles: ["quadriceps", "glutes"],
+          secondaryMuscles: ["hamstrings", "core"],
+        }),
+        [
+          buildEligibleCandidateEntry(
+            {
+              exerciseId: 74,
+              slug: "quad-glute-squat",
+              primaryMuscles: ["quadriceps", "glutes"],
+              secondaryMuscles: ["core"],
+            },
+            { exerciseId: 74, similarityScore: 0.8 }
+          ),
+          buildEligibleCandidateEntry(
+            {
+              exerciseId: 75,
+              slug: "hamstring-core-squat",
+              primaryMuscles: ["hamstrings"],
+              secondaryMuscles: ["core", "glutes"],
+            },
+            { exerciseId: 75, similarityScore: 0.8 }
+          ),
+        ]
+      ),
+    assertResult: (actual) => {
+      const [stronger, weaker] = actual.rankedCandidates;
+      assert.equal(stronger.exerciseId, 74);
+      assert.equal(weaker.exerciseId, 75);
+      assert.equal(stronger.rankingScore, 0.9166);
+      assert.equal(weaker.rankingScore, 0.75);
+      assert.equal(
+        stronger.rankingBreakdown.find((dimension) => dimension.dimension === "musclePreservation").score,
+        0.8333
+      );
+      assert.equal(
+        weaker.rankingBreakdown.find((dimension) => dimension.dimension === "musclePreservation").score,
+        0.5
       );
     },
   },
   {
-    name: "5. deterministic tie-break uses exerciseId and does not depend on input order",
-    input: { sameScore: true },
+    name: "12. directional equipment preservation proves source-to-candidate rank can differ from the reverse direction",
+    input: { directionality: "source required equipment denominator" },
     run: () => {
-      const leftToRight = rankEligibleCandidatesV1(
-        buildExercise(),
-        [
-          buildEligibleCandidateEntry({
-            candidateExercise: buildExercise({ exerciseId: 90, slug: "candidate-z" }),
-            candidateResult: buildEligibleCandidateResult({ exerciseId: 90 }),
-          }),
-          buildEligibleCandidateEntry({
-            candidateExercise: buildExercise({ exerciseId: 80, slug: "candidate-a" }),
-            candidateResult: buildEligibleCandidateResult({ exerciseId: 80 }),
-          }),
-        ],
-        {
-          policy: TEST_ONLY_POLICY_V1,
-          evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
-        }
-      );
+      const left = evaluateReplacementRankingV1({
+        sourceExercise: buildExercise({
+          requiredEquipment: ["barbell", "bench", "rack"],
+        }),
+        candidateExercise: buildExercise({
+          exerciseId: 76,
+          slug: "dumbbell-bench",
+          requiredEquipment: ["dumbbell", "bench"],
+        }),
+        candidateResult: buildEligibleCandidateResult({ exerciseId: 76, similarityScore: 0.85 }),
+        policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+      });
 
-      const rightToLeft = rankEligibleCandidatesV1(
-        buildExercise(),
-        [
-          buildEligibleCandidateEntry({
-            candidateExercise: buildExercise({ exerciseId: 80, slug: "candidate-a" }),
-            candidateResult: buildEligibleCandidateResult({ exerciseId: 80 }),
-          }),
-          buildEligibleCandidateEntry({
-            candidateExercise: buildExercise({ exerciseId: 90, slug: "candidate-z" }),
-            candidateResult: buildEligibleCandidateResult({ exerciseId: 90 }),
-          }),
-        ],
-        {
-          policy: TEST_ONLY_POLICY_V1,
-          evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
-        }
-      );
+      const right = evaluateReplacementRankingV1({
+        sourceExercise: buildExercise({
+          exerciseId: 76,
+          slug: "dumbbell-bench",
+          requiredEquipment: ["dumbbell", "bench"],
+        }),
+        candidateExercise: buildExercise({
+          requiredEquipment: ["barbell", "bench", "rack"],
+        }),
+        candidateResult: buildEligibleCandidateResult({ similarityScore: 0.85 }),
+        policy: DEFAULT_REPLACEMENT_RANKING_POLICY_V1,
+      });
 
-      return { leftToRight, rightToLeft };
+      return { left, right };
     },
     assertResult: (actual) => {
-      assert.deepEqual(
-        actual.leftToRight.rankedCandidates.map((candidate) => candidate.exerciseId),
-        [80, 90]
-      );
-      assert.deepEqual(
-        actual.rightToLeft.rankedCandidates.map((candidate) => candidate.exerciseId),
-        [80, 90]
-      );
+      const leftEquipment = actual.left.breakdown.find((dimension) => dimension.dimension === "equipmentPreservation");
+      const rightEquipment = actual.right.breakdown.find((dimension) => dimension.dimension === "equipmentPreservation");
+      assert.equal(actual.left.score, 0.8333);
+      assert.equal(actual.right.score, 0.875);
+      assert.equal(leftEquipment.score, 0.3333);
+      assert.equal(rightEquipment.score, 0.5);
+    },
+  },
+  {
+    name: "13. exact tie-break uses ascending exerciseId and does not depend on input order",
+    input: { tieBreak: true },
+    run: () => {
+      const first = rankReplacementCandidatesV1(buildExercise(), [
+        buildEligibleCandidateEntry({ exerciseId: 90, slug: "candidate-z" }, { exerciseId: 90, similarityScore: 0.8 }),
+        buildEligibleCandidateEntry({ exerciseId: 80, slug: "candidate-a" }, { exerciseId: 80, similarityScore: 0.8 }),
+      ]);
+      const second = rankReplacementCandidatesV1(buildExercise(), [
+        buildEligibleCandidateEntry({ exerciseId: 80, slug: "candidate-a" }, { exerciseId: 80, similarityScore: 0.8 }),
+        buildEligibleCandidateEntry({ exerciseId: 90, slug: "candidate-z" }, { exerciseId: 90, similarityScore: 0.8 }),
+      ]);
+      return { first, second };
+    },
+    assertResult: (actual) => {
+      assert.deepEqual(actual.first.rankedCandidates.map((candidate) => candidate.exerciseId), [80, 90]);
+      assert.deepEqual(actual.second.rankedCandidates.map((candidate) => candidate.exerciseId), [80, 90]);
       assert.equal(
-        actual.leftToRight.rankedCandidates[0].rankingReasons.some(
+        actual.first.rankedCandidates[0].rankingReasons.some(
           (reason) => reason.code === RANKING_REASON_CODES.TIE_BROKEN_BY_EXERCISE_ID
         ),
         true
@@ -291,251 +605,54 @@ const cases = [
     },
   },
   {
-    name: "6. policy validation rejects unknown, negative, non-finite, and all-zero weights",
-    input: { validation: "policy" },
-    run: () => ({
-      valid: validateReplacementRankingPolicy(TEST_ONLY_POLICY_V1),
-      invalidUnknown: () =>
-        validateReplacementRankingPolicy({
-          version: "bad-policy",
-          enabledDimensions: ["unknown_dimension"],
-          weights: { unknown_dimension: 1 },
-        }),
-      invalidNegative: () =>
-        validateReplacementRankingPolicy({
-          version: "bad-policy",
-          enabledDimensions: [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY],
-          weights: { [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY]: -1 },
-        }),
-      invalidAllZero: () =>
-        validateReplacementRankingPolicy({
-          version: "bad-policy",
-          enabledDimensions: [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY],
-          weights: { [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY]: 0 },
-        }),
-      invalidMissingVersion: () =>
-        validateReplacementRankingPolicy({
-          enabledDimensions: [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY],
-          weights: { [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY]: 1 },
-        }),
-      invalidInfinity: () =>
-        validateReplacementRankingPolicy({
-          version: "bad-policy",
-          enabledDimensions: [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY],
-          weights: { [RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY]: Number.POSITIVE_INFINITY },
-        }),
-    }),
-    assertResult: (actual) => {
-      assert.equal(actual.valid.version, TEST_ONLY_POLICY_V1.version);
-      assert.throws(actual.invalidUnknown, /unknown dimension/i);
-      assert.throws(actual.invalidNegative, /must not be negative/i);
-      assert.throws(actual.invalidAllZero, /at least one positive weight/i);
-      assert.throws(actual.invalidMissingVersion, /version must be a non-empty string/i);
-      assert.throws(actual.invalidInfinity, /must be finite/i);
-    },
-  },
-  {
-    name: "7. invalid ranking scores fail loudly instead of becoming silent zeros",
-    input: { score: 1.2 },
-    run: () =>
-      rankEligibleCandidatesV1(buildExercise(), [buildEligibleCandidateEntry()], {
-        policy: TEST_ONLY_POLICY_V1,
-        evaluateCandidateRanking: () => ({
-          ...TEST_ONLY_AVAILABLE_EVALUATION,
-          score: 1.2,
-          breakdown: [
-            {
-              dimension: RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY,
-              status: RANKING_RESULT_STATUSES.AVAILABLE,
-              score: 1.2,
-              reasons: [{ code: RANKING_REASON_CODES.EVALUATED }],
-            },
-          ],
-        }),
-      }),
-    assertError: (error) => {
-      assert.match(error.message, /must be between 0 and 1/i);
-    },
-  },
-  {
-    name: "8. ranking output preserves eligibility evidence separately from ranking reasons",
-    input: { separateExplainability: true },
-    run: () =>
-      rankEligibleCandidatesV1(buildExercise(), [buildEligibleCandidateEntry()], {
-        policy: TEST_ONLY_POLICY_V1,
-        evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
-      }),
-    assertResult: (actual) => {
-      const candidate = actual.rankedCandidates[0];
-      assert.equal(candidate.eligibilityEvidence.eligibility, true);
-      assert.equal(Array.isArray(candidate.eligibilityEvidence.reasons), true);
-      assert.equal(candidate.rankingReasons[0].code, RANKING_REASON_CODES.EVALUATED);
-      assert.notDeepEqual(candidate.eligibilityEvidence.reasons, candidate.rankingReasons);
-    },
-  },
-  {
-    name: "9. ranking output preserves similarity breakdown without recomputing it",
-    input: { preserveSimilarity: true },
-    run: () => {
-      const candidateEntry = buildEligibleCandidateEntry({
-        candidateResult: buildEligibleCandidateResult({
-          similarityBreakdown: [
-            {
-              dimension: "movement",
-              status: "AVAILABLE",
-              score: 1,
-              reasons: [{ code: "SIMILARITY_MOVEMENT_SAME_PATTERN" }],
-              evidence: { patternA: "squat", patternB: "squat" },
-            },
-            {
-              dimension: "equipment",
-              status: "AVAILABLE",
-              score: 0.3333,
-              reasons: [{ code: "SIMILARITY_EQUIPMENT_PARTIAL_REQUIRED_EQUIPMENT_OVERLAP" }],
-              evidence: { shared: ["rack"], onlyA: ["barbell"], onlyB: ["dumbbell"] },
-            },
-          ],
-        }),
-      });
-
-      return rankEligibleCandidatesV1(buildExercise(), [candidateEntry], {
-        policy: TEST_ONLY_POLICY_V1,
-        evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
-      });
-    },
-    assertResult: (actual) => {
-      assert.deepEqual(actual.rankedCandidates[0].similarityEvidence.similarityBreakdown, [
-        {
-          dimension: "movement",
-          status: "AVAILABLE",
-          score: 1,
-          reasons: [{ code: "SIMILARITY_MOVEMENT_SAME_PATTERN" }],
-          evidence: { patternA: "squat", patternB: "squat" },
-        },
-        {
-          dimension: "equipment",
-          status: "AVAILABLE",
-          score: 0.3333,
-          reasons: [{ code: "SIMILARITY_EQUIPMENT_PARTIAL_REQUIRED_EQUIPMENT_OVERLAP" }],
-          evidence: { shared: ["rack"], onlyA: ["barbell"], onlyB: ["dumbbell"] },
-        },
-      ]);
-    },
-  },
-  {
-    name: "10. source exercise, candidate input, and policy remain unmutated",
+    name: "14. source exercise, candidates, policy, and similarity evidence are not mutated",
     input: { immutability: true },
     run: () => {
       const source = buildExercise();
       const candidateEntry = buildEligibleCandidateEntry();
       const sourceBefore = JSON.parse(JSON.stringify(source));
       const candidateBefore = JSON.parse(JSON.stringify(candidateEntry));
-      const policyBefore = JSON.parse(JSON.stringify(TEST_ONLY_POLICY_V1));
+      const policyBefore = JSON.parse(JSON.stringify(DEFAULT_REPLACEMENT_RANKING_POLICY_V1));
 
-      const actual = rankEligibleCandidatesV1(source, [candidateEntry], {
-        policy: TEST_ONLY_POLICY_V1,
-        evaluateCandidateRanking: () => TEST_ONLY_AVAILABLE_EVALUATION,
-      });
+      const actual = rankReplacementCandidatesV1(source, [candidateEntry]);
 
-      return {
-        actual,
-        source,
-        sourceBefore,
-        candidateEntry,
-        candidateBefore,
-        policyBefore,
-      };
+      return { actual, source, sourceBefore, candidateEntry, candidateBefore, policyBefore };
     },
     assertResult: (actual) => {
       assert.deepEqual(actual.source, actual.sourceBefore);
       assert.deepEqual(actual.candidateEntry, actual.candidateBefore);
-      assert.deepEqual(JSON.parse(JSON.stringify(TEST_ONLY_POLICY_V1)), actual.policyBefore);
+      assert.deepEqual(JSON.parse(JSON.stringify(DEFAULT_REPLACEMENT_RANKING_POLICY_V1)), actual.policyBefore);
       assert.equal(Object.isFrozen(actual.actual), true);
     },
   },
   {
-    name: "11. module has no Prisma dependency and no Candidate Engine ownership",
+    name: "15. ranking accepts only eligible candidates and never overrides blocked eligibility",
+    input: { blockedCandidate: true },
+    run: () =>
+      rankReplacementCandidatesV1(buildExercise(), [
+        {
+          candidateExercise: buildExercise({ exerciseId: 99, slug: "blocked" }),
+          candidateResult: buildEligibleCandidateResult({
+            exerciseId: 99,
+            eligibility: false,
+            blockedRules: ["CANDIDATE_RULE_COMPLETE_DNA"],
+            passedRules: [],
+          }),
+        },
+      ]),
+    assertError: (error) => {
+      assert.match(error.message, /must already be marked eligible/i);
+    },
+  },
+  {
+    name: "16. no prisma, no candidate eligibility recomputation, and no similarity recomputation are imported by ranking",
     input: { dependencyAudit: true },
     run: async () => readFile(new URL("./index.js", import.meta.url), "utf8"),
     assertResult: (actual) => {
       assert.equal(actual.includes("@prisma/client"), false);
-      assert.equal(actual.includes("exerciseCandidates"), false);
       assert.equal(actual.includes("buildReplacementCandidatesV1"), false);
-    },
-  },
-  {
-    name: "12. ranking returns all eligible candidates and has no top-n behavior",
-    input: { candidateCount: 4 },
-    run: () => {
-      const entries = [61, 62, 63, 64].map((exerciseId) =>
-        buildEligibleCandidateEntry({
-          candidateExercise: buildExercise({ exerciseId, slug: `candidate-${exerciseId}` }),
-          candidateResult: buildEligibleCandidateResult({ exerciseId }),
-        })
-      );
-
-      return rankEligibleCandidatesV1(buildExercise(), entries, {
-        policy: TEST_ONLY_POLICY_V1,
-        evaluateCandidateRanking: ({ candidateExercise }) => ({
-          ...TEST_ONLY_AVAILABLE_EVALUATION,
-          score: Number(`0.${candidateExercise.exerciseId - 60}`),
-          breakdown: [
-            {
-              dimension: RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY,
-              status: RANKING_RESULT_STATUSES.AVAILABLE,
-              score: Number(`0.${candidateExercise.exerciseId - 60}`),
-              reasons: [{ code: RANKING_REASON_CODES.EVALUATED }],
-            },
-          ],
-        }),
-      });
-    },
-    assertResult: (actual) => {
-      assert.equal(actual.totalRanked, 4);
-      assert.deepEqual(
-        actual.rankedCandidates.map((candidate) => candidate.exerciseId),
-        [64, 63, 62, 61]
-      );
-    },
-  },
-  {
-    name: "13. ranking scores are bounded semantic ordering values, not probabilities",
-    input: { scoreDomain: [0, 1] },
-    run: () =>
-      rankEligibleCandidatesV1(
-        buildExercise(),
-        [
-          buildEligibleCandidateEntry({
-            candidateExercise: buildExercise({ exerciseId: 75, slug: "low-score" }),
-            candidateResult: buildEligibleCandidateResult({ exerciseId: 75 }),
-          }),
-          buildEligibleCandidateEntry({
-            candidateExercise: buildExercise({ exerciseId: 76, slug: "high-score" }),
-            candidateResult: buildEligibleCandidateResult({ exerciseId: 76 }),
-          }),
-        ],
-        {
-          policy: TEST_ONLY_POLICY_V1,
-          evaluateCandidateRanking: ({ candidateExercise }) => ({
-            ...TEST_ONLY_AVAILABLE_EVALUATION,
-            score: candidateExercise.exerciseId === 75 ? 0 : 1,
-            breakdown: [
-              {
-                dimension: RANKING_POLICY_DIMENSIONS.SEMANTIC_SIMILARITY,
-                status: RANKING_RESULT_STATUSES.AVAILABLE,
-                score: candidateExercise.exerciseId === 75 ? 0 : 1,
-                reasons: [{ code: RANKING_REASON_CODES.EVALUATED }],
-              },
-            ],
-          }),
-        }
-      ),
-    assertResult: (actual) => {
-      assert.deepEqual(
-        actual.rankedCandidates.map((candidate) => candidate.rankingScore),
-        [1, 0]
-      );
-      assert.equal(Object.prototype.hasOwnProperty.call(actual.rankedCandidates[0], "probability"), false);
+      assert.equal(actual.includes("compareExercisesV1"), false);
+      assert.equal(actual.includes("SIMILARITY_REASON_CODES"), false);
     },
   },
 ];
