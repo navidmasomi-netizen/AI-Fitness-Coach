@@ -344,3 +344,43 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Candidate Engine`
 - `rationale`: Conservative exact-pattern gating prevents speculative movement-family substitutions before that policy is explicitly designed.
 - `affected future engines`: `Candidate Engine`, `Replacement Engine`
+
+### Rule 35
+
+- `id`: `RULE_035`
+- `title`: `Ranking Operates Only On Eligible Candidates`
+- `statement`: Ranking operates only on candidates that have already been marked eligible by the Candidate Engine.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Ranking is downstream ordering logic and must not accept blocked or unresolved candidates.
+- `affected future engines`: `Replacement Engine`
+
+### Rule 36
+
+- `id`: `RULE_036`
+- `title`: `Ranking Is Directional And Context-Independent In V1`
+- `statement`: Ranking V1 is directional from source exercise to eligible candidate, while remaining independent from user context and workout context.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Replacement ranking preserves the role of a specific source exercise without yet introducing user- or workout-specific policy.
+- `affected future engines`: `Replacement Engine`, `Workout Integrity`
+
+### Rule 37
+
+- `id`: `RULE_037`
+- `title`: `Ranking Explanations Are Separate From Eligibility Explanations`
+- `statement`: Ranking explanations are independent from eligibility explanations and must be preserved separately in ranking output.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: Downstream consumers need to distinguish why a candidate was allowed from why it was ordered.
+- `affected future engines`: `Replacement Engine`
+
+### Rule 38
+
+- `id`: `RULE_038`
+- `title`: `Ranking Cannot Override Eligibility`
+- `statement`: Ranking cannot override candidate eligibility.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Engine`
+- `rationale`: A high ranking score cannot promote a blocked candidate into consideration.
+- `affected future engines`: `Replacement Engine`
