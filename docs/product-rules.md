@@ -524,3 +524,43 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Decision`
 - `rationale`: Replacement recommendation quality must remain auditable end to end across all upstream evidence layers.
 - `affected future engines`: `Replacement Decision Engine`
+
+### Rule 53
+
+- `id`: `RULE_053`
+- `title`: `Equipment Similarity Is Not Equipment Availability`
+- `statement`: Equipment similarity is not equipment availability.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Similarity compares exercise facts, while availability depends on explicit runtime context.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 54
+
+- `id`: `RULE_054`
+- `title`: `Required Equipment Is Fully Required`
+- `statement`: All values in `Exercise.requiredEquipment` represent required physical requirements; every required item must be available for the exercise to be equipment-feasible.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Equipment feasibility must respect authored physical setup requirements exactly rather than treating the list as advisory.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 55
+
+- `id`: `RULE_055`
+- `title`: `Equipment Availability Is Contextual`
+- `statement`: Equipment availability is contextual and must never be persisted as an intrinsic Exercise fact.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Exercise metadata and runtime equipment context are separate sources of truth with different ownership.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 56
+
+- `id`: `RULE_056`
+- `title`: `Missing Equipment Context Is Not Unavailability`
+- `statement`: Missing equipment-context information must not be interpreted as equipment being unavailable.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Unknown context must remain explicit instead of being converted into a hidden negative feasibility decision.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
