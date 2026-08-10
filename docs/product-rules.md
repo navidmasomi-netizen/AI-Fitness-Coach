@@ -564,3 +564,43 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Context`
 - `rationale`: Unknown context must remain explicit instead of being converted into a hidden negative feasibility decision.
 - `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 57
+
+- `id`: `RULE_057`
+- `title`: `Replacement Context Is Contextual`
+- `statement`: Replacement Context is contextual input, not intrinsic Exercise data.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Runtime decision context must remain separate from canonical Exercise facts and similarity inputs.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 58
+
+- `id`: `RULE_058`
+- `title`: `Replacement Context Is Explicit Versioned And Immutable`
+- `statement`: Replacement Context must be explicit, versioned, and immutable.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Contextual decision inputs need a stable contract boundary that downstream layers can trust without hidden mutation.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 59
+
+- `id`: `RULE_059`
+- `title`: `Unknown Context Remains Unknown`
+- `statement`: Unknown context must remain unknown and must never be silently converted into a negative constraint.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Context`
+- `rationale`: Missing context is not the same as negative context and must not create hidden blocking behavior.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 60
+
+- `id`: `RULE_060`
+- `title`: `Decision Core Does Not Read Context Yet`
+- `statement`: Replacement Decision Core must not read contextual data until an explicit context-aware policy layer is introduced.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Decision`
+- `rationale`: Decision orchestration must stay aligned with current upstream engine semantics until context-aware policy is explicitly added.
+- `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
