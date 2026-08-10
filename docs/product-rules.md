@@ -474,3 +474,53 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Workout Integrity`
 - `rationale`: Workout-level constraints require seeing the candidate in the full workout context rather than only as a pairwise substitution.
 - `affected future engines`: `Workout Integrity Engine`, `Replacement Decision Engine`
+
+### Rule 48
+
+- `id`: `RULE_048`
+- `title`: `Decision Consumes Upstream Evidence`
+- `statement`: Decision consumes upstream evidence; it does not recompute upstream engines.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Decision`
+- `rationale`: The final decision layer must orchestrate upstream outputs, not become a second Similarity, Candidate, Ranking, or Integrity engine.
+- `affected future engines`: `Replacement Decision Engine`
+
+### Rule 49
+
+- `id`: `RULE_049`
+- `title`: `Integrity Block Prevents Recommendation`
+- `statement`: Integrity BLOCK always prevents recommendation.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Decision`
+- `rationale`: Structural workout conflicts must remain hard stops in the final recommendation layer.
+- `affected future engines`: `Replacement Decision Engine`
+
+### Rule 50
+
+- `id`: `RULE_050`
+- `title`: `Integrity Warn Remains Explicit`
+- `statement`: Integrity WARN may still allow recommendation, but warning must remain explicit in the final decision.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Decision`
+- `rationale`: Warning-level integrity issues should not be hidden or silently converted into a ranking penalty in V1.
+- `affected future engines`: `Replacement Decision Engine`
+
+### Rule 51
+
+- `id`: `RULE_051`
+- `title`: `Decision Selects Only Eligible Ranked Candidates`
+- `statement`: Decision Engine selects only from candidates already eligible and ranked.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Decision`
+- `rationale`: Final recommendation must stay downstream of Candidate and Ranking, preserving upstream authority and traceability.
+- `affected future engines`: `Replacement Decision Engine`
+
+### Rule 52
+
+- `id`: `RULE_052`
+- `title`: `Final Decision Preserves Traceability`
+- `statement`: Final decision must preserve traceability to Candidate, Ranking, Similarity, and Integrity evidence.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Decision`
+- `rationale`: Replacement recommendation quality must remain auditable end to end across all upstream evidence layers.
+- `affected future engines`: `Replacement Decision Engine`
