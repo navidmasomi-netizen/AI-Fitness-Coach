@@ -9,6 +9,7 @@ import {
   getSessionById,
   getActiveSession,
   getWorkoutExerciseReplacements,
+  applyWorkoutExerciseReplacement,
 } from "../controllers/workouts.js";
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.patch("/:sessionId/complete", requireAuth, completeWorkoutSession);
 router.get("/user/:userId", requireAuth, getUserWorkoutSessions);
 router.get("/active", requireAuth, getActiveSession);
 router.post("/:sessionId/exercise-targets/:targetId/replacements", requireAuth, getWorkoutExerciseReplacements);
+router.post("/:sessionId/exercise-targets/:targetId/replacements/apply", requireAuth, applyWorkoutExerciseReplacement);
 router.get("/:sessionId", requireAuth, getSessionById);
 
 export default router;

@@ -8,6 +8,10 @@ import {
   ReplacementRecommendationError,
   getWorkoutExerciseReplacementsV1,
 } from "../services/replacementRecommendationService.js";
+import {
+  ApplyReplacementError,
+  applyWorkoutExerciseReplacementV1,
+} from "../services/replacementApplyService.js";
 
 function hasOwn(input, key) {
   return Object.prototype.hasOwnProperty.call(input, key);
@@ -366,6 +370,48 @@ export const getWorkoutExerciseReplacements = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to evaluate workout exercise replacements",
+    });
+  }
+};
+
+export const applyWorkoutExerciseReplacement = async (req, res) => {
+  const userId = req.userId;
+  const normalizedSessionId = Number(req.params.sessionId);
+  const normalizedTargetId = Number(req.params.targetId);
+  const body =
+    req.body && typeof req.body === "object" && !Array.isArray(req.body)
+      ? req.body
+      : {};
+
+  if (Object.keys(body).some((key) => key !== "replacementExerciseId")) {
+    return res.status(422).json({
+      success: false,
+      message: 'Only "replacementExerciseId" is supported on this endpoint',
+      code: "APPLY_REPLACEMENT_INVALID_REQUEST",
+    });
+  }
+
+  try {
+    const result = await applyWorkoutExerciseReplacementV1({
+      userId,
+      sessionId: normalizedSessionId,
+      targetId: normalizedTargetId,
+      replacementExerciseId: Number(body.replacementExerciseId),
+    });
+
+    return res.json({ success: true, data: result });
+  } catch (error) {
+    if (error instanceof ApplyReplacementError) {
+      return res.status(error.statusCode).json({
+        success: false,
+        message: error.message,
+        code: error.code,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to apply workout exercise replacement",
     });
   }
 };

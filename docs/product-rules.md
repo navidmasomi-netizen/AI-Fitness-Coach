@@ -804,3 +804,53 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Mobile Replacement Discovery`
 - `rationale`: Candidate selection in discovery is only ephemeral preparation for a future apply flow.
 - `affected future engines`: `Mobile`, `Replacement Apply`
+
+### Rule 81
+
+- `id`: `RULE_081`
+- `title`: `Apply Never Recomputes Recommendations`
+- `statement`: Apply Replacement must never recompute recommendations.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Apply`
+- `rationale`: Recommendation generation is complete before Apply; mutation must consume explicit user selection only.
+- `affected future engines`: `Replacement Apply`
+
+### Rule 82
+
+- `id`: `RULE_082`
+- `title`: `Apply Uses Explicit User Selection`
+- `statement`: Apply operates only on the candidate selected by the user.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Apply`
+- `rationale`: Mutation authority comes from explicit user choice, not hidden backend re-selection.
+- `affected future engines`: `Replacement Apply`, `Mobile`
+
+### Rule 83
+
+- `id`: `RULE_083`
+- `title`: `Apply Is Fully Transactional`
+- `statement`: Replacement must be fully transactional.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Apply`
+- `rationale`: Workout mutation cannot leave target, logs, and audit evidence in a partial state.
+- `affected future engines`: `Replacement Apply`
+
+### Rule 84
+
+- `id`: `RULE_084`
+- `title`: `Apply Permanently Mutates Workout Session State`
+- `statement`: Successful Apply permanently mutates workout session state.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Apply`
+- `rationale`: Apply is the first replacement write boundary and must persist the selected change.
+- `affected future engines`: `Replacement Apply`, `Mobile`
+
+### Rule 85
+
+- `id`: `RULE_085`
+- `title`: `Every Replacement Is Auditable`
+- `statement`: Every replacement must be fully auditable.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Apply`
+- `rationale`: Replacement mutation requires durable traceability for support, debugging, and future workflow evolution.
+- `affected future engines`: `Replacement Apply`
