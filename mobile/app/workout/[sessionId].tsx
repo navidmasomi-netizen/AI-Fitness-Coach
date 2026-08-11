@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { View, Text, ScrollView, Pressable, TextInput, Modal, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addSetLog, completeSession } from "../../src/api/sessions";
+import { ApiError } from "../../src/api/client";
+import { addSetLog, completeSession, getActiveSession } from "../../src/api/sessions";
 import { applyReplacementSelection, getReplacementRecommendations } from "../../src/api/replacements";
 import { buildWorkoutName } from "../../src/utils/workoutMeta";
 import type { ProgramDayExercise } from "../../src/types/program";
@@ -21,6 +22,7 @@ import {
   getNoReplacementMessage,
   getReplacementUnavailableMessage,
   getReplacementWarningMessage,
+  isAppliedReplacementAuthoritative,
   mergeWorkoutExercisesWithTargets,
   type ReplacementDiscoveryStatus,
 } from "../../src/utils/replacementDiscovery";
@@ -30,6 +32,23 @@ interface LoggedSet {
   setNumber: number;
   reps: number;
   weightKg: number | null;
+}
+
+interface ActiveWorkoutSnapshot {
+  session: {
+    id: number;
+    setLogs?: Array<{
+      id: number;
+      exerciseId: number;
+      setNumber: number;
+      reps: number;
+      weightKg: number | null;
+    }>;
+    exerciseTargets?: WorkoutSessionExerciseTarget[];
+  };
+  program: unknown;
+  programDay: unknown;
+  exercises: unknown[];
 }
 
 type WorkoutExerciseWithTarget = ProgramDayExercise & { targetId: number | null };
@@ -58,6 +77,14 @@ const INITIAL_DISCOVERY_STATE: ReplacementDiscoveryState = {
 
 function getExerciseDisplayName(exercise: { nameFa: string; nameEn: string | null }) {
   return exercise.nameFa || exercise.nameEn || `Exercise ${exercise}`;
+}
+
+function getTargetExerciseDisplayName(exercise: WorkoutSessionExerciseTarget["exercise"]) {
+  if (exercise?.nameFa || exercise?.nameEn) {
+    return exercise.nameFa || exercise.nameEn || "Exercise";
+  }
+
+  return "Exercise";
 }
 
 function getCandidateEquipmentLabel(status: ReplacementCandidateSummary["equipmentAvailabilityStatus"]) {
@@ -130,6 +157,7 @@ export default function WorkoutSessionScreen() {
   const [restSecondsRemaining, setRestSecondsRemaining] = useState(0);
   const [isRestRunning, setIsRestRunning] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const discoveryRequestVersionRef = useRef(0);
 
   useEffect(() => {
     if (isRestRunning) {
@@ -226,26 +254,46 @@ export default function WorkoutSessionScreen() {
         targetId: params.targetId,
         context: buildReplacementContextInput(params.intentType, params.availableEquipment),
       }),
-    onSuccess: (data) => {
-      setDiscoveryState((previous) => ({
-        ...previous,
-        status:
-          data.contextualDecisionStatus === "NO_CONTEXTUAL_REPLACEMENT" ? "NO_REPLACEMENT" : "RESULTS",
-        recommendations: data,
-        selectedCandidateExerciseId: data.recommendedReplacement?.exerciseId ?? null,
-        errorMessage: null,
-        applyErrorMessage: null,
-      }));
-    },
-    onError: (error: any) => {
-      setDiscoveryState((previous) => ({
-        ...previous,
-        status: "ERROR",
-        errorMessage: error.message || "Failed to load replacement suggestions",
-        applyErrorMessage: null,
-      }));
-    },
   });
+
+  const synchronizeWorkoutFromSnapshot = (snapshot: ActiveWorkoutSnapshot) => {
+    const updatedTargets = snapshot.session.exerciseTargets ?? [];
+    const updatedSetLogs = snapshot.session.setLogs ?? [];
+
+    queryClient.setQueryData(["sessionExerciseTargets", numericSessionId], updatedTargets);
+    queryClient.setQueryData(["activeSession"], snapshot);
+
+    setWorkoutExerciseTargets(updatedTargets);
+    setLoggedSets(groupLoggedSetsByExercise(updatedSetLogs));
+    setErrors({});
+  };
+
+  const recoverAuthoritativeApplyState = async (params: {
+    targetId: number;
+    replacementExerciseId: number;
+  }) => {
+    const activeSession = await getActiveSession();
+
+    if (!activeSession || activeSession.session.id !== numericSessionId) {
+      return {
+        recovered: false as const,
+      };
+    }
+
+    synchronizeWorkoutFromSnapshot(activeSession);
+
+    const recovered = isAppliedReplacementAuthoritative(
+      activeSession.session.exerciseTargets ?? [],
+      params.targetId,
+      params.replacementExerciseId
+    );
+
+    return {
+      recovered,
+      replacementExercise:
+        activeSession.session.exerciseTargets?.find((target) => target.id === params.targetId)?.exercise ?? null,
+    };
+  };
 
   const applyReplacementMutation = useMutation({
     mutationFn: (params: { targetId: number; replacementExerciseId: number }) =>
@@ -255,24 +303,19 @@ export default function WorkoutSessionScreen() {
         replacementExerciseId: params.replacementExerciseId,
       }),
     onSuccess: (data) => {
-      const updatedTargets = data.session.exerciseTargets ?? [];
-      const updatedSetLogs = data.session.setLogs ?? [];
       const previousExercise = discoveryState.exercise?.exercise ?? null;
-      const replacementExercise =
-        updatedTargets.find((target) => target.id === data.appliedReplacement.targetId)?.exercise ?? null;
-
-      queryClient.setQueryData(["sessionExerciseTargets", numericSessionId], updatedTargets);
-      queryClient.setQueryData(["activeSession"], {
+      const responseSnapshot = {
         session: data.session,
         program: data.program,
         programDay: data.programDay,
         exercises: data.exercises,
-      });
+      };
+      const replacementExercise =
+        data.session.exerciseTargets?.find((target) => target.id === data.appliedReplacement.targetId)?.exercise ?? null;
+
+      synchronizeWorkoutFromSnapshot(responseSnapshot);
       queryClient.invalidateQueries({ queryKey: ["activeSession"] });
 
-      setWorkoutExerciseTargets(updatedTargets);
-      setLoggedSets(groupLoggedSetsByExercise(updatedSetLogs));
-      setErrors({});
       replacementMutation.reset();
       setDiscoveryState(INITIAL_DISCOVERY_STATE);
       setReplacementSuccessMessage(
@@ -281,10 +324,34 @@ export default function WorkoutSessionScreen() {
           : "Exercise replaced successfully."
       );
     },
-    onError: () => {
+    onError: async (error, variables) => {
+      try {
+        const recoveredState = await recoverAuthoritativeApplyState(variables);
+
+        if (recoveredState.recovered) {
+          const previousExercise = discoveryState.exercise?.exercise ?? null;
+
+          replacementMutation.reset();
+          setDiscoveryState(INITIAL_DISCOVERY_STATE);
+          setReplacementSuccessMessage(
+            previousExercise && recoveredState.replacementExercise
+              ? `${getExerciseDisplayName(previousExercise)} replaced with ${getTargetExerciseDisplayName(recoveredState.replacementExercise)}.`
+              : "Exercise replaced successfully."
+          );
+          return;
+        }
+      } catch {
+        queryClient.invalidateQueries({ queryKey: ["activeSession"] });
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["activeSession"] });
+
       setDiscoveryState((previous) => ({
         ...previous,
-        applyErrorMessage: getApplyReplacementErrorMessage(),
+        applyErrorMessage:
+          error instanceof ApiError && error.code === "REPLACEMENT_ALREADY_APPLIED"
+            ? "This replacement was already applied. Refresh the workout state before trying again."
+            : getApplyReplacementErrorMessage(),
       }));
     },
   });
@@ -382,6 +449,7 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    discoveryRequestVersionRef.current += 1;
     replacementMutation.reset();
     applyReplacementMutation.reset();
 
@@ -398,6 +466,7 @@ export default function WorkoutSessionScreen() {
   };
 
   const closeReplacementDiscovery = () => {
+    discoveryRequestVersionRef.current += 1;
     replacementMutation.reset();
     applyReplacementMutation.reset();
     setDiscoveryState(INITIAL_DISCOVERY_STATE);
@@ -425,6 +494,9 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    const requestVersion = discoveryRequestVersionRef.current + 1;
+    discoveryRequestVersionRef.current = requestVersion;
+
     setDiscoveryState((previous) => ({
       ...previous,
       status: "LOADING_RECOMMENDATIONS",
@@ -433,12 +505,43 @@ export default function WorkoutSessionScreen() {
       errorMessage: null,
     }));
 
-    replacementMutation.mutate({
-      targetId: discoveryState.exercise.targetId,
-      intentType: discoveryState.intentType,
-      availableEquipment:
-        discoveryState.intentType === "NO_EQUIPMENT" ? discoveryState.availableEquipment : [],
-    });
+    replacementMutation.mutate(
+      {
+        targetId: discoveryState.exercise.targetId,
+        intentType: discoveryState.intentType,
+        availableEquipment:
+          discoveryState.intentType === "NO_EQUIPMENT" ? discoveryState.availableEquipment : [],
+      },
+      {
+        onSuccess: (data) => {
+          if (requestVersion !== discoveryRequestVersionRef.current) {
+            return;
+          }
+
+          setDiscoveryState((previous) => ({
+            ...previous,
+            status:
+              data.contextualDecisionStatus === "NO_CONTEXTUAL_REPLACEMENT" ? "NO_REPLACEMENT" : "RESULTS",
+            recommendations: data,
+            selectedCandidateExerciseId: data.recommendedReplacement?.exerciseId ?? null,
+            errorMessage: null,
+            applyErrorMessage: null,
+          }));
+        },
+        onError: (error: any) => {
+          if (requestVersion !== discoveryRequestVersionRef.current) {
+            return;
+          }
+
+          setDiscoveryState((previous) => ({
+            ...previous,
+            status: "ERROR",
+            errorMessage: error.message || "Failed to load replacement suggestions",
+            applyErrorMessage: null,
+          }));
+        },
+      }
+    );
   };
 
   const reopenReplacementContext = () => {

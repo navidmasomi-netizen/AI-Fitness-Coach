@@ -42,6 +42,7 @@ function printCaseResult({
 async function main() {
   const {
     groupLoggedSetsByExercise,
+    isAppliedReplacementAuthoritative,
     mergeWorkoutExercisesWithTargets,
   } = (await (0, eval)('import("./replacementDiscovery.ts")')) as typeof import("./replacementDiscovery");
 
@@ -141,6 +142,37 @@ async function main() {
       }) => {
         assertEqual(actual.exercisesAfter, actual.exercisesBefore, "Exercises input must remain immutable");
         assertEqual(actual.targetsAfter, actual.targetsBefore, "Target input must remain immutable");
+      },
+    },
+    {
+      name: "4. authoritative recovery detects a committed replacement target after a lost client response",
+      input: {
+        targets: [
+          {
+            id: 7001,
+            exerciseId: 51,
+            programDayExerciseId: 101,
+            sourceDecisionType: "REPLACEMENT_APPLY_V1",
+          },
+        ],
+        targetId: 7001,
+        replacementExerciseId: 51,
+      },
+      run: () =>
+        isAppliedReplacementAuthoritative(
+          [
+            {
+              id: 7001,
+              exerciseId: 51,
+              programDayExerciseId: 101,
+              sourceDecisionType: "REPLACEMENT_APPLY_V1",
+            },
+          ],
+          7001,
+          51
+        ),
+      assertResult: (actual: boolean) => {
+        assertEqual(actual, true, "Committed replacement targets should be recognized during recovery");
       },
     },
   ];

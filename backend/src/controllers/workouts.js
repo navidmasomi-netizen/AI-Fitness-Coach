@@ -251,6 +251,12 @@ export const getSessionById = async (req, res) => {
     const session = await prisma.workoutSession.findUnique({
       where: { id: normalizedSessionId },
       include: {
+        exerciseTargets: {
+          include: {
+            exercise: true,
+          },
+          orderBy: { id: "asc" },
+        },
         setLogs: {
           include: { exercise: true },
           orderBy: { loggedAt: "asc" },
@@ -285,6 +291,12 @@ export const getActiveSession = async (req, res) => {
       where: { userId, status: "active" },
       orderBy: { startedAt: "desc" },
       include: {
+        exerciseTargets: {
+          include: {
+            exercise: true,
+          },
+          orderBy: { id: "asc" },
+        },
         setLogs: {
           include: { exercise: true },
         },

@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import prisma from "../lib/prisma.js";
 import {
   APPLY_REPLACEMENT_AUDIT_VERSION,
+  APPLY_REPLACEMENT_CONFLICT_CODE,
   APPLY_REPLACEMENT_DECISION_TYPE,
   APPLY_REPLACEMENT_V1_VERSION,
   ApplyReplacementError,
@@ -24,6 +25,16 @@ function printCaseResult({ name, input, actual, error, status }) {
   }
   console.log(`RESULT: ${status}`);
   console.log("---");
+}
+
+function createDeferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
 }
 
 async function createTestUser(suffix) {
@@ -56,18 +67,22 @@ async function loadExercisesByName(names) {
 
 async function createFixture({
   suffix,
-  exerciseNames = ["Back Squat", "Romanian Deadlift", "Leg Press"],
+  exerciseNames = ["Back Squat", "Romanian Deadlift", "Leg Press", "Front Squat"],
   sourceExerciseName = "Back Squat",
   replacementExerciseName = "Front Squat",
+  alternateReplacementExerciseName = "Leg Press",
   duplicateSource = false,
   withSetLogs = true,
 } = {}) {
   const user = await createTestUser(`${suffix}-owner`);
   const otherUser = await createTestUser(`${suffix}-other`);
   const names = duplicateSource ? [sourceExerciseName, sourceExerciseName, ...exerciseNames.filter((name) => name !== sourceExerciseName)] : exerciseNames;
-  const seededExercises = await loadExercisesByName([...new Set([...names, replacementExerciseName])]);
+  const seededExercises = await loadExercisesByName(
+    [...new Set([...names, replacementExerciseName, alternateReplacementExerciseName])]
+  );
   const exercises = names.map((name) => seededExercises.get(name));
   const replacementExercise = seededExercises.get(replacementExerciseName);
+  const alternateReplacementExercise = seededExercises.get(alternateReplacementExerciseName);
 
   const program = await prisma.program.create({
     data: {
@@ -163,6 +178,7 @@ async function createFixture({
     targets,
     sourceTarget,
     replacementExercise,
+    alternateReplacementExercise,
     setLogs,
   };
 }
@@ -407,6 +423,150 @@ const cases = [
       assert.equal(/exerciseRanking/i.test(actual.fileContent), false);
       assert.equal(/exerciseSimilarity/i.test(actual.fileContent), false);
       assert.equal(/replacementDecision/i.test(actual.fileContent), false);
+    },
+  },
+  {
+    name: "9. concurrent apply attempts for the same target allow exactly one atomic transition",
+    input: { case: "concurrent apply same target" },
+    run: async () => {
+      const fixture = await createFixture({ suffix: "concurrent" });
+      const releaseFirstApply = createDeferred();
+      const firstApplyEnteredLock = createDeferred();
+      let firstHookEntered = false;
+
+      const lockingService = createReplacementApplyService({
+        afterSessionLockImpl: async () => {
+          if (firstHookEntered) {
+            return;
+          }
+          firstHookEntered = true;
+          firstApplyEnteredLock.resolve();
+          await releaseFirstApply.promise;
+        },
+      });
+
+      const firstApplyPromise = lockingService.applyWorkoutExerciseReplacementV1({
+        userId: fixture.user.id,
+        sessionId: fixture.session.id,
+        targetId: fixture.sourceTarget.id,
+        replacementExerciseId: fixture.replacementExercise.id,
+      });
+
+      await firstApplyEnteredLock.promise;
+
+      const secondApplyPromise = defaultService.applyWorkoutExerciseReplacementV1({
+        userId: fixture.user.id,
+        sessionId: fixture.session.id,
+        targetId: fixture.sourceTarget.id,
+        replacementExerciseId: fixture.alternateReplacementExercise.id,
+      });
+
+      releaseFirstApply.resolve();
+
+      const [firstResult, secondResult] = await Promise.allSettled([
+        firstApplyPromise,
+        secondApplyPromise,
+      ]);
+
+      const finalTarget = await prisma.workoutSessionExerciseTarget.findUnique({
+        where: { id: fixture.sourceTarget.id },
+      });
+      const finalSetLogs = await prisma.setLog.findMany({
+        where: { sessionId: fixture.session.id },
+        orderBy: [{ setNumber: "asc" }, { id: "asc" }],
+      });
+      const audit = JSON.parse(finalTarget.sourceRulesVersion);
+
+      return {
+        fixture,
+        firstResult,
+        secondResult,
+        finalTarget,
+        finalSetLogs,
+        audit,
+      };
+    },
+    assertResult: (actual) => {
+      assert.equal(actual.firstResult.status, "fulfilled");
+      assert.equal(actual.secondResult.status, "rejected");
+      assert.equal(actual.secondResult.reason instanceof ApplyReplacementError, true);
+      assert.equal(actual.secondResult.reason.statusCode, 409);
+      assert.equal(
+        [APPLY_REPLACEMENT_CONFLICT_CODE, "REPLACEMENT_ALREADY_APPLIED"].includes(
+          actual.secondResult.reason.code
+        ),
+        true
+      );
+      assert.equal(actual.finalTarget.exerciseId, actual.fixture.replacementExercise.id);
+      assert.equal(actual.finalTarget.sourceDecisionType, APPLY_REPLACEMENT_DECISION_TYPE);
+      assert.equal(actual.audit.version, APPLY_REPLACEMENT_AUDIT_VERSION);
+      assert.equal(actual.audit.replacementExerciseId, actual.fixture.replacementExercise.id);
+      assert.equal(actual.finalSetLogs[0].exerciseId, actual.fixture.replacementExercise.id);
+    },
+  },
+  {
+    name: "10. apply cannot commit after concurrent session completion wins the session-state transition",
+    input: { case: "session completion race" },
+    run: async () => {
+      const fixture = await createFixture({ suffix: "session-race" });
+      const completionMayFinish = createDeferred();
+      const completionHasLock = createDeferred();
+
+      const completionPromise = prisma.$transaction(async (tx) => {
+        await tx.$queryRaw`
+          SELECT "id"
+          FROM "WorkoutSession"
+          WHERE "id" = ${fixture.session.id}
+          FOR UPDATE
+        `;
+        completionHasLock.resolve();
+        await completionMayFinish.promise;
+        await tx.workoutSession.update({
+          where: { id: fixture.session.id },
+          data: {
+            status: "completed",
+            completedAt: new Date(),
+          },
+        });
+      });
+
+      await completionHasLock.promise;
+
+      const applyPromise = defaultService.applyWorkoutExerciseReplacementV1({
+        userId: fixture.user.id,
+        sessionId: fixture.session.id,
+        targetId: fixture.sourceTarget.id,
+        replacementExerciseId: fixture.replacementExercise.id,
+      });
+
+      completionMayFinish.resolve();
+      await completionPromise;
+
+      try {
+        await applyPromise;
+        throw new Error("Expected apply to fail after session completion won the race");
+      } catch (error) {
+        const target = await prisma.workoutSessionExerciseTarget.findUnique({
+          where: { id: fixture.sourceTarget.id },
+        });
+        const setLogs = await prisma.setLog.findMany({
+          where: { sessionId: fixture.session.id },
+          orderBy: [{ setNumber: "asc" }, { id: "asc" }],
+        });
+        const session = await prisma.workoutSession.findUnique({
+          where: { id: fixture.session.id },
+        });
+        return { fixture, error, target, setLogs, session };
+      }
+    },
+    assertResult: (actual) => {
+      assert.equal(actual.error instanceof ApplyReplacementError, true);
+      assert.equal(actual.error.statusCode, 422);
+      assert.equal(actual.error.code, "WORKOUT_SESSION_NOT_ACTIVE");
+      assert.equal(actual.target.exerciseId, actual.fixture.sourceTarget.exerciseId);
+      assert.equal(actual.target.sourceDecisionType, "MAINTAIN");
+      assert.equal(actual.setLogs[0].exerciseId, actual.fixture.sourceTarget.exerciseId);
+      assert.equal(actual.session.status, "completed");
     },
   },
 ];

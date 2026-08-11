@@ -45,6 +45,7 @@ export interface WorkoutExerciseTargetIdentity {
   exerciseId: number;
   programDayExerciseId: number;
   exercise?: { id: number } | null;
+  sourceDecisionType?: string | null;
 }
 
 export interface WorkoutSetLogIdentity {
@@ -178,6 +179,20 @@ export function groupLoggedSetsByExercise(
   }
 
   return grouped;
+}
+
+export function isAppliedReplacementAuthoritative(
+  targets: readonly WorkoutExerciseTargetIdentity[],
+  targetId: number,
+  replacementExerciseId: number
+): boolean {
+  const target = targets.find((entry) => entry.id === targetId) ?? null;
+
+  return Boolean(
+    target &&
+      target.exerciseId === replacementExerciseId &&
+      target.sourceDecisionType === "REPLACEMENT_APPLY_V1"
+  );
 }
 
 export function getReplacementWarningMessage(): string {

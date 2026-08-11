@@ -2,9 +2,11 @@ import { API_BASE_URL } from "../config/env";
 
 export class ApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  code: string | null;
+  constructor(message: string, status: number, code: string | null = null) {
     super(message);
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -46,7 +48,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   }
 
   if (!response.ok || json.success === false) {
-    throw new ApiError(json.message || "Request failed", response.status);
+    throw new ApiError(json.message || "Request failed", response.status, json.code ?? null);
   }
 
   return json.data as T;

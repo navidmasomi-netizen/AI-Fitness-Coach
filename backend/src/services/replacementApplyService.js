@@ -3,6 +3,7 @@ import prisma from "../lib/prisma.js";
 export const APPLY_REPLACEMENT_V1_VERSION = "replacement-apply-v1";
 export const APPLY_REPLACEMENT_DECISION_TYPE = "REPLACEMENT_APPLY_V1";
 export const APPLY_REPLACEMENT_AUDIT_VERSION = "replacement-apply-audit-v1";
+export const APPLY_REPLACEMENT_CONFLICT_CODE = "REPLACEMENT_TARGET_STATE_CHANGED";
 
 export class ApplyReplacementError extends Error {
   constructor(message, { statusCode = 500, code = "APPLY_REPLACEMENT_FAILED", cause = null } = {}) {
@@ -147,6 +148,18 @@ function findTarget(session, targetId) {
   return session.exerciseTargets.find((entry) => entry.id === targetId) ?? null;
 }
 
+async function lockOwnedSessionRow(tx, { sessionId, userId }) {
+  const rows = await tx.$queryRaw`
+    SELECT "id", "userId", "status"
+    FROM "WorkoutSession"
+    WHERE "id" = ${sessionId}
+      AND "userId" = ${userId}
+    FOR UPDATE
+  `;
+
+  return rows[0] ?? null;
+}
+
 function buildUpdatedWorkoutResponse({ session, program, programDay, appliedReplacement }) {
   return {
     version: APPLY_REPLACEMENT_V1_VERSION,
@@ -160,6 +173,7 @@ function buildUpdatedWorkoutResponse({ session, program, programDay, appliedRepl
 
 export function createReplacementApplyService({
   prismaClient = prisma,
+  afterSessionLockImpl = async () => {},
   afterTargetUpdateImpl = async () => {},
 } = {}) {
   async function applyWorkoutExerciseReplacementV1({
@@ -174,6 +188,17 @@ export function createReplacementApplyService({
     assertPositiveInteger(replacementExerciseId, "replacementExerciseId");
 
     return prismaClient.$transaction(async (tx) => {
+      const lockedSession = await lockOwnedSessionRow(tx, { sessionId, userId });
+      assertSessionOwnership(lockedSession, userId);
+      assertSessionIsActive(lockedSession);
+
+      await afterSessionLockImpl({
+        tx,
+        sessionId,
+        userId,
+        lockedSession,
+      });
+
       const session = await tx.workoutSession.findUnique({
         where: { id: sessionId },
         include: {
@@ -194,9 +219,6 @@ export function createReplacementApplyService({
           },
         },
       });
-
-      assertSessionOwnership(session, userId);
-      assertSessionIsActive(session);
 
       const target = findTarget(session, targetId);
       assertTargetExists(target);
@@ -220,8 +242,14 @@ export function createReplacementApplyService({
         appliedAt,
       });
 
-      const updatedTarget = await tx.workoutSessionExerciseTarget.update({
-        where: { id: targetId },
+      const targetTransition = await tx.workoutSessionExerciseTarget.updateMany({
+        where: {
+          id: targetId,
+          sessionId,
+          exerciseId: target.exerciseId,
+          sourceDecisionType: target.sourceDecisionType ?? null,
+          sourceRulesVersion: target.sourceRulesVersion ?? null,
+        },
         data: {
           exerciseId: replacementExerciseId,
           sourceDecisionType: APPLY_REPLACEMENT_DECISION_TYPE,
@@ -229,6 +257,20 @@ export function createReplacementApplyService({
           // Apply stores structured audit metadata in sourceRulesVersion without changing schema.
           sourceRulesVersion: JSON.stringify(auditMetadata),
         },
+      });
+
+      if (targetTransition.count !== 1) {
+        throw new ApplyReplacementError(
+          "Replacement target changed before apply could complete",
+          {
+            statusCode: 409,
+            code: APPLY_REPLACEMENT_CONFLICT_CODE,
+          }
+        );
+      }
+
+      const updatedTarget = await tx.workoutSessionExerciseTarget.findUnique({
+        where: { id: targetId },
         include: {
           exercise: true,
           programDayExercise: {

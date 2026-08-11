@@ -46,6 +46,7 @@ export interface WorkoutSessionExerciseTarget {
   exerciseId: number;
   programDayExerciseId: number;
   exercise?: WorkoutSessionExerciseTargetExercise | null;
+  sourceDecisionType?: string | null;
 }
 
 export type ReplacementApiReasonCode =
