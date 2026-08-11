@@ -1,9 +1,10 @@
-# Replacement API V1
+# Replacement Recommendation API V1
 
 ## Responsibility
 
-Replacement API V1 is the authenticated backend boundary that exposes the
-locked Replacement Intelligence pipeline without adding new replacement logic.
+Replacement Recommendation API V1 is the authenticated backend boundary that
+exposes the locked Replacement Intelligence pipeline without adding new
+replacement logic.
 
 It is responsible for:
 
@@ -232,10 +233,15 @@ It does not:
 - persist recommendations
 - create recommendation applications
 
-## Future Boundary
+## Companion Apply Boundary
 
 This endpoint only evaluates and recommends.
 
-Actual mutation belongs to a future replacement-apply endpoint, which must
-consume explicit recommendation identity and preserve the locked domain
+The companion mutation endpoint is documented separately in
+`docs/replacement-apply-v1.md`.
+
+Recommendation and Apply remain separate operations:
+
+- recommendation evaluates and returns choices
+- Apply mutates only the explicitly selected replacement target occurrence
 semantics rather than rerunning hidden policy from the client.

@@ -2,14 +2,16 @@
 
 ## Responsibility
 
-Mobile Replacement Discovery V1 exposes the existing backend Replacement API inside the active workout session UI. It is a read-only recommendation flow:
+Mobile Replacement Discovery V1 exposes the existing backend Replacement
+Recommendation API inside the active workout session UI. Discovery itself is a
+read-only recommendation flow:
 
 - start discovery from a specific workout exercise target
 - collect minimal replacement context
 - request backend recommendations
 - render recommended replacement, alternatives, warnings, and no-replacement outcomes
 
-It does not apply the replacement.
+It does not mutate the workout directly.
 
 ## Entry Point
 
@@ -119,6 +121,20 @@ Discovery V1 is read-only:
 
 Selecting a recommendation or alternative is local ephemeral UI state only.
 
+## Apply Handoff
+
+The current product supports end-to-end replacement through a separate Apply
+operation on the same active workout screen.
+
+Discovery still remains read-only:
+
+- it loads and renders choices
+- it stores the selected candidate ephemerally
+- it does not mutate the workout
+
+Mutation happens only through the separate Apply API after explicit user
+selection.
+
 ## Internal/External Boundary
 
 Mobile calls:
@@ -133,10 +149,15 @@ Backend remains authoritative for:
 - Core Decision
 - Context-aware Decision
 
-## Known V1 Limitation
+## Current Identity Requirement
 
-Replacement discovery requires exact workout exercise target ids. Newly started sessions provide those ids to mobile, but resumed session views can only support discovery if those target ids are still available in local session cache. Mobile does not guess from canonical `Exercise.id`.
+Replacement discovery requires exact workout exercise target ids. Mobile never
+guesses from canonical `Exercise.id`.
 
-## Future Boundary
+The active workout screen hydrates target ids from:
 
-Applying a selected replacement is a future operation. Discovery V1 intentionally stops at recommendation display and ephemeral candidate selection.
+- session start payloads
+- authoritative active-session snapshots
+
+If a visible exercise row still lacks a target id, discovery remains disabled
+for that row and the workout stays unchanged.
