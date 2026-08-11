@@ -1,15 +1,67 @@
-import { useState, useEffect, useRef } from "react";
-import { View, Text, ScrollView, Pressable, TextInput } from "react-native";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { View, Text, ScrollView, Pressable, TextInput, Modal, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addSetLog, completeSession } from "../../src/api/sessions";
+import { getReplacementRecommendations } from "../../src/api/replacements";
 import { buildWorkoutName } from "../../src/utils/workoutMeta";
+import type { ProgramDayExercise } from "../../src/types/program";
+import type {
+  CatalogEquipment,
+  ReplacementCandidateSummary,
+  ReplacementIntentType,
+  ReplacementRecommendationResponse,
+  WorkoutSessionExerciseTarget,
+} from "../../src/types/replacement";
+import {
+  REPLACEMENT_DISCOVERY_EQUIPMENT_OPTIONS,
+  REPLACEMENT_DISCOVERY_REASON_OPTIONS,
+  buildReplacementContextInput,
+  getNoReplacementMessage,
+  getReplacementUnavailableMessage,
+  getReplacementWarningMessage,
+  mergeWorkoutExercisesWithTargets,
+  type ReplacementDiscoveryStatus,
+} from "../../src/utils/replacementDiscovery";
 
 interface LoggedSet {
   id: number;
   setNumber: number;
   reps: number;
   weightKg: number | null;
+}
+
+type WorkoutExerciseWithTarget = ProgramDayExercise & { targetId: number | null };
+
+interface ReplacementDiscoveryState {
+  status: ReplacementDiscoveryStatus;
+  exercise: WorkoutExerciseWithTarget | null;
+  intentType: ReplacementIntentType | null;
+  availableEquipment: CatalogEquipment[];
+  recommendations: ReplacementRecommendationResponse | null;
+  selectedCandidateExerciseId: number | null;
+  errorMessage: string | null;
+}
+
+const INITIAL_DISCOVERY_STATE: ReplacementDiscoveryState = {
+  status: "IDLE",
+  exercise: null,
+  intentType: null,
+  availableEquipment: [],
+  recommendations: null,
+  selectedCandidateExerciseId: null,
+  errorMessage: null,
+};
+
+function getExerciseDisplayName(exercise: { nameFa: string; nameEn: string | null }) {
+  return exercise.nameFa || exercise.nameEn || `Exercise ${exercise}`;
+}
+
+function getCandidateEquipmentLabel(status: ReplacementCandidateSummary["equipmentAvailabilityStatus"]) {
+  if (status === "AVAILABLE") return "Equipment available";
+  if (status === "UNAVAILABLE") return "Not available with current equipment";
+  if (status === "METADATA_UNAVAILABLE") return "Equipment details unavailable";
+  return "Equipment not checked";
 }
 
 function formatTime(totalSeconds: number) {
@@ -19,18 +71,39 @@ function formatTime(totalSeconds: number) {
 }
 
 export default function WorkoutSessionScreen() {
-  const { sessionId, programName, dayName, exercisesData, existingSetLogsData } = useLocalSearchParams<{
+  const {
+    sessionId,
+    programName,
+    dayName,
+    exercisesData,
+    exerciseTargetsData,
+    existingSetLogsData,
+  } = useLocalSearchParams<{
     sessionId: string;
     programName: string;
     dayName: string;
     exercisesData: string;
+    exerciseTargetsData?: string;
     existingSetLogsData?: string;
   }>();
   const router = useRouter();
   const queryClient = useQueryClient();
   const numericSessionId = Number(sessionId);
 
-  const exercises = exercisesData ? JSON.parse(exercisesData) : [];
+  const baseExercises = useMemo<ProgramDayExercise[]>(
+    () => (exercisesData ? JSON.parse(exercisesData) : []),
+    [exercisesData]
+  );
+  const routeExerciseTargets = useMemo<WorkoutSessionExerciseTarget[]>(
+    () => (exerciseTargetsData ? JSON.parse(exerciseTargetsData) : []),
+    [exerciseTargetsData]
+  );
+  const cachedExerciseTargets =
+    queryClient.getQueryData<WorkoutSessionExerciseTarget[]>(["sessionExerciseTargets", numericSessionId]) ?? [];
+  const exercises = useMemo<WorkoutExerciseWithTarget[]>(
+    () => mergeWorkoutExercisesWithTargets(baseExercises, routeExerciseTargets.length > 0 ? routeExerciseTargets : cachedExerciseTargets),
+    [baseExercises, cachedExerciseTargets, routeExerciseTargets]
+  );
 
   const [inputs, setInputs] = useState<Record<number, { reps: string; weightKg: string }>>({});
   const [loggedSets, setLoggedSets] = useState<Record<number, LoggedSet[]>>({});
@@ -39,6 +112,7 @@ export default function WorkoutSessionScreen() {
   const [lastLoggedExerciseId, setLastLoggedExerciseId] = useState<number | null>(null);
   const [finishError, setFinishError] = useState("");
   const [finishArmed, setFinishArmed] = useState(false);
+  const [discoveryState, setDiscoveryState] = useState<ReplacementDiscoveryState>(INITIAL_DISCOVERY_STATE);
 
   // --- Rest timer state ---
   const [activeRestExerciseId, setActiveRestExerciseId] = useState<number | null>(null);
@@ -77,6 +151,12 @@ export default function WorkoutSessionScreen() {
     setRestSecondsRemaining(restSeconds > 0 ? restSeconds : 60);
     setIsRestRunning(true);
   };
+
+  useEffect(() => {
+    if (routeExerciseTargets.length > 0) {
+      queryClient.setQueryData(["sessionExerciseTargets", numericSessionId], routeExerciseTargets);
+    }
+  }, [numericSessionId, queryClient, routeExerciseTargets]);
 
   useEffect(() => {
     if (!existingSetLogsData) return;
@@ -122,7 +202,38 @@ export default function WorkoutSessionScreen() {
     },
   });
 
+  const replacementMutation = useMutation({
+    mutationFn: (params: {
+      targetId: number;
+      intentType: ReplacementIntentType;
+      availableEquipment: CatalogEquipment[];
+    }) =>
+      getReplacementRecommendations({
+        sessionId: numericSessionId,
+        targetId: params.targetId,
+        context: buildReplacementContextInput(params.intentType, params.availableEquipment),
+      }),
+    onSuccess: (data) => {
+      setDiscoveryState((previous) => ({
+        ...previous,
+        status:
+          data.contextualDecisionStatus === "NO_CONTEXTUAL_REPLACEMENT" ? "NO_REPLACEMENT" : "RESULTS",
+        recommendations: data,
+        selectedCandidateExerciseId: data.recommendedReplacement?.exerciseId ?? null,
+        errorMessage: null,
+      }));
+    },
+    onError: (error: any) => {
+      setDiscoveryState((previous) => ({
+        ...previous,
+        status: "ERROR",
+        errorMessage: error.message || "Failed to load replacement suggestions",
+      }));
+    },
+  });
+
   const totalLoggedSets = Object.values(loggedSets).reduce((sum, arr) => sum + arr.length, 0);
+  const activeReplacementTargetAvailable = exercises.some((exercise) => exercise.targetId !== null);
 
   const getInput = (exerciseId: number) => inputs[exerciseId] || { reps: "", weightKg: "" };
 
@@ -209,10 +320,474 @@ export default function WorkoutSessionScreen() {
     finishMutation.mutate();
   };
 
+  const openReplacementDiscovery = (exercise: WorkoutExerciseWithTarget) => {
+    if (exercise.targetId === null) {
+      return;
+    }
+
+    setDiscoveryState({
+      status: "COLLECTING_CONTEXT",
+      exercise,
+      intentType: "PREFER_VARIATION",
+      availableEquipment: [],
+      recommendations: null,
+      selectedCandidateExerciseId: null,
+      errorMessage: null,
+    });
+  };
+
+  const closeReplacementDiscovery = () => {
+    replacementMutation.reset();
+    setDiscoveryState(INITIAL_DISCOVERY_STATE);
+  };
+
+  const setDiscoveryIntentType = (intentType: ReplacementIntentType) => {
+    setDiscoveryState((previous) => ({
+      ...previous,
+      intentType,
+      availableEquipment: intentType === "NO_EQUIPMENT" ? previous.availableEquipment : [],
+    }));
+  };
+
+  const toggleDiscoveryEquipment = (equipment: CatalogEquipment) => {
+    setDiscoveryState((previous) => ({
+      ...previous,
+      availableEquipment: previous.availableEquipment.includes(equipment)
+        ? previous.availableEquipment.filter((value) => value !== equipment)
+        : [...previous.availableEquipment, equipment],
+    }));
+  };
+
+  const loadReplacementRecommendations = () => {
+    if (!discoveryState.exercise || discoveryState.exercise.targetId === null || !discoveryState.intentType) {
+      return;
+    }
+
+    setDiscoveryState((previous) => ({
+      ...previous,
+      status: "LOADING_RECOMMENDATIONS",
+      recommendations: null,
+      selectedCandidateExerciseId: null,
+      errorMessage: null,
+    }));
+
+    replacementMutation.mutate({
+      targetId: discoveryState.exercise.targetId,
+      intentType: discoveryState.intentType,
+      availableEquipment:
+        discoveryState.intentType === "NO_EQUIPMENT" ? discoveryState.availableEquipment : [],
+    });
+  };
+
+  const reopenReplacementContext = () => {
+    setDiscoveryState((previous) => ({
+      ...previous,
+      status: "COLLECTING_CONTEXT",
+      recommendations: null,
+      selectedCandidateExerciseId: null,
+      errorMessage: null,
+    }));
+  };
+
+  const selectReplacementCandidate = (exerciseId: number) => {
+    setDiscoveryState((previous) => ({
+      ...previous,
+      selectedCandidateExerciseId: exerciseId,
+    }));
+  };
+
   const activeRestExercise = exercises.find((pde: any) => pde.exercise.id === activeRestExerciseId);
+  const recommendedReplacement = discoveryState.recommendations?.recommendedReplacement ?? null;
+  const shouldShowReplacementWarning =
+    discoveryState.recommendations?.contextualDecisionStatus === "RECOMMENDED_WITH_WARNING";
 
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        visible={discoveryState.status !== "IDLE"}
+        transparent
+        animationType="slide"
+        onRequestClose={closeReplacementDiscovery}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "rgba(0,0,0,0.35)",
+            justifyContent: "flex-end",
+          }}
+        >
+          <View
+            style={{
+              maxHeight: "85%",
+              backgroundColor: "white",
+              borderTopLeftRadius: 18,
+              borderTopRightRadius: 18,
+              paddingHorizontal: 20,
+              paddingTop: 18,
+              paddingBottom: 26,
+            }}
+          >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <View style={{ flex: 1, paddingRight: 12 }}>
+                <Text style={{ fontSize: 18, fontWeight: "700" }}>Replace Exercise</Text>
+                {discoveryState.exercise && (
+                  <Text style={{ color: "#666", marginTop: 4 }}>
+                    {getExerciseDisplayName(discoveryState.exercise.exercise)}
+                  </Text>
+                )}
+              </View>
+              <Pressable onPress={closeReplacementDiscovery} accessibilityLabel="Close replacement discovery">
+                <Text style={{ fontSize: 16, color: "#666" }}>Close</Text>
+              </Pressable>
+            </View>
+
+            {discoveryState.status === "COLLECTING_CONTEXT" && (
+              <ScrollView>
+                <Text style={{ fontSize: 14, color: "#555", marginBottom: 12 }}>
+                  Why do you want to replace this exercise?
+                </Text>
+                {REPLACEMENT_DISCOVERY_REASON_OPTIONS.map((option) => {
+                  const selected = discoveryState.intentType === option.intentType;
+                  return (
+                    <Pressable
+                      key={option.intentType}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Replacement reason: ${option.label}`}
+                      onPress={() => setDiscoveryIntentType(option.intentType)}
+                      style={{
+                        borderWidth: 1,
+                        borderColor: selected ? "#2196f3" : "#d7d7d7",
+                        backgroundColor: selected ? "#e3f2fd" : "white",
+                        borderRadius: 10,
+                        padding: 14,
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Text style={{ fontWeight: "600", marginBottom: 4 }}>{option.label}</Text>
+                      <Text style={{ color: "#666", fontSize: 13 }}>{option.helperText}</Text>
+                    </Pressable>
+                  );
+                })}
+
+                {discoveryState.intentType === "NO_EQUIPMENT" && (
+                  <View
+                    style={{
+                      marginTop: 8,
+                      marginBottom: 12,
+                      padding: 14,
+                      borderRadius: 10,
+                      backgroundColor: "#f7f8fa",
+                      borderWidth: 1,
+                      borderColor: "#eceff3",
+                    }}
+                  >
+                    <Text style={{ fontWeight: "600", marginBottom: 6 }}>Available equipment right now</Text>
+                    <Text style={{ color: "#666", fontSize: 13, marginBottom: 12 }}>
+                      Select only what is actually available in this session. Bodyweight is handled automatically.
+                    </Text>
+                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                      {REPLACEMENT_DISCOVERY_EQUIPMENT_OPTIONS.map((option) => {
+                        const selected = discoveryState.availableEquipment.includes(option.value);
+                        return (
+                          <Pressable
+                            key={option.value}
+                            accessibilityRole="button"
+                            accessibilityLabel={`Toggle available equipment ${option.label}`}
+                            onPress={() => toggleDiscoveryEquipment(option.value)}
+                            style={{
+                              borderWidth: 1,
+                              borderColor: selected ? "#2196f3" : "#d7d7d7",
+                              backgroundColor: selected ? "#e3f2fd" : "white",
+                              borderRadius: 999,
+                              paddingVertical: 8,
+                              paddingHorizontal: 12,
+                            }}
+                          >
+                            <Text style={{ color: selected ? "#1565c0" : "#444" }}>{option.label}</Text>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </View>
+                )}
+
+                <Pressable
+                  onPress={loadReplacementRecommendations}
+                  disabled={!discoveryState.intentType}
+                  style={{
+                    marginTop: 8,
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor: discoveryState.intentType ? "#2196f3" : "#bbdefb",
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "700" }}>Find replacements</Text>
+                </Pressable>
+              </ScrollView>
+            )}
+
+            {discoveryState.status === "LOADING_RECOMMENDATIONS" && (
+              <View style={{ alignItems: "center", paddingVertical: 40 }}>
+                <ActivityIndicator size="large" />
+                <Text style={{ color: "#666", marginTop: 12 }}>Loading replacement suggestions...</Text>
+              </View>
+            )}
+
+            {discoveryState.status === "ERROR" && (
+              <View>
+                <View
+                  style={{
+                    backgroundColor: "#ffebee",
+                    borderRadius: 10,
+                    padding: 14,
+                    marginBottom: 14,
+                  }}
+                >
+                  <Text style={{ color: "#b71c1c", fontWeight: "600", marginBottom: 6 }}>Couldn&apos;t load replacements</Text>
+                  <Text style={{ color: "#b71c1c" }}>
+                    {discoveryState.errorMessage || "Something went wrong while loading replacements."}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={reopenReplacementContext}
+                  style={{
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor: "#2196f3",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "700" }}>Try again</Text>
+                </Pressable>
+                <Pressable
+                  onPress={closeReplacementDiscovery}
+                  style={{
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor: "#eceff3",
+                  }}
+                >
+                  <Text style={{ color: "#333", fontWeight: "700" }}>Dismiss</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {discoveryState.status === "NO_REPLACEMENT" && (
+              <ScrollView>
+                <View
+                  style={{
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: 10,
+                    padding: 14,
+                    marginBottom: 14,
+                  }}
+                >
+                  <Text style={{ fontWeight: "600", marginBottom: 6 }}>No replacement available</Text>
+                  <Text style={{ color: "#555" }}>{getNoReplacementMessage()}</Text>
+                </View>
+
+                {discoveryState.recommendations?.contextRejectedCandidates.length ? (
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ fontWeight: "600", marginBottom: 8 }}>Not available right now</Text>
+                    {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
+                      <View
+                        key={candidate.exerciseId}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "#eceff3",
+                          borderRadius: 10,
+                          padding: 12,
+                          marginBottom: 8,
+                        }}
+                      >
+                        <Text style={{ fontWeight: "600" }}>{candidate.nameFa}</Text>
+                        <Text style={{ color: "#666", marginTop: 4 }}>
+                          {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : null}
+
+                <Pressable
+                  onPress={reopenReplacementContext}
+                  style={{
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor: "#2196f3",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "700" }}>Change options</Text>
+                </Pressable>
+                <Pressable
+                  onPress={closeReplacementDiscovery}
+                  style={{
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor: "#eceff3",
+                  }}
+                >
+                  <Text style={{ color: "#333", fontWeight: "700" }}>Done</Text>
+                </Pressable>
+              </ScrollView>
+            )}
+
+            {discoveryState.status === "RESULTS" && discoveryState.recommendations && (
+              <ScrollView>
+                {shouldShowReplacementWarning && (
+                  <View
+                    style={{
+                      backgroundColor: "#fff8e1",
+                      borderRadius: 10,
+                      padding: 14,
+                      marginBottom: 14,
+                    }}
+                  >
+                    <Text style={{ fontWeight: "600", marginBottom: 6, color: "#7a5a00" }}>
+                      Replacement warning
+                    </Text>
+                    <Text style={{ color: "#7a5a00" }}>{getReplacementWarningMessage()}</Text>
+                  </View>
+                )}
+
+                {recommendedReplacement && (
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ fontWeight: "700", marginBottom: 8 }}>Recommended</Text>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`Select recommended replacement ${recommendedReplacement.nameFa}`}
+                      onPress={() => selectReplacementCandidate(recommendedReplacement.exerciseId)}
+                      style={{
+                        borderWidth: 2,
+                        borderColor:
+                          discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId
+                            ? "#2196f3"
+                            : "#d7d7d7",
+                        borderRadius: 12,
+                        padding: 14,
+                        backgroundColor:
+                          discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId
+                            ? "#e3f2fd"
+                            : "white",
+                      }}
+                    >
+                      <Text style={{ fontWeight: "700", fontSize: 16 }}>{recommendedReplacement.nameFa}</Text>
+                      <Text style={{ color: "#666", marginTop: 4 }}>
+                        {getCandidateEquipmentLabel(recommendedReplacement.equipmentAvailabilityStatus)}
+                      </Text>
+                      {recommendedReplacement.reasonCodes.includes("REPLACEMENT_INTEGRITY_WARNING") && (
+                        <Text style={{ color: "#7a5a00", marginTop: 6 }}>{getReplacementWarningMessage()}</Text>
+                      )}
+                      {discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId && (
+                        <Text style={{ color: "#1565c0", marginTop: 8, fontWeight: "600" }}>
+                          Selected locally only. Your workout has not changed.
+                        </Text>
+                      )}
+                    </Pressable>
+                  </View>
+                )}
+
+                {discoveryState.recommendations.alternatives.length > 0 && (
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ fontWeight: "700", marginBottom: 8 }}>Alternatives</Text>
+                    {discoveryState.recommendations.alternatives.map((candidate) => (
+                      <Pressable
+                        key={candidate.exerciseId}
+                        accessibilityRole="button"
+                        accessibilityLabel={`Select replacement alternative ${candidate.nameFa}`}
+                        onPress={() => selectReplacementCandidate(candidate.exerciseId)}
+                        style={{
+                          borderWidth: 1,
+                          borderColor:
+                            discoveryState.selectedCandidateExerciseId === candidate.exerciseId
+                              ? "#2196f3"
+                              : "#d7d7d7",
+                          borderRadius: 10,
+                          padding: 12,
+                          marginBottom: 8,
+                          backgroundColor:
+                            discoveryState.selectedCandidateExerciseId === candidate.exerciseId
+                              ? "#e3f2fd"
+                              : "white",
+                        }}
+                      >
+                        <Text style={{ fontWeight: "600" }}>{candidate.nameFa}</Text>
+                        <Text style={{ color: "#666", marginTop: 4 }}>
+                          {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
+                        </Text>
+                        {discoveryState.selectedCandidateExerciseId === candidate.exerciseId && (
+                          <Text style={{ color: "#1565c0", marginTop: 8, fontWeight: "600" }}>
+                            Selected locally only. Your workout has not changed.
+                          </Text>
+                        )}
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
+
+                {discoveryState.recommendations.contextRejectedCandidates.length > 0 && (
+                  <View style={{ marginBottom: 14 }}>
+                    <Text style={{ fontWeight: "700", marginBottom: 8 }}>Not available right now</Text>
+                    {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
+                      <View
+                        key={candidate.exerciseId}
+                        style={{
+                          borderWidth: 1,
+                          borderColor: "#eceff3",
+                          borderRadius: 10,
+                          padding: 12,
+                          marginBottom: 8,
+                          backgroundColor: "#fafafa",
+                        }}
+                      >
+                        <Text style={{ fontWeight: "600" }}>{candidate.nameFa}</Text>
+                        <Text style={{ color: "#666", marginTop: 4 }}>
+                          {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                <Text style={{ color: "#666", marginBottom: 14 }}>
+                  Recommendations do not change your workout until a future apply step exists.
+                </Text>
+
+                <Pressable
+                  onPress={reopenReplacementContext}
+                  style={{
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor: "#2196f3",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "700" }}>Change options</Text>
+                </Pressable>
+                <Pressable
+                  onPress={closeReplacementDiscovery}
+                  style={{
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor: "#eceff3",
+                  }}
+                >
+                  <Text style={{ color: "#333", fontWeight: "700" }}>Done</Text>
+                </Pressable>
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
+
       {/* Fixed-position rest timer bar */}
       {activeRestExerciseId !== null && (
         <View
@@ -276,6 +851,11 @@ export default function WorkoutSessionScreen() {
             {dayName} {`\u2014`} {buildWorkoutName(exercises)}
           </Text>
           <Text style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>{programName}</Text>
+          {!activeReplacementTargetAvailable && (
+            <View style={{ backgroundColor: "#fff3e0", borderRadius: 8, padding: 12 }}>
+              <Text style={{ color: "#7a5a00" }}>{getReplacementUnavailableMessage()}</Text>
+            </View>
+          )}
         </View>
 
         {totalLoggedSets === 0 && (
@@ -308,13 +888,38 @@ export default function WorkoutSessionScreen() {
             >
               {/* Exercise header */}
               <View style={{ marginBottom: 10 }}>
-                <Text style={{ fontSize: 12, color: "#999", marginBottom: 2 }}>
-                  Suggested: {pde.sets} × {pde.repRangeLow}-{pde.repRangeHigh} reps
-                </Text>
-                <Text style={{ fontWeight: "700", fontSize: 17 }}>{pde.exercise.nameFa}</Text>
-                <Text style={{ color: "#666", fontSize: 13, marginTop: 2 }}>
-                  Target: {pde.sets} x {pde.repRangeLow}-{pde.repRangeHigh} · Rest: {pde.restSeconds}s
-                </Text>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 12, color: "#999", marginBottom: 2 }}>
+                      Suggested: {pde.sets} × {pde.repRangeLow}-{pde.repRangeHigh} reps
+                    </Text>
+                    <Text style={{ fontWeight: "700", fontSize: 17 }}>{pde.exercise.nameFa}</Text>
+                    <Text style={{ color: "#666", fontSize: 13, marginTop: 2 }}>
+                      Target: {pde.sets} x {pde.repRangeLow}-{pde.repRangeHigh} · Rest: {pde.restSeconds}s
+                    </Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={`Replace ${pde.exercise.nameFa}`}
+                    onPress={() => openReplacementDiscovery(pde)}
+                    disabled={pde.targetId === null}
+                    style={{
+                      paddingVertical: 8,
+                      paddingHorizontal: 12,
+                      borderRadius: 999,
+                      backgroundColor: pde.targetId === null ? "#eceff3" : "#e3f2fd",
+                    }}
+                  >
+                    <Text style={{ color: pde.targetId === null ? "#7b8794" : "#1565c0", fontWeight: "600" }}>
+                      Replace
+                    </Text>
+                  </Pressable>
+                </View>
+                {pde.targetId === null && (
+                  <Text style={{ color: "#999", fontSize: 12, marginTop: 6 }}>
+                    Replacement suggestions are unavailable for this exercise in the current session view.
+                  </Text>
+                )}
               </View>
 
               {/* Logged sets — visually distinct */}

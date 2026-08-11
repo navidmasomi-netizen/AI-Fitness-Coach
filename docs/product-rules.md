@@ -754,3 +754,53 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement API`
 - `rationale`: Mobile and future apply flows need stable machine-readable recommendation evidence without rerunning hidden backend logic.
 - `affected future engines`: `Replacement API`, `Mobile`, `Replacement Apply`
+
+### Rule 76
+
+- `id`: `RULE_076`
+- `title`: `Recommendation And Mutation Remain Separate`
+- `statement`: Recommendation and mutation are separate operations. A recommendation flow must never implicitly modify workout state.
+- `status`: `LOCKED`
+- `owning domain`: `Mobile Replacement Discovery`
+- `rationale`: Discovery is read-only product behavior and must not silently replace exercises or persist workout edits.
+- `affected future engines`: `Mobile`, `Replacement Apply`
+
+### Rule 77
+
+- `id`: `RULE_077`
+- `title`: `Mobile Consumes Replacement API As Authoritative`
+- `statement`: Mobile consumes Replacement API output as authoritative and must not duplicate Similarity, Candidate eligibility, Ranking, Workout Integrity, or replacement-selection logic.
+- `status`: `LOCKED`
+- `owning domain`: `Mobile Replacement Discovery`
+- `rationale`: The replacement pipeline already exists in backend domain services; mobile should render outcomes, not fork policy.
+- `affected future engines`: `Mobile`
+
+### Rule 78
+
+- `id`: `RULE_078`
+- `title`: `Ranking Score Is Not User Confidence`
+- `statement`: Ranking score is a ranking signal, not a probability, percentage, or confidence measure.
+- `status`: `LOCKED`
+- `owning domain`: `Mobile Replacement Discovery`
+- `rationale`: Exposing ranking scores as confidence would misrepresent the domain contract and mislead users.
+- `affected future engines`: `Mobile`
+
+### Rule 79
+
+- `id`: `RULE_079`
+- `title`: `Warnings And No-Replacement Are First-Class States`
+- `statement`: Warning and no-replacement states are first-class product states and must not be collapsed into generic API errors.
+- `status`: `LOCKED`
+- `owning domain`: `Mobile Replacement Discovery`
+- `rationale`: A valid evaluation can legitimately return a warning or no replacement; the UI must preserve those distinctions.
+- `affected future engines`: `Mobile`
+
+### Rule 80
+
+- `id`: `RULE_080`
+- `title`: `Discovery Selection Does Not Mutate Workout`
+- `statement`: Selecting a candidate in Discovery V1 does not mutate workout or session state.
+- `status`: `LOCKED`
+- `owning domain`: `Mobile Replacement Discovery`
+- `rationale`: Candidate selection in discovery is only ephemeral preparation for a future apply flow.
+- `affected future engines`: `Mobile`, `Replacement Apply`

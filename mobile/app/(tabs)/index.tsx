@@ -126,6 +126,7 @@ export default function HomeScreen() {
   const startWorkoutMutation = useMutation({
     mutationFn: startFromActiveProgram,
     onSuccess: (data) => {
+      queryClient.setQueryData(["sessionExerciseTargets", data.session.id], data.session.exerciseTargets ?? []);
       router.push({
         pathname: "/workout/[sessionId]",
         params: {
@@ -133,6 +134,7 @@ export default function HomeScreen() {
           programName: data.program.name,
           dayName: data.programDay.name,
           exercisesData: JSON.stringify(data.exercises),
+          exerciseTargetsData: JSON.stringify(data.session.exerciseTargets ?? []),
           existingSetLogsData: JSON.stringify(data.session.setLogs || []),
         },
       });
@@ -158,6 +160,8 @@ export default function HomeScreen() {
 
   const onResume = () => {
     if (!activeSession) return;
+    const cachedExerciseTargets =
+      queryClient.getQueryData(["sessionExerciseTargets", activeSession.session.id]) ?? [];
     router.push({
       pathname: "/workout/[sessionId]",
       params: {
@@ -165,6 +169,7 @@ export default function HomeScreen() {
         programName: activeSession.program.name,
         dayName: activeSession.programDay.name,
         exercisesData: JSON.stringify(activeSession.exercises),
+        exerciseTargetsData: JSON.stringify(cachedExerciseTargets),
         existingSetLogsData: JSON.stringify(activeSession.session.setLogs || []),
       },
     });

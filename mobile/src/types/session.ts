@@ -1,4 +1,5 @@
 import { Exercise } from "./exercise";
+import { WorkoutSessionExerciseTarget } from "./replacement";
 
 export interface SetLog {
   id: number;
@@ -21,4 +22,5 @@ export interface WorkoutSession {
   status: "active" | "completed";
   notes: string | null;
   setLogs?: SetLog[];
+  exerciseTargets?: WorkoutSessionExerciseTarget[];
 }

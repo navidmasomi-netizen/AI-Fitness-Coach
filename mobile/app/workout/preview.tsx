@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { startFromActiveProgram } from "../../src/api/sessions";
 
 export default function WorkoutPreviewScreen() {
@@ -10,12 +10,14 @@ export default function WorkoutPreviewScreen() {
     exerciseNames: string;
   }>();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const names: string[] = exerciseNames ? JSON.parse(exerciseNames) : [];
 
   const startMutation = useMutation({
     mutationFn: startFromActiveProgram,
     onSuccess: (data) => {
+      queryClient.setQueryData(["sessionExerciseTargets", data.session.id], data.session.exerciseTargets ?? []);
       router.replace({
         pathname: "/workout/[sessionId]",
         params: {
@@ -23,6 +25,7 @@ export default function WorkoutPreviewScreen() {
           programName: data.program.name,
           dayName: data.programDay.name,
           exercisesData: JSON.stringify(data.exercises),
+          exerciseTargetsData: JSON.stringify(data.session.exerciseTargets ?? []),
           existingSetLogsData: JSON.stringify(data.session.setLogs || []),
         },
       });
