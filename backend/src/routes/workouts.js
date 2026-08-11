@@ -8,6 +8,7 @@ import {
   startFromActiveProgram,
   getSessionById,
   getActiveSession,
+  getWorkoutExerciseReplacements,
 } from "../controllers/workouts.js";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.post("/:sessionId/set-logs", requireAuth, addSetLog);
 router.patch("/:sessionId/complete", requireAuth, completeWorkoutSession);
 router.get("/user/:userId", requireAuth, getUserWorkoutSessions);
 router.get("/active", requireAuth, getActiveSession);
+router.post("/:sessionId/exercise-targets/:targetId/replacements", requireAuth, getWorkoutExerciseReplacements);
 router.get("/:sessionId", requireAuth, getSessionById);
 
 export default router;

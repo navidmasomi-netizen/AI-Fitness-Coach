@@ -4,6 +4,10 @@ import {
   WorkoutSessionStartError,
   workoutSessionService,
 } from "../services/workoutSessionService.js";
+import {
+  ReplacementRecommendationError,
+  getWorkoutExerciseReplacementsV1,
+} from "../services/replacementRecommendationService.js";
 
 function hasOwn(input, key) {
   return Object.prototype.hasOwnProperty.call(input, key);
@@ -315,5 +319,53 @@ export const getActiveSession = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch active session" });
+  }
+};
+
+export const getWorkoutExerciseReplacements = async (req, res) => {
+  const userId = req.userId;
+  const normalizedSessionId = Number(req.params.sessionId);
+  const normalizedTargetId = Number(req.params.targetId);
+  const body =
+    req.body && typeof req.body === "object" && !Array.isArray(req.body)
+      ? req.body
+      : {};
+
+  if (Object.keys(body).some((key) => key !== "context")) {
+    return res.status(400).json({
+      success: false,
+      message: 'Only "context" is supported on this endpoint',
+    });
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(body, "context")) {
+    return res.status(400).json({
+      success: false,
+      message: 'context is required',
+    });
+  }
+
+  try {
+    const result = await getWorkoutExerciseReplacementsV1({
+      userId,
+      sessionId: normalizedSessionId,
+      targetId: normalizedTargetId,
+      rawContext: body.context,
+    });
+
+    return res.json({ success: true, data: result });
+  } catch (error) {
+    if (error instanceof ReplacementRecommendationError) {
+      return res.status(error.statusCode).json({
+        success: false,
+        message: error.message,
+        code: error.code,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to evaluate workout exercise replacements",
+    });
   }
 };

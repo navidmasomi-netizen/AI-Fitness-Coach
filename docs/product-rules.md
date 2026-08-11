@@ -704,3 +704,53 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Context`
 - `rationale`: Downstream contextual feasibility must not rewrite upstream eligibility evidence.
 - `affected future engines`: `Replacement Context`, `Replacement Decision Engine`
+
+### Rule 71
+
+- `id`: `RULE_071`
+- `title`: `Replacement API Is Thin Orchestration`
+- `statement`: Replacement API is a thin orchestration boundary, not a decision engine.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement API`
+- `rationale`: HTTP exposure must reuse domain engines rather than introducing parallel policy in controllers or serializers.
+- `affected future engines`: `Replacement API`, `Replacement Apply`
+
+### Rule 72
+
+- `id`: `RULE_072`
+- `title`: `API Serialization Preserves Domain Decisions`
+- `statement`: API serialization must not modify, rescore, rerank, reinterpret, or discard domain decisions or evidence except where an intentionally documented public response projection is required.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement API`
+- `rationale`: Public transport concerns may project internal evidence, but they must not mutate domain outcomes.
+- `affected future engines`: `Replacement API`, `Mobile`
+
+### Rule 73
+
+- `id`: `RULE_073`
+- `title`: `Replacement Request Identifies Exact Workout Occurrence`
+- `statement`: The request must identify the exact workout exercise occurrence being replaced. If the source exercise occurs more than once and the API cannot determine which occurrence is intended, it must fail loudly and must not guess.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement API`
+- `rationale`: Replacement evaluation is occurrence-scoped inside a workout and cannot safely infer intent from canonical Exercise identity alone.
+- `affected future engines`: `Replacement API`, `Replacement Apply`
+
+### Rule 74
+
+- `id`: `RULE_074`
+- `title`: `API Maps Errors Without Reinterpreting Policy`
+- `statement`: The API may translate domain and application errors into HTTP semantics but must not reinterpret domain policy.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement API`
+- `rationale`: HTTP status mapping is transport behavior, not product policy.
+- `affected future engines`: `Replacement API`
+
+### Rule 75
+
+- `id`: `RULE_075`
+- `title`: `API Preserves Final Traceability`
+- `statement`: Replacement API V1 must preserve deterministic end-to-end traceability for the final recommendation.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement API`
+- `rationale`: Mobile and future apply flows need stable machine-readable recommendation evidence without rerunning hidden backend logic.
+- `affected future engines`: `Replacement API`, `Mobile`, `Replacement Apply`
