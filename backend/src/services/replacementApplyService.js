@@ -181,170 +181,200 @@ export function createReplacementApplyService({
     sessionId,
     targetId,
     replacementExerciseId,
+    observability = null,
   }) {
+    const serviceStartedAt = performance.now();
+    let transactionStartedAt = null;
+
     assertPositiveInteger(userId, "userId");
     assertPositiveInteger(sessionId, "sessionId");
     assertPositiveInteger(targetId, "targetId");
     assertPositiveInteger(replacementExerciseId, "replacementExerciseId");
 
-    return prismaClient.$transaction(async (tx) => {
-      const lockedSession = await lockOwnedSessionRow(tx, { sessionId, userId });
-      assertSessionOwnership(lockedSession, userId);
-      assertSessionIsActive(lockedSession);
+    try {
+      return await prismaClient.$transaction(async (tx) => {
+        transactionStartedAt = performance.now();
+        const lockedSession = await lockOwnedSessionRow(tx, { sessionId, userId });
+        assertSessionOwnership(lockedSession, userId);
+        assertSessionIsActive(lockedSession);
 
-      await afterSessionLockImpl({
-        tx,
-        sessionId,
-        userId,
-        lockedSession,
-      });
+        await afterSessionLockImpl({
+          tx,
+          sessionId,
+          userId,
+          lockedSession,
+        });
 
-      const session = await tx.workoutSession.findUnique({
-        where: { id: sessionId },
-        include: {
-          setLogs: {
-            include: { exercise: true },
-            orderBy: [{ loggedAt: "asc" }, { id: "asc" }],
-          },
-          exerciseTargets: {
-            include: {
-              exercise: true,
-              programDayExercise: {
-                include: {
-                  exercise: true,
+        const session = await tx.workoutSession.findUnique({
+          where: { id: sessionId },
+          include: {
+            setLogs: {
+              include: { exercise: true },
+              orderBy: [{ loggedAt: "asc" }, { id: "asc" }],
+            },
+            exerciseTargets: {
+              include: {
+                exercise: true,
+                programDayExercise: {
+                  include: {
+                    exercise: true,
+                  },
                 },
               },
+              orderBy: [{ id: "asc" }],
             },
-            orderBy: [{ id: "asc" }],
           },
-        },
-      });
+        });
 
-      const target = findTarget(session, targetId);
-      assertTargetExists(target);
-      assertReplacementNotAlreadyApplied(target);
-      assertSourceSetLogsAreNotAmbiguous(session, target);
+        const target = findTarget(session, targetId);
+        assertTargetExists(target);
+        assertReplacementNotAlreadyApplied(target);
+        assertSourceSetLogsAreNotAmbiguous(session, target);
 
-      const replacementExercise = await tx.exercise.findUnique({
-        where: { id: replacementExerciseId },
-      });
-      assertReplacementExerciseIsValid(target, replacementExercise);
+        const replacementExercise = await tx.exercise.findUnique({
+          where: { id: replacementExerciseId },
+        });
+        assertReplacementExerciseIsValid(target, replacementExercise);
 
-      const appliedAt = new Date();
-      const auditMetadata = buildAuditMetadata({
-        sessionId,
-        targetId,
-        appliedByUserId: userId,
-        previousExerciseId: target.exerciseId,
-        replacementExerciseId,
-        previousSourceDecisionType: target.sourceDecisionType ?? null,
-        previousSourceRulesVersion: target.sourceRulesVersion ?? null,
-        appliedAt,
-      });
-
-      const targetTransition = await tx.workoutSessionExerciseTarget.updateMany({
-        where: {
-          id: targetId,
+        const appliedAt = new Date();
+        const auditMetadata = buildAuditMetadata({
           sessionId,
-          exerciseId: target.exerciseId,
-          sourceDecisionType: target.sourceDecisionType ?? null,
-          sourceRulesVersion: target.sourceRulesVersion ?? null,
-        },
-        data: {
-          exerciseId: replacementExerciseId,
-          sourceDecisionType: APPLY_REPLACEMENT_DECISION_TYPE,
-          // Temporary V1 audit transport: until a dedicated replacement-audit persistence model exists,
-          // Apply stores structured audit metadata in sourceRulesVersion without changing schema.
-          sourceRulesVersion: JSON.stringify(auditMetadata),
-        },
-      });
-
-      if (targetTransition.count !== 1) {
-        throw new ApplyReplacementError(
-          "Replacement target changed before apply could complete",
-          {
-            statusCode: 409,
-            code: APPLY_REPLACEMENT_CONFLICT_CODE,
-          }
-        );
-      }
-
-      const updatedTarget = {
-        ...target,
-        exerciseId: replacementExerciseId,
-        exercise: replacementExercise,
-        sourceDecisionType: APPLY_REPLACEMENT_DECISION_TYPE,
-        sourceRulesVersion: JSON.stringify(auditMetadata),
-      };
-
-      await afterTargetUpdateImpl({
-        tx,
-        session,
-        target,
-        replacementExercise,
-        updatedTarget,
-        auditMetadata,
-      });
-
-      await tx.setLog.updateMany({
-        where: {
-          sessionId,
-          exerciseId: target.exerciseId,
-        },
-        data: {
-          exerciseId: replacementExerciseId,
-        },
-      });
-
-      const updatedSession = await tx.workoutSession.findUnique({
-        where: { id: sessionId },
-        include: {
-          setLogs: {
-            include: { exercise: true },
-            orderBy: [{ loggedAt: "asc" }, { id: "asc" }],
-          },
-          exerciseTargets: {
-            include: {
-              exercise: true,
-              programDayExercise: {
-                include: {
-                  exercise: true,
-                },
-              },
-            },
-            orderBy: [{ id: "asc" }],
-          },
-        },
-      });
-
-      const program = updatedSession.programId
-        ? await tx.program.findUnique({ where: { id: updatedSession.programId } })
-        : null;
-      const programDay = updatedSession.programDayId
-        ? await tx.programDay.findUnique({
-            where: { id: updatedSession.programDayId },
-            include: {
-              exercises: {
-                orderBy: { order: "asc" },
-                include: { exercise: true },
-              },
-            },
-          })
-        : null;
-
-      return buildUpdatedWorkoutResponse({
-        session: updatedSession,
-        program,
-        programDay,
-        appliedReplacement: {
-          targetId: updatedTarget.id,
+          targetId,
+          appliedByUserId: userId,
           previousExerciseId: target.exerciseId,
           replacementExerciseId,
-          sourceDecisionType: updatedTarget.sourceDecisionType,
-          audit: auditMetadata,
-        },
+          previousSourceDecisionType: target.sourceDecisionType ?? null,
+          previousSourceRulesVersion: target.sourceRulesVersion ?? null,
+          appliedAt,
+        });
+        const serializedAuditMetadata = JSON.stringify(auditMetadata);
+
+        const targetTransition = await tx.workoutSessionExerciseTarget.updateMany({
+          where: {
+            id: targetId,
+            sessionId,
+            exerciseId: target.exerciseId,
+            sourceDecisionType: target.sourceDecisionType ?? null,
+            sourceRulesVersion: target.sourceRulesVersion ?? null,
+          },
+          data: {
+            exerciseId: replacementExerciseId,
+            sourceDecisionType: APPLY_REPLACEMENT_DECISION_TYPE,
+            // Temporary V1 audit transport: until a dedicated replacement-audit persistence model exists,
+            // Apply stores structured audit metadata in sourceRulesVersion without changing schema.
+            sourceRulesVersion: serializedAuditMetadata,
+          },
+        });
+
+        if (targetTransition.count !== 1) {
+          throw new ApplyReplacementError(
+            "Replacement target changed before apply could complete",
+            {
+              statusCode: 409,
+              code: APPLY_REPLACEMENT_CONFLICT_CODE,
+            }
+          );
+        }
+
+        const updatedTarget = {
+          ...target,
+          exerciseId: replacementExerciseId,
+          exercise: replacementExercise,
+          sourceDecisionType: APPLY_REPLACEMENT_DECISION_TYPE,
+          sourceRulesVersion: serializedAuditMetadata,
+        };
+
+        await afterTargetUpdateImpl({
+          tx,
+          session,
+          target,
+          replacementExercise,
+          updatedTarget,
+          auditMetadata,
+        });
+
+        const updatedSetLogs = await tx.setLog.updateMany({
+          where: {
+            sessionId,
+            exerciseId: target.exerciseId,
+          },
+          data: {
+            exerciseId: replacementExerciseId,
+          },
+        });
+
+        const updatedSession = await tx.workoutSession.findUnique({
+          where: { id: sessionId },
+          include: {
+            setLogs: {
+              include: { exercise: true },
+              orderBy: [{ loggedAt: "asc" }, { id: "asc" }],
+            },
+            exerciseTargets: {
+              include: {
+                exercise: true,
+                programDayExercise: {
+                  include: {
+                    exercise: true,
+                  },
+                },
+              },
+              orderBy: [{ id: "asc" }],
+            },
+          },
+        });
+
+        const program = updatedSession.programId
+          ? await tx.program.findUnique({ where: { id: updatedSession.programId } })
+          : null;
+        const programDay = updatedSession.programDayId
+          ? await tx.programDay.findUnique({
+              where: { id: updatedSession.programDayId },
+              include: {
+                exercises: {
+                  orderBy: { order: "asc" },
+                  include: { exercise: true },
+                },
+              },
+            })
+          : null;
+
+        const response = buildUpdatedWorkoutResponse({
+          session: updatedSession,
+          program,
+          programDay,
+          appliedReplacement: {
+            targetId: updatedTarget.id,
+            previousExerciseId: target.exerciseId,
+            replacementExerciseId,
+            sourceDecisionType: updatedTarget.sourceDecisionType,
+            audit: auditMetadata,
+          },
+        });
+
+        observability?.onCompleted?.({
+          serviceDurationMs: performance.now() - serviceStartedAt,
+          transactionDurationMs:
+            transactionStartedAt === null ? null : performance.now() - transactionStartedAt,
+          targetRowsChanged: targetTransition.count,
+          setLogRowsChanged: updatedSetLogs.count,
+          appliedTargetId: updatedTarget.id,
+          previousExerciseId: target.exerciseId,
+          appliedReplacementExerciseId: replacementExerciseId,
+          responseSizeBytes: Buffer.byteLength(JSON.stringify(response), "utf8"),
+        });
+
+        return response;
       });
-    });
+    } catch (error) {
+      observability?.onFailed?.({
+        serviceDurationMs: performance.now() - serviceStartedAt,
+        transactionDurationMs:
+          transactionStartedAt === null ? null : performance.now() - transactionStartedAt,
+      });
+
+      throw error;
+    }
   }
 
   return {

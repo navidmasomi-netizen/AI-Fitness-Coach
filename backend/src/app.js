@@ -7,11 +7,13 @@ import programsRouter from "./routes/programs.js";
 import userProgramsRouter from "./routes/userPrograms.js";
 import progressionsRouter from "./routes/progressions.js";
 import profileRouter from "./routes/profile.js";
+import { attachRequestContext } from "./middleware/requestContext.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(attachRequestContext);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "IronFa API is running" });

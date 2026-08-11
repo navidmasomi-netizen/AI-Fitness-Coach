@@ -305,83 +305,120 @@ export async function getWorkoutExerciseReplacementsV1({
   targetId,
   rawContext,
   db = prisma,
+  observability = null,
 } = {}) {
+  const serviceStartedAt = performance.now();
+
   assertPositiveInteger(userId, "userId");
   assertPositiveInteger(sessionId, "sessionId");
   assertPositiveInteger(targetId, "targetId");
 
-  if (!isPlainObject(rawContext)) {
-    throw new ReplacementRecommendationError("context must be a plain object.", {
-      statusCode: 400,
-      code: "REPLACEMENT_CONTEXT_INVALID",
-    });
-  }
-
-  let replacementContext;
   try {
-    replacementContext = buildReplacementContextV1(rawContext);
-  } catch (error) {
-    throw new ReplacementRecommendationError(error.message, {
-      statusCode: 400,
-      code: "REPLACEMENT_CONTEXT_INVALID",
-      cause: error,
-    });
-  }
+    if (!isPlainObject(rawContext)) {
+      throw new ReplacementRecommendationError("context must be a plain object.", {
+        statusCode: 400,
+        code: "REPLACEMENT_CONTEXT_INVALID",
+      });
+    }
 
-  const session = await db.workoutSession.findUnique({
-    where: { id: sessionId },
-    include: {
-      exerciseTargets: {
-        include: {
-          exercise: true,
-          programDayExercise: {
-            select: { order: true },
+    let replacementContext;
+    try {
+      replacementContext = buildReplacementContextV1(rawContext);
+    } catch (error) {
+      throw new ReplacementRecommendationError(error.message, {
+        statusCode: 400,
+        code: "REPLACEMENT_CONTEXT_INVALID",
+        cause: error,
+      });
+    }
+
+    const session = await db.workoutSession.findUnique({
+      where: { id: sessionId },
+      include: {
+        exerciseTargets: {
+          include: {
+            exercise: true,
+            programDayExercise: {
+              select: { order: true },
+            },
           },
+          orderBy: [{ id: "asc" }],
         },
-        orderBy: [{ id: "asc" }],
       },
-    },
-  });
-
-  assertSessionOwnership(session, userId);
-
-  const sourceTarget = findSourceTarget(session.exerciseTargets, targetId);
-  if (!sourceTarget) {
-    throw new ReplacementRecommendationError("Workout session exercise target not found", {
-      statusCode: 404,
-      code: "WORKOUT_SESSION_EXERCISE_TARGET_NOT_FOUND",
     });
+
+    assertSessionOwnership(session, userId);
+
+    const sourceTarget = findSourceTarget(session.exerciseTargets, targetId);
+    if (!sourceTarget) {
+      throw new ReplacementRecommendationError("Workout session exercise target not found", {
+        statusCode: 404,
+        code: "WORKOUT_SESSION_EXERCISE_TARGET_NOT_FOUND",
+      });
+    }
+
+    ensureSourceOccurrenceEvaluable(sourceTarget, session.exerciseTargets);
+
+    const activeCatalog = await db.exercise.findMany({
+      where: { catalogLifecycle: "ACTIVE" },
+      orderBy: [{ id: "asc" }],
+    });
+    const activeCatalogById = buildCandidateExerciseMap(activeCatalog);
+
+    const currentWorkoutExercises = buildCurrentWorkoutExercises(session.exerciseTargets);
+    const candidateResults = buildReplacementCandidatesV1(sourceTarget.exercise, activeCatalog);
+    const eligibleRankingEntries = buildEligibleRankingEntries(candidateResults, activeCatalogById);
+    const rankedResults = rankReplacementCandidatesV1(sourceTarget.exercise, eligibleRankingEntries);
+    const rankedIntegrityEntries = buildRankedIntegrityEntries(rankedResults, activeCatalogById);
+    const integrityResults = evaluateWorkoutIntegrityV1(
+      sourceTarget.exerciseId,
+      currentWorkoutExercises,
+      rankedIntegrityEntries
+    );
+    const coreDecision = decideReplacementV1(sourceTarget.exerciseId, integrityResults.evaluations);
+    const contextCandidateExercises = buildContextCandidateExerciseList(
+      { coreDecisionEvidence: coreDecision },
+      activeCatalogById
+    );
+    const contextualDecision = applyReplacementContextV1(
+      coreDecision,
+      replacementContext,
+      contextCandidateExercises
+    );
+
+    const response = buildPublicResponse({
+      sessionId,
+      sourceTarget,
+      replacementContext,
+      contextualDecision,
+      activeCatalogById,
+    });
+
+    observability?.onCompleted?.({
+      serviceDurationMs: performance.now() - serviceStartedAt,
+      activeCatalogCount: activeCatalog.length,
+      candidateCount: candidateResults.candidates.length,
+      eligibleCandidateCount: eligibleRankingEntries.length,
+      rankedCandidateCount: rankedResults.rankedCandidates.length,
+      contextualDecisionStatus: response.contextualDecisionStatus,
+      recommendedExerciseId: response.recommendedReplacement?.exerciseId ?? null,
+      alternativeCount: response.alternatives.length,
+      contextRejectedCount: response.contextRejectedCandidates.length,
+      responseSizeBytes: Buffer.byteLength(JSON.stringify(response), "utf8"),
+    });
+
+    return response;
+  } catch (error) {
+    observability?.onFailed?.({
+      serviceDurationMs: performance.now() - serviceStartedAt,
+    });
+
+    if (error instanceof ReplacementRecommendationError) {
+      throw error;
+    }
+
+    throw error;
   }
-
-  ensureSourceOccurrenceEvaluable(sourceTarget, session.exerciseTargets);
-
-  const activeCatalog = await db.exercise.findMany({
-    where: { catalogLifecycle: "ACTIVE" },
-    orderBy: [{ id: "asc" }],
-  });
-  const activeCatalogById = buildCandidateExerciseMap(activeCatalog);
-
-  const currentWorkoutExercises = buildCurrentWorkoutExercises(session.exerciseTargets);
-  const candidateResults = buildReplacementCandidatesV1(sourceTarget.exercise, activeCatalog);
-  const eligibleRankingEntries = buildEligibleRankingEntries(candidateResults, activeCatalogById);
-  const rankedResults = rankReplacementCandidatesV1(sourceTarget.exercise, eligibleRankingEntries);
-  const rankedIntegrityEntries = buildRankedIntegrityEntries(rankedResults, activeCatalogById);
-  const integrityResults = evaluateWorkoutIntegrityV1(
-    sourceTarget.exerciseId,
-    currentWorkoutExercises,
-    rankedIntegrityEntries
-  );
-  const coreDecision = decideReplacementV1(sourceTarget.exerciseId, integrityResults.evaluations);
-  const contextCandidateExercises = buildContextCandidateExerciseList({ coreDecisionEvidence: coreDecision }, activeCatalogById);
-  const contextualDecision = applyReplacementContextV1(coreDecision, replacementContext, contextCandidateExercises);
-
-  return buildPublicResponse({
-    sessionId,
-    sourceTarget,
-    replacementContext,
-    contextualDecision,
-    activeCatalogById,
-  });
 }
 
 export function __projectReplacementApiResponseForTest(input) {

@@ -12,6 +12,16 @@ import {
   ApplyReplacementError,
   applyWorkoutExerciseReplacementV1,
 } from "../services/replacementApplyService.js";
+import {
+  REPLACEMENT_OBSERVABILITY_EVENTS,
+  buildReplacementApplyCompletedEvent,
+  buildReplacementApplyStartEvent,
+  buildReplacementDiscoveryCompletedEvent,
+  buildReplacementDiscoveryStartEvent,
+  buildReplacementFailureEvent,
+  buildReplacementLogContext,
+  logReplacementEvent,
+} from "../lib/replacementObservability.js";
 
 function hasOwn(input, key) {
   return Object.prototype.hasOwnProperty.call(input, key);
@@ -339,6 +349,7 @@ export const getActiveSession = async (req, res) => {
 };
 
 export const getWorkoutExerciseReplacements = async (req, res) => {
+  const apiStartedAt = performance.now();
   const userId = req.userId;
   const normalizedSessionId = Number(req.params.sessionId);
   const normalizedTargetId = Number(req.params.targetId);
@@ -346,8 +357,33 @@ export const getWorkoutExerciseReplacements = async (req, res) => {
     req.body && typeof req.body === "object" && !Array.isArray(req.body)
       ? req.body
       : {};
+  const baseLogContext = buildReplacementLogContext({
+    req,
+    userId,
+    sessionId: normalizedSessionId,
+    targetId: normalizedTargetId,
+  });
+  logReplacementEvent(
+    "info",
+    REPLACEMENT_OBSERVABILITY_EVENTS.DISCOVERY_STARTED,
+    buildReplacementDiscoveryStartEvent(baseLogContext, body)
+  );
 
   if (Object.keys(body).some((key) => key !== "context")) {
+    logReplacementEvent(
+      "error",
+      REPLACEMENT_OBSERVABILITY_EVENTS.DISCOVERY_FAILED,
+      buildReplacementFailureEvent(
+        baseLogContext,
+        new ReplacementRecommendationError('Only "context" is supported on this endpoint', {
+          statusCode: 400,
+          code: "REPLACEMENT_CONTEXT_INVALID",
+        }),
+        {
+          apiDurationMs: performance.now() - apiStartedAt,
+        }
+      )
+    );
     return res.status(400).json({
       success: false,
       message: 'Only "context" is supported on this endpoint',
@@ -355,22 +391,63 @@ export const getWorkoutExerciseReplacements = async (req, res) => {
   }
 
   if (!Object.prototype.hasOwnProperty.call(body, "context")) {
+    logReplacementEvent(
+      "error",
+      REPLACEMENT_OBSERVABILITY_EVENTS.DISCOVERY_FAILED,
+      buildReplacementFailureEvent(
+        baseLogContext,
+        new ReplacementRecommendationError("context is required", {
+          statusCode: 400,
+          code: "REPLACEMENT_CONTEXT_INVALID",
+        }),
+        {
+          apiDurationMs: performance.now() - apiStartedAt,
+        }
+      )
+    );
     return res.status(400).json({
       success: false,
       message: 'context is required',
     });
   }
 
+  let observabilityDetails = null;
   try {
     const result = await getWorkoutExerciseReplacementsV1({
       userId,
       sessionId: normalizedSessionId,
       targetId: normalizedTargetId,
       rawContext: body.context,
+      observability: {
+        onCompleted: (details) => {
+          observabilityDetails = details;
+        },
+        onFailed: (details) => {
+          observabilityDetails = details;
+        },
+      },
     });
+
+    logReplacementEvent(
+      "info",
+      REPLACEMENT_OBSERVABILITY_EVENTS.DISCOVERY_COMPLETED,
+      buildReplacementDiscoveryCompletedEvent(baseLogContext, {
+        ...observabilityDetails,
+        apiDurationMs: performance.now() - apiStartedAt,
+      })
+    );
 
     return res.json({ success: true, data: result });
   } catch (error) {
+    logReplacementEvent(
+      "error",
+      REPLACEMENT_OBSERVABILITY_EVENTS.DISCOVERY_FAILED,
+      buildReplacementFailureEvent(baseLogContext, error, {
+        ...observabilityDetails,
+        apiDurationMs: performance.now() - apiStartedAt,
+      })
+    );
+
     if (error instanceof ReplacementRecommendationError) {
       return res.status(error.statusCode).json({
         success: false,
@@ -387,6 +464,7 @@ export const getWorkoutExerciseReplacements = async (req, res) => {
 };
 
 export const applyWorkoutExerciseReplacement = async (req, res) => {
+  const apiStartedAt = performance.now();
   const userId = req.userId;
   const normalizedSessionId = Number(req.params.sessionId);
   const normalizedTargetId = Number(req.params.targetId);
@@ -394,8 +472,35 @@ export const applyWorkoutExerciseReplacement = async (req, res) => {
     req.body && typeof req.body === "object" && !Array.isArray(req.body)
       ? req.body
       : {};
+  const normalizedReplacementExerciseId = Number(body.replacementExerciseId);
+  const baseLogContext = buildReplacementLogContext({
+    req,
+    userId,
+    sessionId: normalizedSessionId,
+    targetId: normalizedTargetId,
+    replacementExerciseId: normalizedReplacementExerciseId,
+  });
+  logReplacementEvent(
+    "info",
+    REPLACEMENT_OBSERVABILITY_EVENTS.APPLY_STARTED,
+    buildReplacementApplyStartEvent(baseLogContext)
+  );
 
   if (Object.keys(body).some((key) => key !== "replacementExerciseId")) {
+    logReplacementEvent(
+      "error",
+      REPLACEMENT_OBSERVABILITY_EVENTS.APPLY_FAILED,
+      buildReplacementFailureEvent(
+        baseLogContext,
+        new ApplyReplacementError('Only "replacementExerciseId" is supported on this endpoint', {
+          statusCode: 422,
+          code: "APPLY_REPLACEMENT_INVALID_REQUEST",
+        }),
+        {
+          apiDurationMs: performance.now() - apiStartedAt,
+        }
+      )
+    );
     return res.status(422).json({
       success: false,
       message: 'Only "replacementExerciseId" is supported on this endpoint',
@@ -403,16 +508,43 @@ export const applyWorkoutExerciseReplacement = async (req, res) => {
     });
   }
 
+  let observabilityDetails = null;
   try {
     const result = await applyWorkoutExerciseReplacementV1({
       userId,
       sessionId: normalizedSessionId,
       targetId: normalizedTargetId,
-      replacementExerciseId: Number(body.replacementExerciseId),
+      replacementExerciseId: normalizedReplacementExerciseId,
+      observability: {
+        onCompleted: (details) => {
+          observabilityDetails = details;
+        },
+        onFailed: (details) => {
+          observabilityDetails = details;
+        },
+      },
     });
+
+    logReplacementEvent(
+      "info",
+      REPLACEMENT_OBSERVABILITY_EVENTS.APPLY_COMPLETED,
+      buildReplacementApplyCompletedEvent(baseLogContext, {
+        ...observabilityDetails,
+        apiDurationMs: performance.now() - apiStartedAt,
+      })
+    );
 
     return res.json({ success: true, data: result });
   } catch (error) {
+    logReplacementEvent(
+      "error",
+      REPLACEMENT_OBSERVABILITY_EVENTS.APPLY_FAILED,
+      buildReplacementFailureEvent(baseLogContext, error, {
+        ...observabilityDetails,
+        apiDurationMs: performance.now() - apiStartedAt,
+      })
+    );
+
     if (error instanceof ApplyReplacementError) {
       return res.status(error.statusCode).json({
         success: false,

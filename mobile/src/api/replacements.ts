@@ -257,11 +257,13 @@ export async function getReplacementRecommendations(params: {
   sessionId: number;
   targetId: number;
   context: ReplacementContextInput;
+  flowId?: string | null;
 }): Promise<ReplacementRecommendationResponse> {
   const response = await apiRequest<unknown>(
     `/sessions/${params.sessionId}/exercise-targets/${params.targetId}/replacements`,
     {
       method: "POST",
+      headers: params.flowId ? { "X-Replacement-Flow-Id": params.flowId } : undefined,
       body: {
         context: params.context,
       },
@@ -275,11 +277,13 @@ export async function applyReplacementSelection(params: {
   sessionId: number;
   targetId: number;
   replacementExerciseId: number;
+  flowId?: string | null;
 }) {
   const response = await apiRequest<unknown>(
     `/sessions/${params.sessionId}/exercise-targets/${params.targetId}/replacements/apply`,
     {
       method: "POST",
+      headers: params.flowId ? { "X-Replacement-Flow-Id": params.flowId } : undefined,
       body: {
         replacementExerciseId: params.replacementExerciseId,
       },

@@ -26,6 +26,10 @@ import {
   mergeWorkoutExercisesWithTargets,
   type ReplacementDiscoveryStatus,
 } from "../../src/utils/replacementDiscovery";
+import {
+  createReplacementFlowId,
+  logReplacementMobileEvent,
+} from "../../src/utils/replacementObservability";
 
 interface LoggedSet {
   id: number;
@@ -56,6 +60,7 @@ type WorkoutExerciseWithTarget = ProgramDayExercise & { targetId: number | null 
 interface ReplacementDiscoveryState {
   status: ReplacementDiscoveryStatus;
   exercise: WorkoutExerciseWithTarget | null;
+  flowId: string | null;
   intentType: ReplacementIntentType | null;
   availableEquipment: CatalogEquipment[];
   recommendations: ReplacementRecommendationResponse | null;
@@ -67,6 +72,7 @@ interface ReplacementDiscoveryState {
 const INITIAL_DISCOVERY_STATE: ReplacementDiscoveryState = {
   status: "IDLE",
   exercise: null,
+  flowId: null,
   intentType: null,
   availableEquipment: [],
   recommendations: null,
@@ -246,6 +252,7 @@ export default function WorkoutSessionScreen() {
   const replacementMutation = useMutation({
     mutationFn: (params: {
       targetId: number;
+      flowId: string | null;
       intentType: ReplacementIntentType;
       availableEquipment: CatalogEquipment[];
     }) =>
@@ -253,6 +260,7 @@ export default function WorkoutSessionScreen() {
         sessionId: numericSessionId,
         targetId: params.targetId,
         context: buildReplacementContextInput(params.intentType, params.availableEquipment),
+        flowId: params.flowId,
       }),
   });
 
@@ -296,13 +304,14 @@ export default function WorkoutSessionScreen() {
   };
 
   const applyReplacementMutation = useMutation({
-    mutationFn: (params: { targetId: number; replacementExerciseId: number }) =>
+    mutationFn: (params: { targetId: number; replacementExerciseId: number; flowId: string | null }) =>
       applyReplacementSelection({
         sessionId: numericSessionId,
         targetId: params.targetId,
         replacementExerciseId: params.replacementExerciseId,
+        flowId: params.flowId,
       }),
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       const previousExercise = discoveryState.exercise?.exercise ?? null;
       const responseSnapshot = {
         session: data.session,
@@ -314,6 +323,13 @@ export default function WorkoutSessionScreen() {
         data.session.exerciseTargets?.find((target) => target.id === data.appliedReplacement.targetId)?.exercise ?? null;
 
       synchronizeWorkoutFromSnapshot(responseSnapshot);
+      logReplacementMobileEvent("replacement.apply.completed", {
+        flowId: variables.flowId,
+        sessionId: numericSessionId,
+        targetId: data.appliedReplacement.targetId,
+        replacementExerciseId: data.appliedReplacement.replacementExerciseId,
+        recovered: false,
+      });
 
       replacementMutation.reset();
       setDiscoveryState(INITIAL_DISCOVERY_STATE);
@@ -332,6 +348,13 @@ export default function WorkoutSessionScreen() {
 
           replacementMutation.reset();
           setDiscoveryState(INITIAL_DISCOVERY_STATE);
+          logReplacementMobileEvent("replacement.apply.completed", {
+            flowId: variables.flowId,
+            sessionId: numericSessionId,
+            targetId: variables.targetId,
+            replacementExerciseId: variables.replacementExerciseId,
+            recovered: true,
+          });
           setReplacementSuccessMessage(
             previousExercise && recoveredState.replacementExercise
               ? `${getExerciseDisplayName(previousExercise)} replaced with ${getTargetExerciseDisplayName(recoveredState.replacementExercise)}.`
@@ -344,6 +367,21 @@ export default function WorkoutSessionScreen() {
       }
 
       queryClient.invalidateQueries({ queryKey: ["activeSession"] });
+      logReplacementMobileEvent("replacement.apply.failed", {
+        flowId: variables.flowId,
+        sessionId: numericSessionId,
+        targetId: variables.targetId,
+        replacementExerciseId: variables.replacementExerciseId,
+        failureCategory:
+          error instanceof ApiError && error.status === 409
+            ? "conflict"
+            : error instanceof ApiError && (error.status === 401 || error.status === 403)
+              ? "authorization"
+              : error instanceof ApiError && error.status > 0 && error.status < 500
+                ? "validation"
+                : "unexpected",
+        recovered: false,
+      });
 
       setDiscoveryState((previous) => ({
         ...previous,
@@ -448,6 +486,7 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    const flowId = createReplacementFlowId(numericSessionId, exercise.targetId);
     discoveryRequestVersionRef.current += 1;
     replacementMutation.reset();
     applyReplacementMutation.reset();
@@ -455,6 +494,7 @@ export default function WorkoutSessionScreen() {
     setDiscoveryState({
       status: "COLLECTING_CONTEXT",
       exercise,
+      flowId,
       intentType: "PREFER_VARIATION",
       availableEquipment: [],
       recommendations: null,
@@ -493,6 +533,14 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    logReplacementMobileEvent("replacement.discovery.started", {
+      flowId: discoveryState.flowId,
+      sessionId: numericSessionId,
+      targetId: discoveryState.exercise.targetId,
+      replacementIntentType: discoveryState.intentType,
+      hasEquipmentContext: discoveryState.intentType === "NO_EQUIPMENT",
+    });
+
     const requestVersion = discoveryRequestVersionRef.current + 1;
     discoveryRequestVersionRef.current = requestVersion;
 
@@ -507,15 +555,26 @@ export default function WorkoutSessionScreen() {
     replacementMutation.mutate(
       {
         targetId: discoveryState.exercise.targetId,
+        flowId: discoveryState.flowId,
         intentType: discoveryState.intentType,
         availableEquipment:
           discoveryState.intentType === "NO_EQUIPMENT" ? discoveryState.availableEquipment : [],
       },
       {
-        onSuccess: (data) => {
+        onSuccess: (data, variables) => {
           if (requestVersion !== discoveryRequestVersionRef.current) {
             return;
           }
+
+          logReplacementMobileEvent("replacement.discovery.completed", {
+            flowId: variables.flowId,
+            sessionId: numericSessionId,
+            targetId: variables.targetId,
+            contextualDecisionStatus: data.contextualDecisionStatus,
+            recommendedExerciseId: data.recommendedReplacement?.exerciseId ?? null,
+            alternativeCount: data.alternatives.length,
+            contextRejectedCount: data.contextRejectedCandidates.length,
+          });
 
           setDiscoveryState((previous) => ({
             ...previous,
@@ -527,10 +586,22 @@ export default function WorkoutSessionScreen() {
             applyErrorMessage: null,
           }));
         },
-        onError: (error: any) => {
+        onError: (error: any, variables) => {
           if (requestVersion !== discoveryRequestVersionRef.current) {
             return;
           }
+
+          logReplacementMobileEvent("replacement.discovery.failed", {
+            flowId: variables.flowId,
+            sessionId: numericSessionId,
+            targetId: variables.targetId,
+            failureCategory:
+              error instanceof ApiError && (error.status === 401 || error.status === 403)
+                ? "authorization"
+                : error instanceof ApiError && error.status > 0 && error.status < 500
+                  ? "validation"
+                  : "unexpected",
+          });
 
           setDiscoveryState((previous) => ({
             ...previous,
@@ -576,9 +647,17 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    logReplacementMobileEvent("replacement.apply.started", {
+      flowId: discoveryState.flowId,
+      sessionId: numericSessionId,
+      targetId: discoveryState.exercise.targetId,
+      replacementExerciseId: discoveryState.selectedCandidateExerciseId,
+    });
+
     applyReplacementMutation.mutate({
       targetId: discoveryState.exercise.targetId,
       replacementExerciseId: discoveryState.selectedCandidateExerciseId,
+      flowId: discoveryState.flowId,
     });
   };
 

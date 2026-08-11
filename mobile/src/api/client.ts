@@ -19,12 +19,16 @@ export function setAuthToken(token: string | null) {
 type RequestOptions = {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
+  headers?: Record<string, string>;
 };
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = "GET", body } = options;
+  const { method = "GET", body, headers: extraHeaders = {} } = options;
 
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...extraHeaders,
+  };
   if (authToken) {
     headers["Authorization"] = `Bearer ${authToken}`;
   }

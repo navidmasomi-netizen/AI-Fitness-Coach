@@ -904,3 +904,53 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Performance`
 - `rationale`: Regression detection requires stable, documented budgets rather than informal expectations.
 - `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`
+
+### Rule 91
+
+- `id`: `RULE_091`
+- `title`: `Replacement Events Require Correlation`
+- `statement`: All production replacement events must be traceable through a correlation identifier.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Observability`
+- `rationale`: Multi-step replacement debugging requires a stable way to reconstruct one workflow across request and client boundaries.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`
+
+### Rule 92
+
+- `id`: `RULE_092`
+- `title`: `Replacement Logs Must Be Structured`
+- `statement`: Replacement logs must be structured and machine-readable.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Observability`
+- `rationale`: Free-form console output is not reliable enough for production debugging and correlation.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`
+
+### Rule 93
+
+- `id`: `RULE_093`
+- `title`: `Observability Cannot Change Domain Behavior`
+- `statement`: Observability must never change replacement domain behavior.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Observability`
+- `rationale`: Logging, timing, and correlation are implementation support concerns, not policy inputs.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`
+
+### Rule 94
+
+- `id`: `RULE_094`
+- `title`: `Replacement Failures Must Be Categorized`
+- `statement`: Failure logs must classify the failure category.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Observability`
+- `rationale`: Structured failure categories reduce debugging time and improve operational triage.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`
+
+### Rule 95
+
+- `id`: `RULE_095`
+- `title`: `Replacement Logs Must Avoid Sensitive Data`
+- `statement`: Replacement logs must never expose sensitive user data.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Observability`
+- `rationale`: Operational traceability must not come at the cost of leaking tokens, raw request bodies, or personal data.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`
