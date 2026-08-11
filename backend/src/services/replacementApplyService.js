@@ -269,17 +269,13 @@ export function createReplacementApplyService({
         );
       }
 
-      const updatedTarget = await tx.workoutSessionExerciseTarget.findUnique({
-        where: { id: targetId },
-        include: {
-          exercise: true,
-          programDayExercise: {
-            include: {
-              exercise: true,
-            },
-          },
-        },
-      });
+      const updatedTarget = {
+        ...target,
+        exerciseId: replacementExerciseId,
+        exercise: replacementExercise,
+        sourceDecisionType: APPLY_REPLACEMENT_DECISION_TYPE,
+        sourceRulesVersion: JSON.stringify(auditMetadata),
+      };
 
       await afterTargetUpdateImpl({
         tx,

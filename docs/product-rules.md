@@ -854,3 +854,53 @@ Exercise Intelligence Foundation V1.
 - `owning domain`: `Replacement Apply`
 - `rationale`: Replacement mutation requires durable traceability for support, debugging, and future workflow evolution.
 - `affected future engines`: `Replacement Apply`
+
+### Rule 86
+
+- `id`: `RULE_086`
+- `title`: `No Optimization Without Measurement`
+- `statement`: No performance optimization may be introduced without explicit measurement first.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Performance`
+- `rationale`: Performance work must be evidence-driven rather than speculative.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`
+
+### Rule 87
+
+- `id`: `RULE_087`
+- `title`: `Performance Changes Preserve Replacement Semantics`
+- `statement`: Performance changes must preserve replacement semantics exactly.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Performance`
+- `rationale`: Performance hardening cannot change candidate, ranking, integrity, decision, or apply behavior.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`
+
+### Rule 88
+
+- `id`: `RULE_088`
+- `title`: `Performance Optimization Cannot Weaken Safety Guarantees`
+- `statement`: Query-count optimization must not weaken transaction, authorization, ownership, or concurrency guarantees.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Performance`
+- `rationale`: Safety and correctness constraints take priority over saving queries.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`
+
+### Rule 89
+
+- `id`: `RULE_089`
+- `title`: `Network Optimization Cannot Create Stale Authority`
+- `statement`: Cache and network optimization must not introduce stale authoritative replacement or workout state.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Performance`
+- `rationale`: Fewer requests are only acceptable when the client already holds the authoritative backend state it needs.
+- `affected future engines`: `Mobile`, `Replacement Apply`
+
+### Rule 90
+
+- `id`: `RULE_090`
+- `title`: `Performance Budgets Must Be Explicit`
+- `statement`: Performance budgets and measurements must be explicit and reproducible.
+- `status`: `LOCKED`
+- `owning domain`: `Replacement Performance`
+- `rationale`: Regression detection requires stable, documented budgets rather than informal expectations.
+- `affected future engines`: `Replacement Recommendation`, `Replacement Apply`, `Mobile`

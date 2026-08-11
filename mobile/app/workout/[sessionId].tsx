@@ -314,7 +314,6 @@ export default function WorkoutSessionScreen() {
         data.session.exerciseTargets?.find((target) => target.id === data.appliedReplacement.targetId)?.exercise ?? null;
 
       synchronizeWorkoutFromSnapshot(responseSnapshot);
-      queryClient.invalidateQueries({ queryKey: ["activeSession"] });
 
       replacementMutation.reset();
       setDiscoveryState(INITIAL_DISCOVERY_STATE);
