@@ -30,7 +30,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test:replacement-discovery": "node src/utils/replacementDiscovery.test.ts"
+    "test:replacement-discovery": "node src/utils/replacementDiscovery.test.ts",
+    "test:replacement-apply-integration": "node src/utils/replacementApplyIntegration.test.ts"
   },
   "private": true
 }

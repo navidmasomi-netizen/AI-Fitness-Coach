@@ -147,6 +147,112 @@ const replacementRecommendationResponseSchema = z.object({
   context: replacementContextSchema,
 });
 
+const exerciseSchema = z.object({
+  id: z.number().int().positive(),
+  nameFa: z.string(),
+  nameEn: z.string().nullable(),
+  description: z.string().nullable(),
+  icon: z.string().nullable(),
+  primaryMuscles: z.array(z.string()),
+  secondaryMuscles: z.array(z.string()),
+  movementPattern: z.string().nullable(),
+  equipment: z.string().nullable(),
+  difficulty: z.string().nullable(),
+  complexity: z.string().nullable(),
+  suitableGoals: z.array(z.string()),
+  contraindications: z.array(z.string()),
+  jointStressFlags: z.array(z.string()),
+  substitutionNames: z.array(z.string()),
+  defaultRepRangeLow: z.number().nullable(),
+  defaultRepRangeHigh: z.number().nullable(),
+  defaultRestSecondsLow: z.number().nullable(),
+  defaultRestSecondsHigh: z.number().nullable(),
+  progressionType: z.string().nullable(),
+});
+
+const workoutSessionExerciseTargetSchema = z.object({
+  id: z.number().int().positive(),
+  exerciseId: z.number().int().positive(),
+  programDayExerciseId: z.number().int().positive(),
+  exercise: exerciseSchema.nullable().optional(),
+});
+
+const setLogSchema = z.object({
+  id: z.number().int().positive(),
+  sessionId: z.number().int().positive(),
+  exerciseId: z.number().int().positive(),
+  setNumber: z.number().int().positive(),
+  weightKg: z.number().nullable(),
+  reps: z.number().int().positive(),
+  loggedAt: z.string(),
+  exercise: exerciseSchema.optional(),
+});
+
+const workoutSessionSchema = z.object({
+  id: z.number().int().positive(),
+  userId: z.number().int().positive(),
+  programId: z.number().int().positive().nullable(),
+  programDayId: z.number().int().positive().nullable(),
+  startedAt: z.string(),
+  completedAt: z.string().nullable(),
+  status: z.enum(["active", "completed"]),
+  notes: z.string().nullable(),
+  setLogs: z.array(setLogSchema).optional(),
+  exerciseTargets: z.array(workoutSessionExerciseTargetSchema).optional(),
+});
+
+const programSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string(),
+  splitFamily: z.string(),
+  goal: z.string(),
+  isStatic: z.boolean(),
+});
+
+const programDayExerciseSchema = z.object({
+  id: z.number().int().positive(),
+  order: z.number().int().nonnegative(),
+  sets: z.number().int().positive(),
+  repRangeLow: z.number().int().positive(),
+  repRangeHigh: z.number().int().positive(),
+  restSeconds: z.number().int().nonnegative(),
+  intensity: z.string().nullable(),
+  progressionType: z.string().nullable(),
+  exercise: exerciseSchema,
+});
+
+const programDaySchema = z.object({
+  id: z.number().int().positive(),
+  dayIndex: z.number().int().nonnegative(),
+  name: z.string(),
+  exercises: z.array(programDayExerciseSchema),
+});
+
+const applyReplacementResponseSchema = z.object({
+  version: z.literal("replacement-apply-v1"),
+  session: workoutSessionSchema,
+  program: programSchema.nullable(),
+  programDay: programDaySchema.nullable(),
+  exercises: z.array(programDayExerciseSchema),
+  appliedReplacement: z.object({
+    targetId: z.number().int().positive(),
+    previousExerciseId: z.number().int().positive(),
+    replacementExerciseId: z.number().int().positive(),
+    sourceDecisionType: z.literal("REPLACEMENT_APPLY_V1"),
+    audit: z.object({
+      version: z.literal("replacement-apply-audit-v1"),
+      sessionId: z.number().int().positive(),
+      targetId: z.number().int().positive(),
+      appliedByUserId: z.number().int().positive(),
+      appliedAt: z.string(),
+      previousExerciseId: z.number().int().positive(),
+      replacementExerciseId: z.number().int().positive(),
+      previousSourceDecisionType: z.string().nullable(),
+      previousSourceRulesVersion: z.string().nullable(),
+    }),
+  }),
+});
+
 export async function getReplacementRecommendations(params: {
   sessionId: number;
   targetId: number;
@@ -163,4 +269,22 @@ export async function getReplacementRecommendations(params: {
   );
 
   return replacementRecommendationResponseSchema.parse(response) as ReplacementRecommendationResponse;
+}
+
+export async function applyReplacementSelection(params: {
+  sessionId: number;
+  targetId: number;
+  replacementExerciseId: number;
+}) {
+  const response = await apiRequest<unknown>(
+    `/sessions/${params.sessionId}/exercise-targets/${params.targetId}/replacements/apply`,
+    {
+      method: "POST",
+      body: {
+        replacementExerciseId: params.replacementExerciseId,
+      },
+    }
+  );
+
+  return applyReplacementResponseSchema.parse(response);
 }

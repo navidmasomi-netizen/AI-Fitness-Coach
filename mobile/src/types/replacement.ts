@@ -33,10 +33,19 @@ export interface ReplacementContextInput {
   replacementIntent: ReplacementIntentInput | null;
 }
 
+export interface WorkoutSessionExerciseTargetExercise {
+  id: number;
+  nameFa?: string;
+  nameEn?: string | null;
+  equipment?: string | null;
+  [key: string]: unknown;
+}
+
 export interface WorkoutSessionExerciseTarget {
   id: number;
   exerciseId: number;
   programDayExerciseId: number;
+  exercise?: WorkoutSessionExerciseTargetExercise | null;
 }
 
 export type ReplacementApiReasonCode =

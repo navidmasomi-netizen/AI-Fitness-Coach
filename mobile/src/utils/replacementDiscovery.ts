@@ -44,6 +44,15 @@ export interface WorkoutExerciseTargetIdentity {
   id: number;
   exerciseId: number;
   programDayExerciseId: number;
+  exercise?: { id: number } | null;
+}
+
+export interface WorkoutSetLogIdentity {
+  id: number;
+  exerciseId: number;
+  setNumber: number;
+  reps: number;
+  weightKg: number | null;
 }
 
 export interface DiscoveryReasonOption {
@@ -131,20 +140,44 @@ export function buildReplacementContextInput(
 export function mergeWorkoutExercisesWithTargets<T extends WorkoutExerciseIdentity>(
   exercises: readonly T[],
   targets: readonly WorkoutExerciseTargetIdentity[]
-): Array<T & { targetId: number | null }> {
+): Array<Omit<T, "exercise"> & { exercise: T["exercise"]; targetId: number | null }> {
   return exercises.map((exercise) => {
     const matchingTarget =
       targets.find(
-        (target) =>
-          target.programDayExerciseId === exercise.id &&
-          target.exerciseId === exercise.exercise.id
+        (target) => target.programDayExerciseId === exercise.id
       ) ?? null;
 
     return {
       ...exercise,
+      exercise: (matchingTarget?.exercise as T["exercise"] | null | undefined) ?? exercise.exercise,
       targetId: matchingTarget?.id ?? null,
     };
   });
+}
+
+export function groupLoggedSetsByExercise(
+  setLogs: readonly WorkoutSetLogIdentity[]
+): Record<number, Array<Pick<WorkoutSetLogIdentity, "id" | "setNumber" | "reps" | "weightKg">>> {
+  const grouped: Record<number, Array<Pick<WorkoutSetLogIdentity, "id" | "setNumber" | "reps" | "weightKg">>> = {};
+
+  for (const log of setLogs) {
+    if (!grouped[log.exerciseId]) {
+      grouped[log.exerciseId] = [];
+    }
+
+    grouped[log.exerciseId].push({
+      id: log.id,
+      setNumber: log.setNumber,
+      reps: log.reps,
+      weightKg: log.weightKg,
+    });
+  }
+
+  for (const exerciseId of Object.keys(grouped)) {
+    grouped[Number(exerciseId)].sort((left, right) => left.setNumber - right.setNumber);
+  }
+
+  return grouped;
 }
 
 export function getReplacementWarningMessage(): string {

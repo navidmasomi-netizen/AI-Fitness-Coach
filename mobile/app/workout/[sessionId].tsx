@@ -3,7 +3,7 @@ import { View, Text, ScrollView, Pressable, TextInput, Modal, ActivityIndicator 
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addSetLog, completeSession } from "../../src/api/sessions";
-import { getReplacementRecommendations } from "../../src/api/replacements";
+import { applyReplacementSelection, getReplacementRecommendations } from "../../src/api/replacements";
 import { buildWorkoutName } from "../../src/utils/workoutMeta";
 import type { ProgramDayExercise } from "../../src/types/program";
 import type {
@@ -17,6 +17,7 @@ import {
   REPLACEMENT_DISCOVERY_EQUIPMENT_OPTIONS,
   REPLACEMENT_DISCOVERY_REASON_OPTIONS,
   buildReplacementContextInput,
+  groupLoggedSetsByExercise,
   getNoReplacementMessage,
   getReplacementUnavailableMessage,
   getReplacementWarningMessage,
@@ -41,6 +42,7 @@ interface ReplacementDiscoveryState {
   recommendations: ReplacementRecommendationResponse | null;
   selectedCandidateExerciseId: number | null;
   errorMessage: string | null;
+  applyErrorMessage: string | null;
 }
 
 const INITIAL_DISCOVERY_STATE: ReplacementDiscoveryState = {
@@ -51,6 +53,7 @@ const INITIAL_DISCOVERY_STATE: ReplacementDiscoveryState = {
   recommendations: null,
   selectedCandidateExerciseId: null,
   errorMessage: null,
+  applyErrorMessage: null,
 };
 
 function getExerciseDisplayName(exercise: { nameFa: string; nameEn: string | null }) {
@@ -62,6 +65,10 @@ function getCandidateEquipmentLabel(status: ReplacementCandidateSummary["equipme
   if (status === "UNAVAILABLE") return "Not available with current equipment";
   if (status === "METADATA_UNAVAILABLE") return "Equipment details unavailable";
   return "Equipment not checked";
+}
+
+function getApplyReplacementErrorMessage() {
+  return "Could not apply this replacement. Your workout has not changed.";
 }
 
 function formatTime(totalSeconds: number) {
@@ -100,9 +107,12 @@ export default function WorkoutSessionScreen() {
   );
   const cachedExerciseTargets =
     queryClient.getQueryData<WorkoutSessionExerciseTarget[]>(["sessionExerciseTargets", numericSessionId]) ?? [];
+  const [workoutExerciseTargets, setWorkoutExerciseTargets] = useState<WorkoutSessionExerciseTarget[]>(
+    routeExerciseTargets.length > 0 ? routeExerciseTargets : cachedExerciseTargets
+  );
   const exercises = useMemo<WorkoutExerciseWithTarget[]>(
-    () => mergeWorkoutExercisesWithTargets(baseExercises, routeExerciseTargets.length > 0 ? routeExerciseTargets : cachedExerciseTargets),
-    [baseExercises, cachedExerciseTargets, routeExerciseTargets]
+    () => mergeWorkoutExercisesWithTargets(baseExercises, workoutExerciseTargets),
+    [baseExercises, workoutExerciseTargets]
   );
 
   const [inputs, setInputs] = useState<Record<number, { reps: string; weightKg: string }>>({});
@@ -113,6 +123,7 @@ export default function WorkoutSessionScreen() {
   const [finishError, setFinishError] = useState("");
   const [finishArmed, setFinishArmed] = useState(false);
   const [discoveryState, setDiscoveryState] = useState<ReplacementDiscoveryState>(INITIAL_DISCOVERY_STATE);
+  const [replacementSuccessMessage, setReplacementSuccessMessage] = useState<string | null>(null);
 
   // --- Rest timer state ---
   const [activeRestExerciseId, setActiveRestExerciseId] = useState<number | null>(null);
@@ -159,6 +170,17 @@ export default function WorkoutSessionScreen() {
   }, [numericSessionId, queryClient, routeExerciseTargets]);
 
   useEffect(() => {
+    if (routeExerciseTargets.length > 0) {
+      setWorkoutExerciseTargets(routeExerciseTargets);
+      return;
+    }
+
+    if (cachedExerciseTargets.length > 0) {
+      setWorkoutExerciseTargets(cachedExerciseTargets);
+    }
+  }, [cachedExerciseTargets, routeExerciseTargets]);
+
+  useEffect(() => {
     if (!existingSetLogsData) return;
     let parsed: any[] = [];
     try {
@@ -168,16 +190,7 @@ export default function WorkoutSessionScreen() {
     }
     if (!Array.isArray(parsed) || parsed.length === 0) return;
 
-    const grouped: Record<number, LoggedSet[]> = {};
-    for (const log of parsed) {
-      const exId = log.exerciseId;
-      if (!grouped[exId]) grouped[exId] = [];
-      grouped[exId].push({ id: log.id, setNumber: log.setNumber, reps: log.reps, weightKg: log.weightKg });
-    }
-    for (const exId of Object.keys(grouped)) {
-      grouped[Number(exId)].sort((a, b) => a.setNumber - b.setNumber);
-    }
-    setLoggedSets(grouped);
+    setLoggedSets(groupLoggedSetsByExercise(parsed));
   }, []);
 
   const logSetMutation = useMutation({
@@ -221,6 +234,7 @@ export default function WorkoutSessionScreen() {
         recommendations: data,
         selectedCandidateExerciseId: data.recommendedReplacement?.exerciseId ?? null,
         errorMessage: null,
+        applyErrorMessage: null,
       }));
     },
     onError: (error: any) => {
@@ -228,6 +242,49 @@ export default function WorkoutSessionScreen() {
         ...previous,
         status: "ERROR",
         errorMessage: error.message || "Failed to load replacement suggestions",
+        applyErrorMessage: null,
+      }));
+    },
+  });
+
+  const applyReplacementMutation = useMutation({
+    mutationFn: (params: { targetId: number; replacementExerciseId: number }) =>
+      applyReplacementSelection({
+        sessionId: numericSessionId,
+        targetId: params.targetId,
+        replacementExerciseId: params.replacementExerciseId,
+      }),
+    onSuccess: (data) => {
+      const updatedTargets = data.session.exerciseTargets ?? [];
+      const updatedSetLogs = data.session.setLogs ?? [];
+      const previousExercise = discoveryState.exercise?.exercise ?? null;
+      const replacementExercise =
+        updatedTargets.find((target) => target.id === data.appliedReplacement.targetId)?.exercise ?? null;
+
+      queryClient.setQueryData(["sessionExerciseTargets", numericSessionId], updatedTargets);
+      queryClient.setQueryData(["activeSession"], {
+        session: data.session,
+        program: data.program,
+        programDay: data.programDay,
+        exercises: data.exercises,
+      });
+      queryClient.invalidateQueries({ queryKey: ["activeSession"] });
+
+      setWorkoutExerciseTargets(updatedTargets);
+      setLoggedSets(groupLoggedSetsByExercise(updatedSetLogs));
+      setErrors({});
+      replacementMutation.reset();
+      setDiscoveryState(INITIAL_DISCOVERY_STATE);
+      setReplacementSuccessMessage(
+        previousExercise && replacementExercise
+          ? `${getExerciseDisplayName(previousExercise)} replaced with ${getExerciseDisplayName(replacementExercise)}.`
+          : "Exercise replaced successfully."
+      );
+    },
+    onError: () => {
+      setDiscoveryState((previous) => ({
+        ...previous,
+        applyErrorMessage: getApplyReplacementErrorMessage(),
       }));
     },
   });
@@ -325,6 +382,9 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    replacementMutation.reset();
+    applyReplacementMutation.reset();
+
     setDiscoveryState({
       status: "COLLECTING_CONTEXT",
       exercise,
@@ -333,11 +393,13 @@ export default function WorkoutSessionScreen() {
       recommendations: null,
       selectedCandidateExerciseId: null,
       errorMessage: null,
+      applyErrorMessage: null,
     });
   };
 
   const closeReplacementDiscovery = () => {
     replacementMutation.reset();
+    applyReplacementMutation.reset();
     setDiscoveryState(INITIAL_DISCOVERY_STATE);
   };
 
@@ -386,20 +448,43 @@ export default function WorkoutSessionScreen() {
       recommendations: null,
       selectedCandidateExerciseId: null,
       errorMessage: null,
+      applyErrorMessage: null,
     }));
   };
 
   const selectReplacementCandidate = (exerciseId: number) => {
+    if (applyReplacementMutation.isPending) {
+      return;
+    }
+
     setDiscoveryState((previous) => ({
       ...previous,
       selectedCandidateExerciseId: exerciseId,
+      applyErrorMessage: null,
     }));
+  };
+
+  const applySelectedReplacement = () => {
+    if (
+      applyReplacementMutation.isPending ||
+      !discoveryState.exercise ||
+      discoveryState.exercise.targetId === null ||
+      !discoveryState.selectedCandidateExerciseId
+    ) {
+      return;
+    }
+
+    applyReplacementMutation.mutate({
+      targetId: discoveryState.exercise.targetId,
+      replacementExerciseId: discoveryState.selectedCandidateExerciseId,
+    });
   };
 
   const activeRestExercise = exercises.find((pde: any) => pde.exercise.id === activeRestExerciseId);
   const recommendedReplacement = discoveryState.recommendations?.recommendedReplacement ?? null;
   const shouldShowReplacementWarning =
     discoveryState.recommendations?.contextualDecisionStatus === "RECOMMENDED_WITH_WARNING";
+  const isApplyPending = applyReplacementMutation.isPending;
 
   return (
     <View style={{ flex: 1 }}>
@@ -436,7 +521,11 @@ export default function WorkoutSessionScreen() {
                   </Text>
                 )}
               </View>
-              <Pressable onPress={closeReplacementDiscovery} accessibilityLabel="Close replacement discovery">
+              <Pressable
+                onPress={closeReplacementDiscovery}
+                accessibilityLabel="Close replacement discovery"
+                disabled={isApplyPending}
+              >
                 <Text style={{ fontSize: 16, color: "#666" }}>Close</Text>
               </Pressable>
             </View>
@@ -513,13 +602,13 @@ export default function WorkoutSessionScreen() {
 
                 <Pressable
                   onPress={loadReplacementRecommendations}
-                  disabled={!discoveryState.intentType}
+                  disabled={!discoveryState.intentType || isApplyPending}
                   style={{
                     marginTop: 8,
                     paddingVertical: 14,
                     borderRadius: 10,
                     alignItems: "center",
-                    backgroundColor: discoveryState.intentType ? "#2196f3" : "#bbdefb",
+                    backgroundColor: discoveryState.intentType && !isApplyPending ? "#2196f3" : "#bbdefb",
                   }}
                 >
                   <Text style={{ color: "white", fontWeight: "700" }}>Find replacements</Text>
@@ -640,6 +729,22 @@ export default function WorkoutSessionScreen() {
 
             {discoveryState.status === "RESULTS" && discoveryState.recommendations && (
               <ScrollView>
+                {discoveryState.applyErrorMessage && (
+                  <View
+                    style={{
+                      backgroundColor: "#ffebee",
+                      borderRadius: 10,
+                      padding: 14,
+                      marginBottom: 14,
+                    }}
+                  >
+                    <Text style={{ color: "#b71c1c", fontWeight: "600", marginBottom: 6 }}>
+                      Couldn&apos;t apply replacement
+                    </Text>
+                    <Text style={{ color: "#b71c1c" }}>{discoveryState.applyErrorMessage}</Text>
+                  </View>
+                )}
+
                 {shouldShowReplacementWarning && (
                   <View
                     style={{
@@ -663,6 +768,7 @@ export default function WorkoutSessionScreen() {
                       accessibilityRole="button"
                       accessibilityLabel={`Select recommended replacement ${recommendedReplacement.nameFa}`}
                       onPress={() => selectReplacementCandidate(recommendedReplacement.exerciseId)}
+                      disabled={isApplyPending}
                       style={{
                         borderWidth: 2,
                         borderColor:
@@ -702,6 +808,7 @@ export default function WorkoutSessionScreen() {
                         accessibilityRole="button"
                         accessibilityLabel={`Select replacement alternative ${candidate.nameFa}`}
                         onPress={() => selectReplacementCandidate(candidate.exerciseId)}
+                        disabled={isApplyPending}
                         style={{
                           borderWidth: 1,
                           borderColor:
@@ -756,11 +863,29 @@ export default function WorkoutSessionScreen() {
                 )}
 
                 <Text style={{ color: "#666", marginBottom: 14 }}>
-                  Recommendations do not change your workout until a future apply step exists.
+                  Your workout only changes after you apply the selected replacement.
                 </Text>
 
                 <Pressable
+                  onPress={applySelectedReplacement}
+                  disabled={!discoveryState.selectedCandidateExerciseId || isApplyPending}
+                  style={{
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    backgroundColor:
+                      discoveryState.selectedCandidateExerciseId && !isApplyPending ? "#2e7d32" : "#a5d6a7",
+                    marginBottom: 10,
+                  }}
+                >
+                  <Text style={{ color: "white", fontWeight: "700" }}>
+                    {isApplyPending ? "Applying replacement..." : "Apply selected replacement"}
+                  </Text>
+                </Pressable>
+
+                <Pressable
                   onPress={reopenReplacementContext}
+                  disabled={isApplyPending}
                   style={{
                     paddingVertical: 14,
                     borderRadius: 10,
@@ -773,6 +898,7 @@ export default function WorkoutSessionScreen() {
                 </Pressable>
                 <Pressable
                   onPress={closeReplacementDiscovery}
+                  disabled={isApplyPending}
                   style={{
                     paddingVertical: 14,
                     borderRadius: 10,
@@ -851,6 +977,11 @@ export default function WorkoutSessionScreen() {
             {dayName} {`\u2014`} {buildWorkoutName(exercises)}
           </Text>
           <Text style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>{programName}</Text>
+          {replacementSuccessMessage && (
+            <View style={{ backgroundColor: "#e8f5e9", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+              <Text style={{ color: "#2e7d32", fontWeight: "600" }}>{replacementSuccessMessage}</Text>
+            </View>
+          )}
           {!activeReplacementTargetAvailable && (
             <View style={{ backgroundColor: "#fff3e0", borderRadius: 8, padding: 12 }}>
               <Text style={{ color: "#7a5a00" }}>{getReplacementUnavailableMessage()}</Text>
