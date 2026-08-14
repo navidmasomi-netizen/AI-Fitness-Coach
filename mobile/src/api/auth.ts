@@ -6,7 +6,7 @@ export interface AuthResponse {
   accessToken: string;
 }
 
-export function registerUser(params: { email: string; name?: string; password: string }): Promise<AuthResponse> {
+export function registerUser(params: { email: string; name: string; password: string }): Promise<AuthResponse> {
   return apiRequest<AuthResponse>("/users", { method: "POST", body: params });
 }
 

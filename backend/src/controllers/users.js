@@ -4,6 +4,15 @@ import jwt from "jsonwebtoken";
 
 const sanitizeUser = ({ password, ...user }) => user;
 
+export function normalizeRequiredName(value) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const normalizedName = value.trim();
+  return normalizedName || null;
+}
+
 function signToken(user) {
   return jwt.sign(
     { userId: user.id, email: user.email },
@@ -14,18 +23,19 @@ function signToken(user) {
 
 export const createUser = async (req, res) => {
   const { email, name, password } = req.body;
+  const normalizedName = normalizeRequiredName(name);
 
-  if (!email || !password) {
+  if (!email || !normalizedName || !password) {
     return res.status(400).json({
       success: false,
-      message: "Email and password are required",
+      message: "Name, email and password are required",
     });
   }
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { email, name, password: hashedPassword },
+      data: { email, name: normalizedName, password: hashedPassword },
     });
     const accessToken = signToken(user);
     res.json({ success: true, data: { user: sanitizeUser(user), accessToken } });
