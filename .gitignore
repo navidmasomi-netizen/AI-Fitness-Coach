@@ -9,6 +9,7 @@ mobile/node_modules/
 backend/.env
 mobile/.env
 mobile/.env.*
+!mobile/.env.example
 
 # Expo
 .expo/
