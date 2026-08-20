@@ -59,6 +59,7 @@ export default function WizardStepSixScreen() {
             bounces={false}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            automaticallyAdjustKeyboardInsets={true}
           >
             <View style={styles.content}>
               <View style={styles.topContent}>
