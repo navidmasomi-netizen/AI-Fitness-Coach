@@ -14,6 +14,7 @@ interface WizardStepScreenProps {
   isNextLoading?: boolean;
   errorMessage?: string | null;
   nextLabel?: string;
+  onBack: () => void;
 }
 
 export function WizardStepScreen({
@@ -27,6 +28,7 @@ export function WizardStepScreen({
   isNextLoading = false,
   errorMessage = null,
   nextLabel = "Next",
+  onBack,
 }: WizardStepScreenProps) {
   const router = useRouter();
   const logout = useAuthStore((s) => s.logout);
@@ -57,7 +59,7 @@ export function WizardStepScreen({
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 24 }}>
         {canGoBack ? (
           <Pressable
-            onPress={() => router.back()}
+            onPress={onBack}
             style={{ paddingVertical: 14, paddingHorizontal: 20, backgroundColor: "#ddd", borderRadius: 10 }}
           >
             <Text>Back</Text>

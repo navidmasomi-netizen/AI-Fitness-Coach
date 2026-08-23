@@ -25,6 +25,7 @@ export default function WizardStepNineScreen() {
       totalSteps={totalSteps}
       title="What is your weight in kg?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-8")}
       isNextEnabled={isWeightValid}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

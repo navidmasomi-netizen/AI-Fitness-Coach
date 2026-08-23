@@ -21,6 +21,7 @@ export default function WizardStepThirteenScreen() {
       totalSteps={totalSteps}
       title="How many meals do you usually eat per day?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-12")}
       isNextEnabled={mealFrequency !== null}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

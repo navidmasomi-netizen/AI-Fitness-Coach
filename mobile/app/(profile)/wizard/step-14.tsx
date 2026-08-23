@@ -21,6 +21,7 @@ export default function WizardStepFourteenScreen() {
       totalSteps={totalSteps}
       title="What is your cardio preference?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-13")}
       isNextEnabled={cardioPreference !== null}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

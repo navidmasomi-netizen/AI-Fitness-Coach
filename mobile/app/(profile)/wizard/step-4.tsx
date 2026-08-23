@@ -190,7 +190,7 @@ export default function WizardStepFourScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Go back to the session frequency question"
                     hitSlop={8}
-                    onPress={() => router.back()}
+                    onPress={() => router.replace("/(profile)/wizard/step-3")}
                     style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
                   >
                     <Feather name="arrow-left" size={19} color={colors.textSecondary} />

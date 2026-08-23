@@ -176,7 +176,7 @@ export default function WizardStepThreeScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Go back to the training level question"
                     hitSlop={8}
-                    onPress={() => router.back()}
+                    onPress={() => router.replace("/(profile)/wizard/step-2")}
                     style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
                   >
                     <Feather name="arrow-left" size={19} color={colors.textSecondary} />

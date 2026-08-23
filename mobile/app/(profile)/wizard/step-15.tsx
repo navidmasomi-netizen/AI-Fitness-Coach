@@ -47,6 +47,7 @@ export default function WizardStepFifteenScreen() {
       totalSteps={totalSteps}
       title="Which supplements do you use?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-14")}
       isNextEnabled={supplementUse.length > 0}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

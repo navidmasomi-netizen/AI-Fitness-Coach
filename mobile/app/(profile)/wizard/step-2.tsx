@@ -181,7 +181,7 @@ export default function WizardStepTwoScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Go back to the primary goal question"
                     hitSlop={8}
-                    onPress={() => router.back()}
+                    onPress={() => router.replace("/(profile)/wizard/step-1")}
                     style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
                   >
                     <Feather name="arrow-left" size={19} color={colors.textSecondary} />

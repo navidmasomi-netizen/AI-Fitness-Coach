@@ -162,7 +162,11 @@ export default function WizardStepEighteenScreen() {
 
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 24 }}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.replace(
+            draft.injuryFlags.includes("none") || draft.injuryFlags.length === 0
+              ? "/(profile)/wizard/step-16"
+              : "/(profile)/wizard/step-17"
+          )}
           style={{ paddingVertical: 14, paddingHorizontal: 20, backgroundColor: "#ddd", borderRadius: 10 }}
         >
           <Text>Back</Text>

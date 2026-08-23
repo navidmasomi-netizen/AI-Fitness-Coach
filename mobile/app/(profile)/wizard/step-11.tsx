@@ -21,6 +21,7 @@ export default function WizardStepElevenScreen() {
       totalSteps={totalSteps}
       title="How would you rate your recovery quality?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-10")}
       isNextEnabled={recoveryQuality !== null}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

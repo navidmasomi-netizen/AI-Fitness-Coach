@@ -21,6 +21,7 @@ export default function WizardStepTwelveScreen() {
       totalSteps={totalSteps}
       title="How would you describe your nutrition habits?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-11")}
       isNextEnabled={nutritionHabits !== null}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

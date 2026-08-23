@@ -37,6 +37,7 @@ export default function WizardStepSixteenScreen() {
       totalSteps={totalSteps}
       title="Any injuries or limitations to consider?"
       canGoBack
+      onBack={() => router.replace(supplementUse.includes("other") ? "/(profile)/wizard/step-15b" : "/(profile)/wizard/step-15")}
       isNextEnabled={injuryFlags.length > 0}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

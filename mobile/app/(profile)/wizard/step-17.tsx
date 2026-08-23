@@ -22,6 +22,7 @@ export default function WizardStepSeventeenScreen() {
       totalSteps={totalSteps}
       title="Anything else we should know about your injuries or limitations?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-16")}
       isNextEnabled
       isNextLoading={isSaving}
       errorMessage={errorMessage}

@@ -21,6 +21,7 @@ export default function WizardStepTenScreen() {
       totalSteps={totalSteps}
       title="What best describes your occupation?"
       canGoBack
+      onBack={() => router.replace("/(profile)/wizard/step-9")}
       isNextEnabled={occupationType !== null}
       isNextLoading={isSaving}
       errorMessage={errorMessage}

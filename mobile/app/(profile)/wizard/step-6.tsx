@@ -160,7 +160,7 @@ export default function WizardStepSixScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Go back to the equipment access question"
                     hitSlop={8}
-                    onPress={() => router.back()}
+                    onPress={() => router.replace("/(profile)/wizard/step-5")}
                     style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
                   >
                     <Feather name="arrow-left" size={19} color={colors.textSecondary} />
