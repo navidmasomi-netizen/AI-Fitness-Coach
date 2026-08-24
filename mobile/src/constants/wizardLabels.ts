@@ -26,11 +26,19 @@ export const SEX_LABELS: Record<string, string> = {
 };
 
 export const OCCUPATION_TYPE_LABELS: Record<string, string> = {
-  desk_job: "Desk Job",
-  active_job: "Active Job",
-  mixed: "Mixed Activity",
-  student: "Student",
-  unemployed: "Unemployed",
+  desk_job: "Mostly sitting",
+  active_job: "Mostly on my feet",
+  mixed: "A mix of both",
+  student: "Light daily activity",
+  unemployed: "Mostly at home",
+};
+
+export const OCCUPATION_TYPE_SUB_COPY: Record<string, string> = {
+  desk_job: "Office, remote work, or study",
+  active_job: "Retail, trades, healthcare",
+  mixed: "Some desk, some moving around",
+  student: "Classes with low physical demand",
+  unemployed: "Minimal structured activity",
 };
 
 export const RECOVERY_QUALITY_LABELS: Record<string, string> = {
