@@ -42,9 +42,15 @@ export const OCCUPATION_TYPE_SUB_COPY: Record<string, string> = {
 };
 
 export const RECOVERY_QUALITY_LABELS: Record<string, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High",
+  low: "I'm often still sore or tired",
+  medium: "I recover fairly well",
+  high: "I recover quickly",
+};
+
+export const RECOVERY_QUALITY_SUB_COPY: Record<string, string> = {
+  low: "Recovery is slow after workouts or busy days",
+  medium: "Some fatigue, but usually ready by the next session",
+  high: "I usually feel fresh and ready to train again",
 };
 
 export const NUTRITION_HABITS_LABELS: Record<string, string> = {
