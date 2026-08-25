@@ -82,16 +82,16 @@ export const CARDIO_PREFERENCE_SUB_COPY: Record<string, string> = {
 };
 
 export const SUPPLEMENT_LABELS: Record<string, string> = {
-  none: "None",
+  none: "I don't take supplements",
   protein: "Protein",
   creatine: "Creatine",
   omega3: "Omega-3",
   multivitamin: "Multivitamin",
   vitamin_d: "Vitamin D",
   magnesium: "Magnesium",
-  fish_oil: "Fish Oil",
+  fish_oil: "Fish oil",
   electrolytes: "Electrolytes",
-  pre_workout: "Pre-Workout",
+  pre_workout: "Pre-workout",
   other: "Other",
 };
 
