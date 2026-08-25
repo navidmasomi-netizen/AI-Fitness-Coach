@@ -98,9 +98,9 @@ export const SUPPLEMENT_LABELS: Record<string, string> = {
 export const INJURY_FLAG_LABELS: Record<string, string> = {
   knee: "Knee",
   shoulder: "Shoulder",
-  lower_back: "Lower Back",
+  lower_back: "Lower back",
   wrist: "Wrist",
-  none: "None",
+  none: "No injuries or limitations",
 };
 
 export function getWizardTotalSteps(supplementUse: string[]): number {
