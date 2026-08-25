@@ -54,10 +54,17 @@ export const RECOVERY_QUALITY_SUB_COPY: Record<string, string> = {
 };
 
 export const NUTRITION_HABITS_LABELS: Record<string, string> = {
-  strict: "Strict",
-  moderate: "Moderate",
-  flexible: "Flexible",
-  unstructured: "Unstructured",
+  strict: "Very structured",
+  moderate: "Mostly consistent",
+  flexible: "Relaxed and intuitive",
+  unstructured: "No fixed routine",
+};
+
+export const NUTRITION_HABITS_SUB_COPY: Record<string, string> = {
+  strict: "I follow consistent meals, macros, or a set plan",
+  moderate: "I follow general targets but allow flexibility",
+  flexible: "I usually eat by feel without a fixed plan",
+  unstructured: "Meal timing and choices vary day to day",
 };
 
 export const CARDIO_PREFERENCE_LABELS: Record<string, string> = {
