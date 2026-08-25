@@ -68,10 +68,17 @@ export const NUTRITION_HABITS_SUB_COPY: Record<string, string> = {
 };
 
 export const CARDIO_PREFERENCE_LABELS: Record<string, string> = {
-  none: "None",
-  low_intensity: "Low Intensity",
-  hiit: "HIIT",
-  mixed: "Mixed",
+  none: "No cardio",
+  low_intensity: "Low intensity",
+  hiit: "High-intensity intervals",
+  mixed: "A mix of both",
+};
+
+export const CARDIO_PREFERENCE_SUB_COPY: Record<string, string> = {
+  none: "I mainly focus on strength training",
+  low_intensity: "Walking, cycling, or easy steady-state cardio",
+  hiit: "Short, hard efforts like sprints or circuits",
+  mixed: "A combination of steady and intense cardio",
 };
 
 export const SUPPLEMENT_LABELS: Record<string, string> = {
