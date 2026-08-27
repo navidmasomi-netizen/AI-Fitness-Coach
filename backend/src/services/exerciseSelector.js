@@ -281,6 +281,7 @@ export async function selectExerciseForUser({
   injuryFlags,
 }) {
   const exercises = await prisma.exercise.findMany({
+    where: { catalogLifecycle: "ACTIVE" },
     orderBy: { id: "asc" },
   });
 

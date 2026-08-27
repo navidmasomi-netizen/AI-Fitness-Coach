@@ -1973,6 +1973,7 @@ async function main() {
           const historicalSnapshot = serializeForLog(historicalTrainingSignals);
           const expectedDecision = buildHistoricalConflictDecision({
             sourceSessionId: started.session.id,
+            exerciseId: target.exerciseId,
           });
           let decisionInput = null;
           let capturedHistoricalSignals = null;

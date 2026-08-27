@@ -813,6 +813,362 @@ const cases = [
       }
     },
   },
+  {
+    name: "A1. every exercise referenced in a generated program has catalogLifecycle ACTIVE",
+    input: { lifecycleFilter: true },
+    run: async () => {
+      const user = await createTestUser({
+        profileData: buildCompleteProfileData(),
+      });
+
+      try {
+        const program = await generateProgramForUser(user.id);
+        const violations = [];
+        for (const day of program.days) {
+          for (const row of day.exercises) {
+            if (row.exercise.catalogLifecycle !== "ACTIVE") {
+              violations.push({
+                dayIndex: day.dayIndex,
+                exerciseId: row.exercise.id,
+                nameEn: row.exercise.nameEn,
+                catalogLifecycle: row.exercise.catalogLifecycle,
+              });
+            }
+          }
+        }
+        assert.equal(
+          violations.length,
+          0,
+          `Non-ACTIVE exercises found in generated program: ${JSON.stringify(violations)}`
+        );
+        return {
+          totalExercises: program.days.reduce((sum, day) => sum + day.exercises.length, 0),
+          violations,
+        };
+      } finally {
+        await cleanupUserArtifacts(user.id);
+      }
+    },
+  },
+  {
+    name: "A2. DEPRECATED exercise in DB is never selected into a generated program",
+    input: { lifecycleFilter: "DEPRECATED" },
+    run: async () => {
+      const testExercise = await prisma.exercise.create({
+        data: {
+          nameFa: "ورزش تست چرخه حیات منسوخ",
+          nameEn: "Lifecycle Test Exercise DEPRECATED",
+          slug: `lifecycle-test-deprecated-${Date.now()}`,
+          catalogLifecycle: "DEPRECATED",
+          movementPattern: "horizontal_press",
+          equipment: "barbell",
+          difficulty: "intermediate",
+          complexity: "compound",
+          suitableGoals: ["hypertrophy", "strength"],
+        },
+      });
+
+      const user = await createTestUser({
+        profileData: buildCompleteProfileData({
+          equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
+          goal: "hypertrophy",
+          trainingLevel: "intermediate",
+        }),
+      });
+
+      try {
+        const program = await generateProgramForUser(user.id);
+        const usedExerciseIds = program.days.flatMap((day) =>
+          day.exercises.map((row) => row.exercise.id)
+        );
+        assert.ok(
+          !usedExerciseIds.includes(testExercise.id),
+          `DEPRECATED exercise ${testExercise.id} was incorrectly included in the generated program`
+        );
+        return {
+          deprecatedExerciseId: testExercise.id,
+          totalUsedExercises: usedExerciseIds.length,
+          deprecatedExerciseUsed: false,
+        };
+      } finally {
+        await cleanupUserArtifacts(user.id);
+        await prisma.exercise.delete({ where: { id: testExercise.id } });
+      }
+    },
+  },
+  {
+    name: "A3. DRAFT exercise in DB is never selected into a generated program",
+    input: { lifecycleFilter: "DRAFT" },
+    run: async () => {
+      const testExercise = await prisma.exercise.create({
+        data: {
+          nameFa: "ورزش تست چرخه حیات پیش‌نویس",
+          nameEn: "Lifecycle Test Exercise DRAFT",
+          slug: `lifecycle-test-draft-${Date.now()}`,
+          catalogLifecycle: "DRAFT",
+          movementPattern: "squat",
+          equipment: "barbell",
+          difficulty: "intermediate",
+          complexity: "compound",
+          suitableGoals: ["hypertrophy", "strength"],
+        },
+      });
+
+      const user = await createTestUser({
+        profileData: buildCompleteProfileData({
+          equipmentAccess: ["barbell", "dumbbell", "machine", "cable", "bodyweight", "pull_up_bar"],
+          goal: "hypertrophy",
+          trainingLevel: "intermediate",
+        }),
+      });
+
+      try {
+        const program = await generateProgramForUser(user.id);
+        const usedExerciseIds = program.days.flatMap((day) =>
+          day.exercises.map((row) => row.exercise.id)
+        );
+        assert.ok(
+          !usedExerciseIds.includes(testExercise.id),
+          `DRAFT exercise ${testExercise.id} was incorrectly included in the generated program`
+        );
+        return {
+          draftExerciseId: testExercise.id,
+          totalUsedExercises: usedExerciseIds.length,
+          draftExerciseUsed: false,
+        };
+      } finally {
+        await cleanupUserArtifacts(user.id);
+        await prisma.exercise.delete({ where: { id: testExercise.id } });
+      }
+    },
+  },
+  {
+    name: "A4. CURATED, APPROVED, and REJECTED exercises are each excluded from program generation",
+    input: { lifecycleStates: ["CURATED", "APPROVED", "REJECTED"] },
+    run: async () => {
+      const nonActiveStates = ["CURATED", "APPROVED", "REJECTED"];
+      const results = [];
+
+      for (const lifecycle of nonActiveStates) {
+        const testExercise = await prisma.exercise.create({
+          data: {
+            nameFa: `ورزش تست ${lifecycle}`,
+            nameEn: `Lifecycle Test Exercise ${lifecycle}`,
+            slug: `lifecycle-test-${lifecycle.toLowerCase()}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`,
+            catalogLifecycle: lifecycle,
+            movementPattern: "horizontal_press",
+            equipment: "barbell",
+            difficulty: "intermediate",
+            complexity: "compound",
+            suitableGoals: ["hypertrophy", "strength"],
+          },
+        });
+
+        const user = await createTestUser({
+          profileData: buildCompleteProfileData(),
+        });
+
+        try {
+          const program = await generateProgramForUser(user.id);
+          const usedIds = program.days.flatMap((day) =>
+            day.exercises.map((row) => row.exercise.id)
+          );
+          assert.ok(
+            !usedIds.includes(testExercise.id),
+            `${lifecycle} exercise ${testExercise.id} was incorrectly included in the generated program`
+          );
+          results.push({ lifecycle, exerciseId: testExercise.id, excluded: true });
+        } finally {
+          await cleanupUserArtifacts(user.id);
+          await prisma.exercise.delete({ where: { id: testExercise.id } });
+        }
+      }
+
+      return results;
+    },
+  },
+  {
+    name: "A5. DEPRECATED exercise that is a level-0 candidate is excluded by lifecycle filter — fallback uses ACTIVE level-1 candidate instead",
+    input: { fallbackLifecycleSafety: true },
+    run: async () => {
+      // Confirmed by data query: only ACTIVE barbell horizontal_pull exercise is Barbell Row (difficulty "advanced").
+      // For intermediate trainingLevel + hypertrophy goal, no level-0 ACTIVE barbell candidate exists —
+      // buildProgramPlan falls back to level 1. A DEPRECATED exercise with difficulty "intermediate" would be
+      // level-0 if lifecycle were ignored. vertical_pull (accessory slot) is omitted gracefully with barbell-only.
+      const testExercise = await prisma.exercise.create({
+        data: {
+          nameFa: "ورزش تست امنیت فال‌بک",
+          nameEn: "Lifecycle Fallback Safety DEPRECATED",
+          slug: `lifecycle-test-fallback-${Date.now()}`,
+          catalogLifecycle: "DEPRECATED",
+          movementPattern: "horizontal_pull",
+          equipment: "barbell",
+          difficulty: "intermediate",
+          complexity: "compound",
+          suitableGoals: ["hypertrophy"],
+        },
+      });
+
+      try {
+        // Step 1: Fetch the ACTIVE pool as generateProgramForUser would.
+        const activeOnlyExercises = await prisma.exercise.findMany({
+          where: { catalogLifecycle: "ACTIVE" },
+          orderBy: { id: "asc" },
+        });
+
+        // barbell-only profile isolates the horizontal_pull/barbell slot so the fallback level
+        // is determined solely by barbell candidates. Accessory slots with no barbell candidate
+        // are omitted; primary barbell slots (squat, hinge, horizontal_press, horizontal_pull,
+        // vertical_press) have ACTIVE candidates and keep the plan alive.
+        const barbellProfile = buildCompleteProfileData({
+          trainingDaysPerWeek: 4,
+          trainingLevel: "intermediate",
+          goal: "hypertrophy",
+          equipmentAccess: ["barbell"],
+        });
+
+        // Step 2: With ACTIVE-only pool, horizontal_pull/barbell/intermediate/hypertrophy requires level-1 fallback.
+        const activeOnlyPlan = buildProgramPlan({ profile: barbellProfile, exercises: activeOnlyExercises });
+        const hpActive = activeOnlyPlan.plannedDays
+          .flatMap((day) => day.plannedExercises)
+          .find((pe) => pe.movementPattern === "horizontal_pull");
+
+        assert.ok(hpActive, "Expected a horizontal_pull slot in the barbell-only ACTIVE plan");
+        assert.equal(
+          hpActive.selectionResult.fallbackLevelUsed,
+          1,
+          `Expected level-1 fallback with ACTIVE-only barbell pool; got level ${hpActive.selectionResult.fallbackLevelUsed}`
+        );
+        assert.ok(
+          hpActive.exercise !== null,
+          "Expected a non-null exercise selected at fallback level 1"
+        );
+
+        // Behavioral proof #4: selected exercise at fallback is ACTIVE.
+        assert.equal(
+          hpActive.exercise.catalogLifecycle,
+          "ACTIVE",
+          `Expected catalogLifecycle === "ACTIVE" for fallback-selected exercise; got ${hpActive.exercise.catalogLifecycle}`
+        );
+
+        // Behavioral proof #3: non-ACTIVE candidate is NOT selected even under relaxed conditions.
+        assert.notEqual(
+          hpActive.exercise.id,
+          testExercise.id,
+          "DEPRECATED exercise must not be selected from an ACTIVE-only pool"
+        );
+
+        // Step 3: Adding the DEPRECATED exercise to the pool makes it a level-0 winner.
+        // buildProgramPlan → selectExercise does not filter by catalogLifecycle, so the DEPRECATED
+        // exercise competes and wins at level-0 (intermediate difficulty exact match for intermediate profile).
+        // This proves it IS a valid level-0 candidate — only its catalogLifecycle keeps it out of generation.
+        const poolWithDeprecated = [...activeOnlyExercises, testExercise];
+        const planWithDeprecated = buildProgramPlan({ profile: barbellProfile, exercises: poolWithDeprecated });
+        const hpWithDeprecated = planWithDeprecated.plannedDays
+          .flatMap((day) => day.plannedExercises)
+          .find((pe) => pe.movementPattern === "horizontal_pull");
+
+        assert.ok(hpWithDeprecated, "Expected a horizontal_pull slot in the plan with DEPRECATED pool");
+        assert.equal(
+          hpWithDeprecated.selectionResult.fallbackLevelUsed,
+          0,
+          `Expected level-0 when DEPRECATED exercise is in the pool; got level ${hpWithDeprecated.selectionResult.fallbackLevelUsed}`
+        );
+        assert.equal(
+          hpWithDeprecated.exercise.id,
+          testExercise.id,
+          "Expected DEPRECATED exercise to win level-0 when lifecycle is not filtered"
+        );
+
+        // Step 4: End-to-end generation must not include the DEPRECATED exercise.
+        const user = await createTestUser({
+          profileData: buildCompleteProfileData({
+            trainingDaysPerWeek: 4,
+            trainingLevel: "intermediate",
+            goal: "hypertrophy",
+          }),
+        });
+
+        try {
+          const program = await generateProgramForUser(user.id);
+          const usedIds = program.days.flatMap((day) =>
+            day.exercises.map((row) => row.exercise.id)
+          );
+          assert.ok(
+            !usedIds.includes(testExercise.id),
+            `DEPRECATED would-be level-0 winner (id ${testExercise.id}) was incorrectly selected in end-to-end generation`
+          );
+
+          return {
+            activePoolFallbackLevel: hpActive.selectionResult.fallbackLevelUsed,
+            activePoolSelectedExercise: hpActive.exercise.nameEn,
+            activePoolSelectedLifecycle: hpActive.exercise.catalogLifecycle,
+            withDeprecatedFallbackLevel: hpWithDeprecated.selectionResult.fallbackLevelUsed,
+            withDeprecatedSelectedExercise: hpWithDeprecated.exercise.nameEn,
+            deprecatedExerciseId: testExercise.id,
+            deprecatedExerciseUsedInGeneration: false,
+          };
+        } finally {
+          await cleanupUserArtifacts(user.id);
+        }
+      } finally {
+        await prisma.exercise.delete({ where: { id: testExercise.id } });
+      }
+    },
+  },
+  {
+    name: "A6. generation fails with primary-slot error when only non-ACTIVE exercises exist for a required slot",
+    input: { noActiveCandidate: true },
+    run: async () => {
+      // vertical_pull/barbell has zero ACTIVE exercises (confirmed by data query).
+      // A DEPRECATED exercise is inserted that would satisfy the slot if lifecycle were not filtered.
+      // full_body_strength (trainingDaysPerWeek: 3, goal: "strength") has vertical_pull as primary — it must throw.
+      const testExercise = await prisma.exercise.create({
+        data: {
+          nameFa: "ورزش تست بدون کاندیدای فعال",
+          nameEn: "Lifecycle No Active Candidate DEPRECATED",
+          slug: `lifecycle-test-no-active-${Date.now()}`,
+          catalogLifecycle: "DEPRECATED",
+          movementPattern: "vertical_pull",
+          equipment: "barbell",
+          difficulty: "intermediate",
+          complexity: "compound",
+          suitableGoals: ["hypertrophy", "strength"],
+        },
+      });
+
+      const user = await createTestUser({
+        profileData: buildCompleteProfileData({
+          trainingDaysPerWeek: 3,
+          goal: "strength",
+          trainingLevel: "intermediate",
+          equipmentAccess: ["barbell"],
+        }),
+      });
+
+      try {
+        await assert.rejects(
+          () => generateProgramForUser(user.id),
+          /Program generation failed for primary slot/
+        );
+
+        const activeUserProgram = await getActiveUserProgram(user.id);
+        assert.equal(
+          activeUserProgram,
+          null,
+          "No active UserProgram should exist after a failed generation"
+        );
+
+        return {
+          deprecatedExerciseId: testExercise.id,
+          activeUserProgram: null,
+        };
+      } finally {
+        await cleanupUserArtifacts(user.id);
+        await prisma.exercise.delete({ where: { id: testExercise.id } });
+      }
+    },
+  },
 ];
 
 for (const testCase of cases) {
