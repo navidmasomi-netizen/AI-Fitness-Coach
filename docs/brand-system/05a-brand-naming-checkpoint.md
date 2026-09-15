@@ -2,11 +2,11 @@
 
 ## Status
 
-**Paused — not finalized.**
+**Active — not finalized.**
 
-Naming exploration is intentionally stopped at this checkpoint to prevent further delay to the V2 brand-system build. The product may continue into symbol, app-icon, color, typography, and broader visual-system development without a final public brand name.
+Naming exploration has resumed. The user explicitly chose to continue naming before moving on because the master brand name is considered foundational to the visual identity and product brand system.
 
-The final name must be selected before the final wordmark, legal filing, store listing, launch assets, and production brand handoff are locked.
+The logo/symbol phase is deferred until naming is resolved or intentionally paused again.
 
 ## Current Legal-Clearance Finalists
 
@@ -18,13 +18,16 @@ The following names are retained as the strongest current candidates after preli
 
 These names are **not final selections** and should not be treated as approved production names.
 
-## Naming Decision Rule
+## Naming Direction
 
-Naming should resume only when one of the following becomes true:
+Continue exploring materially stronger candidates rather than broad, low-signal name generation. New candidates should be globally pronounceable, visually strong in Latin script, non-generic, extensible beyond fitness, and capable of supporting a Premium Health Technology master brand.
 
-- the visual identity is mature enough to test the finalists in real brand contexts;
-- legal counsel completes formal clearance;
-- a materially stronger candidate appears without reopening broad, open-ended naming exploration.
+Current exploration territories include:
+
+- Iranian, Avestan, Pahlavi, and ancient Persian roots
+- ancient anatomical terms across classical languages
+- concepts connected to intelligence, vitality, longevity, wholeness, resilience, movement, identity, and Future Self
+- primarily 5–7 letter forms with strong wordmark potential
 
 ## Required Final Legal Clearance
 
@@ -38,7 +41,7 @@ Before selecting a final name, run exact and similarity searches across the inte
 
 Priority registries/jurisdictions include USPTO, EUIPO/TMview, WIPO Madrid Monitor, UKIPO, and TÜRKPATENT.
 
-## Naming Guardrails Retained
+## Naming Guardrails
 
 The final master brand should remain compatible with the approved brand strategy:
 
@@ -52,4 +55,4 @@ The final master brand should remain compatible with the approved brand strategy
 
 ## Next Step
 
-Proceed to **Phase 5B — Logo & Symbol System** using a **name-agnostic symbol-first process**. The final wordmark is deferred until naming is resolved.
+Continue **Phase 5A — Brand Naming** until a final naming decision is made. Phase 5B — Logo & Symbol System remains deferred.
