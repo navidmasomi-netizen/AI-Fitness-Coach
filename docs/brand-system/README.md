@@ -26,4 +26,4 @@ The V2 UI/UX redesign must derive from the approved decisions documented here. D
 
 ## Current Status
 
-**Stage:** Brand Discovery, Competitive Brand Audit, Brand Core & Positioning, and Creative Direction complete. Visual Identity is in progress. Brand naming is paused at a documented checkpoint with ATURVA, HAURVA, and HIRKAN retained as legal-clearance finalists. Proceeding to Phase 5B — Logo & Symbol System using a name-agnostic, symbol-first process.
+**Stage:** Brand Discovery, Competitive Brand Audit, Brand Core & Positioning, and Creative Direction complete. Visual Identity is in progress. Phase 5A — Brand Naming is active again. ATURVA, HAURVA, and HIRKAN remain the current legal-clearance finalists while additional materially stronger candidates are explored. Phase 5B — Logo & Symbol System is deferred until naming is resolved or intentionally paused again.
