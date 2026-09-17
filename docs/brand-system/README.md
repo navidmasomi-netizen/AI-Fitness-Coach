@@ -26,4 +26,24 @@ The V2 UI/UX redesign must derive from the approved decisions documented here. D
 
 ## Current Status
 
-**Stage:** Brand Discovery, Competitive Brand Audit, Brand Core & Positioning, and Creative Direction complete. Visual Identity is in progress. Phase 5A — Brand Naming is active again. ATURVA, HAURVA, and HIRKAN remain the current legal-clearance finalists while additional materially stronger candidates are explored. Phase 5B — Logo & Symbol System is deferred until naming is resolved or intentionally paused again.
+**Updated:** 2026-09-17
+
+**Stage:** Brand Discovery, Competitive Brand Audit, Brand Core & Positioning, and Creative Direction complete. Master brand selected: **RUNPUY**. Visual Identity is in progress.
+
+- Phase 5A: naming selection recorded; final legal clearance is not documented as complete.
+- Phase 5B: **C — Precision Wordmark** preferred; **C3** is the current refinement target, pending final wordmark and app-icon approval.
+- Color: user reports a previously finalized palette; exact values are not present in the reviewed documents and must be recovered before approved-palette recoloring or token implementation.
+- Existing strategy documents remain authoritative. Logo concept letters do not supersede the Phase 04 tone architecture.
+
+## Document Index
+
+- [01 — Brand Discovery](01-brand-discovery.md)
+- [02 — Competitive Brand Audit](02-competitive-brand-audit.md)
+- [03 — Brand Core & Positioning](03-brand-core-positioning.md)
+- [04 — Creative Direction](04-creative-direction.md)
+- [05A — Brand Naming Checkpoint](05a-brand-naming-checkpoint.md)
+- [05B — Logo & Symbol Checkpoint](05b-logo-symbol-checkpoint.md)
+
+## Ongoing Updates
+
+Record subsequent approved decisions here, with dates and explicit approval status. Preserve historical context while clearly marking superseded decisions. Keep proposals, unresolved questions, and production-ready specifications distinct. Do not invent missing palette values or silently promote concept previews to final assets.
