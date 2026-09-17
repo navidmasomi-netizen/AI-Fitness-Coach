@@ -1,6 +1,18 @@
 # Phase 5A — Brand Naming Checkpoint
 
-## Status
+## Current Decision — 2026-09-17
+
+**Selected master brand: RUNPUY.**
+
+The user's subsequent naming decision supersedes the active exploration status below. Phase 5B is now in progress; see [Logo & Symbol Checkpoint](05b-logo-symbol-checkpoint.md).
+
+The selected brand name does not establish trademark clearance. No final legal-clearance evidence is recorded in this update. The historical clearance checklist below remains a pending due-diligence reference, not a completed legal review.
+
+## Historical Naming Checkpoint — Superseded
+
+The following text is preserved as the earlier decision record. Its candidates, active status, and next-step instructions are historical and are not the current naming direction.
+
+### Historical Status
 
 **Active — not finalized.**
 
