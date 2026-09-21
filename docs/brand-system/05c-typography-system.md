@@ -1,11 +1,11 @@
 # Phase 5C — RUNPUY Typography System
 
 **Updated:** 2026-09-21
-**Status:** In progress — Latin direction selected; Persian/Arabic companion pending visual approval.
+**Status:** Approved typography direction — implementation validation pending.
 
 ## Selected Latin Direction
 
-**Manrope** is the selected working typeface for RUNPUY's Latin-script brand and product experience.
+**Manrope** is the approved typeface for RUNPUY's Latin-script brand and product experience.
 
 Working hierarchy:
 
@@ -21,9 +21,9 @@ The custom RUNPUY wordmark remains a separate logo asset and must not be recreat
 
 The typography system must support right-to-left layout and Persian/Arabic shaping before V2 implementation. Manrope's documented coverage focuses on Latin and Cyrillic scripts, so it is not the Persian/Arabic production font.
 
-### Recommended Companion
+### Selected Persian/Arabic Companion
 
-**Vazirmatn** is the current recommended Persian/Arabic companion for evaluation.
+**Vazirmatn** is the approved Persian/Arabic companion for RUNPUY.
 
 Reasons:
 
@@ -33,7 +33,7 @@ Reasons:
 - available as a variable font and multiple weights;
 - practical mapping to the selected Manrope hierarchy.
 
-Proposed weight mapping:
+Approved weight mapping:
 
 - Manrope 800 ↔ Vazirmatn 800
 - Manrope 700 ↔ Vazirmatn 700
@@ -44,16 +44,15 @@ Proposed weight mapping:
 
 **Noto Sans Arabic** remains the fallback candidate if broader Arabic-script coverage becomes more important than visual pairing. Noto documents Persian among the languages using the Arabic script.
 
-## Open Validation
+## Implementation Validation
 
-Before final approval:
+Before production implementation:
 
-1. Compare Manrope + Vazirmatn in matched English and Persian UI screens.
-2. Verify perceived weight, x-height, line height, and density across scripts.
-3. Test Persian and Latin numerals, mixed-language strings, units, punctuation, and date formats.
-4. Validate RTL navigation, icon direction, alignment, truncation, and dynamic type.
-5. Define font-loading, fallback, and accessibility rules for React Native/Expo.
-6. Confirm which languages are launch requirements versus future fallback coverage.
+1. Verify perceived weight, x-height, line height, and density across scripts using the actual font files.
+2. Test Persian and Latin numerals, mixed-language strings, units, punctuation, and date formats.
+3. Validate RTL navigation, icon direction, alignment, truncation, and dynamic type.
+4. Define font-loading, fallback, and accessibility rules for React Native/Expo.
+5. Confirm which languages are launch requirements versus future fallback coverage.
 
 ## Sources
 
