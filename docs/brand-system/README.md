@@ -32,7 +32,7 @@ The V2 UI/UX redesign must derive from the approved decisions documented here. D
 
 - Phase 5A: naming selection recorded; final legal clearance is not documented as complete.
 - Phase 5B: **C3** retained as the provisional wordmark/app-icon direction. The provisional palette is documented in the Phase 5B checkpoint.
-- Phase 5C: **Manrope** selected as the working Latin typeface. Persian/Arabic companion evaluation is active, with **Vazirmatn** recommended for visual testing.
+- Phase 5C: typography direction approved — **Manrope** for Latin-script interfaces and **Vazirmatn** for Persian/Arabic. **Noto Sans Arabic** remains the fallback.
 - Existing strategy documents remain authoritative. Logo concept letters do not supersede the Phase 04 tone architecture.
 
 ## Document Index
