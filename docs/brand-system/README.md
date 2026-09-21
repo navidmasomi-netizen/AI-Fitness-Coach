@@ -26,13 +26,13 @@ The V2 UI/UX redesign must derive from the approved decisions documented here. D
 
 ## Current Status
 
-**Updated:** 2026-09-17
+**Updated:** 2026-09-21
 
 **Stage:** Brand Discovery, Competitive Brand Audit, Brand Core & Positioning, and Creative Direction complete. Master brand selected: **RUNPUY**. Visual Identity is in progress.
 
 - Phase 5A: naming selection recorded; final legal clearance is not documented as complete.
-- Phase 5B: **C — Precision Wordmark** preferred; **C3** is the current refinement target, pending final wordmark and app-icon approval.
-- Color: user reports a previously finalized palette; exact values are not present in the reviewed documents and must be recovered before approved-palette recoloring or token implementation.
+- Phase 5B: **C3** retained as the provisional wordmark/app-icon direction. The provisional palette is documented in the Phase 5B checkpoint.
+- Phase 5C: **Manrope** selected as the working Latin typeface. Persian/Arabic companion evaluation is active, with **Vazirmatn** recommended for visual testing.
 - Existing strategy documents remain authoritative. Logo concept letters do not supersede the Phase 04 tone architecture.
 
 ## Document Index
@@ -43,6 +43,7 @@ The V2 UI/UX redesign must derive from the approved decisions documented here. D
 - [04 — Creative Direction](04-creative-direction.md)
 - [05A — Brand Naming Checkpoint](05a-brand-naming-checkpoint.md)
 - [05B — Logo & Symbol Checkpoint](05b-logo-symbol-checkpoint.md)
+- [05C — Typography System](05c-typography-system.md)
 
 ## Ongoing Updates
 
