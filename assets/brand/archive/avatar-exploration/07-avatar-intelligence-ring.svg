@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024">
+  <defs><linearGradient id="r" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18B887"/><stop offset="1" stop-color="#3ED6AE"/></linearGradient></defs>
+  <rect width="1024" height="1024" rx="228" fill="#0D1417"/>
+  <circle cx="512" cy="512" r="350" fill="none" stroke="#263940" stroke-width="34"/>
+  <circle cx="512" cy="512" r="350" fill="none" stroke="url(#r)" stroke-width="34" stroke-linecap="round" stroke-dasharray="1450 2200" transform="rotate(-88 512 512)"/>
+  <circle cx="512" cy="512" r="270" fill="#132128"/>
+  <image x="300" y="300" width="424" height="424" xlink:href="../package/runpuy-glyph-white.svg"/>
+  <circle cx="803" cy="713" r="24" fill="#18B887" stroke="#0D1417" stroke-width="12"/>
+</svg>

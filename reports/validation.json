@@ -1,0 +1,59 @@
+{
+  "brand": "RUNPUY",
+  "release": "1.0.0-rc.1",
+  "validated_on": "2026-09-25",
+  "passed": true,
+  "summary": {
+    "files": 120,
+    "svg": 50,
+    "png": 37,
+    "pdf": 1
+  },
+  "checks": [
+    {
+      "name": "no_empty_files",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "svg_xml",
+      "passed": true,
+      "count": 50,
+      "details": []
+    },
+    {
+      "name": "png_decode",
+      "passed": true,
+      "count": 37,
+      "details": []
+    },
+    {
+      "name": "pdf_decode",
+      "passed": true,
+      "count": 1,
+      "details": []
+    },
+    {
+      "name": "approved_palette",
+      "passed": true,
+      "details": []
+    },
+    {
+      "name": "ios_icon",
+      "passed": true,
+      "details": {
+        "size": [
+          1024,
+          1024
+        ],
+        "opaque": true
+      }
+    },
+    {
+      "name": "required_assets",
+      "passed": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

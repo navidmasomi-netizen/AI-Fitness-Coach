@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F7F7F4"/><stop offset="1" stop-color="#EAF5F1"/></linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18B887"/><stop offset="1" stop-color="#163A52"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="28" stdDeviation="30" flood-color="#0D1417" flood-opacity=".16"/></filter>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#hero)"/>
+  <rect x="0" y="0" width="1600" height="106" fill="#F7F7F4" fill-opacity=".92"/>
+  <image x="72" y="25" width="330" height="70" xlink:href="../package/runpuy-primary-horizontal.svg"/>
+  <g font-family="Manrope,Arial,sans-serif" font-size="17" font-weight="600" fill="#526169">
+    <text x="890" y="64">PRODUCT</text><text x="1020" y="64">SCIENCE</text><text x="1140" y="64">ABOUT</text>
+  </g>
+  <rect x="1270" y="25" width="250" height="58" rx="29" fill="#111719"/><text x="1395" y="62" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="17" font-weight="700">JOIN THE WAITLIST</text>
+  <text x="92" y="290" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="5">YOUR BETTER SELF, IN MOTION</text>
+  <text x="88" y="400" fill="#111719" font-family="Manrope,Arial,sans-serif" font-size="84" font-weight="780">MOVE SMARTER.</text>
+  <text x="88" y="492" fill="#111719" font-family="Manrope,Arial,sans-serif" font-size="84" font-weight="780">LIVE STRONGER.</text>
+  <text x="94" y="582" fill="#526169" font-family="Manrope,Arial,sans-serif" font-size="26" font-weight="450">AI coaching that turns health data into a clear daily plan—</text>
+  <text x="94" y="620" fill="#526169" font-family="Manrope,Arial,sans-serif" font-size="26" font-weight="450">built around your body, goals and real life.</text>
+  <rect x="92" y="692" width="250" height="72" rx="36" fill="#18B887"/><text x="217" y="738" text-anchor="middle" fill="#fff" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="750">START YOUR JOURNEY</text>
+  <text x="380" y="738" fill="#163A52" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="700">SEE HOW IT WORKS →</text>
+  <g>
+    <rect x="900" y="190" width="560" height="700" rx="54" fill="#0D1417"/>
+    <rect x="930" y="220" width="500" height="640" rx="38" fill="#132128"/>
+  </g>
+  <text x="980" y="292" fill="#AFC1C5" font-family="Manrope,Arial,sans-serif" font-size="17" font-weight="600" letter-spacing="3">TODAY'S READINESS</text>
+  <text x="980" y="360" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="40" font-weight="750">Good morning, Navid</text>
+  <circle cx="1168" cy="535" r="132" fill="none" stroke="#263940" stroke-width="30"/>
+  <circle cx="1168" cy="535" r="132" fill="none" stroke="url(#ring)" stroke-width="30" stroke-linecap="round" stroke-dasharray="610 830" transform="rotate(-90 1168 535)"/>
+  <text x="1168" y="532" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="88" font-weight="760">82</text>
+  <text x="1168" y="570" text-anchor="middle" fill="#AFC1C5" font-family="Manrope,Arial,sans-serif" font-size="18">HEALTH SCORE</text>
+  <g font-family="Manrope,Arial,sans-serif">
+    <rect x="970" y="715" width="126" height="88" rx="20" fill="#1B3036"/><text x="990" y="746" fill="#AFC1C5" font-size="14">SLEEP</text><text x="990" y="783" fill="#F7F7F4" font-size="27" font-weight="700">7h 42</text>
+    <rect x="1105" y="715" width="126" height="88" rx="20" fill="#1B3036"/><text x="1125" y="746" fill="#AFC1C5" font-size="14">RECOVERY</text><text x="1125" y="783" fill="#18B887" font-size="27" font-weight="700">86%</text>
+    <rect x="1240" y="715" width="150" height="88" rx="20" fill="#1B3036"/><text x="1260" y="746" fill="#AFC1C5" font-size="14">NEXT</text><text x="1260" y="783" fill="#F7F7F4" font-size="22" font-weight="700">Tempo run</text>
+  </g>
+  <text x="94" y="925" fill="#74838A" font-family="Manrope,Arial,sans-serif" font-size="16" font-weight="600" letter-spacing="5">KEEP PUYING</text>
+</svg>

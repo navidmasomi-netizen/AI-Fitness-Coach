@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1350" role="img" aria-label="RUNPUY motivational consistency post">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#163A52"/><stop offset="0.55" stop-color="#0D1417"/><stop offset="1" stop-color="#0E4D3C"/></linearGradient></defs>
+  <rect width="1080" height="1350" fill="url(#bg)"/>
+  <circle cx="910" cy="250" r="310" fill="#18B887" fill-opacity="0.09"/>
+  <circle cx="125" cy="1120" r="300" fill="#65D8B4" fill-opacity="0.06"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-wordmark-white.png" x="72" y="68" width="258" height="44" preserveAspectRatio="xMidYMid meet"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-app-icon-emerald.png" x="346" y="68" width="44" height="44"/>
+  <text x="72" y="300" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="26" font-weight="800" letter-spacing="4">THE RUNPUY MINDSET</text>
+  <text x="72" y="440" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="104" font-weight="900">CONSISTENCY</text>
+  <text x="72" y="548" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="104" font-weight="900">BEATS</text>
+  <text x="72" y="656" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="104" font-weight="900">INTENSITY.</text>
+  <line x1="72" y1="730" x2="1008" y2="730" stroke="#A7F0D8" stroke-opacity="0.30" stroke-width="2"/>
+  <text x="72" y="825" fill="#D3DFE3" font-family="Manrope,Arial,sans-serif" font-size="34">You do not need a perfect day.</text>
+  <text x="72" y="878" fill="#D3DFE3" font-family="Manrope,Arial,sans-serif" font-size="34">You need the next right move.</text>
+  <g transform="translate(72 1010)">
+    <rect width="936" height="126" rx="32" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.15"/>
+    <circle cx="64" cy="63" r="31" fill="#18B887"/><path d="M50 64 l10 11 20 -25" fill="none" stroke="#F7F7F4" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="118" y="56" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="24" font-weight="800">TODAY'S WIN</text>
+    <text x="118" y="91" fill="#A7B9C0" font-family="Manrope,Arial,sans-serif" font-size="22">Show up—even if the session changes.</text>
+    <text x="888" y="76" text-anchor="end" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="22" font-weight="800">KEEP PUYING →</text>
+  </g>
+  <text x="72" y="1288" fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="20" letter-spacing="4">MOVE • IMPROVE • LIVE WELL</text>
+</svg>

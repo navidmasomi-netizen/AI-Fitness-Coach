@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1350" role="img" aria-label="RUNPUY social post route B health intelligence">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#163A52"/><stop offset="0.58" stop-color="#0D2028"/><stop offset="1" stop-color="#0D1417"/></linearGradient>
+    <linearGradient id="data" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18B887"/><stop offset="1" stop-color="#65D8B4"/></linearGradient>
+    <pattern id="grid" width="54" height="54" patternUnits="userSpaceOnUse"><path d="M54 0H0V54" fill="none" stroke="#7DA1AF" stroke-opacity="0.10" stroke-width="1"/></pattern>
+  </defs>
+  <rect width="1080" height="1350" fill="url(#night)"/>
+  <rect width="1080" height="1350" fill="url(#grid)"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-wordmark-white.png" x="72" y="68" width="258" height="44" preserveAspectRatio="xMidYMid meet"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-app-icon-emerald.png" x="346" y="68" width="44" height="44"/>
+  <rect x="795" y="71" width="213" height="38" rx="19" fill="#18B887" fill-opacity="0.14" stroke="#18B887" stroke-opacity="0.5"/>
+  <circle cx="824" cy="90" r="6" fill="#18B887"/>
+  <text x="844" y="98" fill="#A7F0D8" font-family="Manrope,Arial,sans-serif" font-size="17" font-weight="700">LIVE INSIGHT</text>
+
+  <text x="72" y="270" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="86" font-weight="800">KNOW YOUR</text>
+  <text x="72" y="362" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="86" font-weight="800">BODY.</text>
+  <text x="76" y="424" fill="#B8C7CD" font-family="Manrope,Arial,sans-serif" font-size="27">Health signals translated into one clear decision.</text>
+
+  <circle cx="540" cy="723" r="228" fill="#0D1417" fill-opacity="0.5" stroke="#31586A" stroke-width="2"/>
+  <circle cx="540" cy="723" r="176" fill="none" stroke="#294451" stroke-width="32"/>
+  <path d="M540 547 A176 176 0 1 1 382 800" fill="none" stroke="url(#data)" stroke-width="32" stroke-linecap="round"/>
+  <text x="540" y="696" text-anchor="middle" fill="#B8C7CD" font-family="Manrope,Arial,sans-serif" font-size="22" font-weight="600" letter-spacing="3">HEALTH SCORE</text>
+  <text x="540" y="792" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="112" font-weight="800">82</text>
+
+  <rect x="72" y="1000" width="286" height="170" rx="30" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+  <rect x="397" y="1000" width="286" height="170" rx="30" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+  <rect x="722" y="1000" width="286" height="170" rx="30" fill="#FFFFFF" fill-opacity="0.06" stroke="#FFFFFF" stroke-opacity="0.12"/>
+  <text x="104" y="1050" fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="600">RECOVERY</text><text x="104" y="1115" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="48" font-weight="800">78%</text><text x="104" y="1148" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="18">+6 today</text>
+  <text x="429" y="1050" fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="600">SLEEP</text><text x="429" y="1115" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="48" font-weight="800">7:42</text><text x="429" y="1148" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="18">Optimal</text>
+  <text x="754" y="1050" fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="600">TRAINING</text><text x="754" y="1115" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="48" font-weight="800">GO</text><text x="754" y="1148" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="18">Moderate load</text>
+  <text x="72" y="1286" fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="21" letter-spacing="4">KEEP PUYING</text>
+  <text x="1008" y="1286" text-anchor="end" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="21">02 / INSIGHT</text>
+</svg>

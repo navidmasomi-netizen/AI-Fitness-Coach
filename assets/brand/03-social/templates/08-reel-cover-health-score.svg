@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1920" role="img" aria-label="RUNPUY Health Score reel cover">
+  <defs><linearGradient id="reelBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#163A52"/><stop offset="0.55" stop-color="#0D2028"/><stop offset="1" stop-color="#0D1417"/></linearGradient><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0H0V60" fill="none" stroke="#8FA7B0" stroke-opacity="0.08"/></pattern></defs>
+  <rect width="1080" height="1920" fill="url(#reelBg)"/><rect width="1080" height="1920" fill="url(#grid)"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-wordmark-white.png" x="72" y="154" width="258" height="44" preserveAspectRatio="xMidYMid meet"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-app-icon-emerald.png" x="346" y="154" width="44" height="44"/>
+  <rect x="755" y="154" width="253" height="44" rx="22" fill="#18B887" fill-opacity="0.15" stroke="#18B887" stroke-opacity="0.5"/><text x="882" y="183" text-anchor="middle" fill="#A7F0D8" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="800">AI EXPLAINED</text>
+  <text x="72" y="460" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="86" font-weight="850">WHAT YOUR</text>
+  <text x="72" y="554" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="86" font-weight="850">HEALTH SCORE</text>
+  <text x="72" y="648" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="86" font-weight="850">REALLY MEANS.</text>
+  <circle cx="540" cy="1065" r="256" fill="#0D1417" fill-opacity="0.45" stroke="#31586A" stroke-width="3"/>
+  <circle cx="540" cy="1065" r="190" fill="none" stroke="#294451" stroke-width="34"/><path d="M540 875 A190 190 0 1 1 368 1145" fill="none" stroke="#18B887" stroke-width="34" stroke-linecap="round"/>
+  <text x="540" y="1042" text-anchor="middle" fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="24" font-weight="800" letter-spacing="4">TODAY</text>
+  <text x="540" y="1152" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="136" font-weight="900">82</text>
+  <rect x="72" y="1470" width="356" height="80" rx="40" fill="#18B887"/><text x="250" y="1520" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="23" font-weight="850">WATCH • 30 SEC</text>
+  <text x="72" y="1636" fill="#B8C7CD" font-family="Manrope,Arial,sans-serif" font-size="27">Recovery. Sleep. Training load.</text>
+  <text x="72" y="1682" fill="#B8C7CD" font-family="Manrope,Arial,sans-serif" font-size="27">One number—explained clearly.</text>
+  <text x="72" y="1810" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="800" letter-spacing="5">KEEP PUYING</text>
+</svg>

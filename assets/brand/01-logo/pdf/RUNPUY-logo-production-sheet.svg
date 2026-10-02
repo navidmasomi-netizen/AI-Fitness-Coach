@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 1100">
+  <rect width="1600" height="1100" fill="#F7F7F4"/>
+  <style>
+    .k{font:600 16px Manrope,Arial,sans-serif;letter-spacing:3px;fill:#53626A}
+    .h{font:700 28px Manrope,Arial,sans-serif;fill:#111719}
+    .b{font:500 17px Manrope,Arial,sans-serif;fill:#53626A}
+    .n{font:600 15px Manrope,Arial,sans-serif;fill:#111719}
+    .card{fill:#fff;stroke:#D9DCDE;stroke-width:1.5}
+  </style>
+  <text x="60" y="58" class="k">RUNPUY · PRODUCT BRAND SYSTEM</text>
+  <text x="60" y="102" class="h">Logo direction B — Premium Clarity</text>
+  <text x="1540" y="58" text-anchor="end" class="k">PRODUCTION DRAFT 01</text>
+
+  <rect x="60" y="140" width="950" height="250" rx="24" class="card"/>
+  <text x="90" y="178" class="k">PRIMARY HORIZONTAL</text>
+  <image x="110" y="218" width="840" height="180" xlink:href="package/runpuy-primary-horizontal.svg"/>
+
+  <rect x="1040" y="140" width="500" height="250" rx="24" fill="#0D1417"/>
+  <text x="1070" y="178" class="k" fill="#A9B4B8">REVERSE</text>
+  <image x="1080" y="230" width="420" height="120" xlink:href="package/runpuy-primary-horizontal-reverse.svg"/>
+
+  <rect x="60" y="420" width="440" height="370" rx="24" class="card"/>
+  <text x="90" y="458" class="k">STACKED LOCKUP</text>
+  <image x="115" y="490" width="330" height="250" xlink:href="package/runpuy-stacked.svg"/>
+
+  <rect x="530" y="420" width="1010" height="170" rx="24" class="card"/>
+  <text x="560" y="458" class="k">WITH TAGLINE</text>
+  <image x="650" y="465" width="780" height="115" xlink:href="package/runpuy-with-tagline.svg"/>
+
+  <rect x="530" y="620" width="1010" height="170" rx="24" class="card"/>
+  <text x="560" y="658" class="k">APP / SOCIAL ICONS</text>
+  <image x="615" y="680" width="86" height="86" xlink:href="package/runpuy-app-icon-ink.svg"/>
+  <image x="740" y="680" width="86" height="86" xlink:href="package/runpuy-app-icon-navy.svg"/>
+  <image x="865" y="680" width="86" height="86" xlink:href="package/runpuy-app-icon-emerald.svg"/>
+  <text x="1010" y="707" class="n">Use the standalone R only at compact sizes.</text>
+  <text x="1010" y="738" class="b">Recommended minimum: 20 px symbol · 24 px full lockup</text>
+
+  <text x="60" y="850" class="k">APPROVED LOGO PALETTE</text>
+  <g transform="translate(60 875)">
+    <rect width="250" height="88" rx="15" fill="#111719"/><text x="18" y="118" class="n">INK · #111719</text>
+  </g>
+  <g transform="translate(360 875)">
+    <rect width="250" height="88" rx="15" fill="#0D1417"/><text x="18" y="118" class="n">NIGHT INK · #0D1417</text>
+  </g>
+  <g transform="translate(660 875)">
+    <rect width="250" height="88" rx="15" fill="#163A52"/><text x="18" y="118" class="n">DEEP NAVY · #163A52</text>
+  </g>
+  <g transform="translate(960 875)">
+    <rect width="250" height="88" rx="15" fill="#18B887"/><text x="18" y="118" class="n">EMERALD · #18B887</text>
+  </g>
+  <g transform="translate(1260 875)">
+    <rect width="250" height="88" rx="15" fill="#F7F7F4" stroke="#D9DCDE"/><text x="18" y="118" class="n">WARM WHITE · #F7F7F4</text>
+  </g>
+
+  <line x1="60" y1="1035" x2="1540" y2="1035" stroke="#D9DCDE"/>
+  <text x="60" y="1070" class="b">Clear space: ≥ 25% of the R-tile width · No distortion, outline, shadow, or unapproved color.</text>
+  <text x="1540" y="1070" text-anchor="end" class="k">KEEP PUYING</text>
+</svg>

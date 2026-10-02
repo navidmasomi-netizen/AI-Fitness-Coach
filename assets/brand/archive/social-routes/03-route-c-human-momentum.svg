@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1350" role="img" aria-label="RUNPUY social post route C human momentum">
+  <defs>
+    <linearGradient id="energy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18B887"/><stop offset="1" stop-color="#0E4D3C"/></linearGradient>
+    <clipPath id="panel"><rect x="0" y="548" width="1080" height="802"/></clipPath>
+  </defs>
+  <rect width="1080" height="1350" fill="#F7F7F4"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-wordmark-ink.png" x="72" y="68" width="258" height="44" preserveAspectRatio="xMidYMid meet"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-app-icon-emerald.png" x="346" y="68" width="44" height="44"/>
+  <text x="72" y="260" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="108" font-weight="900">KEEP</text>
+  <text x="72" y="372" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="108" font-weight="900">PUYING.</text>
+  <text x="76" y="438" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="27">Small moves. Smarter progress. Every day.</text>
+
+  <g clip-path="url(#panel)">
+    <rect x="0" y="548" width="1080" height="802" fill="url(#energy)"/>
+    <path d="M-80 1025 C220 735 420 1240 760 760 C900 565 1050 650 1180 540" fill="none" stroke="#65D8B4" stroke-opacity="0.38" stroke-width="96"/>
+    <path d="M-70 1100 C250 810 430 1300 800 800 C925 630 1060 700 1190 600" fill="none" stroke="#F7F7F4" stroke-opacity="0.13" stroke-width="24"/>
+    <circle cx="720" cy="720" r="58" fill="#F7F7F4"/>
+    <path d="M696 790 C742 760 790 782 817 833 L865 930 M766 806 L690 920 M793 838 L890 820 M700 920 L635 1040 M865 930 L960 1006" fill="none" stroke="#F7F7F4" stroke-width="43" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M748 781 L690 712" fill="none" stroke="#F7F7F4" stroke-width="36" stroke-linecap="round"/>
+    <circle cx="670" cy="688" r="18" fill="#F7F7F4"/>
+  </g>
+
+  <rect x="72" y="611" width="346" height="154" rx="28" fill="#0D1417" fill-opacity="0.82"/>
+  <text x="104" y="657" fill="#A7F0D8" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="700">TODAY</text>
+  <text x="104" y="716" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="44" font-weight="800">6,840 steps</text>
+  <text x="104" y="747" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="18">68% of daily goal</text>
+  <rect x="72" y="1128" width="936" height="116" rx="30" fill="#F7F7F4"/>
+  <text x="110" y="1181" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="25" font-weight="800">YOUR NEXT MOVE</text>
+  <text x="110" y="1218" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="21">A 12-minute walk keeps your momentum on track.</text>
+  <rect x="815" y="1160" width="153" height="52" rx="26" fill="#0D1417"/>
+  <text x="891" y="1194" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="700">LET'S GO →</text>
+  <text x="72" y="1303" fill="#D8FFF2" font-family="Manrope,Arial,sans-serif" font-size="19" letter-spacing="4">MOVE • IMPROVE • LIVE WELL</text>
+</svg>

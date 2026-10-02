@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1350" role="img" aria-label="RUNPUY educational recovery post">
+  <rect width="1080" height="1350" fill="#F7F7F4"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-wordmark-ink.png" x="72" y="68" width="258" height="44" preserveAspectRatio="xMidYMid meet"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-app-icon-emerald.png" x="346" y="68" width="44" height="44"/>
+  <rect x="802" y="72" width="206" height="36" rx="18" fill="#E2F5EE"/>
+  <text x="905" y="97" text-anchor="middle" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="17" font-weight="800">RECOVERY 101</text>
+  <text x="72" y="258" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="78" font-weight="850">3 SIGNALS YOUR</text>
+  <text x="72" y="346" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="78" font-weight="850">BODY NEEDS REST.</text>
+  <text x="76" y="410" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="26">Recovery is training—not time lost.</text>
+
+  <rect x="72" y="500" width="936" height="174" rx="34" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <circle cx="154" cy="587" r="46" fill="#0D1417"/><text x="154" y="603" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="42" font-weight="800">1</text>
+  <text x="230" y="564" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="30" font-weight="800">RESTING HEART RATE IS UP</text>
+  <text x="230" y="610" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="23">A noticeable rise can signal accumulated fatigue.</text>
+  <text x="932" y="602" text-anchor="end" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="48" font-weight="800">+8</text>
+
+  <rect x="72" y="708" width="936" height="174" rx="34" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <circle cx="154" cy="795" r="46" fill="#163A52"/><text x="154" y="811" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="42" font-weight="800">2</text>
+  <text x="230" y="772" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="30" font-weight="800">SLEEP DEBT IS BUILDING</text>
+  <text x="230" y="818" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="23">Two short nights can reduce training readiness.</text>
+  <text x="932" y="810" text-anchor="end" fill="#163A52" font-family="Manrope,Arial,sans-serif" font-size="42" font-weight="800">−1:40</text>
+
+  <rect x="72" y="916" width="936" height="174" rx="34" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <circle cx="154" cy="1003" r="46" fill="#18B887"/><text x="154" y="1019" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="42" font-weight="800">3</text>
+  <text x="230" y="980" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="30" font-weight="800">NORMAL LOAD FEELS HEAVY</text>
+  <text x="230" y="1026" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="23">Your body is asking for adaptation, not pressure.</text>
+  <text x="932" y="1017" text-anchor="end" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="30" font-weight="800">ADAPT</text>
+
+  <rect x="72" y="1162" width="266" height="58" rx="29" fill="#0D1417"/><text x="205" y="1200" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="800">SAVE FOR LATER</text>
+  <text x="1008" y="1201" text-anchor="end" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="21">SWIPE →</text>
+  <text x="72" y="1288" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="20" letter-spacing="4">KEEP PUYING</text>
+</svg>
