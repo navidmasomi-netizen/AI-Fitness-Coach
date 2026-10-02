@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1380" role="img" aria-label="RUNPUY health data visualization system">
+  <defs><linearGradient id="night" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#163A52"/><stop offset="1" stop-color="#0D1417"/></linearGradient><linearGradient id="green" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#65D8B4"/><stop offset="1" stop-color="#18B887"/></linearGradient></defs>
+  <rect width="1800" height="1380" fill="#F7F7F4"/>
+  <text x="80" y="92" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="52" font-weight="850">RUNPUY DATA VISUALIZATION SYSTEM</text>
+  <text x="82" y="140" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="22" letter-spacing="3">CLEAR SIGNALS • LIMITED COLOR • DIRECT INTERPRETATION</text>
+
+  <rect x="80" y="205" width="500" height="500" rx="42" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <text x="124" y="266" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="22" font-weight="800">HEALTH SCORE</text>
+  <circle cx="330" cy="456" r="132" fill="none" stroke="#D7EFE7" stroke-width="28"/><path d="M330 324 A132 132 0 1 1 210 510" fill="none" stroke="#18B887" stroke-width="28" stroke-linecap="round"/>
+  <text x="330" y="445" text-anchor="middle" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="2">TODAY</text><text x="330" y="530" text-anchor="middle" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="92" font-weight="900">82</text>
+  <rect x="153" y="625" width="354" height="46" rx="23" fill="#E2F5EE"/><text x="330" y="655" text-anchor="middle" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="18" font-weight="800">GOOD • READY TO MOVE</text>
+
+  <rect x="620" y="205" width="1100" height="500" rx="42" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <text x="664" y="266" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="22" font-weight="800">7-DAY READINESS TREND</text>
+  <text x="1628" y="266" text-anchor="end" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="24" font-weight="800">+8 THIS WEEK</text>
+  <g stroke="#D9DCDE" stroke-width="2"><line x1="680" y1="350" x2="1640" y2="350"/><line x1="680" y1="450" x2="1640" y2="450"/><line x1="680" y1="550" x2="1640" y2="550"/></g>
+  <path d="M700 555 C780 530 820 470 900 490 S1040 580 1120 480 1260 365 1340 420 1490 490 1620 345" fill="none" stroke="#18B887" stroke-width="12" stroke-linecap="round"/>
+  <g fill="#F7F7F4" stroke="#18B887" stroke-width="6"><circle cx="700" cy="555" r="11"/><circle cx="900" cy="490" r="11"/><circle cx="1120" cy="480" r="11"/><circle cx="1340" cy="420" r="11"/><circle cx="1620" cy="345" r="11"/></g>
+  <g fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="18"><text x="690" y="635">MON</text><text x="840" y="635">TUE</text><text x="990" y="635">WED</text><text x="1140" y="635">THU</text><text x="1290" y="635">FRI</text><text x="1440" y="635">SAT</text><text x="1590" y="635">SUN</text></g>
+
+  <rect x="80" y="750" width="790" height="530" rx="42" fill="url(#night)"/>
+  <text x="124" y="812" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="22" font-weight="800">WEEKLY ACTIVITY</text><text x="790" y="812" text-anchor="end" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="24" font-weight="800">4 / 5 DAYS</text>
+  <g fill="#294451"><rect x="140" y="1060" width="64" height="140" rx="32"/><rect x="240" y="980" width="64" height="220" rx="32"/><rect x="340" y="1100" width="64" height="100" rx="32"/><rect x="440" y="900" width="64" height="300" rx="32"/><rect x="540" y="1020" width="64" height="180" rx="32"/><rect x="640" y="850" width="64" height="350" rx="32"/></g>
+  <g fill="url(#green)"><rect x="140" y="1120" width="64" height="80" rx="32"/><rect x="240" y="1040" width="64" height="160" rx="32"/><rect x="340" y="1140" width="64" height="60" rx="30"/><rect x="440" y="950" width="64" height="250" rx="32"/><rect x="540" y="1070" width="64" height="130" rx="32"/><rect x="640" y="890" width="64" height="310" rx="32"/></g>
+  <g fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="17"><text x="155" y="1240">M</text><text x="255" y="1240">T</text><text x="355" y="1240">W</text><text x="455" y="1240">T</text><text x="555" y="1240">F</text><text x="655" y="1240">S</text></g>
+
+  <rect x="915" y="750" width="805" height="250" rx="42" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <text x="959" y="810" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="22" font-weight="800">STATUS LANGUAGE</text>
+  <rect x="959" y="850" width="205" height="62" rx="31" fill="#E2F5EE"/><circle cx="994" cy="881" r="10" fill="#18B887"/><text x="1020" y="889" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="800">GOOD</text>
+  <rect x="1190" y="850" width="225" height="62" rx="31" fill="#FFF7E8"/><path d="M1225 869 l12 23 h-24z" fill="#B66E16"/><text x="1253" y="889" fill="#7B4A0F" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="800">ATTENTION</text>
+  <rect x="1441" y="850" width="220" height="62" rx="31" fill="#FFF2F1"/><circle cx="1476" cy="881" r="11" fill="#C84C4C"/><text x="1502" y="889" fill="#8E3333" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="800">HIGH</text>
+  <text x="959" y="957" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="20">Color + shape + label communicate every status.</text>
+
+  <rect x="915" y="1030" width="805" height="250" rx="42" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <text x="959" y="1090" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="22" font-weight="800">SLEEP COMPOSITION</text>
+  <rect x="959" y="1140" width="650" height="42" rx="21" fill="#EEF1F2"/><path d="M980 1140h165v42H980a21 21 0 0 1-21-21 21 21 0 0 1 21-21z" fill="#163A52"/><rect x="1145" y="1140" width="260" height="42" fill="#3767C8"/><rect x="1405" y="1140" width="140" height="42" fill="#7C91DE"/><path d="M1545 1140h43a21 21 0 0 1 21 21 21 21 0 0 1-21 21h-43z" fill="#B8C7F3"/>
+  <text x="959" y="1235" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="19">DEEP 1:42</text><text x="1155" y="1235" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="19">CORE 4:12</text><text x="1405" y="1235" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="19">REM 1:18</text><text x="1550" y="1235" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="19">AWAKE</text>
+</svg>

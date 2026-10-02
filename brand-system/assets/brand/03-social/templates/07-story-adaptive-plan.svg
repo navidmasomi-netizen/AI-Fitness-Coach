@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1920" role="img" aria-label="RUNPUY adaptive daily plan story">
+  <defs><linearGradient id="storyBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#EAF5F1"/><stop offset="0.58" stop-color="#F7F7F4"/><stop offset="1" stop-color="#D7EFE7"/></linearGradient><linearGradient id="cta" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#18B887"/><stop offset="1" stop-color="#0E8F6A"/></linearGradient></defs>
+  <rect width="1080" height="1920" fill="url(#storyBg)"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-wordmark-ink.png" x="72" y="154" width="258" height="44" preserveAspectRatio="xMidYMid meet"/>
+  <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/previews/runpuy-app-icon-emerald.png" x="346" y="154" width="44" height="44"/>
+  <text x="1008" y="185" text-anchor="end" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="19" font-weight="700">TODAY • 08:32</text>
+  <text x="72" y="374" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="88" font-weight="850">YOUR PLAN</text>
+  <text x="72" y="468" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="88" font-weight="850">ADAPTED.</text>
+  <text x="76" y="535" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="28">RUNPUY detected lower readiness this morning.</text>
+
+  <rect x="72" y="645" width="936" height="360" rx="50" fill="#0D1417"/>
+  <text x="126" y="712" fill="#8FA7B0" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="3">READINESS</text>
+  <text x="126" y="842" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="128" font-weight="850">58</text>
+  <text x="126" y="904" fill="#65D8B4" font-family="Manrope,Arial,sans-serif" font-size="25" font-weight="700">RECOVERY RECOMMENDED</text>
+  <circle cx="846" cy="822" r="112" fill="none" stroke="#294451" stroke-width="24"/><path d="M846 710 A112 112 0 1 1 741 862" fill="none" stroke="#18B887" stroke-width="24" stroke-linecap="round"/>
+
+  <rect x="72" y="1061" width="936" height="388" rx="50" fill="#FFFFFF" stroke="#D9DCDE" stroke-width="2"/>
+  <rect x="116" y="1107" width="140" height="140" rx="34" fill="#E2F5EE"/><path d="M158 1180 h58 M187 1151 v58" stroke="#18B887" stroke-width="14" stroke-linecap="round"/>
+  <text x="296" y="1148" fill="#18B887" font-family="Manrope,Arial,sans-serif" font-size="20" font-weight="800">AI-ADAPTED SESSION</text>
+  <text x="296" y="1205" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="42" font-weight="850">Recovery Walk</text>
+  <text x="296" y="1252" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="25">20 min  •  Low load  •  Zone 1</text>
+  <line x1="116" y1="1302" x2="964" y2="1302" stroke="#D9DCDE" stroke-width="2"/>
+  <text x="116" y="1360" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="23">Replaces today's interval session</text>
+  <text x="964" y="1360" text-anchor="end" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="23" font-weight="800">WHY? →</text>
+
+  <rect x="72" y="1588" width="936" height="92" rx="46" fill="url(#cta)"/><text x="540" y="1645" text-anchor="middle" fill="#F7F7F4" font-family="Manrope,Arial,sans-serif" font-size="27" font-weight="850">VIEW MY UPDATED PLAN</text>
+  <text x="540" y="1762" text-anchor="middle" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="22">Training smarter is still training.</text>
+  <text x="540" y="1810" text-anchor="middle" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="19" font-weight="800" letter-spacing="5">KEEP PUYING</text>
+</svg>

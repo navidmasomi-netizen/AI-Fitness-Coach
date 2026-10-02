@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">RUNPUY avatar scale and crop test</title>
+  <desc id="desc">Validation board showing the primary Emerald RUNPUY avatar in square and circular crops at multiple display sizes, plus a dark fallback.</desc>
+  <defs>
+    <clipPath id="circleLarge"><circle cx="1225" cy="320" r="205"/></clipPath>
+    <clipPath id="circle96"><circle cx="1130" cy="785" r="72"/></clipPath>
+    <clipPath id="circle48"><circle cx="1325" cy="785" r="42"/></clipPath>
+    <clipPath id="circleDark"><circle cx="865" cy="785" r="72"/></clipPath>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="28" flood-color="#0D1417" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="1100" fill="#F7F7F4"/>
+  <text x="90" y="105" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="56" font-weight="750">RUNPUY SOCIAL AVATAR</text>
+  <text x="92" y="155" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="23" letter-spacing="4">RESEARCH-LED PRIMARY SYSTEM</text>
+
+  <g>
+    <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/applications/09-avatar-research-primary.png" x="90" y="230" width="520" height="520" preserveAspectRatio="xMidYMid slice"/>
+  </g>
+  <text x="90" y="815" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="30" font-weight="700">PRIMARY — EMERALD</text>
+  <text x="90" y="855" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="22">One mark · high contrast · no micro-detail</text>
+
+  <g clip-path="url(#circleLarge)">
+    <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/applications/09-avatar-research-primary.png" x="1020" y="115" width="410" height="410" preserveAspectRatio="xMidYMid slice"/>
+  </g>
+  <text x="1038" y="575" fill="#0D1417" font-family="Manrope,Arial,sans-serif" font-size="28" font-weight="700">CIRCULAR CROP</text>
+  <text x="1038" y="614" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="21">Instagram · TikTok · X</text>
+
+  <g clip-path="url(#circle96)">
+    <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/applications/09-avatar-research-primary.png" x="1058" y="713" width="144" height="144" preserveAspectRatio="xMidYMid slice"/>
+  </g>
+  <text x="1095" y="890" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="20">96 px</text>
+
+  <g clip-path="url(#circle48)">
+    <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/applications/09-avatar-research-primary.png" x="1283" y="743" width="84" height="84" preserveAspectRatio="xMidYMid slice"/>
+  </g>
+  <text x="1294" y="890" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="20">48 px</text>
+
+  <g>
+    <circle cx="865" cy="785" r="72" fill="#0D1417"/>
+    <image xlink:href="file:///workspace/scratch/6c1d874c4045/output/runpuy-logo/applications/10-avatar-research-dark.png" x="793" y="713" width="144" height="144" preserveAspectRatio="xMidYMid slice" clip-path="url(#circleDark)"/>
+  </g>
+  <text x="790" y="890" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="20">DARK FALLBACK</text>
+
+  <line x1="90" y1="965" x2="1510" y2="965" stroke="#D9DCDE" stroke-width="2"/>
+  <text x="90" y="1020" fill="#0E4D3C" font-family="Manrope,Arial,sans-serif" font-size="23" font-weight="700">SAFE AREA</text>
+  <text x="250" y="1020" fill="#52616A" font-family="Manrope,Arial,sans-serif" font-size="22">The glyph stays clear of circular crops and remains identifiable at feed size.</text>
+</svg>
