@@ -36,4 +36,4 @@ export const darkTheme = {
   },
 } as const;
 
-export type RunpuyTheme = typeof lightTheme;
+export type RunpuyTheme = typeof lightTheme | typeof darkTheme;
