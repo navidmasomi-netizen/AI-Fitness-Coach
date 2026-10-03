@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 import {
   ImageBackground,
   ImageStyle,
@@ -9,12 +9,13 @@ import {
   StyleSheet,
   StyleProp,
   View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { authTheme } from "./authTheme";
+import { darkTheme } from '../../design-system/themes';
+import { layout, spacing } from '../../design-system/tokens';
 
-const authHeroImage = require("../../../assets/images/auth/auth-hero.png");
+const authHeroImage = require('../../../assets/images/auth/auth-hero.png');
 
 type AuthScreenBackgroundProps = {
   children: ReactNode;
@@ -32,10 +33,10 @@ export function AuthScreenBackground({
       <View style={styles.baseTone} />
       <View style={styles.leftReadabilityShade} />
       <View style={styles.bottomShade} />
-      <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <KeyboardAvoidingView
           style={styles.keyboard}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <ScrollView
             style={styles.scroll}
@@ -71,35 +72,36 @@ export function AuthScreenBackground({
 
 const styles = StyleSheet.create({
   root: {
+    backgroundColor: darkTheme.colors.canvas,
     flex: 1,
-    backgroundColor: authTheme.colors.background,
   },
   background: {
+    backgroundColor: darkTheme.colors.canvas,
     flex: 1,
-    backgroundColor: authTheme.colors.background,
   },
   backgroundImage: {
-    resizeMode: "cover",
+    resizeMode: 'cover',
   },
+  // Existing image-readability overlays are local structural composition values.
   baseTone: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(1, 5, 12, 0.32)",
+    backgroundColor: 'rgba(1, 5, 12, 0.32)',
   },
   leftReadabilityShade: {
-    position: "absolute",
-    top: 0,
+    backgroundColor: 'rgba(1, 5, 12, 0.42)',
     bottom: 0,
     left: 0,
-    width: "78%",
-    backgroundColor: "rgba(1, 5, 12, 0.42)",
+    position: 'absolute',
+    top: 0,
+    width: '78%',
   },
   bottomShade: {
-    position: "absolute",
-    right: 0,
+    backgroundColor: 'rgba(1, 5, 12, 0.36)',
     bottom: 0,
+    height: '38%',
     left: 0,
-    height: "38%",
-    backgroundColor: "rgba(1, 5, 12, 0.36)",
+    position: 'absolute',
+    right: 0,
   },
   safeArea: {
     flex: 1,
@@ -112,14 +114,14 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: authTheme.spacing.screenHorizontal,
-    paddingTop: authTheme.spacing.screenTop,
-    paddingBottom: authTheme.spacing.screenBottom,
+    justifyContent: 'center',
+    paddingBottom: layout.pageMargin,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
   },
   content: {
-    width: "100%",
-    maxWidth: authTheme.sizes.contentMaxWidth,
-    alignSelf: "center",
+    alignSelf: 'center',
+    maxWidth: 440,
+    width: '100%',
   },
 });

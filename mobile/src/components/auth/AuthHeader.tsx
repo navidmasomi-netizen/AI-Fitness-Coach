@@ -1,6 +1,8 @@
-import { StyleProp, StyleSheet, Text, TextStyle, View } from "react-native";
+import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 
-import { authTheme } from "./authTheme";
+import { RunpuyText } from '../../design-system/components/RunpuyText';
+import { darkTheme } from '../../design-system/themes';
+import { spacing } from '../../design-system/tokens';
 
 type AuthHeaderProps = {
   title: string;
@@ -13,20 +15,31 @@ export function AuthHeader({ title, subtitle, titleStyle, subtitleStyle }: AuthH
   return (
     <View style={styles.root}>
       <View style={styles.brandRow}>
-        <View style={styles.brandMark}>
-          <Text style={styles.brandLetter}>A</Text>
-        </View>
+        <RunpuyText theme={darkTheme} variant="heading" style={styles.brandLetter}>
+          A
+        </RunpuyText>
         <View style={styles.brandText}>
-          <Text style={styles.brandName}>AI COACH</Text>
-          <Text style={styles.brandTagline}>YOUR TRAINING PARTNER</Text>
+          <RunpuyText theme={darkTheme} variant="title" style={styles.brandName}>
+            AI COACH
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} variant="caption" tone="secondary" style={styles.brandTagline}>
+            YOUR TRAINING PARTNER
+          </RunpuyText>
         </View>
       </View>
 
       <View style={styles.heroCopy}>
-        <Text accessibilityRole="header" style={[styles.title, titleStyle]}>
+        <RunpuyText
+          accessibilityRole="header"
+          theme={darkTheme}
+          variant="heading"
+          style={titleStyle}
+        >
           {title}
-        </Text>
-        <Text style={[styles.subtitle, subtitleStyle]}>{subtitle}</Text>
+        </RunpuyText>
+        <RunpuyText theme={darkTheme} variant="body" tone="secondary" style={subtitleStyle}>
+          {subtitle}
+        </RunpuyText>
       </View>
     </View>
   );
@@ -34,54 +47,26 @@ export function AuthHeader({ title, subtitle, titleStyle, subtitleStyle }: AuthH
 
 const styles = StyleSheet.create({
   root: {
-    gap: 22,
+    gap: spacing.xl,
   },
   brandRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 9,
-  },
-  brandMark: {
-    width: 30,
-    height: 30,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
   },
   brandLetter: {
-    color: authTheme.colors.accent,
-    fontSize: 28,
-    fontWeight: "900",
-    lineHeight: 28,
+    color: darkTheme.colors.actionPrimary,
   },
   brandText: {
-    gap: 1,
+    gap: spacing.xs,
   },
   brandName: {
-    color: authTheme.colors.textPrimary,
-    fontSize: 22,
-    fontWeight: "700",
     letterSpacing: 0.3,
-    lineHeight: 26,
   },
   brandTagline: {
-    color: authTheme.colors.textMuted,
-    fontSize: 10,
-    fontWeight: "600",
     letterSpacing: 0.8,
-    lineHeight: 12,
   },
   heroCopy: {
-    gap: 8,
-  },
-  title: {
-    color: authTheme.colors.textPrimary,
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: "800",
-  },
-  subtitle: {
-    color: authTheme.colors.textSecondary,
-    fontSize: 17,
-    lineHeight: 24,
+    gap: spacing.sm,
   },
 });

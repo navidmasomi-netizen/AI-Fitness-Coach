@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Pressable, StyleSheet } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { useState } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
-import { AuthTextField } from "./AuthTextField";
-import { authTheme } from "./authTheme";
+import { darkTheme } from '../../design-system/themes';
+import { layout } from '../../design-system/tokens';
+import { AuthTextField } from './AuthTextField';
 
 type AuthPasswordFieldProps = {
   value: string;
@@ -35,20 +36,20 @@ export function AuthPasswordField({
       isFocused={isFocused}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
-      icon={<Feather name="lock" size={18} color={authTheme.colors.icon} />}
+      icon={<Feather name="lock" size={18} color={darkTheme.colors.textSecondary} />}
       rightAccessory={
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={visible ? "Hide password" : "Show password"}
+          accessibilityLabel={visible ? 'Hide password' : 'Show password'}
           accessibilityHint="Toggles password visibility"
           hitSlop={8}
           onPress={() => setVisible((current) => !current)}
           style={styles.visibilityButton}
         >
           <Feather
-            name={visible ? "eye-off" : "eye"}
+            name={visible ? 'eye-off' : 'eye'}
             size={18}
-            color={authTheme.colors.icon}
+            color={darkTheme.colors.textSecondary}
           />
         </Pressable>
       }
@@ -58,9 +59,9 @@ export function AuthPasswordField({
 
 const styles = StyleSheet.create({
   visibilityButton: {
-    width: authTheme.sizes.iconButton,
-    height: authTheme.sizes.iconButton,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    height: layout.minimumTouchTarget,
+    justifyContent: 'center',
+    width: layout.minimumTouchTarget,
   },
 });

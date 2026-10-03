@@ -1,15 +1,17 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 import {
   NativeSyntheticEvent,
   StyleSheet,
-  Text,
   TextInput,
   TextInputFocusEventData,
   TextInputProps,
   View,
-} from "react-native";
+} from 'react-native';
 
-import { authTheme } from "./authTheme";
+import { RunpuyText } from '../../design-system/components/RunpuyText';
+import { darkTheme } from '../../design-system/themes';
+import { layout, radii, spacing } from '../../design-system/tokens';
+import { typography } from '../../design-system/typography';
 
 type AuthTextFieldProps = TextInputProps & {
   label: string;
@@ -34,19 +36,21 @@ export function AuthTextField({
   ...inputProps
 }: AuthTextFieldProps) {
   const borderColor = error
-    ? authTheme.colors.panelBorderError
+    ? darkTheme.colors.error
     : isFocused
-      ? authTheme.colors.panelBorderFocus
-      : authTheme.colors.panelBorder;
+      ? darkTheme.colors.focus
+      : darkTheme.colors.borderSubtle;
 
   return (
     <View style={styles.root}>
-      <Text style={styles.label}>{label}</Text>
+      <RunpuyText theme={darkTheme} variant="caption">
+        {label}
+      </RunpuyText>
       <View style={[styles.fieldShell, { borderColor }]}>
         {icon ? <View style={styles.iconSlot}>{icon}</View> : null}
         <TextInput
-          placeholderTextColor={authTheme.colors.inputPlaceholder}
-          selectionColor={authTheme.colors.textPrimary}
+          placeholderTextColor={darkTheme.colors.textSecondary}
+          selectionColor={darkTheme.colors.textPrimary}
           style={styles.input}
           onFocus={onFocus}
           onBlur={onBlur}
@@ -55,51 +59,47 @@ export function AuthTextField({
         />
         {rightAccessory ? <View style={styles.rightAccessory}>{rightAccessory}</View> : null}
       </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      {!error && helperText ? <Text style={styles.helperText}>{helperText}</Text> : null}
+      {error ? (
+        <RunpuyText theme={darkTheme} variant="caption" style={styles.errorText}>
+          {error}
+        </RunpuyText>
+      ) : null}
+      {!error && helperText ? (
+        <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+          {helperText}
+        </RunpuyText>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
-    gap: 7,
-  },
-  label: {
-    color: authTheme.colors.textPrimary,
-    fontSize: 14,
-    fontWeight: "600",
+    gap: spacing.sm,
   },
   fieldShell: {
-    minHeight: authTheme.sizes.inputHeight,
-    borderRadius: authTheme.radius.input,
+    alignItems: 'center',
+    backgroundColor: darkTheme.colors.card,
+    borderRadius: radii.control,
     borderWidth: 1,
-    backgroundColor: "rgba(5, 12, 22, 0.70)",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 15,
-    paddingRight: 12,
+    flexDirection: 'row',
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.md,
   },
   iconSlot: {
-    marginRight: 10,
+    marginRight: spacing.sm,
   },
   input: {
+    color: darkTheme.colors.textPrimary,
     flex: 1,
-    color: authTheme.colors.textPrimary,
-    fontSize: 16,
-    paddingVertical: 14,
+    fontSize: typography.body.fontSize,
+    lineHeight: typography.body.lineHeight,
+    paddingVertical: spacing.md,
   },
   rightAccessory: {
-    marginLeft: 8,
-  },
-  helperText: {
-    color: authTheme.colors.textMuted,
-    fontSize: 13,
-    lineHeight: 18,
+    marginLeft: spacing.sm,
   },
   errorText: {
-    color: authTheme.colors.error,
-    fontSize: 13,
-    lineHeight: 18,
+    color: darkTheme.colors.error,
   },
 });
