@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { View, Text, ScrollView, Pressable, TextInput, Modal, ActivityIndicator, StyleSheet } from "react-native";
+import { View, ScrollView, Pressable, TextInput, Modal, ActivityIndicator, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,7 +31,13 @@ import {
   createReplacementFlowId,
   logReplacementMobileEvent,
 } from "../../src/utils/replacementObservability";
-import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
+import {
+  RunpuyButton,
+  RunpuyCard,
+  RunpuySelectableCard,
+  RunpuyStatusChip,
+  RunpuyText,
+} from "../../src/design-system/components";
 import { darkTheme } from "../../src/design-system/themes";
 import { layout, radii, spacing } from "../../src/design-system/tokens";
 
@@ -679,419 +685,289 @@ export default function WorkoutSessionScreen() {
         animationType="slide"
         onRequestClose={closeReplacementDiscovery}
       >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.35)",
-            justifyContent: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              maxHeight: "85%",
-              backgroundColor: "white",
-              borderTopLeftRadius: 18,
-              borderTopRightRadius: 18,
-              paddingHorizontal: 20,
-              paddingTop: 18,
-              paddingBottom: 26,
-            }}
-          >
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-              <View style={{ flex: 1, paddingRight: 12 }}>
-                <Text style={{ fontSize: 18, fontWeight: "700" }}>Replace Exercise</Text>
+        <View style={styles.modalBackdrop}>
+          <View accessibilityViewIsModal style={styles.modalSheet}>
+            <View style={styles.modalHeader}>
+              <View style={styles.modalHeaderCopy}>
+                <RunpuyText accessibilityRole="header" theme={darkTheme} variant="title">
+                  Replace Exercise
+                </RunpuyText>
                 {discoveryState.exercise && (
-                  <Text style={{ color: "#666", marginTop: 4 }}>
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="body">
                     {getExerciseDisplayName(discoveryState.exercise.exercise)}
-                  </Text>
+                  </RunpuyText>
                 )}
               </View>
               <Pressable
                 onPress={closeReplacementDiscovery}
+                accessibilityRole="button"
                 accessibilityLabel="Close replacement discovery"
+                accessibilityState={{ disabled: isApplyPending }}
                 disabled={isApplyPending}
+                style={styles.modalCloseButton}
               >
-                <Text style={{ fontSize: 16, color: "#666" }}>Close</Text>
+                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                  Close
+                </RunpuyText>
               </Pressable>
             </View>
 
             {discoveryState.status === "COLLECTING_CONTEXT" && (
-              <ScrollView>
-                <Text style={{ fontSize: 14, color: "#555", marginBottom: 12 }}>
+              <ScrollView contentContainerStyle={styles.modalScrollContent}>
+                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
                   Why do you want to replace this exercise?
-                </Text>
+                </RunpuyText>
                 {REPLACEMENT_DISCOVERY_REASON_OPTIONS.map((option) => {
                   const selected = discoveryState.intentType === option.intentType;
                   return (
-                    <Pressable
+                    <RunpuySelectableCard
                       key={option.intentType}
-                      accessibilityRole="button"
                       accessibilityLabel={`Replacement reason: ${option.label}`}
+                      description={option.helperText}
+                      label={option.label}
                       onPress={() => setDiscoveryIntentType(option.intentType)}
-                      style={{
-                        borderWidth: 1,
-                        borderColor: selected ? "#2196f3" : "#d7d7d7",
-                        backgroundColor: selected ? "#e3f2fd" : "white",
-                        borderRadius: 10,
-                        padding: 14,
-                        marginBottom: 10,
-                      }}
-                    >
-                      <Text style={{ fontWeight: "600", marginBottom: 4 }}>{option.label}</Text>
-                      <Text style={{ color: "#666", fontSize: 13 }}>{option.helperText}</Text>
-                    </Pressable>
+                      selected={selected}
+                      selectionRole="radio"
+                      theme={darkTheme}
+                    />
                   );
                 })}
 
                 {discoveryState.intentType === "NO_EQUIPMENT" && (
-                  <View
-                    style={{
-                      marginTop: 8,
-                      marginBottom: 12,
-                      padding: 14,
-                      borderRadius: 10,
-                      backgroundColor: "#f7f8fa",
-                      borderWidth: 1,
-                      borderColor: "#eceff3",
-                    }}
-                  >
-                    <Text style={{ fontWeight: "600", marginBottom: 6 }}>Available equipment right now</Text>
-                    <Text style={{ color: "#666", fontSize: 13, marginBottom: 12 }}>
+                  <RunpuyCard theme={darkTheme} style={styles.equipmentSection}>
+                    <RunpuyText theme={darkTheme} variant="title">
+                      Available equipment right now
+                    </RunpuyText>
+                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                       Select only what is actually available in this session. Bodyweight is handled automatically.
-                    </Text>
-                    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                      {REPLACEMENT_DISCOVERY_EQUIPMENT_OPTIONS.map((option) => {
-                        const selected = discoveryState.availableEquipment.includes(option.value);
-                        return (
-                          <Pressable
-                            key={option.value}
-                            accessibilityRole="button"
-                            accessibilityLabel={`Toggle available equipment ${option.label}`}
-                            onPress={() => toggleDiscoveryEquipment(option.value)}
-                            style={{
-                              borderWidth: 1,
-                              borderColor: selected ? "#2196f3" : "#d7d7d7",
-                              backgroundColor: selected ? "#e3f2fd" : "white",
-                              borderRadius: 999,
-                              paddingVertical: 8,
-                              paddingHorizontal: 12,
-                            }}
-                          >
-                            <Text style={{ color: selected ? "#1565c0" : "#444" }}>{option.label}</Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
-                  </View>
+                    </RunpuyText>
+                    {REPLACEMENT_DISCOVERY_EQUIPMENT_OPTIONS.map((option) => {
+                      const selected = discoveryState.availableEquipment.includes(option.value);
+                      return (
+                        <RunpuySelectableCard
+                          key={option.value}
+                          accessibilityLabel={`Toggle available equipment ${option.label}`}
+                          label={option.label}
+                          onPress={() => toggleDiscoveryEquipment(option.value)}
+                          selected={selected}
+                          selectionRole="checkbox"
+                          theme={darkTheme}
+                        />
+                      );
+                    })}
+                  </RunpuyCard>
                 )}
 
-                <Pressable
-                  onPress={loadReplacementRecommendations}
+                <RunpuyButton
                   disabled={!discoveryState.intentType || isApplyPending}
-                  style={{
-                    marginTop: 8,
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: discoveryState.intentType && !isApplyPending ? "#2196f3" : "#bbdefb",
-                  }}
-                >
-                  <Text style={{ color: "white", fontWeight: "700" }}>Find replacements</Text>
-                </Pressable>
+                  label="Find replacements"
+                  onPress={loadReplacementRecommendations}
+                  theme={darkTheme}
+                />
               </ScrollView>
             )}
 
             {discoveryState.status === "LOADING_RECOMMENDATIONS" && (
-              <View style={{ alignItems: "center", paddingVertical: 40 }}>
-                <ActivityIndicator size="large" />
-                <Text style={{ color: "#666", marginTop: 12 }}>Loading replacement suggestions...</Text>
+              <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading replacement suggestions" style={styles.loadingState}>
+                <ActivityIndicator color={darkTheme.colors.actionPrimary} size="large" />
+                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                  Loading replacement suggestions...
+                </RunpuyText>
               </View>
             )}
 
             {discoveryState.status === "ERROR" && (
-              <View>
-                <View
-                  style={{
-                    backgroundColor: "#ffebee",
-                    borderRadius: 10,
-                    padding: 14,
-                    marginBottom: 14,
-                  }}
-                >
-                  <Text style={{ color: "#b71c1c", fontWeight: "600", marginBottom: 6 }}>Couldn&apos;t load replacements</Text>
-                  <Text style={{ color: "#b71c1c" }}>
+              <View style={styles.modalActionStack}>
+                <RunpuyCard theme={darkTheme} style={styles.errorSurface}>
+                  <RunpuyText theme={darkTheme} variant="title" style={styles.errorText}>
+                    Couldn&apos;t load replacements
+                  </RunpuyText>
+                  <RunpuyText theme={darkTheme} variant="body" style={styles.errorText}>
                     {discoveryState.errorMessage || "Something went wrong while loading replacements."}
-                  </Text>
-                </View>
-                <Pressable
-                  onPress={reopenReplacementContext}
-                  style={{
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: "#2196f3",
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text style={{ color: "white", fontWeight: "700" }}>Try again</Text>
-                </Pressable>
+                  </RunpuyText>
+                </RunpuyCard>
+                <RunpuyButton label="Try again" onPress={reopenReplacementContext} theme={darkTheme} />
                 <Pressable
                   onPress={closeReplacementDiscovery}
-                  style={{
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: "#eceff3",
-                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Dismiss replacement discovery"
+                  style={styles.secondaryAction}
                 >
-                  <Text style={{ color: "#333", fontWeight: "700" }}>Dismiss</Text>
+                  <RunpuyText theme={darkTheme} variant="body">
+                    Dismiss
+                  </RunpuyText>
                 </Pressable>
               </View>
             )}
 
             {discoveryState.status === "NO_REPLACEMENT" && (
-              <ScrollView>
-                <View
-                  style={{
-                    backgroundColor: "#f5f5f5",
-                    borderRadius: 10,
-                    padding: 14,
-                    marginBottom: 14,
-                  }}
-                >
-                  <Text style={{ fontWeight: "600", marginBottom: 6 }}>No replacement available</Text>
-                  <Text style={{ color: "#555" }}>{getNoReplacementMessage()}</Text>
-                </View>
+              <ScrollView contentContainerStyle={styles.modalScrollContent}>
+                <RunpuyCard theme={darkTheme} style={styles.noReplacementSurface}>
+                  <RunpuyText theme={darkTheme} variant="title">
+                    No replacement available
+                  </RunpuyText>
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                    {getNoReplacementMessage()}
+                  </RunpuyText>
+                </RunpuyCard>
 
                 {discoveryState.recommendations?.contextRejectedCandidates.length ? (
-                  <View style={{ marginBottom: 14 }}>
-                    <Text style={{ fontWeight: "600", marginBottom: 8 }}>Not available right now</Text>
+                  <View style={styles.candidateSection}>
+                    <RunpuyText theme={darkTheme} variant="title">
+                      Not available right now
+                    </RunpuyText>
                     {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
-                      <View
-                        key={candidate.exerciseId}
-                        style={{
-                          borderWidth: 1,
-                          borderColor: "#eceff3",
-                          borderRadius: 10,
-                          padding: 12,
-                          marginBottom: 8,
-                        }}
-                      >
-                        <Text style={{ fontWeight: "600" }}>{candidate.nameFa}</Text>
-                        <Text style={{ color: "#666", marginTop: 4 }}>
+                      <RunpuyCard key={candidate.exerciseId} theme={darkTheme} style={styles.candidateCard}>
+                        <RunpuyText theme={darkTheme} variant="body">
+                          {candidate.nameFa}
+                        </RunpuyText>
+                        <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                           {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
-                        </Text>
-                      </View>
+                        </RunpuyText>
+                      </RunpuyCard>
                     ))}
                   </View>
                 ) : null}
 
-                <Pressable
-                  onPress={reopenReplacementContext}
-                  style={{
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: "#2196f3",
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text style={{ color: "white", fontWeight: "700" }}>Change options</Text>
-                </Pressable>
+                <RunpuyButton label="Change options" onPress={reopenReplacementContext} theme={darkTheme} />
                 <Pressable
                   onPress={closeReplacementDiscovery}
-                  style={{
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: "#eceff3",
-                  }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Done with replacement discovery"
+                  style={styles.secondaryAction}
                 >
-                  <Text style={{ color: "#333", fontWeight: "700" }}>Done</Text>
+                  <RunpuyText theme={darkTheme} variant="body">
+                    Done
+                  </RunpuyText>
                 </Pressable>
               </ScrollView>
             )}
 
             {discoveryState.status === "RESULTS" && discoveryState.recommendations && (
-              <ScrollView>
+              <ScrollView contentContainerStyle={styles.modalScrollContent}>
                 {discoveryState.applyErrorMessage && (
-                  <View
-                    style={{
-                      backgroundColor: "#ffebee",
-                      borderRadius: 10,
-                      padding: 14,
-                      marginBottom: 14,
-                    }}
-                  >
-                    <Text style={{ color: "#b71c1c", fontWeight: "600", marginBottom: 6 }}>
+                  <RunpuyCard theme={darkTheme} style={styles.errorSurface}>
+                    <RunpuyText theme={darkTheme} variant="title" style={styles.errorText}>
                       Couldn&apos;t apply replacement
-                    </Text>
-                    <Text style={{ color: "#b71c1c" }}>{discoveryState.applyErrorMessage}</Text>
-                  </View>
+                    </RunpuyText>
+                    <RunpuyText theme={darkTheme} variant="body" style={styles.errorText}>
+                      {discoveryState.applyErrorMessage}
+                    </RunpuyText>
+                  </RunpuyCard>
                 )}
 
                 {shouldShowReplacementWarning && (
-                  <View
-                    style={{
-                      backgroundColor: "#fff8e1",
-                      borderRadius: 10,
-                      padding: 14,
-                      marginBottom: 14,
-                    }}
-                  >
-                    <Text style={{ fontWeight: "600", marginBottom: 6, color: "#7a5a00" }}>
+                  <RunpuyCard theme={darkTheme} style={styles.warningSurface}>
+                    <RunpuyText theme={darkTheme} variant="title" style={styles.warningText}>
                       Replacement warning
-                    </Text>
-                    <Text style={{ color: "#7a5a00" }}>{getReplacementWarningMessage()}</Text>
-                  </View>
+                    </RunpuyText>
+                    <RunpuyText theme={darkTheme} variant="body" style={styles.warningText}>
+                      {getReplacementWarningMessage()}
+                    </RunpuyText>
+                  </RunpuyCard>
                 )}
 
                 {recommendedReplacement && (
-                  <View style={{ marginBottom: 14 }}>
-                    <Text style={{ fontWeight: "700", marginBottom: 8 }}>Recommended</Text>
-                    <Pressable
-                      accessibilityRole="button"
+                  <View style={styles.candidateSection}>
+                    <RunpuyText theme={darkTheme} variant="title">
+                      Recommended
+                    </RunpuyText>
+                    <RunpuySelectableCard
                       accessibilityLabel={`Select recommended replacement ${recommendedReplacement.nameFa}`}
-                      onPress={() => selectReplacementCandidate(recommendedReplacement.exerciseId)}
+                      description={getCandidateEquipmentLabel(recommendedReplacement.equipmentAvailabilityStatus)}
                       disabled={isApplyPending}
-                      style={{
-                        borderWidth: 2,
-                        borderColor:
-                          discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId
-                            ? "#2196f3"
-                            : "#d7d7d7",
-                        borderRadius: 12,
-                        padding: 14,
-                        backgroundColor:
-                          discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId
-                            ? "#e3f2fd"
-                            : "white",
-                      }}
-                    >
-                      <Text style={{ fontWeight: "700", fontSize: 16 }}>{recommendedReplacement.nameFa}</Text>
-                      <Text style={{ color: "#666", marginTop: 4 }}>
-                        {getCandidateEquipmentLabel(recommendedReplacement.equipmentAvailabilityStatus)}
-                      </Text>
-                      {recommendedReplacement.reasonCodes.includes("REPLACEMENT_INTEGRITY_WARNING") && (
-                        <Text style={{ color: "#7a5a00", marginTop: 6 }}>{getReplacementWarningMessage()}</Text>
-                      )}
-                      {discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId && (
-                        <Text style={{ color: "#1565c0", marginTop: 8, fontWeight: "600" }}>
-                          Selected locally only. Your workout has not changed.
-                        </Text>
-                      )}
-                    </Pressable>
+                      label={recommendedReplacement.nameFa}
+                      onPress={() => selectReplacementCandidate(recommendedReplacement.exerciseId)}
+                      selected={discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId}
+                      selectionRole="radio"
+                      theme={darkTheme}
+                    />
+                    {recommendedReplacement.reasonCodes.includes("REPLACEMENT_INTEGRITY_WARNING") && (
+                      <RunpuyText theme={darkTheme} variant="caption" style={styles.warningText}>
+                        {getReplacementWarningMessage()}
+                      </RunpuyText>
+                    )}
+                    {discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId && (
+                      <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                        Selected locally only. Your workout has not changed.
+                      </RunpuyText>
+                    )}
                   </View>
                 )}
 
                 {discoveryState.recommendations.alternatives.length > 0 && (
-                  <View style={{ marginBottom: 14 }}>
-                    <Text style={{ fontWeight: "700", marginBottom: 8 }}>Alternatives</Text>
+                  <View style={styles.candidateSection}>
+                    <RunpuyText theme={darkTheme} variant="title">
+                      Alternatives
+                    </RunpuyText>
                     {discoveryState.recommendations.alternatives.map((candidate) => (
-                      <Pressable
-                        key={candidate.exerciseId}
-                        accessibilityRole="button"
-                        accessibilityLabel={`Select replacement alternative ${candidate.nameFa}`}
-                        onPress={() => selectReplacementCandidate(candidate.exerciseId)}
-                        disabled={isApplyPending}
-                        style={{
-                          borderWidth: 1,
-                          borderColor:
-                            discoveryState.selectedCandidateExerciseId === candidate.exerciseId
-                              ? "#2196f3"
-                              : "#d7d7d7",
-                          borderRadius: 10,
-                          padding: 12,
-                          marginBottom: 8,
-                          backgroundColor:
-                            discoveryState.selectedCandidateExerciseId === candidate.exerciseId
-                              ? "#e3f2fd"
-                              : "white",
-                        }}
-                      >
-                        <Text style={{ fontWeight: "600" }}>{candidate.nameFa}</Text>
-                        <Text style={{ color: "#666", marginTop: 4 }}>
-                          {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
-                        </Text>
+                      <View key={candidate.exerciseId} style={styles.candidateSelection}>
+                        <RunpuySelectableCard
+                          accessibilityLabel={`Select replacement alternative ${candidate.nameFa}`}
+                          description={getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
+                          disabled={isApplyPending}
+                          label={candidate.nameFa}
+                          onPress={() => selectReplacementCandidate(candidate.exerciseId)}
+                          selected={discoveryState.selectedCandidateExerciseId === candidate.exerciseId}
+                          selectionRole="radio"
+                          theme={darkTheme}
+                        />
                         {discoveryState.selectedCandidateExerciseId === candidate.exerciseId && (
-                          <Text style={{ color: "#1565c0", marginTop: 8, fontWeight: "600" }}>
+                          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                             Selected locally only. Your workout has not changed.
-                          </Text>
+                          </RunpuyText>
                         )}
-                      </Pressable>
-                    ))}
-                  </View>
-                )}
-
-                {discoveryState.recommendations.contextRejectedCandidates.length > 0 && (
-                  <View style={{ marginBottom: 14 }}>
-                    <Text style={{ fontWeight: "700", marginBottom: 8 }}>Not available right now</Text>
-                    {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
-                      <View
-                        key={candidate.exerciseId}
-                        style={{
-                          borderWidth: 1,
-                          borderColor: "#eceff3",
-                          borderRadius: 10,
-                          padding: 12,
-                          marginBottom: 8,
-                          backgroundColor: "#fafafa",
-                        }}
-                      >
-                        <Text style={{ fontWeight: "600" }}>{candidate.nameFa}</Text>
-                        <Text style={{ color: "#666", marginTop: 4 }}>
-                          {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
-                        </Text>
                       </View>
                     ))}
                   </View>
                 )}
 
-                <Text style={{ color: "#666", marginBottom: 14 }}>
+                {discoveryState.recommendations.contextRejectedCandidates.length > 0 && (
+                  <View style={styles.candidateSection}>
+                    <RunpuyText theme={darkTheme} variant="title">
+                      Not available right now
+                    </RunpuyText>
+                    {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
+                      <RunpuyCard key={candidate.exerciseId} theme={darkTheme} style={styles.candidateCard}>
+                        <RunpuyText theme={darkTheme} variant="body">
+                          {candidate.nameFa}
+                        </RunpuyText>
+                        <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                          {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
+                        </RunpuyText>
+                      </RunpuyCard>
+                    ))}
+                  </View>
+                )}
+
+                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
                   Your workout only changes after you apply the selected replacement.
-                </Text>
+                </RunpuyText>
 
-                <Pressable
-                  onPress={applySelectedReplacement}
+                <RunpuyButton
+                  accessibilityState={{ busy: isApplyPending }}
                   disabled={!discoveryState.selectedCandidateExerciseId || isApplyPending}
-                  style={{
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor:
-                      discoveryState.selectedCandidateExerciseId && !isApplyPending ? "#2e7d32" : "#a5d6a7",
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text style={{ color: "white", fontWeight: "700" }}>
-                    {isApplyPending ? "Applying replacement..." : "Apply selected replacement"}
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  onPress={reopenReplacementContext}
+                  label={isApplyPending ? "Applying replacement..." : "Apply selected replacement"}
+                  onPress={applySelectedReplacement}
+                  theme={darkTheme}
+                />
+                <RunpuyButton
                   disabled={isApplyPending}
-                  style={{
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: "#2196f3",
-                    marginBottom: 10,
-                  }}
-                >
-                  <Text style={{ color: "white", fontWeight: "700" }}>Change options</Text>
-                </Pressable>
+                  label="Change options"
+                  onPress={reopenReplacementContext}
+                  theme={darkTheme}
+                />
                 <Pressable
                   onPress={closeReplacementDiscovery}
+                  accessibilityRole="button"
+                  accessibilityLabel="Done with replacement discovery"
+                  accessibilityState={{ disabled: isApplyPending }}
                   disabled={isApplyPending}
-                  style={{
-                    paddingVertical: 14,
-                    borderRadius: 10,
-                    alignItems: "center",
-                    backgroundColor: "#eceff3",
-                  }}
+                  style={styles.secondaryAction}
                 >
-                  <Text style={{ color: "#333", fontWeight: "700" }}>Done</Text>
+                  <RunpuyText theme={darkTheme} variant="body">
+                    Done
+                  </RunpuyText>
                 </Pressable>
               </ScrollView>
             )}
@@ -1161,14 +1037,10 @@ export default function WorkoutSessionScreen() {
             {programName}
           </RunpuyText>
           {replacementSuccessMessage && (
-            <View style={{ backgroundColor: "#e8f5e9", borderRadius: 8, padding: 12, marginBottom: 12 }}>
-              <Text style={{ color: "#2e7d32", fontWeight: "600" }}>{replacementSuccessMessage}</Text>
-            </View>
+            <RunpuyStatusChip label={replacementSuccessMessage} status="success" theme={darkTheme} />
           )}
           {!activeReplacementTargetAvailable && (
-            <View style={{ backgroundColor: "#fff3e0", borderRadius: 8, padding: 12 }}>
-              <Text style={{ color: "#7a5a00" }}>{getReplacementUnavailableMessage()}</Text>
-            </View>
+            <RunpuyStatusChip label={getReplacementUnavailableMessage()} status="warning" theme={darkTheme} />
           )}
         </View>
 
@@ -1224,9 +1096,9 @@ export default function WorkoutSessionScreen() {
                   </Pressable>
                 </View>
                 {pde.targetId === null && (
-                  <Text style={{ color: "#999", fontSize: 12, marginTop: 6 }}>
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                     Replacement suggestions are unavailable for this exercise in the current session view.
-                  </Text>
+                  </RunpuyText>
                 )}
               </View>
 
@@ -1439,5 +1311,86 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     gap: spacing.sm,
     paddingTop: spacing.lg,
+  },
+  modalBackdrop: {
+    backgroundColor: "rgba(0,0,0,0.35)",
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  modalSheet: {
+    backgroundColor: darkTheme.colors.canvas,
+    borderColor: darkTheme.colors.borderSubtle,
+    borderTopLeftRadius: radii.insight,
+    borderTopRightRadius: radii.insight,
+    borderWidth: 1,
+    gap: spacing.md,
+    maxHeight: "85%",
+    paddingBottom: spacing['2xl'],
+    paddingHorizontal: layout.pageMargin,
+    paddingTop: spacing.xl,
+  },
+  modalHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.md,
+    justifyContent: "space-between",
+  },
+  modalHeaderCopy: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  modalCloseButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.sm,
+  },
+  modalScrollContent: {
+    gap: spacing.md,
+    paddingBottom: spacing.xs,
+  },
+  equipmentSection: {
+    gap: spacing.sm,
+  },
+  loadingState: {
+    alignItems: "center",
+    gap: spacing.md,
+    paddingVertical: spacing['2xl'],
+  },
+  modalActionStack: {
+    gap: spacing.sm,
+  },
+  secondaryAction: {
+    alignItems: "center",
+    borderColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.button,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+  },
+  errorSurface: {
+    borderColor: darkTheme.colors.error,
+    gap: spacing.sm,
+  },
+  noReplacementSurface: {
+    gap: spacing.sm,
+  },
+  warningSurface: {
+    borderColor: darkTheme.colors.warning,
+    gap: spacing.sm,
+  },
+  warningText: {
+    color: darkTheme.colors.warning,
+  },
+  candidateSection: {
+    gap: spacing.sm,
+  },
+  candidateCard: {
+    gap: spacing.xs,
+  },
+  candidateSelection: {
+    gap: spacing.xs,
   },
 });
