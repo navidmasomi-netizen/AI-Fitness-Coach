@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { View, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CompleteSessionResponse, getSession } from "../../../src/api/sessions";
@@ -8,11 +9,20 @@ import { getMyCompletedSessions } from "../../../src/api/sessions";
 import { useAuthStore } from "../../../src/store/authStore";
 import { getLastSetForExercise, getTrend, trendArrow, comparisonText, findPreviousSession } from "../../../src/utils/compareSets";
 import { buildWorkoutName } from "../../../src/utils/workoutMeta";
+import {
+  darkTheme,
+  layout,
+  RunpuyCard,
+  RunpuyStatusChip,
+  RunpuyText,
+  spacing,
+  type RunpuyStatus,
+} from "../../../src/design-system";
 
-function recommendationColor(type: RecommendationType) {
-  if (type === "increase") return { bg: "#e8f5e9", text: "#2e7d32", label: "Increase" };
-  if (type === "deload") return { bg: "#ffebee", text: "#c62828", label: "Deload" };
-  return { bg: "#f5f5f5", text: "#555", label: "Maintain" };
+function recommendationColor(type: RecommendationType): { label: string; status: RunpuyStatus } {
+  if (type === "increase") return { label: "Increase", status: "success" };
+  if (type === "deload") return { label: "Deload", status: "error" };
+  return { label: "Maintain", status: "neutral" };
 }
 
 function contextLine(rec: ProgressionRecommendation): string | null {
@@ -95,17 +105,26 @@ export default function WorkoutSummaryScreen() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator />
-      </View>
+      <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: darkTheme.colors.canvas }}>
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.md }}>
+          <ActivityIndicator accessibilityLabel="Loading workout summary" color={darkTheme.colors.actionPrimary} />
+          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+            Loading workout summary
+          </RunpuyText>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (isError || !data) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Text style={{ color: "red" }}>{(error as Error)?.message || "Failed to load summary"}</Text>
-      </View>
+      <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: darkTheme.colors.canvas }}>
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: layout.pageMargin }}>
+          <RunpuyText accessibilityRole="alert" theme={darkTheme} variant="body" style={{ color: darkTheme.colors.error }}>
+            {(error as Error)?.message || "Failed to load summary"}
+          </RunpuyText>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -140,116 +159,142 @@ export default function WorkoutSummaryScreen() {
       : [];
 
   return (
-    <ScrollView style={{ flex: 1, padding: 20, paddingTop: 60 }}>
-      <Pressable onPress={() => router.replace("/(tabs)")} style={{ marginBottom: 16 }}>
-        <Text>{`\u2190 Home`}</Text>
-      </Pressable>
+    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: darkTheme.colors.canvas }}>
+      <ScrollView
+        contentContainerStyle={{ padding: layout.pageMargin, paddingTop: spacing.lg, paddingBottom: spacing.xl, gap: spacing.lg }}
+        style={{ flex: 1 }}
+      >
+        <Pressable
+          accessibilityLabel="Return to Home"
+          accessibilityRole="button"
+          onPress={() => router.replace("/(tabs)")}
+          style={{ alignSelf: "flex-start", justifyContent: "center", minHeight: layout.minimumTouchTarget }}
+        >
+          <RunpuyText theme={darkTheme} variant="body">{`\u2190 Home`}</RunpuyText>
+        </Pressable>
 
-      <Text style={{ fontSize: 22, fontWeight: "bold" }}>Workout Summary</Text>
-      <Text style={{ fontSize: 15, color: "#555" }}>
-        {programDay?.name || ""} {programDay ? `\u2014` : ""} {buildWorkoutName(workoutNameExercises)}
-      </Text>
-      <Text style={{ fontSize: 12, color: "#999" }}>Session #{session.id}</Text>
-      <Text>Status: {session.status}</Text>
-      {session.completedAt && <Text>Completed at: {new Date(session.completedAt).toLocaleString()}</Text>}
-      {program && <Text>Program: {program.name}</Text>}
-      {programDay && <Text>Day: {programDay.name}</Text>}
-
-      {/* Progress insight — deterministic one-liner */}
-      {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length > 0 && (
-        <View style={{ backgroundColor: "#eef6ff", borderRadius: 8, padding: 12, marginTop: 14 }}>
-          <Text style={{ fontSize: 13, color: "#1565c0" }}>{buildInsight(displayedProgressions)}</Text>
+        <View style={{ gap: spacing.xs }}>
+          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+            Workout Summary
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+            {programDay?.name || ""} {programDay ? `\u2014` : ""} {buildWorkoutName(workoutNameExercises)}
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+            Session #{session.id}
+          </RunpuyText>
         </View>
-      )}
 
-      {/* Completion reinforcement + soft urgency — local, no backend, no streak wording */}
-      <View style={{ marginTop: 10 }}>
-        <Text style={{ fontSize: 13, color: "#2e7d32" }}>{buildReinforcement(numericSessionId)}</Text>
-        <Text style={{ fontSize: 12, color: "#999", marginTop: 2 }}>Try to train again within 48 hours.</Text>
-      </View>
+        <RunpuyCard theme={darkTheme} style={{ gap: spacing.xs }}>
+          <RunpuyText theme={darkTheme} variant="body">Status: {session.status}</RunpuyText>
+          {session.completedAt && (
+            <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+              Completed at: {new Date(session.completedAt).toLocaleString()}
+            </RunpuyText>
+          )}
+          {program && <RunpuyText theme={darkTheme} tone="secondary" variant="caption">Program: {program.name}</RunpuyText>}
+          {programDay && <RunpuyText theme={darkTheme} tone="secondary" variant="caption">Day: {programDay.name}</RunpuyText>}
+        </RunpuyCard>
 
-      <View style={{ marginTop: 16, marginBottom: 16 }}>
-        <Text style={{ fontWeight: "bold" }}>Total exercises logged: {totalExercisesLogged}</Text>
-        <Text style={{ fontWeight: "bold" }}>Total sets: {totalSets}</Text>
-      </View>
-
-      {Object.entries(byExercise).map(([exId, group]) => (
-        <View key={exId} style={{ marginBottom: 16, borderTopWidth: 1, paddingTop: 10 }}>
-          <Text style={{ fontWeight: "600", fontSize: 16 }}>{group.name}</Text>
-          {group.sets.map((s) => (
-            <Text key={s.id}>
-              Set {s.setNumber}: {s.reps} reps{s.weightKg !== null ? ` @ ${s.weightKg}kg` : ""}
-            </Text>
-          ))}
-        </View>
-      ))}
-
-      {/* Progression recommendations — secondary section, below workout data */}
-      <View style={{ marginTop: 28, borderTopWidth: 2, borderTopColor: "#eee", paddingTop: 16 }}>
-        <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 10, color: "#444" }}>
-          Next Session Recommendations
-        </Text>
-
-        {isProgressionsLoading && <Text style={{ fontSize: 13, color: "#999" }}>Loading recommendations...</Text>}
-        {isProgressionsError && (
-          <Text style={{ fontSize: 13, color: "#c62828" }}>Could not load recommendations.</Text>
-        )}
-        {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length === 0 && (
-          <Text style={{ fontSize: 13, color: "#999" }}>No recommendations yet</Text>
+        {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length > 0 && (
+          <RunpuyCard theme={darkTheme}>
+            <RunpuyText theme={darkTheme} variant="body">
+              {buildInsight(displayedProgressions)}
+            </RunpuyText>
+          </RunpuyCard>
         )}
 
-        {displayedProgressions.map((rec) => {
-          const colors = recommendationColor(rec.recommendationType);
-          const context = contextLine(rec);
-          const explanationText =
-            rec.explanation && typeof rec.explanation.userSummary === "string" && rec.explanation.userSummary.length > 0
-              ? rec.explanation.userSummary
-              : null;
-          return (
-            <View
-              key={rec.id}
-              style={{
-                backgroundColor: colors.bg,
-                borderRadius: 8,
-                padding: 12,
-                marginBottom: 10,
-              }}
-            >
-              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <Text style={{ fontWeight: "600" }}>{rec.exercise.nameFa}</Text>
-                <Text style={{ color: colors.text, fontWeight: "bold", fontSize: 12 }}>{colors.label}</Text>
-              </View>
-              {rec.previousWeightKg !== null && rec.recommendedWeightKg !== null && (
-                <Text style={{ fontSize: 13, marginTop: 4 }}>
-                  {rec.previousWeightKg}kg → {rec.recommendedWeightKg}kg
-                </Text>
-              )}
-              {rec.recommendedTargetLow !== null && rec.recommendedTargetHigh !== null && (
-                <Text style={{ fontSize: 13 }}>
-                  Target: {rec.recommendedTargetLow}-{rec.recommendedTargetHigh}
-                </Text>
-              )}
-              {context && <Text style={{ fontSize: 12, color: colors.text, marginTop: 4, fontStyle: "italic" }}>{context}</Text>}
-              {(() => {
-                const currentLastSet = getLastSetForExercise(session, rec.exerciseId);
-                const previousLastSet = getLastSetForExercise(previousSession, rec.exerciseId);
-                if (!currentLastSet || !previousLastSet) return null;
-                const trend = getTrend(currentLastSet, previousLastSet);
-                return (
-                  <Text style={{ fontSize: 12, color: "#444", marginTop: 4 }}>
-                    {trendArrow(trend)} {comparisonText(currentLastSet, previousLastSet)}
-                  </Text>
-                );
-              })()}
-              {explanationText ? (
-                <Text style={{ fontSize: 12, color: "#444", marginTop: 6 }}>{explanationText}</Text>
-              ) : (
-                <Text style={{ fontSize: 12, color: "#777", marginTop: 4 }}>{rec.reason}</Text>
-              )}
-            </View>
-          );
-        })}
-      </View>
-    </ScrollView>
+        <RunpuyCard theme={darkTheme} style={{ gap: spacing.xs }}>
+          <RunpuyText theme={darkTheme} variant="body">
+            {buildReinforcement(numericSessionId)}
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+            Try to train again within 48 hours.
+          </RunpuyText>
+        </RunpuyCard>
+
+        <RunpuyCard theme={darkTheme} style={{ gap: spacing.xs }}>
+          <RunpuyText theme={darkTheme} variant="body">Total exercises logged: {totalExercisesLogged}</RunpuyText>
+          <RunpuyText theme={darkTheme} variant="body">Total sets: {totalSets}</RunpuyText>
+        </RunpuyCard>
+
+        {Object.entries(byExercise).map(([exId, group]) => (
+          <RunpuyCard key={exId} theme={darkTheme} style={{ gap: spacing.xs }}>
+            <RunpuyText theme={darkTheme} variant="title">{group.name}</RunpuyText>
+            {group.sets.map((s) => (
+              <RunpuyText key={s.id} theme={darkTheme} tone="secondary" variant="body">
+                Set {s.setNumber}: {s.reps} reps{s.weightKg !== null ? ` @ ${s.weightKg}kg` : ""}
+              </RunpuyText>
+            ))}
+          </RunpuyCard>
+        ))}
+
+        <View style={{ gap: spacing.md }}>
+          <RunpuyText theme={darkTheme} variant="title">Next Session Recommendations</RunpuyText>
+
+          {isProgressionsLoading && (
+            <RunpuyText accessibilityRole="progressbar" theme={darkTheme} tone="secondary" variant="caption">
+              Loading recommendations...
+            </RunpuyText>
+          )}
+          {isProgressionsError && (
+            <RunpuyText accessibilityRole="alert" theme={darkTheme} variant="caption" style={{ color: darkTheme.colors.error }}>
+              Could not load recommendations.
+            </RunpuyText>
+          )}
+          {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length === 0 && (
+            <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+              No recommendations yet
+            </RunpuyText>
+          )}
+
+          {displayedProgressions.map((rec) => {
+            const colors = recommendationColor(rec.recommendationType);
+            const context = contextLine(rec);
+            const explanationText =
+              rec.explanation && typeof rec.explanation.userSummary === "string" && rec.explanation.userSummary.length > 0
+                ? rec.explanation.userSummary
+                : null;
+            return (
+              <RunpuyCard key={rec.id} theme={darkTheme} style={{ gap: spacing.xs }}>
+                <View style={{ alignItems: "flex-start", flexDirection: "row", gap: spacing.sm, justifyContent: "space-between" }}>
+                  <RunpuyText theme={darkTheme} variant="title" style={{ flex: 1 }}>
+                    {rec.exercise.nameFa}
+                  </RunpuyText>
+                  <RunpuyStatusChip label={colors.label} status={colors.status} theme={darkTheme} />
+                </View>
+                {rec.previousWeightKg !== null && rec.recommendedWeightKg !== null && (
+                  <RunpuyText theme={darkTheme} variant="body">
+                    {rec.previousWeightKg}kg → {rec.recommendedWeightKg}kg
+                  </RunpuyText>
+                )}
+                {rec.recommendedTargetLow !== null && rec.recommendedTargetHigh !== null && (
+                  <RunpuyText theme={darkTheme} variant="body">
+                    Target: {rec.recommendedTargetLow}-{rec.recommendedTargetHigh}
+                  </RunpuyText>
+                )}
+                {context && <RunpuyText theme={darkTheme} tone="secondary" variant="caption">{context}</RunpuyText>}
+                {(() => {
+                  const currentLastSet = getLastSetForExercise(session, rec.exerciseId);
+                  const previousLastSet = getLastSetForExercise(previousSession, rec.exerciseId);
+                  if (!currentLastSet || !previousLastSet) return null;
+                  const trend = getTrend(currentLastSet, previousLastSet);
+                  return (
+                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                      {trendArrow(trend)} {comparisonText(currentLastSet, previousLastSet)}
+                    </RunpuyText>
+                  );
+                })()}
+                {explanationText ? (
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">{explanationText}</RunpuyText>
+                ) : (
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">{rec.reason}</RunpuyText>
+                )}
+              </RunpuyCard>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
