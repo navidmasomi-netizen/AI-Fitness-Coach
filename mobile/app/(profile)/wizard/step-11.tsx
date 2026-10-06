@@ -1,386 +1,42 @@
-import { useState } from "react";
-import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useState } from 'react';
+import { Image, Pressable, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { RECOVERY_QUALITY_LABELS, RECOVERY_QUALITY_SUB_COPY, getWizardTotalSteps } from "../../../src/constants/wizardLabels";
-import { useWizardStepSave } from "../../../src/hooks/useWizardStepSave";
-import { useAuthStore } from "../../../src/store/authStore";
-import { useWizardDraftStore } from "../../../src/store/wizardDraftStore";
-
-const stepElevenHero = require("../../../assets/images/onboarding/onboarding-step-11-recovery-hero.png");
+import { WizardStepScreen } from '../../../src/components/wizard/WizardStepScreen';
+import { RECOVERY_QUALITY_LABELS, RECOVERY_QUALITY_SUB_COPY, getWizardTotalSteps } from '../../../src/constants/wizardLabels';
+import { RunpuySelectableCard, RunpuyText } from '../../../src/design-system/components';
+import { darkTheme } from '../../../src/design-system/themes';
+import { layout, radii, spacing } from '../../../src/design-system/tokens';
+import { useWizardStepSave } from '../../../src/hooks/useWizardStepSave';
+import { useAuthStore } from '../../../src/store/authStore';
+import { useWizardDraftStore } from '../../../src/store/wizardDraftStore';
 
 const OPTION_ICONS: Record<string, ReturnType<typeof require>> = {
-  low: require("../../../assets/images/onboarding/onboarding-step-11-icon-low-recovery.png"),
-  medium: require("../../../assets/images/onboarding/onboarding-step-11-icon-medium-recovery.png"),
-  high: require("../../../assets/images/onboarding/onboarding-step-11-icon-high-recovery.png"),
+  low: require('../../../assets/images/onboarding/onboarding-step-11-icon-low-recovery.png'),
+  medium: require('../../../assets/images/onboarding/onboarding-step-11-icon-medium-recovery.png'),
+  high: require('../../../assets/images/onboarding/onboarding-step-11-icon-high-recovery.png'),
 };
-
-const RECOVERY_OPTIONS = ["low", "medium", "high"];
+const RECOVERY_OPTIONS = ['low', 'medium', 'high'];
 
 export default function WizardStepElevenScreen() {
   const currentStep = 11;
   const router = useRouter();
-  const logout = useAuthStore((s) => s.logout);
-  const supplementUse = useWizardDraftStore((s) => s.supplementUse);
-  const recoveryQuality = useWizardDraftStore((s) => s.recoveryQuality);
-  const setRecoveryQuality = useWizardDraftStore((s) => s.setRecoveryQuality);
+  const logout = useAuthStore((state) => state.logout);
+  const supplementUse = useWizardDraftStore((state) => state.supplementUse);
+  const recoveryQuality = useWizardDraftStore((state) => state.recoveryQuality);
+  const setRecoveryQuality = useWizardDraftStore((state) => state.setRecoveryQuality);
   const totalSteps = getWizardTotalSteps(supplementUse);
-  const progressPercentage = (currentStep / totalSteps) * 100;
-  const progressWidth = `${progressPercentage}%` as `${number}%`;
   const { isSaving, errorMessage, saveStep } = useWizardStepSave();
   const [isOverflowOpen, setIsOverflowOpen] = useState(false);
+  const onContinue = async () => { if (!recoveryQuality || isSaving) return; const didSave = await saveStep({ recoveryQuality }, 11); if (didSave) router.push('/(profile)/wizard/step-12'); };
+  const onLogout = async () => { await logout(); router.replace('/(auth)/login'); };
 
-  const onContinue = async () => {
-    if (!recoveryQuality || isSaving) return;
-    const didSave = await saveStep({ recoveryQuality }, 11);
-    if (didSave) {
-      router.push("/(profile)/wizard/step-12");
-    }
-  };
-
-  const onLogout = async () => {
-    await logout();
-    router.replace("/(auth)/login");
-  };
-
-  return (
-    <View style={styles.root}>
-      <ImageBackground source={stepElevenHero} resizeMode="cover" style={styles.background} accessible={false}>
-        <View pointerEvents="none" style={styles.baseTone} />
-        <View pointerEvents="none" style={styles.leftReadabilityShade} />
-        <View pointerEvents="none" style={styles.topShade} />
-        <View pointerEvents="none" style={styles.bottomShade} />
-
-        <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
-          <ScrollView
-            style={styles.scroll}
-            contentContainerStyle={styles.scrollContent}
-            bounces={false}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.content}>
-              <View style={styles.topContent}>
-                <View style={styles.progressHeader}>
-                  <View style={styles.progressCopy}>
-                    <Text style={styles.stepLabel}>Step {currentStep} of {totalSteps}</Text>
-                    <View
-                      accessibilityLabel={"Progress: step " + currentStep + " of " + totalSteps}
-                      accessibilityRole="progressbar"
-                      accessibilityValue={{ min: 0, max: totalSteps, now: currentStep }}
-                      style={styles.progressTrack}
-                    >
-                      <View style={[styles.progressFill, { width: progressWidth }]} />
-                    </View>
-                  </View>
-
-                  <View style={styles.overflowContainer}>
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel="More onboarding options"
-                      accessibilityState={{ expanded: isOverflowOpen }}
-                      hitSlop={10}
-                      onPress={() => setIsOverflowOpen((current) => !current)}
-                      style={styles.overflowButton}
-                    >
-                      <Feather name="more-horizontal" size={22} color={colors.textSecondary} />
-                    </Pressable>
-                    {isOverflowOpen ? (
-                      <Pressable
-                        accessibilityRole="button"
-                        accessibilityLabel="Log out"
-                        onPress={onLogout}
-                        style={styles.logoutAction}
-                      >
-                        <Text style={styles.logoutActionText}>Log out</Text>
-                      </Pressable>
-                    ) : null}
-                  </View>
-                </View>
-
-                <View style={styles.questionBlock}>
-                  <Text style={styles.chapterLabel}>RECOVERY & LIFESTYLE</Text>
-                  <Text accessibilityRole="header" style={styles.questionTitle}>
-                    How well do you{"\n"}
-                    <Text style={styles.questionAccent}>recover between sessions?</Text>
-                  </Text>
-                  <Text style={styles.coachingCopy}>
-                    Your recovery helps us adjust training volume, rest, and weekly workload.
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.bottomContent}>
-                <View style={styles.optionList}>
-                  {RECOVERY_OPTIONS.map((option) => {
-                    const isSelected = recoveryQuality === option;
-                    return (
-                      <Pressable
-                        key={option}
-                        accessibilityRole="button"
-                        accessibilityLabel={RECOVERY_QUALITY_LABELS[option]}
-                        accessibilityState={{ selected: isSelected }}
-                        onPress={() => setRecoveryQuality(option)}
-                        style={({ pressed }) => [
-                          styles.optionCard,
-                          isSelected && styles.optionCardSelected,
-                          pressed && !isSelected && styles.optionCardPressed,
-                        ]}
-                      >
-                        <Image
-                          source={OPTION_ICONS[option]}
-                          style={styles.optionIcon}
-                          accessibilityElementsHidden
-                          importantForAccessibility="no"
-                        />
-                        <View style={styles.optionText}>
-                          <Text style={[styles.optionLabel, isSelected && styles.optionLabelSelected]}>
-                            {RECOVERY_QUALITY_LABELS[option]}
-                          </Text>
-                          <Text style={[styles.optionSubCopy, isSelected && styles.optionSubCopySelected]}>
-                            {RECOVERY_QUALITY_SUB_COPY[option]}
-                          </Text>
-                        </View>
-                        <View style={[styles.selectionIndicator, isSelected && styles.selectionIndicatorSelected]}>
-                          {isSelected ? (
-                            <Feather name="check" size={13} color={colors.textPrimary} />
-                          ) : null}
-                        </View>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-
-                {errorMessage ? (
-                  <Text accessibilityRole="alert" style={styles.errorMessage}>{errorMessage}</Text>
-                ) : null}
-
-                <View style={styles.actionRow}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Go back to the daily activity question"
-                    hitSlop={8}
-                    onPress={() => router.replace("/(profile)/wizard/step-10")}
-                    style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}
-                  >
-                    <Feather name="arrow-left" size={19} color={colors.textSecondary} />
-                    <Text style={styles.backLabel}>Back</Text>
-                  </Pressable>
-
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Continue to the next onboarding question"
-                    accessibilityState={{ disabled: !recoveryQuality || isSaving, busy: isSaving }}
-                    disabled={!recoveryQuality || isSaving}
-                    onPress={onContinue}
-                    style={({ pressed }) => [
-                      styles.continueButton,
-                      (!recoveryQuality || isSaving) && styles.continueButtonDisabled,
-                      pressed && !!recoveryQuality && !isSaving && styles.continueButtonPressed,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.continueLabel,
-                        (!recoveryQuality || isSaving) && styles.continueLabelDisabled,
-                      ]}
-                    >
-                      {isSaving ? "Saving..." : "Continue"}
-                    </Text>
-                    <Feather
-                      name="arrow-right"
-                      size={20}
-                      color={!recoveryQuality || isSaving ? colors.disabledText : colors.textPrimary}
-                    />
-                  </Pressable>
-                </View>
-
-                <View style={styles.privacyFooter}>
-                  <Feather name="lock" size={15} color={colors.textMuted} />
-                  <Text style={styles.privacyText}>
-                    Your answers are private and secure.{"\n"}You can change them later.
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </ScrollView>
-        </SafeAreaView>
-      </ImageBackground>
-    </View>
-  );
+  return <WizardStepScreen title="How well do you recover between sessions?" subtitle="Your recovery helps us adjust training volume, rest, and weekly workload." currentStep={currentStep} totalSteps={totalSteps} primaryActionLabel="Continue" onPrimaryAction={onContinue} primaryActionDisabled={!recoveryQuality || isSaving} primaryActionLoading={isSaving} onBack={() => router.replace('/(profile)/wizard/step-10')} backAccessibilityLabel="Go back to the daily activity question" footer={<Footer isOverflowOpen={isOverflowOpen} onToggleOverflow={() => setIsOverflowOpen((value) => !value)} onLogout={onLogout} />}>
+    <View accessibilityRole="radiogroup" style={styles.optionList}>{RECOVERY_OPTIONS.map((option) => <RunpuySelectableCard key={option} label={RECOVERY_QUALITY_LABELS[option]} description={RECOVERY_QUALITY_SUB_COPY[option]} icon={<Image source={OPTION_ICONS[option]} style={styles.optionIcon} accessibilityElementsHidden importantForAccessibility="no" />} selected={recoveryQuality === option} selectionRole="radio" onPress={() => setRecoveryQuality(option)} theme={darkTheme} />)}</View>
+    {errorMessage ? <RunpuyText accessibilityRole="alert" theme={darkTheme} variant="caption" style={styles.errorMessage}>{errorMessage}</RunpuyText> : null}
+  </WizardStepScreen>;
 }
 
-const colors = {
-  background: "#020617",
-  textPrimary: "#F8FAFC",
-  textSecondary: "rgba(226, 232, 240, 0.84)",
-  textMuted: "rgba(148, 163, 184, 0.96)",
-  accent: "#2563EB",
-  accentPressed: "#1D4ED8",
-  disabled: "rgba(37, 99, 235, 0.42)",
-  disabledText: "rgba(226, 232, 240, 0.64)",
-  error: "#FCA5A5",
-} as const;
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.background },
-  background: { flex: 1, backgroundColor: colors.background },
-  baseTone: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(1, 5, 12, 0.28)" },
-  leftReadabilityShade: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: "66%",
-    backgroundColor: "rgba(1, 5, 12, 0.50)",
-  },
-  topShade: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    left: 0,
-    height: "32%",
-    backgroundColor: "rgba(1, 5, 12, 0.18)",
-  },
-  bottomShade: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    left: 0,
-    height: "52%",
-    backgroundColor: "rgba(1, 5, 12, 0.62)",
-  },
-  safeArea: { flex: 1 },
-  scroll: { flex: 1 },
-  scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 12, paddingBottom: 14 },
-  content: {
-    flex: 1,
-    width: "100%",
-    maxWidth: 440,
-    alignSelf: "center",
-    justifyContent: "space-between",
-    gap: 14,
-  },
-  topContent: { gap: 22 },
-  progressHeader: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" },
-  progressCopy: { gap: 10 },
-  stepLabel: { color: colors.textSecondary, fontSize: 13, fontWeight: "600" },
-  progressTrack: {
-    width: 172,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "rgba(148, 163, 184, 0.34)",
-    overflow: "hidden",
-  },
-  progressFill: { height: "100%", borderRadius: 2, backgroundColor: colors.accent },
-  overflowContainer: { alignItems: "flex-end" },
-  overflowButton: { width: 42, height: 36, alignItems: "center", justifyContent: "center" },
-  logoutAction: {
-    marginTop: 2,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
-    backgroundColor: "rgba(2, 6, 23, 0.88)",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-  },
-  logoutActionText: { color: colors.textSecondary, fontSize: 14, fontWeight: "600" },
-  questionBlock: { gap: 10 },
-  chapterLabel: { color: colors.accent, fontSize: 12, fontWeight: "800", letterSpacing: 1.25 },
-  questionTitle: {
-    color: colors.textPrimary,
-    fontSize: 35,
-    lineHeight: 41,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-  },
-  questionAccent: { color: colors.accent },
-  coachingCopy: { maxWidth: 300, color: colors.textSecondary, fontSize: 16, lineHeight: 23 },
-  bottomContent: { gap: 10 },
-  optionList: { gap: 10 },
-  optionCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(148, 163, 184, 0.22)",
-    backgroundColor: "rgba(5, 12, 22, 0.72)",
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    gap: 14,
-  },
-  optionCardSelected: {
-    borderColor: colors.accent,
-    backgroundColor: "rgba(37, 99, 235, 0.16)",
-  },
-  optionCardPressed: {
-    backgroundColor: "rgba(15, 23, 42, 0.86)",
-  },
-  optionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-  },
-  optionText: { flex: 1, gap: 3 },
-  optionLabel: {
-    color: colors.textSecondary,
-    fontSize: 16,
-    fontWeight: "600",
-    letterSpacing: -0.1,
-  },
-  optionLabelSelected: { color: colors.textPrimary },
-  optionSubCopy: {
-    color: "rgba(148, 163, 184, 0.68)",
-    fontSize: 13,
-    fontWeight: "400",
-    lineHeight: 18,
-  },
-  optionSubCopySelected: { color: "rgba(226, 232, 240, 0.72)" },
-  selectionIndicator: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 1.5,
-    borderColor: "rgba(148, 163, 184, 0.38)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  selectionIndicatorSelected: {
-    borderColor: colors.accent,
-    backgroundColor: colors.accent,
-  },
-  errorMessage: { color: colors.error, fontSize: 13, lineHeight: 19 },
-  actionRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  backButton: {
-    minHeight: 50,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "rgba(148, 163, 184, 0.32)",
-    backgroundColor: "rgba(2, 6, 23, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 7,
-    paddingHorizontal: 17,
-  },
-  backButtonPressed: { backgroundColor: "rgba(30, 41, 59, 0.86)" },
-  backLabel: { color: colors.textSecondary, fontSize: 16, fontWeight: "700" },
-  continueButton: {
-    minHeight: 50,
-    borderRadius: 14,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-    flexDirection: "row",
-    gap: 10,
-  },
-  continueButtonDisabled: { backgroundColor: colors.disabled },
-  continueButtonPressed: { backgroundColor: colors.accentPressed },
-  continueLabel: { color: colors.textPrimary, fontSize: 17, fontWeight: "700" },
-  continueLabelDisabled: { color: colors.disabledText },
-  privacyFooter: { flexDirection: "row", justifyContent: "center", alignItems: "flex-start", gap: 8 },
-  privacyText: { color: colors.textMuted, fontSize: 12, lineHeight: 16, textAlign: "center" },
-});
+function Footer({ isOverflowOpen, onToggleOverflow, onLogout }: { isOverflowOpen: boolean; onToggleOverflow: () => void; onLogout: () => void | Promise<void> }) { return <View style={styles.footerContent}><Pressable accessibilityRole="button" accessibilityLabel="More onboarding options" accessibilityState={{ expanded: isOverflowOpen }} onPress={onToggleOverflow} style={styles.overflowButton}><Feather name="more-horizontal" size={spacing.xl} color={darkTheme.colors.textSecondary} /></Pressable>{isOverflowOpen ? <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={onLogout} style={styles.logoutAction}><RunpuyText theme={darkTheme} variant="caption" tone="secondary">Log out</RunpuyText></Pressable> : null}<View style={styles.privacyFooter}><Feather name="lock" size={spacing.md} color={darkTheme.colors.textSecondary} /><RunpuyText theme={darkTheme} variant="caption" tone="secondary" style={styles.privacyText}>Your answers are private and secure.{'\n'}You can change them later.</RunpuyText></View></View>; }
+const styles = { optionList: { gap: spacing.md }, optionIcon: { height: layout.minimumTouchTarget, width: layout.minimumTouchTarget }, errorMessage: { color: darkTheme.colors.error }, footerContent: { alignItems: 'center', gap: spacing.sm }, overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget }, logoutAction: { borderColor: darkTheme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }, privacyFooter: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }, privacyText: { textAlign: 'center' } } as const;
