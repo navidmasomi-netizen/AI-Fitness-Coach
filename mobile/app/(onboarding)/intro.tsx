@@ -1,27 +1,31 @@
-import { ImageBackground, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { ImageBackground, ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-import { markIntroSeen } from "../../src/store/onboardingStorage";
+import { RunpuyButton } from '../../src/design-system/components/RunpuyButton';
+import { RunpuyText } from '../../src/design-system/components/RunpuyText';
+import { darkTheme } from '../../src/design-system/themes';
+import { iconography, layout, radii, spacing } from '../../src/design-system/tokens';
+import { markIntroSeen } from '../../src/store/onboardingStorage';
 
-const onboardingIntroHero = require("../../assets/images/onboarding/onboarding-intro-hero.png");
+const onboardingIntroHero = require('../../assets/images/onboarding/onboarding-intro-hero.png');
 
 const BENEFITS = [
   {
-    icon: "user-check" as const,
-    title: "Personalized for you",
-    description: "Every plan is tailored to your goals,\nbody and experience.",
+    icon: 'user-check' as const,
+    title: 'Personalized for you',
+    description: 'Every plan is tailored to your goals,\nbody and experience.',
   },
   {
-    icon: "cpu" as const,
-    title: "Adaptive & smart",
-    description: "Your program evolves based on your\nprogress and feedback.",
+    icon: 'cpu' as const,
+    title: 'Adaptive & smart',
+    description: 'Your program evolves based on your\nprogress and feedback.',
   },
   {
-    icon: "calendar" as const,
-    title: "Built around your life",
-    description: "We fit your plan to your schedule,\nequipment and lifestyle.",
+    icon: 'calendar' as const,
+    title: 'Built around your life',
+    description: 'We fit your plan to your schedule,\nequipment and lifestyle.',
   },
 ];
 
@@ -30,7 +34,7 @@ export default function IntroScreen() {
 
   const onContinue = async () => {
     await markIntroSeen();
-    router.replace("/");
+    router.replace('/');
   };
 
   return (
@@ -47,7 +51,7 @@ export default function IntroScreen() {
         <View pointerEvents="none" style={styles.topShade} />
         <View pointerEvents="none" style={styles.bottomShade} />
 
-        <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+        <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
           <ScrollView
             style={styles.scroll}
             contentContainerStyle={styles.scrollContent}
@@ -56,27 +60,40 @@ export default function IntroScreen() {
           >
             <View style={styles.content}>
               <View style={styles.heroSection}>
-                <Text style={styles.brand}>AI COACH</Text>
+                <RunpuyText theme={darkTheme} variant="caption">
+                  AI COACH
+                </RunpuyText>
 
                 <View style={styles.headlineBlock}>
-                  <Text accessibilityRole="header" style={styles.headline}>
-                    Let&apos;s build{"\n"}
-                    your <Text style={styles.headlineAccent}>best plan.</Text>
-                  </Text>
-                  <Text style={styles.supportingCopy}>
+                  <RunpuyText accessibilityRole="header" theme={darkTheme} variant="display">
+                    Let&apos;s build{'\n'}
+                    your{' '}
+                    <RunpuyText theme={darkTheme} variant="display" style={styles.headlineAccent}>
+                      best plan.
+                    </RunpuyText>
+                  </RunpuyText>
+                  <RunpuyText theme={darkTheme} variant="body" tone="secondary" style={styles.supportingCopy}>
                     Answer a few questions so I can create a program that&apos;s built just for you.
-                  </Text>
+                  </RunpuyText>
                 </View>
 
                 <View style={styles.benefitList}>
                   {BENEFITS.map((benefit) => (
                     <View key={benefit.title} style={styles.benefitRow}>
                       <View style={styles.benefitIcon}>
-                        <Feather name={benefit.icon} size={20} color={colors.accent} />
+                        <Feather
+                          name={benefit.icon}
+                          size={iconography.grid}
+                          color={darkTheme.colors.actionPrimary}
+                        />
                       </View>
                       <View style={styles.benefitCopy}>
-                        <Text style={styles.benefitTitle}>{benefit.title}</Text>
-                        <Text style={styles.benefitDescription}>{benefit.description}</Text>
+                        <RunpuyText theme={darkTheme} variant="title">
+                          {benefit.title}
+                        </RunpuyText>
+                        <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+                          {benefit.description}
+                        </RunpuyText>
                       </View>
                     </View>
                   ))}
@@ -84,25 +101,34 @@ export default function IntroScreen() {
               </View>
 
               <View style={styles.bottomSection}>
-                <Pressable
-                  accessibilityRole="button"
+                <RunpuyButton
+                  label="Get Started"
                   accessibilityLabel="Get started with onboarding"
-                  hitSlop={8}
                   onPress={onContinue}
-                  style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}
-                >
-                  <Text style={styles.primaryButtonLabel}>Get Started</Text>
-                  <Feather name="arrow-right" size={20} color={colors.textPrimary} />
-                </Pressable>
+                  theme={darkTheme}
+                />
 
                 <View style={styles.timeEstimate}>
-                  <Feather name="clock" size={15} color={colors.textMuted} />
-                  <Text style={styles.timeEstimateText}>Takes about 2–3 minutes</Text>
+                  <Feather name="clock" size={spacing.lg} color={darkTheme.colors.textSecondary} />
+                  <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+                    Takes about 2–3 minutes
+                  </RunpuyText>
                 </View>
 
-                <View accessible accessibilityRole="text" accessibilityLabel="Onboarding step 1 of 4" style={styles.indicator}>
+                <View
+                  accessible
+                  accessibilityRole="text"
+                  accessibilityLabel="Onboarding step 1 of 4"
+                  style={styles.indicator}
+                >
                   {[0, 1, 2, 3].map((position) => (
-                    <View key={position} style={[styles.indicatorDot, position === 0 && styles.indicatorDotActive]} />
+                    <View
+                      key={position}
+                      style={[
+                        styles.indicatorDot,
+                        position === 0 && styles.indicatorDotActive,
+                      ]}
+                    />
                   ))}
                 </View>
               </View>
@@ -114,55 +140,47 @@ export default function IntroScreen() {
   );
 }
 
-const colors = {
-  background: "#020617",
-  textPrimary: "#F8FAFC",
-  textSecondary: "rgba(226, 232, 240, 0.84)",
-  textMuted: "rgba(148, 163, 184, 0.96)",
-  accent: "#2563EB",
-  accentPressed: "#1D4ED8",
-} as const;
-
 const styles = StyleSheet.create({
   root: {
+    backgroundColor: darkTheme.colors.canvas,
     flex: 1,
-    backgroundColor: colors.background,
   },
   background: {
+    backgroundColor: darkTheme.colors.canvas,
     flex: 1,
-    backgroundColor: colors.background,
   },
   backgroundImage: {
-    resizeMode: "cover",
+    resizeMode: 'cover',
     transform: [{ translateX: 14 }],
   },
+  // Existing image-readability overlays remain local structural composition values.
   baseTone: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(1, 5, 12, 0.25)",
+    backgroundColor: 'rgba(1, 5, 12, 0.25)',
   },
   leftReadabilityShade: {
-    position: "absolute",
-    top: 0,
+    backgroundColor: 'rgba(1, 5, 12, 0.48)',
     bottom: 0,
     left: 0,
-    width: "64%",
-    backgroundColor: "rgba(1, 5, 12, 0.48)",
+    position: 'absolute',
+    top: 0,
+    width: '64%',
   },
   topShade: {
-    position: "absolute",
-    top: 0,
-    right: 0,
+    backgroundColor: 'rgba(1, 5, 12, 0.18)',
+    height: '36%',
     left: 0,
-    height: "36%",
-    backgroundColor: "rgba(1, 5, 12, 0.18)",
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   bottomShade: {
-    position: "absolute",
-    right: 0,
+    backgroundColor: 'rgba(1, 5, 12, 0.34)',
     bottom: 0,
+    height: '34%',
     left: 0,
-    height: "34%",
-    backgroundColor: "rgba(1, 5, 12, 0.34)",
+    position: 'absolute',
+    right: 0,
   },
   safeArea: {
     flex: 1,
@@ -172,123 +190,76 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 22,
-    paddingBottom: 22,
+    paddingBottom: spacing.lg,
+    paddingHorizontal: layout.pageMargin,
+    paddingTop: spacing.lg,
   },
   content: {
+    alignSelf: 'center',
     flex: 1,
-    width: "100%",
+    gap: spacing['2xl'],
+    justifyContent: 'space-between',
     maxWidth: 440,
-    alignSelf: "center",
-    justifyContent: "space-between",
-    gap: 34,
+    width: '100%',
   },
   heroSection: {
-    gap: 30,
-  },
-  brand: {
-    color: colors.textPrimary,
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 1.3,
+    gap: spacing['2xl'],
   },
   headlineBlock: {
-    gap: 14,
-  },
-  headline: {
-    color: colors.textPrimary,
-    fontSize: 38,
-    lineHeight: 44,
-    fontWeight: "800",
-    letterSpacing: -0.6,
+    gap: spacing.md,
   },
   headlineAccent: {
-    color: colors.accent,
+    color: darkTheme.colors.actionPrimary,
   },
   supportingCopy: {
     maxWidth: 292,
-    color: colors.textSecondary,
-    fontSize: 17,
-    lineHeight: 25,
   },
   benefitList: {
-    gap: 18,
+    gap: spacing.lg,
   },
   benefitRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 13,
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: spacing.md,
   },
   benefitIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: darkTheme.colors.card,
+    borderColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
     borderWidth: 1,
-    borderColor: "rgba(96, 165, 250, 0.34)",
-    backgroundColor: "rgba(2, 6, 23, 0.48)",
-    alignItems: "center",
-    justifyContent: "center",
+    height: layout.minimumTouchTarget,
+    justifyContent: 'center',
+    width: layout.minimumTouchTarget,
   },
   benefitCopy: {
     flex: 1,
-    gap: 3,
-    paddingTop: 1,
-  },
-  benefitTitle: {
-    color: colors.textPrimary,
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  benefitDescription: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    gap: spacing.xs,
   },
   bottomSection: {
-    gap: 14,
-  },
-  primaryButton: {
-    minHeight: 56,
-    borderRadius: 14,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 10,
-  },
-  primaryButtonPressed: {
-    backgroundColor: colors.accentPressed,
-  },
-  primaryButtonLabel: {
-    color: colors.textPrimary,
-    fontSize: 17,
-    fontWeight: "700",
+    gap: spacing.md,
   },
   timeEstimate: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 7,
-  },
-  timeEstimateText: {
-    color: colors.textMuted,
-    fontSize: 13,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'center',
   },
   indicator: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    paddingTop: 2,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: spacing.sm,
+    justifyContent: 'center',
+    paddingTop: spacing.xs,
   },
   indicatorDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: "rgba(148, 163, 184, 0.55)",
+    backgroundColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
+    height: spacing.xs,
+    width: spacing.xs,
   },
   indicatorDotActive: {
-    backgroundColor: colors.accent,
+    backgroundColor: darkTheme.colors.actionPrimary,
+    width: spacing.lg,
   },
 });
