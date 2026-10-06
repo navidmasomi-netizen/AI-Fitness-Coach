@@ -1,7 +1,11 @@
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Pressable, ScrollView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { startFromActiveProgram } from "../../src/api/sessions";
+import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
+import { darkTheme } from "../../src/design-system/themes";
+import { layout, spacing } from "../../src/design-system/tokens";
 
 export default function WorkoutPreviewScreen() {
   const { dayName, workoutName, exerciseNames } = useLocalSearchParams<{
@@ -33,35 +37,97 @@ export default function WorkoutPreviewScreen() {
   });
 
   return (
-    <ScrollView style={{ flex: 1, padding: 20, paddingTop: 60 }}>
-      <Pressable onPress={() => router.back()} style={{ marginBottom: 16 }}>
-        <Text>{`\u2190 Back`}</Text>
-      </Pressable>
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.content} style={styles.scrollView}>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          style={styles.backButton}
+        >
+          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+            {`\u2190 Back`}
+          </RunpuyText>
+        </Pressable>
 
-      <Text style={{ fontSize: 22, fontWeight: "bold" }}>Today's Workout</Text>
-      <Text style={{ fontSize: 16, color: "#555", marginTop: 4, marginBottom: 20 }}>
-        {dayName} — {workoutName}
-      </Text>
-
-      {names.map((name, i) => (
-        <View key={i} style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
-          <Text style={{ fontWeight: "bold", width: 24 }}>{i + 1}.</Text>
-          <Text style={{ fontSize: 16 }}>{name}</Text>
+        <View style={styles.header}>
+          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+            Today's Workout
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+            {dayName} — {workoutName}
+          </RunpuyText>
         </View>
-      ))}
 
-      <Pressable
-        onPress={() => startMutation.mutate()}
-        disabled={startMutation.isPending}
-        style={{ padding: 18, backgroundColor: "#2196f3", borderRadius: 10, marginTop: 28, alignItems: "center" }}
-      >
-        <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>
-          {startMutation.isPending ? "Starting..." : "Start Session"}
-        </Text>
-      </Pressable>
-      {startMutation.isError && (
-        <Text style={{ color: "red", marginTop: 8 }}>{(startMutation.error as Error)?.message}</Text>
-      )}
-    </ScrollView>
+        <View style={styles.exercises}>
+          {names.map((name, i) => (
+            <RunpuyCard key={i} theme={darkTheme} style={styles.exerciseCard}>
+              <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                {i + 1}.
+              </RunpuyText>
+              <RunpuyText theme={darkTheme} variant="body">
+                {name}
+              </RunpuyText>
+            </RunpuyCard>
+          ))}
+        </View>
+
+        <View style={styles.actionArea}>
+          <RunpuyButton
+            label="Start Session"
+            loading={startMutation.isPending}
+            onPress={() => startMutation.mutate()}
+            theme={darkTheme}
+          />
+          {startMutation.isPending && (
+            <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} tone="secondary" variant="caption">
+              Starting...
+            </RunpuyText>
+          )}
+          {startMutation.isError && (
+            <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+              {(startMutation.error as Error)?.message}
+            </RunpuyText>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: darkTheme.colors.canvas,
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    gap: spacing.lg,
+    paddingBottom: layout.pageMargin,
+    paddingHorizontal: layout.pageMargin,
+    paddingTop: spacing.lg,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    minHeight: layout.minimumTouchTarget,
+  },
+  header: {
+    gap: spacing.xs,
+  },
+  exercises: {
+    gap: spacing.sm,
+  },
+  exerciseCard: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  actionArea: {
+    gap: spacing.sm,
+  },
+  errorText: {
+    color: darkTheme.colors.error,
+  },
+});
