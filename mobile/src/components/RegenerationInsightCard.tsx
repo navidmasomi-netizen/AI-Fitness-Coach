@@ -1,5 +1,7 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import type { RegenerationRecommendation } from "../api/programs";
+import { RunpuyButton, RunpuyCard, RunpuyText } from "../design-system/components";
+import { darkTheme } from "../design-system/themes";
+import { spacing } from "../design-system/tokens";
 
 interface RegenerationInsightCardProps {
   recommendation: RegenerationRecommendation | null | undefined;
@@ -37,40 +39,24 @@ export function RegenerationInsightCard({
     const headline = "Your current program is working well.";
 
     return (
-      <View
+      <RunpuyCard
         accessible
         accessibilityLabel={headline}
-        style={{
-          backgroundColor: "#f5f7fb",
-          borderRadius: 10,
-          borderWidth: 1,
-          borderColor: "#d8e2f0",
-          padding: 16,
-          marginBottom: 20,
-        }}
+        theme={darkTheme}
+        style={styles.card}
       >
-        <Text style={{ fontSize: 16, fontWeight: "600", color: "#16324f" }}>{headline}</Text>
-        <Text style={{ fontSize: 13, color: "#5f6f82", marginTop: 6, lineHeight: 19 }}>
+        <RunpuyText theme={darkTheme} variant="title">
+          {headline}
+        </RunpuyText>
+        <RunpuyText theme={darkTheme} tone="secondary" variant="body">
           Keep training consistently. We'll let you know if a program refresh becomes worthwhile.
-        </Text>
-      </View>
+        </RunpuyText>
+      </RunpuyCard>
     );
   }
 
   const headline = getHeadline(recommendation.urgency);
   const visibleReasons = recommendation.reasons.slice(0, 2);
-  const accentColor =
-    recommendation.urgency === "high"
-      ? "#5c7ea6"
-      : recommendation.urgency === "moderate"
-        ? "#6f8fb6"
-        : "#8ba8c7";
-  const backgroundColor =
-    recommendation.urgency === "high"
-      ? "#eef4fb"
-      : recommendation.urgency === "moderate"
-        ? "#f3f7fc"
-        : "#f7f9fc";
   const indicatorLabel =
     recommendation.urgency === "high"
       ? "Profile update"
@@ -79,79 +65,54 @@ export function RegenerationInsightCard({
         : null;
 
   return (
-    <View
+    <RunpuyCard
       accessible
       accessibilityLabel={headline}
-      style={{
-        backgroundColor,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: "#d8e2f0",
-        borderLeftWidth: recommendation.urgency === "low" ? 3 : 5,
-        borderLeftColor: accentColor,
-        padding: 16,
-        marginBottom: 20,
-      }}
+      theme={darkTheme}
+      style={styles.card}
     >
       {indicatorLabel && (
-        <Text
-          style={{
-            fontSize: 11,
-            fontWeight: "700",
-            color: accentColor,
-            marginBottom: 8,
-            textTransform: "uppercase",
-            letterSpacing: 0.4,
-          }}
-        >
+        <RunpuyText theme={darkTheme} variant="caption" style={styles.indicator}>
           {indicatorLabel}
-        </Text>
+        </RunpuyText>
       )}
 
-      <Text
-        style={{
-          fontSize: recommendation.urgency === "high" ? 17 : 16,
-          fontWeight: recommendation.urgency === "high" ? "700" : "600",
-          color: "#16324f",
-          lineHeight: 24,
-        }}
-      >
+      <RunpuyText theme={darkTheme} variant="title">
         {headline}
-      </Text>
+      </RunpuyText>
 
       {visibleReasons.map((reason, index) => (
-        <Text
-          key={`${reason}-${index}`}
-          style={{ fontSize: 13, color: "#5f6f82", marginTop: 8, lineHeight: 19 }}
-        >
+        <RunpuyText key={`${reason}-${index}`} theme={darkTheme} tone="secondary" variant="body">
           {reason}
-        </Text>
+        </RunpuyText>
       ))}
 
-      <Text style={{ fontSize: 12, color: "#7a8796", marginTop: 10 }}>
+      <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
         You can review this anytime.
-      </Text>
+      </RunpuyText>
 
-      <Pressable
+      {isRegenerating ? (
+        <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} tone="secondary" variant="caption">
+          Regenerating...
+        </RunpuyText>
+      ) : null}
+      <RunpuyButton
+        label="Regenerate Program"
         onPress={onRegenerate}
-        disabled={isRegenerating}
-        style={{
-          marginTop: 14,
-          borderRadius: 8,
-          backgroundColor: isRegenerating ? "#9db9d6" : accentColor,
-          paddingVertical: 12,
-          paddingHorizontal: 14,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-          gap: 8,
-        }}
-      >
-        {isRegenerating ? <ActivityIndicator size="small" color="#ffffff" /> : null}
-        <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 14 }}>
-          {isRegenerating ? "Regenerating..." : "Regenerate Program"}
-        </Text>
-      </Pressable>
-    </View>
+        loading={isRegenerating}
+        theme={darkTheme}
+      />
+    </RunpuyCard>
   );
 }
+
+const styles = {
+  card: {
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+  },
+  indicator: {
+    color: darkTheme.colors.information,
+    textTransform: "uppercase" as const,
+  },
+};

@@ -1,6 +1,7 @@
-import { View, Text, Pressable, FlatList, ActivityIndicator, Alert } from "react-native";
+import { View, Pressable, FlatList, ActivityIndicator, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "../../src/store/authStore";
 import { ApiError } from "../../src/api/client";
 import { getPrograms, getRegenerationRecommendation, regenerateProgram } from "../../src/api/programs";
@@ -11,6 +12,14 @@ import { getLastSetForExercise, getTrend } from "../../src/utils/compareSets";
 import { buildWorkoutName, estimateMinutes } from "../../src/utils/workoutMeta";
 import { Program } from "../../src/types/program";
 import { RegenerationInsightCard } from "../../src/components/RegenerationInsightCard";
+import {
+  RunpuyButton,
+  RunpuyCard,
+  RunpuyStatusChip,
+  RunpuyText,
+} from "../../src/design-system/components";
+import { darkTheme } from "../../src/design-system/themes";
+import { layout, radii, spacing } from "../../src/design-system/tokens";
 
 function buildLastSessionSignal(recommendations: { recommendationType: string }[] | undefined): string | null {
   if (!recommendations || recommendations.length === 0) return null;
@@ -210,20 +219,33 @@ export default function HomeScreen() {
     return (
       <Pressable
         onPress={() => router.push(`/programs/${item.id}`)}
-        style={{
-          borderWidth: isActive ? 2 : 1,
-          borderColor: isActive ? "#4caf50" : "#000",
-          borderRadius: 8,
-          padding: 16,
-          marginBottom: 12,
-        }}
+        accessibilityRole="button"
+        accessibilityLabel={`Open ${item.name}`}
+        accessibilityHint="View program details"
+        accessibilityState={{ selected: isActive }}
+        style={styles.programPressable}
       >
-        {isActive && <Text style={{ color: "#4caf50", fontWeight: "bold" }}>ACTIVE</Text>}
-        <Text style={{ fontWeight: "bold", fontSize: 16 }}>{item.name}</Text>
-        <Text>Goal: {item.goal}</Text>
-        <Text>Split: {item.splitFamily}</Text>
-        <Text>Days: {item.days.length}</Text>
-        <Text>Total exercises: {totalExercises}</Text>
+        <RunpuyCard
+          theme={darkTheme}
+          style={isActive ? styles.activeProgramCard : styles.programCard}
+        >
+          {isActive ? <RunpuyStatusChip label="ACTIVE" status="success" theme={darkTheme} /> : null}
+          <RunpuyText theme={darkTheme} variant="title">
+            {item.name}
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} variant="body">
+            Goal: {item.goal}
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} variant="body">
+            Split: {item.splitFamily}
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} variant="body">
+            Days: {item.days.length}
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} variant="body">
+            Total exercises: {totalExercises}
+          </RunpuyText>
+        </RunpuyCard>
       </Pressable>
     );
   };
@@ -243,110 +265,229 @@ export default function HomeScreen() {
   })();
 
   return (
-    <View style={{ flex: 1, padding: 20, paddingTop: 60 }}>
-      <Text style={{ fontSize: 18, marginBottom: 4 }}>
-        {user ? `Logged in as ${user.email}` : "No user"}
-      </Text>
-      <View style={{ flexDirection: "row", gap: 10, marginBottom: 20 }}>
-        <Pressable onPress={onLogout} style={{ padding: 10, backgroundColor: "#ddd", alignSelf: "flex-start" }}>
-          <Text>Logout</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => router.push("/(onboarding)/intro")}
-          style={{ padding: 10, alignSelf: "flex-start" }}
-        >
-          <Text style={{ color: "#2196f3", fontSize: 13 }}>How this works</Text>
-        </Pressable>
-      </View>
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+      <View style={styles.content}>
+        <RunpuyText accessibilityRole="header" theme={darkTheme} variant="title" style={styles.accountText}>
+          {user ? `Logged in as ${user.email}` : "No user"}
+        </RunpuyText>
+        <View style={styles.accountActions}>
+          <Pressable
+            onPress={onLogout}
+            accessibilityRole="button"
+            accessibilityLabel="Logout"
+            style={styles.secondaryAction}
+          >
+            <RunpuyText theme={darkTheme} variant="body">
+              Logout
+            </RunpuyText>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/(onboarding)/intro")}
+            accessibilityRole="button"
+            accessibilityLabel="How this works"
+            style={styles.secondaryAction}
+          >
+            <RunpuyText theme={darkTheme} variant="caption" style={styles.introActionText}>
+              How this works
+            </RunpuyText>
+          </Pressable>
+        </View>
 
-      <View style={{ marginBottom: 20 }}>
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>Active Program</Text>
-        {isMyProgramLoading && <ActivityIndicator />}
-        {!isMyProgramLoading && !myProgram && <Text>No active program yet</Text>}
-        {myProgram && (
-          <View>
-            {currentDay && (() => {
-              const workoutName = buildWorkoutName(currentDay.exercises);
-              const minutes = estimateMinutes(currentDay.exercises);
-              const exerciseCount = currentDay.exercises.length;
-              return (
-                <View>
-                  <Text style={{ fontSize: 22, fontWeight: "bold", marginTop: 8 }}>
-                    Today: {workoutName}
-                  </Text>
-                  <Text style={{ fontSize: 14, color: "#666", marginTop: 2 }}>
-                    {exerciseCount} exercises • ~{minutes} min
-                  </Text>
-                </View>
-              );
-            })()}
-
-            {isActiveSessionLoading && <ActivityIndicator style={{ marginTop: 14 }} />}
-
-            {!isActiveSessionLoading && activeSession && (
-              <Pressable
-                onPress={onResume}
-                style={{ padding: 18, backgroundColor: "#ff9800", borderRadius: 10, marginTop: 16, alignItems: "center" }}
-              >
-                <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>Resume Workout</Text>
-              </Pressable>
-            )}
-
-            {!isActiveSessionLoading && !activeSession && currentDay && (
-              <Pressable
-                onPress={() =>
-                  router.push({
-                    pathname: "/workout/preview",
-                    params: {
-                      dayName: currentDay.name,
-                      workoutName: buildWorkoutName(currentDay.exercises),
-                      exerciseNames: JSON.stringify(currentDay.exercises.map((e) => e.exercise.nameFa)),
-                    },
-                  })
-                }
-                style={{ padding: 18, backgroundColor: "#2196f3", borderRadius: 10, marginTop: 16, alignItems: "center" }}
-              >
-                <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>Start Workout</Text>
-              </Pressable>
-            )}
-            {startWorkoutMutation.isError && (
-              <Text style={{ color: "red" }}>{(startWorkoutMutation.error as Error)?.message}</Text>
-            )}
-
-            <View style={{ marginTop: 12 }}>
-              {!activeSession && nextDayCue && (
-                <Text style={{ fontSize: 12, color: "#999" }}>{nextDayCue}</Text>
-              )}
-              {lastSessionSignal && (
-                <Text style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{lastSessionSignal}</Text>
-              )}
-              {lastWorkoutTrendLine && (
-                <Text style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{lastWorkoutTrendLine}</Text>
-              )}
+        <View style={styles.section}>
+          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="title" style={styles.sectionTitle}>
+            Active Program
+          </RunpuyText>
+          {isMyProgramLoading && (
+            <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading active program">
+              <ActivityIndicator color={darkTheme.colors.actionPrimary} />
             </View>
+          )}
+          {!isMyProgramLoading && !myProgram && (
+            <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+              No active program yet
+            </RunpuyText>
+          )}
+          {myProgram && (
+            <RunpuyCard theme={darkTheme} style={styles.activeProgramSurface}>
+              {currentDay && (() => {
+                const workoutName = buildWorkoutName(currentDay.exercises);
+                const minutes = estimateMinutes(currentDay.exercises);
+                const exerciseCount = currentDay.exercises.length;
+                return (
+                  <View>
+                    <RunpuyText theme={darkTheme} variant="heading">
+                      Today: {workoutName}
+                    </RunpuyText>
+                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption" style={styles.workoutMeta}>
+                      {exerciseCount} exercises • ~{minutes} min
+                    </RunpuyText>
+                  </View>
+                );
+              })()}
+
+              {isActiveSessionLoading && (
+                <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading active workout" style={styles.loadingRow}>
+                  <ActivityIndicator color={darkTheme.colors.actionPrimary} />
+                </View>
+              )}
+
+              {!isActiveSessionLoading && activeSession && (
+                <RunpuyButton
+                  label="Resume Workout"
+                  onPress={onResume}
+                  theme={darkTheme}
+                  style={styles.primaryAction}
+                />
+              )}
+
+              {!isActiveSessionLoading && !activeSession && currentDay && (
+                <RunpuyButton
+                  label="Start Workout"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/workout/preview",
+                      params: {
+                        dayName: currentDay.name,
+                        workoutName: buildWorkoutName(currentDay.exercises),
+                        exerciseNames: JSON.stringify(currentDay.exercises.map((e) => e.exercise.nameFa)),
+                      },
+                    })
+                  }
+                  theme={darkTheme}
+                  style={styles.primaryAction}
+                />
+              )}
+              {startWorkoutMutation.isError && (
+                <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="caption" style={styles.errorText}>
+                  {(startWorkoutMutation.error as Error)?.message}
+                </RunpuyText>
+              )}
+
+              <View style={styles.signals}>
+                {!activeSession && nextDayCue && (
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    {nextDayCue}
+                  </RunpuyText>
+                )}
+                {lastSessionSignal && (
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    {lastSessionSignal}
+                  </RunpuyText>
+                )}
+                {lastWorkoutTrendLine && (
+                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    {lastWorkoutTrendLine}
+                  </RunpuyText>
+                )}
+              </View>
+            </RunpuyCard>
+          )}
+        </View>
+
+        <RegenerationInsightCard
+          recommendation={regenerationRecommendation}
+          isLoading={isRegenerationLoading}
+          onRegenerate={onConfirmRegenerate}
+          isRegenerating={regenerateMutation.isPending}
+        />
+
+        <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading" style={styles.programsHeading}>
+          Programs
+        </RunpuyText>
+
+        {isLoading && (
+          <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading programs">
+            <ActivityIndicator color={darkTheme.colors.actionPrimary} />
           </View>
         )}
+        {isError && (
+          <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+            Error loading programs: {(error as Error)?.message}
+          </RunpuyText>
+        )}
+
+        {programs && (
+          <FlatList
+            data={programs}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={renderProgram}
+          />
+        )}
       </View>
-
-      <RegenerationInsightCard
-        recommendation={regenerationRecommendation}
-        isLoading={isRegenerationLoading}
-        onRegenerate={onConfirmRegenerate}
-        isRegenerating={regenerateMutation.isPending}
-      />
-
-      <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12 }}>Programs</Text>
-
-      {isLoading && <ActivityIndicator />}
-      {isError && <Text style={{ color: "red" }}>Error loading programs: {(error as Error)?.message}</Text>}
-
-      {programs && (
-        <FlatList
-          data={programs}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={renderProgram}
-        />
-      )}
-    </View>
+    </SafeAreaView>
   );
 }
+
+const styles = {
+  safeArea: {
+    backgroundColor: darkTheme.colors.canvas,
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: layout.pageMargin,
+    paddingTop: spacing.lg,
+  },
+  accountText: {
+    marginBottom: spacing.xs,
+  },
+  accountActions: {
+    flexDirection: "row" as const,
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+  },
+  secondaryAction: {
+    alignItems: "center" as const,
+    alignSelf: "flex-start" as const,
+    borderColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
+    borderWidth: 1,
+    justifyContent: "center" as const,
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.md,
+  },
+  introActionText: {
+    color: darkTheme.colors.actionPrimary,
+  },
+  section: {
+    marginBottom: spacing.xl,
+  },
+  sectionTitle: {
+    marginBottom: spacing.md,
+  },
+  activeProgramSurface: {
+    gap: spacing.md,
+  },
+  workoutMeta: {
+    marginTop: spacing.xs,
+  },
+  loadingRow: {
+    marginTop: spacing.md,
+  },
+  primaryAction: {
+    marginTop: spacing.lg,
+  },
+  errorText: {
+    color: darkTheme.colors.error,
+    marginTop: spacing.sm,
+  },
+  signals: {
+    gap: spacing.xs,
+    marginTop: spacing.md,
+  },
+  programsHeading: {
+    marginBottom: spacing.md,
+  },
+  programPressable: {
+    marginBottom: spacing.md,
+    minHeight: layout.minimumTouchTarget,
+  },
+  programCard: {
+    gap: spacing.xs,
+  },
+  activeProgramCard: {
+    borderColor: darkTheme.colors.success,
+    borderWidth: 2,
+    gap: spacing.xs,
+  },
+};
