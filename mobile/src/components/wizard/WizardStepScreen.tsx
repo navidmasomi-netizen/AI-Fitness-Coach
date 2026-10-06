@@ -1,88 +1,179 @@
-import { ReactNode } from "react";
-import { View, Text, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { useAuthStore } from "../../store/authStore";
+import { useState, type ReactNode } from 'react';
+import { Pressable, View, type ViewStyle } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-interface WizardStepScreenProps {
+import { RunpuyButton } from '../../design-system/components/RunpuyButton';
+import { RunpuyText } from '../../design-system/components/RunpuyText';
+import { darkTheme } from '../../design-system/themes';
+import { layout, radii, spacing } from '../../design-system/tokens';
+
+export type WizardStepScreenProps = {
+  title: string;
+  subtitle?: string;
   currentStep: number;
   totalSteps: number;
-  title: string;
-  canGoBack: boolean;
-  isNextEnabled: boolean;
-  onNext: () => void | Promise<void>;
   children: ReactNode;
-  isNextLoading?: boolean;
-  errorMessage?: string | null;
-  nextLabel?: string;
-  onBack: () => void;
-}
+  primaryActionLabel: string;
+  onPrimaryAction: () => void | Promise<void>;
+  primaryActionDisabled?: boolean;
+  primaryActionLoading?: boolean;
+  onBack?: () => void;
+  backAccessibilityLabel?: string;
+  footer?: ReactNode;
+};
 
 export function WizardStepScreen({
+  title,
+  subtitle,
   currentStep,
   totalSteps,
-  title,
-  canGoBack,
-  isNextEnabled,
-  onNext,
   children,
-  isNextLoading = false,
-  errorMessage = null,
-  nextLabel = "Next",
+  primaryActionLabel,
+  onPrimaryAction,
+  primaryActionDisabled = false,
+  primaryActionLoading = false,
   onBack,
+  backAccessibilityLabel = 'Go back',
+  footer,
 }: WizardStepScreenProps) {
-  const router = useRouter();
-  const logout = useAuthStore((s) => s.logout);
-
-  const onLogout = async () => {
-    await logout();
-    router.replace("/(auth)/login");
-  };
+  const [backFocused, setBackFocused] = useState(false);
+  const safeTotalSteps = totalSteps > 0 ? totalSteps : 1;
+  const safeCurrentStep = Math.min(Math.max(currentStep, 0), safeTotalSteps);
+  const progressPercentage = (safeCurrentStep / safeTotalSteps) * 100;
+  const progressWidth: `${number}%` = `${progressPercentage}%`;
 
   return (
-    <View style={{ flex: 1, padding: 24, paddingTop: 60, justifyContent: "space-between" }}>
-      <View style={{ flex: 1 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <Text style={{ fontSize: 13, color: "#777" }}>
-            Step {currentStep} of {totalSteps}
-          </Text>
-          <Pressable onPress={onLogout} style={{ paddingVertical: 6, paddingHorizontal: 10 }}>
-            <Text style={{ color: "#666" }}>Logout</Text>
-          </Pressable>
-        </View>
-
-        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>{title}</Text>
-        <View style={{ flex: 1 }}>{children}</View>
-      </View>
-
-      {errorMessage ? <Text style={{ color: "red", fontSize: 12, marginBottom: 12 }}>{errorMessage}</Text> : null}
-
-      <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 24 }}>
-        {canGoBack ? (
-          <Pressable
-            onPress={onBack}
-            style={{ paddingVertical: 14, paddingHorizontal: 20, backgroundColor: "#ddd", borderRadius: 10 }}
-          >
-            <Text>Back</Text>
-          </Pressable>
-        ) : (
-          <View style={{ paddingVertical: 14, paddingHorizontal: 20, opacity: 0 }}>
-            <Text>Back</Text>
+    <View style={styles.root}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.progressHeader}>
+              <View style={styles.progressCopy}>
+                <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+                  {safeCurrentStep} / {safeTotalSteps}
+                </RunpuyText>
+                <View
+                  accessible
+                  accessibilityRole="progressbar"
+                  accessibilityLabel={`${safeCurrentStep} / ${safeTotalSteps}`}
+                  accessibilityValue={{
+                    min: 0,
+                    max: safeTotalSteps,
+                    now: safeCurrentStep,
+                  }}
+                  style={styles.progressTrack}
+                >
+                  <View style={[styles.progressFill, { width: progressWidth }]} />
+                </View>
+              </View>
+              {onBack ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={backAccessibilityLabel}
+                  onPress={onBack}
+                  onFocus={() => setBackFocused(true)}
+                  onBlur={() => setBackFocused(false)}
+                  style={[
+                    styles.backControl,
+                    {
+                      borderColor: backFocused ? darkTheme.colors.focus : darkTheme.colors.borderSubtle,
+                      borderWidth: backFocused ? 2 : 1,
+                    },
+                  ]}
+                >
+                  <RunpuyText theme={darkTheme} variant="body" tone="secondary">
+                    ‹
+                  </RunpuyText>
+                </Pressable>
+              ) : null}
+            </View>
+            <View style={styles.titleCopy}>
+              <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+                {title}
+              </RunpuyText>
+              {subtitle ? (
+                <RunpuyText theme={darkTheme} variant="body" tone="secondary">
+                  {subtitle}
+                </RunpuyText>
+              ) : null}
+            </View>
           </View>
-        )}
 
-        <Pressable
-          onPress={onNext}
-          disabled={!isNextEnabled || isNextLoading}
-          style={{
-            paddingVertical: 14,
-            paddingHorizontal: 20,
-            backgroundColor: isNextEnabled && !isNextLoading ? "#2196f3" : "#bbdefb",
-            borderRadius: 10,
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold" }}>{isNextLoading ? "Saving..." : nextLabel}</Text>
-        </Pressable>
-      </View>
+          <View style={styles.body}>{children}</View>
+
+          <View style={styles.actionArea}>
+            {footer ? <View style={styles.footer}>{footer}</View> : null}
+            <RunpuyButton
+              label={primaryActionLabel}
+              onPress={onPrimaryAction}
+              disabled={primaryActionDisabled}
+              loading={primaryActionLoading}
+              theme={darkTheme}
+            />
+          </View>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
+
+const styles = {
+  root: {
+    backgroundColor: darkTheme.colors.canvas,
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    gap: spacing.xl,
+    paddingBottom: layout.pageMargin,
+    paddingHorizontal: layout.pageMargin,
+    paddingTop: spacing.lg,
+  },
+  header: {
+    gap: spacing.lg,
+  },
+  progressHeader: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  progressCopy: {
+    flex: 1,
+    gap: spacing.sm,
+  },
+  // Progress thickness is local structural geometry; its color comes from the theme.
+  progressTrack: {
+    backgroundColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
+    height: spacing.xs,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    backgroundColor: darkTheme.colors.actionPrimary,
+    borderRadius: radii.control,
+    height: '100%',
+  },
+  // Back-control borders are structural focus geometry, not brand tokens.
+  backControl: {
+    alignItems: 'center',
+    borderRadius: radii.control,
+    justifyContent: 'center',
+    minHeight: layout.minimumTouchTarget,
+    minWidth: layout.minimumTouchTarget,
+  },
+  titleCopy: {
+    gap: spacing.sm,
+  },
+  body: {
+    flex: 1,
+  },
+  actionArea: {
+    gap: spacing.md,
+  },
+  footer: {
+    alignItems: 'center',
+  },
+} satisfies Record<string, ViewStyle>;
