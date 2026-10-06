@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { View, Text, ScrollView, Pressable, TextInput, Modal, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput, Modal, ActivityIndicator, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../src/api/client";
@@ -30,6 +31,9 @@ import {
   createReplacementFlowId,
   logReplacementMobileEvent,
 } from "../../src/utils/replacementObservability";
+import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
+import { darkTheme } from "../../src/design-system/themes";
+import { layout, radii, spacing } from "../../src/design-system/tokens";
 
 interface LoggedSet {
   id: number;
@@ -668,7 +672,7 @@ export default function WorkoutSessionScreen() {
   const isApplyPending = applyReplacementMutation.isPending;
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <Modal
         visible={discoveryState.status !== "IDLE"}
         transparent
@@ -1097,67 +1101,65 @@ export default function WorkoutSessionScreen() {
 
       {/* Fixed-position rest timer bar */}
       {activeRestExerciseId !== null && (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            backgroundColor: "#fff3e0",
-            paddingTop: 50,
-            paddingBottom: 12,
-            paddingHorizontal: 20,
-            borderBottomWidth: 1,
-            borderBottomColor: "#ffcc80",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+        <View style={styles.restTimer}>
           <View>
-            <Text style={{ fontSize: 12, color: "#7a5a00" }}>Resting · {activeRestExercise?.exercise?.nameFa}</Text>
-            <Text style={{ fontSize: 22, fontWeight: "bold" }}>
+            <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+              Resting · {activeRestExercise?.exercise?.nameFa}
+            </RunpuyText>
+            <RunpuyText theme={darkTheme} variant="heading">
               {restSecondsRemaining > 0 ? formatTime(restSecondsRemaining) : "Rest complete!"}
-            </Text>
+            </RunpuyText>
           </View>
-          <View style={{ flexDirection: "row", gap: 8 }}>
+          <View style={styles.restActions}>
             {restSecondsRemaining > 0 && (
               <Pressable
                 onPress={() => setIsRestRunning((prev) => !prev)}
-                style={{ paddingVertical: 8, paddingHorizontal: 12, backgroundColor: "#2196f3", borderRadius: 6 }}
+                accessibilityRole="button"
+                accessibilityLabel={isRestRunning ? "Pause rest timer" : "Start rest timer"}
+                style={styles.restPrimaryAction}
               >
-                <Text style={{ color: "white", fontSize: 13 }}>{isRestRunning ? "Pause" : "Start"}</Text>
+                <RunpuyText theme={darkTheme} variant="caption" style={styles.restPrimaryActionText}>
+                  {isRestRunning ? "Pause" : "Start"}
+                </RunpuyText>
               </Pressable>
             )}
             <Pressable
               onPress={clearRestTimer}
-              style={{ paddingVertical: 8, paddingHorizontal: 12, backgroundColor: "#9e9e9e", borderRadius: 6 }}
+              accessibilityRole="button"
+              accessibilityLabel="Skip rest timer"
+              style={styles.restSecondaryAction}
             >
-              <Text style={{ color: "white", fontSize: 13 }}>Skip</Text>
+              <RunpuyText theme={darkTheme} variant="caption">
+                Skip
+              </RunpuyText>
             </Pressable>
           </View>
         </View>
       )}
 
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          padding: 20,
-          paddingTop: activeRestExerciseId !== null ? 110 : 60,
-          paddingBottom: 40,
-        }}
+        style={styles.scrollView}
+        contentContainerStyle={[styles.content, activeRestExerciseId !== null && styles.contentWithRestTimer]}
       >
-        <Pressable onPress={() => router.back()} style={{ marginBottom: 12 }}>
-          <Text>{`\u2190 Back`}</Text>
+        <Pressable
+          onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          style={styles.backButton}
+        >
+          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+            {`\u2190 Back`}
+          </RunpuyText>
         </Pressable>
 
         {/* Session header */}
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ fontSize: 22, fontWeight: "bold" }}>
+        <View style={styles.sessionHeader}>
+          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
             {dayName} {`\u2014`} {buildWorkoutName(exercises)}
-          </Text>
-          <Text style={{ fontSize: 13, color: "#999", marginBottom: 16 }}>{programName}</Text>
+          </RunpuyText>
+          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+            {programName}
+          </RunpuyText>
           {replacementSuccessMessage && (
             <View style={{ backgroundColor: "#e8f5e9", borderRadius: 8, padding: 12, marginBottom: 12 }}>
               <Text style={{ color: "#2e7d32", fontWeight: "600" }}>{replacementSuccessMessage}</Text>
@@ -1171,9 +1173,11 @@ export default function WorkoutSessionScreen() {
         </View>
 
         {totalLoggedSets === 0 && (
-          <View style={{ backgroundColor: "#e3f2fd", borderRadius: 8, padding: 14, marginBottom: 16 }}>
-            <Text style={{ color: "#1565c0" }}>Start by logging your first set</Text>
-          </View>
+          <RunpuyCard theme={darkTheme} style={styles.zeroLogPrompt}>
+            <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+              Start by logging your first set
+            </RunpuyText>
+          </RunpuyCard>
         )}
 
         {exercises.map((pde: any) => {
@@ -1187,44 +1191,36 @@ export default function WorkoutSessionScreen() {
           const validForLog = isInputValid(exerciseId, isBodyweight);
 
           return (
-            <View
+            <RunpuyCard
               key={pde.id}
-              style={{
-                marginBottom: 20,
-                padding: 14,
-                borderRadius: 10,
-                borderWidth: isLast ? 2 : 1,
-                borderColor: isLast ? "#2196f3" : "#ddd",
-                backgroundColor: "#fff",
-              }}
+              theme={darkTheme}
+              style={[styles.exerciseCard, isLast && styles.lastLoggedExerciseCard]}
             >
               {/* Exercise header */}
-              <View style={{ marginBottom: 10 }}>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 12, color: "#999", marginBottom: 2 }}>
+              <View style={styles.exerciseHeader}>
+                <View style={styles.exerciseHeaderRow}>
+                  <View style={styles.exerciseDetails}>
+                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                       Suggested: {pde.sets} × {pde.repRangeLow}-{pde.repRangeHigh} reps
-                    </Text>
-                    <Text style={{ fontWeight: "700", fontSize: 17 }}>{pde.exercise.nameFa}</Text>
-                    <Text style={{ color: "#666", fontSize: 13, marginTop: 2 }}>
+                    </RunpuyText>
+                    <RunpuyText theme={darkTheme} variant="title">
+                      {pde.exercise.nameFa}
+                    </RunpuyText>
+                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                       Target: {pde.sets} x {pde.repRangeLow}-{pde.repRangeHigh} · Rest: {pde.restSeconds}s
-                    </Text>
+                    </RunpuyText>
                   </View>
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={`Replace ${pde.exercise.nameFa}`}
                     onPress={() => openReplacementDiscovery(pde)}
                     disabled={pde.targetId === null}
-                    style={{
-                      paddingVertical: 8,
-                      paddingHorizontal: 12,
-                      borderRadius: 999,
-                      backgroundColor: pde.targetId === null ? "#eceff3" : "#e3f2fd",
-                    }}
+                    accessibilityState={{ disabled: pde.targetId === null }}
+                    style={styles.replaceButton}
                   >
-                    <Text style={{ color: pde.targetId === null ? "#7b8794" : "#1565c0", fontWeight: "600" }}>
+                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                       Replace
-                    </Text>
+                    </RunpuyText>
                   </Pressable>
                 </View>
                 {pde.targetId === null && (
@@ -1236,75 +1232,212 @@ export default function WorkoutSessionScreen() {
 
               {/* Logged sets — visually distinct */}
               {sets.length > 0 && (
-                <View style={{ backgroundColor: "#f1f8e9", borderRadius: 8, padding: 10, marginBottom: 12 }}>
+                <View style={styles.loggedSets}>
                   {sets.map((s) => (
-                    <Text key={s.id} style={{ color: "#33691e", fontSize: 14 }}>
+                    <RunpuyText key={s.id} theme={darkTheme} tone="secondary" variant="caption">
                       Set {s.setNumber} — {s.reps} reps{s.weightKg !== null ? ` @ ${s.weightKg}kg` : ""}
-                    </Text>
+                    </RunpuyText>
                   ))}
                 </View>
               )}
 
               {/* Input row */}
-              <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+              <View style={styles.inputRow}>
                 <TextInput
                   placeholder="Weight (kg)"
+                  placeholderTextColor={darkTheme.colors.textSecondary}
                   keyboardType="numeric"
                   value={input.weightKg}
                   onChangeText={(v) => setInput(exerciseId, "weightKg", v)}
-                  style={{ borderWidth: 1, borderColor: "#ccc", borderRadius: 6, padding: 8, width: 100 }}
+                  accessibilityLabel={`Weight in kilograms for ${pde.exercise.nameFa}`}
+                  style={[styles.input, styles.weightInput]}
                 />
                 <TextInput
                   placeholder="Reps"
+                  placeholderTextColor={darkTheme.colors.textSecondary}
                   keyboardType="numeric"
                   value={input.reps}
                   onChangeText={(v) => setInput(exerciseId, "reps", v)}
-                  style={{ borderWidth: 1, borderColor: "#ccc", borderRadius: 6, padding: 8, width: 70 }}
+                  accessibilityLabel={`Reps for ${pde.exercise.nameFa}`}
+                  style={[styles.input, styles.repsInput]}
                 />
-                <Pressable
+                <RunpuyButton
                   onPress={() => onLogSet(exerciseId, pde.restSeconds, isBodyweight)}
                   disabled={logSetMutation.isPending || !validForLog}
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 14,
-                    backgroundColor: !validForLog ? "#bbdefb" : "#2196f3",
-                    borderRadius: 6,
-                  }}
-                >
-                  <Text style={{ color: "white", fontWeight: "600" }}>Log Set</Text>
-                </Pressable>
+                  accessibilityState={{ busy: logSetMutation.isPending }}
+                  label="Log Set"
+                  theme={darkTheme}
+                />
               </View>
 
               {showLoggedFeedback && (
-                <Text style={{ color: "#2e7d32", marginTop: 6, fontSize: 13 }}>{"\u2713"} Logged</Text>
+                <RunpuyText theme={darkTheme} variant="caption" style={styles.successText}>
+                  {"\u2713"} Logged
+                </RunpuyText>
               )}
-              {error ? <Text style={{ color: "#c62828", marginTop: 6, fontSize: 13 }}>{error}</Text> : null}
-            </View>
+              {error ? (
+                <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="caption" style={styles.errorText}>
+                  {error}
+                </RunpuyText>
+              ) : null}
+            </RunpuyCard>
           );
         })}
 
-        <View style={{ marginTop: 8, borderTopWidth: 1, borderTopColor: "#eee", paddingTop: 20 }}>
-          <Pressable
+        <View style={styles.finishSection}>
+          <RunpuyButton
             onPress={onFinishPress}
             disabled={finishMutation.isPending}
-            style={{
-              padding: 16,
-              backgroundColor: finishArmed ? "#2e7d32" : "#4caf50",
-              borderRadius: 8,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
-              {finishMutation.isPending
-                ? "Finishing..."
-                : finishArmed
-                ? "Tap again to confirm"
-                : "Finish Workout"}
-            </Text>
-          </Pressable>
-          {finishError ? <Text style={{ color: "#c62828", marginTop: 8 }}>{finishError}</Text> : null}
+            accessibilityState={{ busy: finishMutation.isPending }}
+            label={
+              finishMutation.isPending ? "Finishing..." : finishArmed ? "Tap again to confirm" : "Finish Workout"
+            }
+            theme={darkTheme}
+          />
+          {finishError ? (
+            <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+              {finishError}
+            </RunpuyText>
+          ) : null}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: darkTheme.colors.canvas,
+    flex: 1,
+  },
+  restTimer: {
+    alignItems: "center",
+    backgroundColor: darkTheme.colors.card,
+    borderBottomColor: darkTheme.colors.borderSubtle,
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    left: 0,
+    paddingBottom: spacing.md,
+    paddingHorizontal: layout.pageMargin,
+    paddingTop: spacing.md,
+    position: "absolute",
+    right: 0,
+    top: 0,
+    zIndex: 10,
+  },
+  restActions: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  restPrimaryAction: {
+    alignItems: "center",
+    backgroundColor: darkTheme.colors.actionPrimary,
+    borderRadius: radii.control,
+    justifyContent: "center",
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.md,
+  },
+  restPrimaryActionText: {
+    color: darkTheme.colors.actionPrimaryText,
+  },
+  restSecondaryAction: {
+    alignItems: "center",
+    borderColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.md,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    gap: spacing.lg,
+    paddingBottom: 40,
+    paddingHorizontal: layout.pageMargin,
+    paddingTop: spacing.lg,
+  },
+  contentWithRestTimer: {
+    paddingTop: 96,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    minHeight: layout.minimumTouchTarget,
+  },
+  sessionHeader: {
+    gap: spacing.xs,
+  },
+  zeroLogPrompt: {
+    padding: spacing.md,
+  },
+  exerciseCard: {
+    gap: spacing.md,
+  },
+  lastLoggedExerciseCard: {
+    borderColor: darkTheme.colors.focus,
+    borderWidth: 2,
+  },
+  exerciseHeader: {
+    gap: spacing.sm,
+  },
+  exerciseHeaderRow: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    gap: spacing.md,
+    justifyContent: "space-between",
+  },
+  exerciseDetails: {
+    flex: 1,
+    gap: spacing.xs,
+  },
+  replaceButton: {
+    alignItems: "center",
+    borderColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.md,
+  },
+  loggedSets: {
+    borderColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
+    borderWidth: 1,
+    gap: spacing.xs,
+    padding: spacing.sm,
+  },
+  inputRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
+  input: {
+    borderColor: darkTheme.colors.borderSubtle,
+    borderRadius: radii.control,
+    borderWidth: 1,
+    color: darkTheme.colors.textPrimary,
+    minHeight: layout.minimumTouchTarget,
+    paddingHorizontal: spacing.sm,
+  },
+  weightInput: {
+    width: 100,
+  },
+  repsInput: {
+    width: 70,
+  },
+  successText: {
+    color: darkTheme.colors.success,
+  },
+  errorText: {
+    color: darkTheme.colors.error,
+  },
+  finishSection: {
+    borderTopColor: darkTheme.colors.borderSubtle,
+    borderTopWidth: 1,
+    gap: spacing.sm,
+    paddingTop: spacing.lg,
+  },
+});
