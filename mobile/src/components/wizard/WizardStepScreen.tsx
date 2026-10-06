@@ -18,6 +18,7 @@ export type WizardStepScreenProps = {
   primaryActionDisabled?: boolean;
   primaryActionLoading?: boolean;
   onBack?: () => void;
+  backDisabled?: boolean;
   backAccessibilityLabel?: string;
   footer?: ReactNode;
 };
@@ -33,6 +34,7 @@ export function WizardStepScreen({
   primaryActionDisabled = false,
   primaryActionLoading = false,
   onBack,
+  backDisabled = false,
   backAccessibilityLabel = 'Go back',
   footer,
 }: WizardStepScreenProps) {
@@ -70,6 +72,8 @@ export function WizardStepScreen({
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={backAccessibilityLabel}
+                  accessibilityState={{ disabled: backDisabled }}
+                  disabled={backDisabled}
                   onPress={onBack}
                   onFocus={() => setBackFocused(true)}
                   onBlur={() => setBackFocused(false)}
