@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RunpuyButton } from '../../design-system/components/RunpuyButton';
 import { RunpuyText } from '../../design-system/components/RunpuyText';
-import { darkTheme } from '../../design-system/themes';
+import { useRunpuyTheme } from '../../design-system/theme-context';
 import { layout, radii, spacing } from '../../design-system/tokens';
 
 export type WizardStepScreenProps = {
@@ -39,6 +39,8 @@ export function WizardStepScreen({
   footer,
 }: WizardStepScreenProps) {
   const [backFocused, setBackFocused] = useState(false);
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const safeTotalSteps = totalSteps > 0 ? totalSteps : 1;
   const safeCurrentStep = Math.min(Math.max(currentStep, 0), safeTotalSteps);
   const progressPercentage = (safeCurrentStep / safeTotalSteps) * 100;
@@ -51,7 +53,7 @@ export function WizardStepScreen({
           <View style={styles.header}>
             <View style={styles.progressHeader}>
               <View style={styles.progressCopy}>
-                <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+                <RunpuyText variant="caption" tone="secondary">
                   {safeCurrentStep} / {safeTotalSteps}
                 </RunpuyText>
                 <View
@@ -80,23 +82,23 @@ export function WizardStepScreen({
                   style={[
                     styles.backControl,
                     {
-                      borderColor: backFocused ? darkTheme.colors.focus : darkTheme.colors.borderSubtle,
+                      borderColor: backFocused ? theme.colors.focus : theme.colors.borderSubtle,
                       borderWidth: backFocused ? 2 : 1,
                     },
                   ]}
                 >
-                  <RunpuyText theme={darkTheme} variant="body" tone="secondary">
+                  <RunpuyText variant="body" tone="secondary">
                     ‹
                   </RunpuyText>
                 </Pressable>
               ) : null}
             </View>
             <View style={styles.titleCopy}>
-              <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+              <RunpuyText accessibilityRole="header" variant="heading">
                 {title}
               </RunpuyText>
               {subtitle ? (
-                <RunpuyText theme={darkTheme} variant="body" tone="secondary">
+                <RunpuyText variant="body" tone="secondary">
                   {subtitle}
                 </RunpuyText>
               ) : null}
@@ -112,7 +114,6 @@ export function WizardStepScreen({
               onPress={onPrimaryAction}
               disabled={primaryActionDisabled}
               loading={primaryActionLoading}
-              theme={darkTheme}
             />
           </View>
         </View>
@@ -121,9 +122,9 @@ export function WizardStepScreen({
   );
 }
 
-const styles = {
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({
   root: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   safeArea: {
@@ -150,13 +151,13 @@ const styles = {
   },
   // Progress thickness is local structural geometry; its color comes from the theme.
   progressTrack: {
-    backgroundColor: darkTheme.colors.borderSubtle,
+    backgroundColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     height: spacing.xs,
     overflow: 'hidden',
   },
   progressFill: {
-    backgroundColor: darkTheme.colors.actionPrimary,
+    backgroundColor: theme.colors.actionPrimary,
     borderRadius: radii.control,
     height: '100%',
   },
@@ -180,4 +181,4 @@ const styles = {
   footer: {
     alignItems: 'center',
   },
-} satisfies Record<string, ViewStyle>;
+} satisfies Record<string, ViewStyle>);

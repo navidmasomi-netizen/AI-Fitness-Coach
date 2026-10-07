@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 import { RunpuyButton } from '../../src/design-system/components/RunpuyButton';
 import { RunpuyText } from '../../src/design-system/components/RunpuyText';
-import { darkTheme } from '../../src/design-system/themes';
+import { useRunpuyTheme } from '../../src/design-system/theme-context';
 import { iconography, layout, radii, spacing } from '../../src/design-system/tokens';
 import { markIntroSeen } from '../../src/store/onboardingStorage';
 
@@ -31,6 +31,10 @@ const BENEFITS = [
 
 export default function IntroScreen() {
   const router = useRouter();
+  const { scheme, theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
+  const overlayStyle = (darkColor: string, opacity: number) =>
+    scheme === 'dark' ? { backgroundColor: darkColor } : { backgroundColor: theme.colors.canvas, opacity };
 
   const onContinue = async () => {
     await markIntroSeen();
@@ -38,7 +42,7 @@ export default function IntroScreen() {
   };
 
   return (
-    <View style={styles.root}>
+      <View style={styles.root}>
       <ImageBackground
         source={onboardingIntroHero}
         resizeMode="cover"
@@ -46,10 +50,10 @@ export default function IntroScreen() {
         imageStyle={styles.backgroundImage}
         accessible={false}
       >
-        <View pointerEvents="none" style={styles.baseTone} />
-        <View pointerEvents="none" style={styles.leftReadabilityShade} />
-        <View pointerEvents="none" style={styles.topShade} />
-        <View pointerEvents="none" style={styles.bottomShade} />
+        <View pointerEvents="none" style={[styles.baseTone, overlayStyle('rgba(1, 5, 12, 0.25)', 0.25)]} />
+        <View pointerEvents="none" style={[styles.leftReadabilityShade, overlayStyle('rgba(1, 5, 12, 0.48)', 0.48)]} />
+        <View pointerEvents="none" style={[styles.topShade, overlayStyle('rgba(1, 5, 12, 0.18)', 0.18)]} />
+        <View pointerEvents="none" style={[styles.bottomShade, overlayStyle('rgba(1, 5, 12, 0.34)', 0.34)]} />
 
         <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
           <ScrollView
@@ -60,19 +64,19 @@ export default function IntroScreen() {
           >
             <View style={styles.content}>
               <View style={styles.heroSection}>
-                <RunpuyText theme={darkTheme} variant="caption">
+                <RunpuyText variant="caption">
                   AI COACH
                 </RunpuyText>
 
                 <View style={styles.headlineBlock}>
-                  <RunpuyText accessibilityRole="header" theme={darkTheme} variant="display">
+                  <RunpuyText accessibilityRole="header" variant="display">
                     Let&apos;s build{'\n'}
                     your{' '}
-                    <RunpuyText theme={darkTheme} variant="display" style={styles.headlineAccent}>
+                    <RunpuyText variant="display" style={styles.headlineAccent}>
                       best plan.
                     </RunpuyText>
                   </RunpuyText>
-                  <RunpuyText theme={darkTheme} variant="body" tone="secondary" style={styles.supportingCopy}>
+                  <RunpuyText variant="body" tone="secondary" style={styles.supportingCopy}>
                     Answer a few questions so I can create a program that&apos;s built just for you.
                   </RunpuyText>
                 </View>
@@ -84,14 +88,14 @@ export default function IntroScreen() {
                         <Feather
                           name={benefit.icon}
                           size={iconography.grid}
-                          color={darkTheme.colors.actionPrimary}
+                          color={theme.colors.actionPrimary}
                         />
                       </View>
                       <View style={styles.benefitCopy}>
-                        <RunpuyText theme={darkTheme} variant="title">
+                        <RunpuyText variant="title">
                           {benefit.title}
                         </RunpuyText>
-                        <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+                        <RunpuyText variant="caption" tone="secondary">
                           {benefit.description}
                         </RunpuyText>
                       </View>
@@ -105,12 +109,11 @@ export default function IntroScreen() {
                   label="Get Started"
                   accessibilityLabel="Get started with onboarding"
                   onPress={onContinue}
-                  theme={darkTheme}
                 />
 
                 <View style={styles.timeEstimate}>
-                  <Feather name="clock" size={spacing.lg} color={darkTheme.colors.textSecondary} />
-                  <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+                  <Feather name="clock" size={spacing.lg} color={theme.colors.textSecondary} />
+                  <RunpuyText variant="caption" tone="secondary">
                     Takes about 2–3 minutes
                   </RunpuyText>
                 </View>
@@ -140,13 +143,13 @@ export default function IntroScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => StyleSheet.create({
   root: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   background: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   backgroundImage: {
@@ -156,10 +159,8 @@ const styles = StyleSheet.create({
   // Existing image-readability overlays remain local structural composition values.
   baseTone: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(1, 5, 12, 0.25)',
   },
   leftReadabilityShade: {
-    backgroundColor: 'rgba(1, 5, 12, 0.48)',
     bottom: 0,
     left: 0,
     position: 'absolute',
@@ -167,7 +168,6 @@ const styles = StyleSheet.create({
     width: '64%',
   },
   topShade: {
-    backgroundColor: 'rgba(1, 5, 12, 0.18)',
     height: '36%',
     left: 0,
     position: 'absolute',
@@ -175,7 +175,6 @@ const styles = StyleSheet.create({
     top: 0,
   },
   bottomShade: {
-    backgroundColor: 'rgba(1, 5, 12, 0.34)',
     bottom: 0,
     height: '34%',
     left: 0,
@@ -209,7 +208,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   headlineAccent: {
-    color: darkTheme.colors.actionPrimary,
+    color: theme.colors.actionPrimary,
   },
   supportingCopy: {
     maxWidth: 292,
@@ -224,8 +223,8 @@ const styles = StyleSheet.create({
   },
   benefitIcon: {
     alignItems: 'center',
-    backgroundColor: darkTheme.colors.card,
-    borderColor: darkTheme.colors.borderSubtle,
+    backgroundColor: theme.colors.card,
+    borderColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     borderWidth: 1,
     height: layout.minimumTouchTarget,
@@ -253,13 +252,13 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xs,
   },
   indicatorDot: {
-    backgroundColor: darkTheme.colors.borderSubtle,
+    backgroundColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     height: spacing.xs,
     width: spacing.xs,
   },
   indicatorDotActive: {
-    backgroundColor: darkTheme.colors.actionPrimary,
+    backgroundColor: theme.colors.actionPrimary,
     width: spacing.lg,
   },
 });

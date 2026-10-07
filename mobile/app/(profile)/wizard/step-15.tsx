@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { WizardStepScreen } from '../../../src/components/wizard/WizardStepScreen';
 import { SUPPLEMENT_LABELS, getWizardTotalSteps } from '../../../src/constants/wizardLabels';
 import { RunpuySelectableCard, RunpuyText } from '../../../src/design-system/components';
-import { darkTheme } from '../../../src/design-system/themes';
+import { useRunpuyTheme } from '../../../src/design-system/theme-context';
 import { layout, radii, spacing } from '../../../src/design-system/tokens';
 import { useWizardStepSave } from '../../../src/hooks/useWizardStepSave';
 import { useAuthStore } from '../../../src/store/authStore';
@@ -16,6 +16,8 @@ const SUPPLEMENT_OPTIONS = ['protein', 'creatine', 'omega3', 'multivitamin', 'vi
 
 export default function WizardStepFifteenScreen() {
   const currentStep = 15;
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
   const supplementUse = useWizardDraftStore((state) => state.supplementUse);
@@ -30,10 +32,16 @@ export default function WizardStepFifteenScreen() {
   const noneSelected = supplementUse.includes('none');
 
   return <WizardStepScreen title="Which supplements do you use?" subtitle="Select all that apply." currentStep={currentStep} totalSteps={totalSteps} primaryActionLabel="Continue" onPrimaryAction={onContinue} primaryActionDisabled={!isNextEnabled || isSaving} primaryActionLoading={isSaving} onBack={() => router.replace('/(profile)/wizard/step-14')} backAccessibilityLabel="Go back to the cardio preference question" footer={<Footer isOverflowOpen={isOverflowOpen} onToggleOverflow={() => setIsOverflowOpen((value) => !value)} onLogout={onLogout} />}>
-    <ScrollView style={styles.listScroll} contentContainerStyle={styles.optionList} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" bounces={false}>{SUPPLEMENT_OPTIONS.map((option) => <RunpuySelectableCard key={option} label={SUPPLEMENT_LABELS[option]} selected={supplementUse.includes(option)} selectionRole="checkbox" onPress={() => toggleSupplement(option)} theme={darkTheme} />)}<View style={styles.noneSeparator} /><RunpuySelectableCard label={SUPPLEMENT_LABELS.none} selected={noneSelected} selectionRole="checkbox" accessibilityLabel="I don't take supplements — clears all other selections" onPress={() => toggleSupplement('none')} theme={darkTheme} /></ScrollView>
-    {errorMessage ? <RunpuyText accessibilityRole="alert" theme={darkTheme} variant="caption" style={styles.errorMessage}>{errorMessage}</RunpuyText> : null}
+    <ScrollView style={styles.listScroll} contentContainerStyle={styles.optionList} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" bounces={false}>{SUPPLEMENT_OPTIONS.map((option) => <RunpuySelectableCard key={option} label={SUPPLEMENT_LABELS[option]} selected={supplementUse.includes(option)} selectionRole="checkbox" onPress={() => toggleSupplement(option)} />)}<View style={styles.noneSeparator} /><RunpuySelectableCard label={SUPPLEMENT_LABELS.none} selected={noneSelected} selectionRole="checkbox" accessibilityLabel="I don't take supplements — clears all other selections" onPress={() => toggleSupplement('none')} /></ScrollView>
+    {errorMessage ? <RunpuyText accessibilityRole="alert" variant="caption" style={styles.errorMessage}>{errorMessage}</RunpuyText> : null}
   </WizardStepScreen>;
 }
 
-function Footer({ isOverflowOpen, onToggleOverflow, onLogout }: { isOverflowOpen: boolean; onToggleOverflow: () => void; onLogout: () => void | Promise<void> }) { return <View style={styles.footerContent}><Pressable accessibilityRole="button" accessibilityLabel="More onboarding options" accessibilityState={{ expanded: isOverflowOpen }} onPress={onToggleOverflow} style={styles.overflowButton}><Feather name="more-horizontal" size={spacing.xl} color={darkTheme.colors.textSecondary} /></Pressable>{isOverflowOpen ? <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={onLogout} style={styles.logoutAction}><RunpuyText theme={darkTheme} variant="caption" tone="secondary">Log out</RunpuyText></Pressable> : null}<View style={styles.privacyFooter}><Feather name="lock" size={spacing.md} color={darkTheme.colors.textSecondary} /><RunpuyText theme={darkTheme} variant="caption" tone="secondary" style={styles.privacyText}>Your answers are private and secure.{'\n'}You can change them later.</RunpuyText></View></View>; }
-const styles = { listScroll: { flex: 1 }, optionList: { gap: spacing.md, paddingBottom: spacing.sm }, noneSeparator: { backgroundColor: darkTheme.colors.borderSubtle, height: 1 }, errorMessage: { color: darkTheme.colors.error }, footerContent: { alignItems: 'center', gap: spacing.sm }, overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget }, logoutAction: { borderColor: darkTheme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }, privacyFooter: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }, privacyText: { textAlign: 'center' } } as const;
+function Footer({ isOverflowOpen, onToggleOverflow, onLogout }: { isOverflowOpen: boolean; onToggleOverflow: () => void; onLogout: () => void | Promise<void> }) {
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
+
+  return <View style={styles.footerContent}><Pressable accessibilityRole="button" accessibilityLabel="More onboarding options" accessibilityState={{ expanded: isOverflowOpen }} onPress={onToggleOverflow} style={styles.overflowButton}><Feather name="more-horizontal" size={spacing.xl} color={theme.colors.textSecondary} /></Pressable>{isOverflowOpen ? <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={onLogout} style={styles.logoutAction}><RunpuyText variant="caption" tone="secondary">Log out</RunpuyText></Pressable> : null}<View style={styles.privacyFooter}><Feather name="lock" size={spacing.md} color={theme.colors.textSecondary} /><RunpuyText variant="caption" tone="secondary" style={styles.privacyText}>Your answers are private and secure.{'\n'}You can change them later.</RunpuyText></View></View>;
+}
+
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({ listScroll: { flex: 1 }, optionList: { gap: spacing.md, paddingBottom: spacing.sm }, noneSeparator: { backgroundColor: theme.colors.borderSubtle, height: 1 }, errorMessage: { color: theme.colors.error }, footerContent: { alignItems: 'center', gap: spacing.sm }, overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget }, logoutAction: { borderColor: theme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }, privacyFooter: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }, privacyText: { textAlign: 'center' } } as const);

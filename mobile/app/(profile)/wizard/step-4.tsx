@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { WizardStepScreen } from '../../../src/components/wizard/WizardStepScreen';
 import { getWizardTotalSteps } from '../../../src/constants/wizardLabels';
 import { RunpuyCard, RunpuySelectableCard, RunpuyText } from '../../../src/design-system/components';
-import { darkTheme } from '../../../src/design-system/themes';
+import { useRunpuyTheme } from '../../../src/design-system/theme-context';
 import { layout, radii, spacing } from '../../../src/design-system/tokens';
 import { useWizardStepSave } from '../../../src/hooks/useWizardStepSave';
 import { useAuthStore } from '../../../src/store/authStore';
@@ -25,6 +25,8 @@ const DURATION_SUMMARIES: Record<DurationOption, { title: string; description: s
 
 export default function WizardStepFourScreen() {
   const currentStep = 4;
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
   const supplementUse = useWizardDraftStore((state) => state.supplementUse);
@@ -45,24 +47,24 @@ export default function WizardStepFourScreen() {
   return (
     <WizardStepScreen title="How long should each session be?" subtitle={'Choose the time that fits your schedule\nand helps you stay consistent.'} currentStep={currentStep} totalSteps={totalSteps} primaryActionLabel="Continue" onPrimaryAction={onContinue} primaryActionDisabled={sessionDurationMin === null || isSaving} primaryActionLoading={isSaving} onBack={() => router.replace('/(profile)/wizard/step-3')} backAccessibilityLabel="Go back to the session frequency question" footer={<Footer isOverflowOpen={isOverflowOpen} onToggleOverflow={() => setIsOverflowOpen((current) => !current)} onLogout={onLogout} />}>
       <View accessibilityRole="radiogroup" style={styles.durationList}>
-        {SESSION_DURATION_OPTIONS.map((option) => <RunpuySelectableCard key={option} label={`${option} MIN`} selected={sessionDurationMin === option} selectionRole="radio" onPress={() => setSessionDurationMin(option)} accessibilityLabel={`${option} minutes`} theme={darkTheme} />)}
+        {SESSION_DURATION_OPTIONS.map((option) => <RunpuySelectableCard key={option} label={`${option} MIN`} selected={sessionDurationMin === option} selectionRole="radio" onPress={() => setSessionDurationMin(option)} accessibilityLabel={`${option} minutes`} theme={theme} />)}
       </View>
-      {selectedSummary ? <RunpuyCard theme={darkTheme} style={styles.summaryCard}>
-        <Feather name="clock" size={spacing.xl} color={darkTheme.colors.actionPrimary} />
-        <View style={styles.summaryCopy}><RunpuyText theme={darkTheme} variant="title">{selectedSummary.title}</RunpuyText><RunpuyText theme={darkTheme} variant="caption" tone="secondary">{selectedSummary.description}</RunpuyText></View>
+      {selectedSummary ? <RunpuyCard theme={theme} style={styles.summaryCard}>
+        <Feather name="clock" size={spacing.xl} color={theme.colors.actionPrimary} />
+        <View style={styles.summaryCopy}><RunpuyText theme={theme} variant="title">{selectedSummary.title}</RunpuyText><RunpuyText theme={theme} variant="caption" tone="secondary">{selectedSummary.description}</RunpuyText></View>
       </RunpuyCard> : null}
-      {errorMessage ? <RunpuyText accessibilityRole="alert" theme={darkTheme} variant="caption" style={styles.errorMessage}>{errorMessage}</RunpuyText> : null}
+      {errorMessage ? <RunpuyText accessibilityRole="alert" theme={theme} variant="caption" style={styles.errorMessage}>{errorMessage}</RunpuyText> : null}
     </WizardStepScreen>
   );
 }
 
-function Footer({ isOverflowOpen, onToggleOverflow, onLogout }: { isOverflowOpen: boolean; onToggleOverflow: () => void; onLogout: () => void | Promise<void> }) {
-  return <View style={styles.footerContent}><Pressable accessibilityRole="button" accessibilityLabel="More onboarding options" accessibilityState={{ expanded: isOverflowOpen }} onPress={onToggleOverflow} style={styles.overflowButton}><Feather name="more-horizontal" size={spacing.xl} color={darkTheme.colors.textSecondary} /></Pressable>{isOverflowOpen ? <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={onLogout} style={styles.logoutAction}><RunpuyText theme={darkTheme} variant="caption" tone="secondary">Log out</RunpuyText></Pressable> : null}<View style={styles.privacyFooter}><Feather name="lock" size={spacing.md} color={darkTheme.colors.textSecondary} /><RunpuyText theme={darkTheme} variant="caption" tone="secondary" style={styles.privacyText}>Your answers are private and secure.{'\n'}You can change them later.</RunpuyText></View></View>;
+function Footer({ isOverflowOpen, onToggleOverflow, onLogout }: { isOverflowOpen: boolean; onToggleOverflow: () => void; onLogout: () => void | Promise<void> }) { const { theme } = useRunpuyTheme(); const styles = createStyles(theme);
+  return <View style={styles.footerContent}><Pressable accessibilityRole="button" accessibilityLabel="More onboarding options" accessibilityState={{ expanded: isOverflowOpen }} onPress={onToggleOverflow} style={styles.overflowButton}><Feather name="more-horizontal" size={spacing.xl} color={theme.colors.textSecondary} /></Pressable>{isOverflowOpen ? <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={onLogout} style={styles.logoutAction}><RunpuyText theme={theme} variant="caption" tone="secondary">Log out</RunpuyText></Pressable> : null}<View style={styles.privacyFooter}><Feather name="lock" size={spacing.md} color={theme.colors.textSecondary} /><RunpuyText theme={theme} variant="caption" tone="secondary" style={styles.privacyText}>Your answers are private and secure.{'\n'}You can change them later.</RunpuyText></View></View>;
 }
 
-const styles = {
-  durationList: { gap: spacing.md }, summaryCard: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md }, summaryCopy: { flex: 1, gap: spacing.xs }, errorMessage: { color: darkTheme.colors.error },
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({
+  durationList: { gap: spacing.md }, summaryCard: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md }, summaryCopy: { flex: 1, gap: spacing.xs }, errorMessage: { color: theme.colors.error },
   footerContent: { alignItems: 'center', gap: spacing.sm }, overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget },
-  logoutAction: { borderColor: darkTheme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  logoutAction: { borderColor: theme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   privacyFooter: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }, privacyText: { textAlign: 'center' },
-} as const;
+} as const);
