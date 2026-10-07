@@ -99,6 +99,6 @@ function Footer({ isOverflowOpen, onToggleOverflow, onLogout }: { isOverflowOpen
 const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({
   optionList: { gap: spacing.md }, errorMessage: { color: theme.colors.error }, footerContent: { alignItems: 'center', gap: spacing.sm },
   overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget },
-  logoutAction: { borderColor: theme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  logoutAction: { borderColor: theme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, minHeight: layout.minimumTouchTarget, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   privacyFooter: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }, privacyText: { textAlign: 'center' },
 } as const);
