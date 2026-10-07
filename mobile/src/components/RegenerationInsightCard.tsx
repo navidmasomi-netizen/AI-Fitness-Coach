@@ -1,6 +1,6 @@
 import type { RegenerationRecommendation } from "../api/programs";
 import { RunpuyButton, RunpuyCard, RunpuyText } from "../design-system/components";
-import { darkTheme } from "../design-system/themes";
+import { useRunpuyTheme } from "../design-system/theme-context";
 import { spacing } from "../design-system/tokens";
 
 interface RegenerationInsightCardProps {
@@ -28,6 +28,9 @@ export function RegenerationInsightCard({
   onRegenerate,
   isRegenerating,
 }: RegenerationInsightCardProps) {
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
+
   if (isLoading || !recommendation) {
     return null;
   }
@@ -39,16 +42,11 @@ export function RegenerationInsightCard({
     const headline = "Your current program is working well.";
 
     return (
-      <RunpuyCard
-        accessible
-        accessibilityLabel={headline}
-        theme={darkTheme}
-        style={styles.card}
-      >
-        <RunpuyText theme={darkTheme} variant="title">
+      <RunpuyCard accessible accessibilityLabel={headline} style={styles.card}>
+        <RunpuyText variant="title">
           {headline}
         </RunpuyText>
-        <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+        <RunpuyText tone="secondary" variant="body">
           Keep training consistently. We'll let you know if a program refresh becomes worthwhile.
         </RunpuyText>
       </RunpuyCard>
@@ -65,34 +63,29 @@ export function RegenerationInsightCard({
         : null;
 
   return (
-    <RunpuyCard
-      accessible
-      accessibilityLabel={headline}
-      theme={darkTheme}
-      style={styles.card}
-    >
+    <RunpuyCard accessible accessibilityLabel={headline} style={styles.card}>
       {indicatorLabel && (
-        <RunpuyText theme={darkTheme} variant="caption" style={styles.indicator}>
+        <RunpuyText variant="caption" style={styles.indicator}>
           {indicatorLabel}
         </RunpuyText>
       )}
 
-      <RunpuyText theme={darkTheme} variant="title">
+      <RunpuyText variant="title">
         {headline}
       </RunpuyText>
 
       {visibleReasons.map((reason, index) => (
-        <RunpuyText key={`${reason}-${index}`} theme={darkTheme} tone="secondary" variant="body">
+        <RunpuyText key={`${reason}-${index}`} tone="secondary" variant="body">
           {reason}
         </RunpuyText>
       ))}
 
-      <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+      <RunpuyText tone="secondary" variant="caption">
         You can review this anytime.
       </RunpuyText>
 
       {isRegenerating ? (
-        <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} tone="secondary" variant="caption">
+        <RunpuyText accessibilityLiveRegion="polite" tone="secondary" variant="caption">
           Regenerating...
         </RunpuyText>
       ) : null}
@@ -100,19 +93,18 @@ export function RegenerationInsightCard({
         label="Regenerate Program"
         onPress={onRegenerate}
         loading={isRegenerating}
-        theme={darkTheme}
       />
     </RunpuyCard>
   );
 }
 
-const styles = {
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
   card: {
     gap: spacing.sm,
     marginBottom: spacing.xl,
   },
   indicator: {
-    color: darkTheme.colors.information,
+    color: theme.colors.information,
     textTransform: "uppercase" as const,
   },
-};
+} as const);

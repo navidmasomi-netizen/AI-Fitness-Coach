@@ -6,10 +6,12 @@ import { useAuthStore } from "../../src/store/authStore";
 import { getMyCompletedSessions } from "../../src/api/sessions";
 import { WorkoutSession } from "../../src/types/session";
 import { RunpuyCard, RunpuyText } from "../../src/design-system/components";
-import { darkTheme } from "../../src/design-system/themes";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, spacing } from "../../src/design-system/tokens";
 
 export default function HistoryScreen() {
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
 
@@ -31,20 +33,20 @@ export default function HistoryScreen() {
         accessibilityHint="Open workout summary"
         style={styles.sessionPressable}
       >
-        <RunpuyCard theme={darkTheme} style={styles.sessionCard}>
-          <RunpuyText theme={darkTheme} variant="title">
+        <RunpuyCard style={styles.sessionCard}>
+          <RunpuyText variant="title">
             {item.program?.name || "Unknown Program"}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyText variant="body">
             {item.programDay?.name || ""}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+          <RunpuyText tone="secondary" variant="caption">
             {item.completedAt ? new Date(item.completedAt).toLocaleString() : ""}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyText variant="body">
             Total sets: {totalSets}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyText variant="body">
             Exercises logged: {uniqueExercises}
           </RunpuyText>
         </RunpuyCard>
@@ -55,22 +57,22 @@ export default function HistoryScreen() {
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <View style={styles.content}>
-        <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading" style={styles.title}>
+        <RunpuyText accessibilityRole="header" variant="heading" style={styles.title}>
           Workout History
         </RunpuyText>
 
         {isLoading && (
           <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading workout history">
-            <ActivityIndicator color={darkTheme.colors.actionPrimary} />
+            <ActivityIndicator color={theme.colors.actionPrimary} />
           </View>
         )}
         {isError && (
-          <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+          <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
             {(error as Error)?.message}
           </RunpuyText>
         )}
         {sessions && sessions.length === 0 && (
-          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <RunpuyText tone="secondary" variant="body">
             No completed workouts yet
           </RunpuyText>
         )}
@@ -87,9 +89,9 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = {
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
   safeArea: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   content: {
@@ -108,6 +110,6 @@ const styles = {
     gap: spacing.xs,
   },
   errorText: {
-    color: darkTheme.colors.error,
+    color: theme.colors.error,
   },
-};
+} as const);

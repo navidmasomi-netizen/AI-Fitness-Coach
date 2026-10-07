@@ -18,7 +18,7 @@ import {
   RunpuyStatusChip,
   RunpuyText,
 } from "../../src/design-system/components";
-import { darkTheme } from "../../src/design-system/themes";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, radii, spacing } from "../../src/design-system/tokens";
 
 function buildLastSessionSignal(recommendations: { recommendationType: string }[] | undefined): string | null {
@@ -70,6 +70,8 @@ function getRegenerationErrorMessage(error: unknown): string | null {
 }
 
 export default function HomeScreen() {
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const router = useRouter();
   const queryClient = useQueryClient();
   const logout = useAuthStore((s) => s.logout);
@@ -225,24 +227,21 @@ export default function HomeScreen() {
         accessibilityState={{ selected: isActive }}
         style={styles.programPressable}
       >
-        <RunpuyCard
-          theme={darkTheme}
-          style={isActive ? styles.activeProgramCard : styles.programCard}
-        >
-          {isActive ? <RunpuyStatusChip label="ACTIVE" status="success" theme={darkTheme} /> : null}
-          <RunpuyText theme={darkTheme} variant="title">
+        <RunpuyCard style={isActive ? styles.activeProgramCard : styles.programCard}>
+          {isActive ? <RunpuyStatusChip label="ACTIVE" status="success" /> : null}
+          <RunpuyText variant="title">
             {item.name}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyText variant="body">
             Goal: {item.goal}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyText variant="body">
             Split: {item.splitFamily}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyText variant="body">
             Days: {item.days.length}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyText variant="body">
             Total exercises: {totalExercises}
           </RunpuyText>
         </RunpuyCard>
@@ -267,7 +266,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <View style={styles.content}>
-        <RunpuyText accessibilityRole="header" theme={darkTheme} variant="title" style={styles.accountText}>
+        <RunpuyText accessibilityRole="header" variant="title" style={styles.accountText}>
           {user ? `Logged in as ${user.email}` : "No user"}
         </RunpuyText>
         <View style={styles.accountActions}>
@@ -277,7 +276,7 @@ export default function HomeScreen() {
             accessibilityLabel="Logout"
             style={styles.secondaryAction}
           >
-            <RunpuyText theme={darkTheme} variant="body">
+            <RunpuyText variant="body">
               Logout
             </RunpuyText>
           </Pressable>
@@ -287,38 +286,38 @@ export default function HomeScreen() {
             accessibilityLabel="How this works"
             style={styles.secondaryAction}
           >
-            <RunpuyText theme={darkTheme} variant="caption" style={styles.introActionText}>
+            <RunpuyText variant="caption" style={styles.introActionText}>
               How this works
             </RunpuyText>
           </Pressable>
         </View>
 
         <View style={styles.section}>
-          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="title" style={styles.sectionTitle}>
+          <RunpuyText accessibilityRole="header" variant="title" style={styles.sectionTitle}>
             Active Program
           </RunpuyText>
           {isMyProgramLoading && (
             <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading active program">
-              <ActivityIndicator color={darkTheme.colors.actionPrimary} />
+              <ActivityIndicator color={theme.colors.actionPrimary} />
             </View>
           )}
           {!isMyProgramLoading && !myProgram && (
-            <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+            <RunpuyText tone="secondary" variant="body">
               No active program yet
             </RunpuyText>
           )}
           {myProgram && (
-            <RunpuyCard theme={darkTheme} style={styles.activeProgramSurface}>
+            <RunpuyCard style={styles.activeProgramSurface}>
               {currentDay && (() => {
                 const workoutName = buildWorkoutName(currentDay.exercises);
                 const minutes = estimateMinutes(currentDay.exercises);
                 const exerciseCount = currentDay.exercises.length;
                 return (
                   <View>
-                    <RunpuyText theme={darkTheme} variant="heading">
+                    <RunpuyText variant="heading">
                       Today: {workoutName}
                     </RunpuyText>
-                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption" style={styles.workoutMeta}>
+                    <RunpuyText tone="secondary" variant="caption" style={styles.workoutMeta}>
                       {exerciseCount} exercises • ~{minutes} min
                     </RunpuyText>
                   </View>
@@ -327,7 +326,7 @@ export default function HomeScreen() {
 
               {isActiveSessionLoading && (
                 <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading active workout" style={styles.loadingRow}>
-                  <ActivityIndicator color={darkTheme.colors.actionPrimary} />
+                  <ActivityIndicator color={theme.colors.actionPrimary} />
                 </View>
               )}
 
@@ -335,7 +334,6 @@ export default function HomeScreen() {
                 <RunpuyButton
                   label="Resume Workout"
                   onPress={onResume}
-                  theme={darkTheme}
                   style={styles.primaryAction}
                 />
               )}
@@ -353,29 +351,28 @@ export default function HomeScreen() {
                       },
                     })
                   }
-                  theme={darkTheme}
                   style={styles.primaryAction}
                 />
               )}
               {startWorkoutMutation.isError && (
-                <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="caption" style={styles.errorText}>
+                <RunpuyText accessibilityLiveRegion="polite" variant="caption" style={styles.errorText}>
                   {(startWorkoutMutation.error as Error)?.message}
                 </RunpuyText>
               )}
 
               <View style={styles.signals}>
                 {!activeSession && nextDayCue && (
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                  <RunpuyText tone="secondary" variant="caption">
                     {nextDayCue}
                   </RunpuyText>
                 )}
                 {lastSessionSignal && (
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                  <RunpuyText tone="secondary" variant="caption">
                     {lastSessionSignal}
                   </RunpuyText>
                 )}
                 {lastWorkoutTrendLine && (
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                  <RunpuyText tone="secondary" variant="caption">
                     {lastWorkoutTrendLine}
                   </RunpuyText>
                 )}
@@ -391,17 +388,17 @@ export default function HomeScreen() {
           isRegenerating={regenerateMutation.isPending}
         />
 
-        <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading" style={styles.programsHeading}>
+        <RunpuyText accessibilityRole="header" variant="heading" style={styles.programsHeading}>
           Programs
         </RunpuyText>
 
         {isLoading && (
           <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading programs">
-            <ActivityIndicator color={darkTheme.colors.actionPrimary} />
+            <ActivityIndicator color={theme.colors.actionPrimary} />
           </View>
         )}
         {isError && (
-          <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+          <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
             Error loading programs: {(error as Error)?.message}
           </RunpuyText>
         )}
@@ -418,9 +415,9 @@ export default function HomeScreen() {
   );
 }
 
-const styles = {
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
   safeArea: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   content: {
@@ -439,7 +436,7 @@ const styles = {
   secondaryAction: {
     alignItems: "center" as const,
     alignSelf: "flex-start" as const,
-    borderColor: darkTheme.colors.borderSubtle,
+    borderColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     borderWidth: 1,
     justifyContent: "center" as const,
@@ -447,7 +444,7 @@ const styles = {
     paddingHorizontal: spacing.md,
   },
   introActionText: {
-    color: darkTheme.colors.actionPrimary,
+    color: theme.colors.actionPrimary,
   },
   section: {
     marginBottom: spacing.xl,
@@ -468,7 +465,7 @@ const styles = {
     marginTop: spacing.lg,
   },
   errorText: {
-    color: darkTheme.colors.error,
+    color: theme.colors.error,
     marginTop: spacing.sm,
   },
   signals: {
@@ -486,8 +483,8 @@ const styles = {
     gap: spacing.xs,
   },
   activeProgramCard: {
-    borderColor: darkTheme.colors.success,
+    borderColor: theme.colors.success,
     borderWidth: 2,
     gap: spacing.xs,
   },
-};
+} as const);
