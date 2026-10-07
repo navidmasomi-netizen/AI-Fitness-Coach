@@ -8,11 +8,12 @@ import {
   ScrollView,
   StyleSheet,
   StyleProp,
+  ViewStyle,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { darkTheme } from '../../design-system/themes';
+import { useRunpuyTheme } from '../../design-system/theme-context';
 import { layout, spacing } from '../../design-system/tokens';
 
 const authHeroImage = require('../../../assets/images/auth/auth-hero.png');
@@ -28,11 +29,17 @@ export function AuthScreenBackground({
   backgroundImageSource = authHeroImage,
   backgroundImageStyle,
 }: AuthScreenBackgroundProps) {
+  const { scheme, theme } = useRunpuyTheme();
+  const overlayStyle = (darkColor: string, opacity: number): ViewStyle =>
+    scheme === 'dark'
+      ? { backgroundColor: darkColor }
+      : { backgroundColor: theme.colors.canvas, opacity };
+
   const content = (
     <>
-      <View style={styles.baseTone} />
-      <View style={styles.leftReadabilityShade} />
-      <View style={styles.bottomShade} />
+      <View style={[styles.baseTone, overlayStyle('rgba(1, 5, 12, 0.32)', 0.32)]} />
+      <View style={[styles.leftReadabilityShade, overlayStyle('rgba(1, 5, 12, 0.42)', 0.42)]} />
+      <View style={[styles.bottomShade, overlayStyle('rgba(1, 5, 12, 0.36)', 0.36)]} />
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <KeyboardAvoidingView
           style={styles.keyboard}
@@ -53,18 +60,18 @@ export function AuthScreenBackground({
   );
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: theme.colors.canvas }]}>
       {backgroundImageSource ? (
         <ImageBackground
           source={backgroundImageSource}
           resizeMode="cover"
-          style={styles.background}
+          style={[styles.background, { backgroundColor: theme.colors.canvas }]}
           imageStyle={[styles.backgroundImage, backgroundImageStyle]}
         >
           {content}
         </ImageBackground>
       ) : (
-        <View style={styles.background}>{content}</View>
+        <View style={[styles.background, { backgroundColor: theme.colors.canvas }]}>{content}</View>
       )}
     </View>
   );
@@ -72,23 +79,18 @@ export function AuthScreenBackground({
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: darkTheme.colors.canvas,
     flex: 1,
   },
   background: {
-    backgroundColor: darkTheme.colors.canvas,
     flex: 1,
   },
   backgroundImage: {
     resizeMode: 'cover',
   },
-  // Existing image-readability overlays are local structural composition values.
   baseTone: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(1, 5, 12, 0.32)',
   },
   leftReadabilityShade: {
-    backgroundColor: 'rgba(1, 5, 12, 0.42)',
     bottom: 0,
     left: 0,
     position: 'absolute',
@@ -96,7 +98,6 @@ const styles = StyleSheet.create({
     width: '78%',
   },
   bottomShade: {
-    backgroundColor: 'rgba(1, 5, 12, 0.36)',
     bottom: 0,
     height: '38%',
     left: 0,

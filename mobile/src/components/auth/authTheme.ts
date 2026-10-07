@@ -1,23 +1,24 @@
-import { darkTheme } from '../../design-system/themes';
+import type { RunpuyTheme } from '../../design-system/themes';
 import { layout, radii, spacing } from '../../design-system/tokens';
 
-/** Compatibility adapter for unchanged Auth route styles. */
-export const authTheme = {
+/** Compatibility adapter for Auth-specific aliases backed by the resolved RUNPUY theme. */
+export function createAuthTheme(theme: RunpuyTheme) {
+  return {
   colors: {
-    background: darkTheme.colors.canvas,
-    panel: darkTheme.colors.card,
-    panelBorder: darkTheme.colors.borderSubtle,
-    panelBorderFocus: darkTheme.colors.focus,
-    panelBorderError: darkTheme.colors.error,
-    textPrimary: darkTheme.colors.textPrimary,
-    textSecondary: darkTheme.colors.textSecondary,
-    textMuted: darkTheme.colors.textSecondary,
-    accent: darkTheme.colors.actionPrimary,
-    error: darkTheme.colors.error,
-    subtleDivider: darkTheme.colors.borderSubtle,
-    inputPlaceholder: darkTheme.colors.textSecondary,
-    icon: darkTheme.colors.textSecondary,
-    devOnly: darkTheme.colors.information,
+    background: theme.colors.canvas,
+    panel: theme.colors.card,
+    panelBorder: theme.colors.borderSubtle,
+    panelBorderFocus: theme.colors.focus,
+    panelBorderError: theme.colors.error,
+    textPrimary: theme.colors.textPrimary,
+    textSecondary: theme.colors.textSecondary,
+    textMuted: theme.colors.textSecondary,
+    accent: theme.colors.actionPrimary,
+    error: theme.colors.error,
+    subtleDivider: theme.colors.borderSubtle,
+    inputPlaceholder: theme.colors.textSecondary,
+    icon: theme.colors.textSecondary,
+    devOnly: theme.colors.information,
   },
   spacing: {
     screenHorizontal: spacing.xl,
@@ -36,4 +37,7 @@ export const authTheme = {
     iconButton: layout.minimumTouchTarget,
     contentMaxWidth: 440,
   },
-} as const;
+  } as const;
+}
+
+export type AuthTheme = ReturnType<typeof createAuthTheme>;

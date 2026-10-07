@@ -1,7 +1,7 @@
 import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 
 import { RunpuyText } from '../../design-system/components/RunpuyText';
-import { darkTheme } from '../../design-system/themes';
+import { useRunpuyTheme } from '../../design-system/theme-context';
 import { spacing } from '../../design-system/tokens';
 
 type AuthHeaderProps = {
@@ -12,17 +12,19 @@ type AuthHeaderProps = {
 };
 
 export function AuthHeader({ title, subtitle, titleStyle, subtitleStyle }: AuthHeaderProps) {
+  const { theme } = useRunpuyTheme();
+
   return (
     <View style={styles.root}>
       <View style={styles.brandRow}>
-        <RunpuyText theme={darkTheme} variant="heading" style={styles.brandLetter}>
+        <RunpuyText variant="heading" style={{ color: theme.colors.actionPrimary }}>
           A
         </RunpuyText>
         <View style={styles.brandText}>
-          <RunpuyText theme={darkTheme} variant="title" style={styles.brandName}>
+          <RunpuyText variant="title" style={styles.brandName}>
             AI COACH
           </RunpuyText>
-          <RunpuyText theme={darkTheme} variant="caption" tone="secondary" style={styles.brandTagline}>
+          <RunpuyText variant="caption" tone="secondary" style={styles.brandTagline}>
             YOUR TRAINING PARTNER
           </RunpuyText>
         </View>
@@ -31,13 +33,12 @@ export function AuthHeader({ title, subtitle, titleStyle, subtitleStyle }: AuthH
       <View style={styles.heroCopy}>
         <RunpuyText
           accessibilityRole="header"
-          theme={darkTheme}
           variant="heading"
           style={titleStyle}
         >
           {title}
         </RunpuyText>
-        <RunpuyText theme={darkTheme} variant="body" tone="secondary" style={subtitleStyle}>
+        <RunpuyText variant="body" tone="secondary" style={subtitleStyle}>
           {subtitle}
         </RunpuyText>
       </View>
@@ -53,9 +54,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: spacing.sm,
-  },
-  brandLetter: {
-    color: darkTheme.colors.actionPrimary,
   },
   brandText: {
     gap: spacing.xs,

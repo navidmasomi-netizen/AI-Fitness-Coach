@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
-import { darkTheme } from '../../design-system/themes';
+import { useRunpuyTheme } from '../../design-system/theme-context';
 import { layout } from '../../design-system/tokens';
 import { AuthTextField } from './AuthTextField';
 
@@ -21,6 +21,7 @@ export function AuthPasswordField({
 }: AuthPasswordFieldProps) {
   const [visible, setVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const { theme } = useRunpuyTheme();
 
   return (
     <AuthTextField
@@ -36,7 +37,7 @@ export function AuthPasswordField({
       isFocused={isFocused}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
-      icon={<Feather name="lock" size={18} color={darkTheme.colors.textSecondary} />}
+      icon={<Feather name="lock" size={18} color={theme.colors.textSecondary} />}
       rightAccessory={
         <Pressable
           accessibilityRole="button"
@@ -49,7 +50,7 @@ export function AuthPasswordField({
           <Feather
             name={visible ? 'eye-off' : 'eye'}
             size={18}
-            color={darkTheme.colors.textSecondary}
+            color={theme.colors.textSecondary}
           />
         </Pressable>
       }

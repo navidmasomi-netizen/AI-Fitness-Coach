@@ -1,5 +1,4 @@
 import { RunpuyButton } from '../../design-system/components/RunpuyButton';
-import { darkTheme } from '../../design-system/themes';
 
 type AuthPrimaryButtonProps = {
   label: string;
@@ -20,7 +19,6 @@ export function AuthPrimaryButton({
       onPress={onPress}
       disabled={disabled}
       loading={loading}
-      theme={darkTheme}
     />
   );
 }

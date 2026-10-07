@@ -10,7 +10,7 @@ import {
 
 import { RunpuyText } from '../../design-system/components/RunpuyText';
 import { runpuyFontFamilies } from '../../design-system/fonts';
-import { darkTheme } from '../../design-system/themes';
+import { useRunpuyTheme } from '../../design-system/theme-context';
 import { layout, radii, spacing } from '../../design-system/tokens';
 import { typography } from '../../design-system/typography';
 
@@ -36,23 +36,24 @@ export function AuthTextField({
   onBlur,
   ...inputProps
 }: AuthTextFieldProps) {
+  const { theme } = useRunpuyTheme();
   const borderColor = error
-    ? darkTheme.colors.error
+    ? theme.colors.error
     : isFocused
-      ? darkTheme.colors.focus
-      : darkTheme.colors.borderSubtle;
+      ? theme.colors.focus
+      : theme.colors.borderSubtle;
 
   return (
     <View style={styles.root}>
-      <RunpuyText theme={darkTheme} variant="caption">
+      <RunpuyText variant="caption">
         {label}
       </RunpuyText>
-      <View style={[styles.fieldShell, { borderColor }]}>
+      <View style={[styles.fieldShell, { backgroundColor: theme.colors.card, borderColor }]}>
         {icon ? <View style={styles.iconSlot}>{icon}</View> : null}
         <TextInput
-          placeholderTextColor={darkTheme.colors.textSecondary}
-          selectionColor={darkTheme.colors.textPrimary}
-          style={styles.input}
+          placeholderTextColor={theme.colors.textSecondary}
+          selectionColor={theme.colors.textPrimary}
+          style={[styles.input, { color: theme.colors.textPrimary }]}
           onFocus={onFocus}
           onBlur={onBlur}
           accessibilityLabel={label}
@@ -61,12 +62,12 @@ export function AuthTextField({
         {rightAccessory ? <View style={styles.rightAccessory}>{rightAccessory}</View> : null}
       </View>
       {error ? (
-        <RunpuyText theme={darkTheme} variant="caption" style={styles.errorText}>
+        <RunpuyText variant="caption" style={{ color: theme.colors.error }}>
           {error}
         </RunpuyText>
       ) : null}
       {!error && helperText ? (
-        <RunpuyText theme={darkTheme} variant="caption" tone="secondary">
+        <RunpuyText variant="caption" tone="secondary">
           {helperText}
         </RunpuyText>
       ) : null}
@@ -80,7 +81,6 @@ const styles = StyleSheet.create({
   },
   fieldShell: {
     alignItems: 'center',
-    backgroundColor: darkTheme.colors.card,
     borderRadius: radii.control,
     borderWidth: 1,
     flexDirection: 'row',
@@ -91,7 +91,6 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
   },
   input: {
-    color: darkTheme.colors.textPrimary,
     flex: 1,
     fontFamily: runpuyFontFamilies.latin.body,
     fontSize: typography.body.fontSize,
@@ -100,8 +99,5 @@ const styles = StyleSheet.create({
   },
   rightAccessory: {
     marginLeft: spacing.sm,
-  },
-  errorText: {
-    color: darkTheme.colors.error,
   },
 });

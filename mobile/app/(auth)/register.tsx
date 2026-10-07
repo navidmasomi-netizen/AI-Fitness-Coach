@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 
@@ -8,7 +8,9 @@ import { AuthPasswordField } from "../../src/components/auth/AuthPasswordField";
 import { AuthPrimaryButton } from "../../src/components/auth/AuthPrimaryButton";
 import { AuthScreenBackground } from "../../src/components/auth/AuthScreenBackground";
 import { AuthTextField } from "../../src/components/auth/AuthTextField";
-import { authTheme } from "../../src/components/auth/authTheme";
+import { createAuthTheme } from "../../src/components/auth/authTheme";
+import { RunpuyText } from "../../src/design-system/components/RunpuyText";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { useAuthStore } from "../../src/store/authStore";
 import { validateEmail, validateName, validatePassword } from "../../src/utils/registerValidation";
 
@@ -16,6 +18,9 @@ const registerHeroImage = require("../../assets/images/auth/auth-register-hero.p
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { scheme, theme } = useRunpuyTheme();
+  const authTheme = useMemo(() => createAuthTheme(theme), [theme]);
+  const styles = useMemo(() => createStyles(authTheme, scheme), [authTheme, scheme]);
   const register = useAuthStore((s) => s.register);
   const error = useAuthStore((s) => s.error);
   const [name, setName] = useState("");
@@ -111,17 +116,17 @@ export default function RegisterScreen() {
           {__DEV__ ? (
             <View style={styles.legalRow} accessible accessibilityRole="text">
               <View style={styles.legalCheckbox} />
-              <Text style={styles.legalText}>
-                I agree to the <Text style={styles.legalLink}>Terms of Service</Text>{"\n"}
-                and <Text style={styles.legalLink}>Privacy Policy</Text>
-              </Text>
+              <RunpuyText variant="body" tone="secondary" style={styles.legalText}>
+                I agree to the <RunpuyText variant="body" style={styles.legalLink}>Terms of Service</RunpuyText>{"\n"}
+                and <RunpuyText variant="body" style={styles.legalLink}>Privacy Policy</RunpuyText>
+              </RunpuyText>
             </View>
           ) : null}
 
           {error ? (
-            <Text accessibilityRole="alert" style={styles.serverError}>
+            <RunpuyText accessibilityRole="alert" variant="caption" style={styles.serverError}>
               {error}
-            </Text>
+            </RunpuyText>
           ) : null}
 
           <AuthPrimaryButton
@@ -132,14 +137,14 @@ export default function RegisterScreen() {
           />
 
           <View style={styles.footerRow}>
-            <Text style={styles.footerText}>Already have an account?</Text>
+            <RunpuyText variant="body" tone="secondary" style={styles.footerText}>Already have an account?</RunpuyText>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Go to login"
               hitSlop={8}
               onPress={() => router.push("/(auth)/login")}
             >
-              <Text style={styles.footerLink}>Log in</Text>
+              <RunpuyText variant="display" style={styles.footerLink}>Log in</RunpuyText>
             </Pressable>
           </View>
         </View>
@@ -148,7 +153,7 @@ export default function RegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "light" | "dark") => StyleSheet.create({
   container: {
     gap: authTheme.spacing.sectionGap,
   },
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: authTheme.colors.panelBorder,
-    backgroundColor: "rgba(5, 12, 22, 0.60)",
+    backgroundColor: scheme === "dark" ? "rgba(5, 12, 22, 0.60)" : authTheme.colors.panel,
   },
   legalText: {
     flex: 1,
@@ -211,6 +216,5 @@ const styles = StyleSheet.create({
   footerLink: {
     color: authTheme.colors.accent,
     fontSize: 15,
-    fontWeight: "700",
   },
 });

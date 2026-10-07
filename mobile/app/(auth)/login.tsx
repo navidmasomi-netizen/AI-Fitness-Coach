@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 
@@ -8,7 +8,9 @@ import { AuthPasswordField } from "../../src/components/auth/AuthPasswordField";
 import { AuthPrimaryButton } from "../../src/components/auth/AuthPrimaryButton";
 import { AuthScreenBackground } from "../../src/components/auth/AuthScreenBackground";
 import { AuthTextField } from "../../src/components/auth/AuthTextField";
-import { authTheme } from "../../src/components/auth/authTheme";
+import { createAuthTheme } from "../../src/components/auth/authTheme";
+import { RunpuyText } from "../../src/design-system/components/RunpuyText";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { useAuthStore } from "../../src/store/authStore";
 
 function validateEmail(value: string): string | null {
@@ -35,6 +37,9 @@ function validatePassword(value: string): string | null {
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { scheme, theme } = useRunpuyTheme();
+  const authTheme = useMemo(() => createAuthTheme(theme), [theme]);
+  const styles = useMemo(() => createStyles(authTheme, scheme), [authTheme, scheme]);
   const login = useAuthStore((s) => s.login);
   const error = useAuthStore((s) => s.error);
   const [email, setEmail] = useState("");
@@ -104,14 +109,14 @@ export default function LoginScreen() {
 
           {__DEV__ ? (
             <View style={styles.futureActionRow}>
-              <Text style={styles.futureActionText}>Forgot password?</Text>
+              <RunpuyText variant="caption" style={styles.futureActionText}>Forgot password?</RunpuyText>
             </View>
           ) : null}
 
           {error ? (
-            <Text accessibilityRole="alert" style={styles.serverError}>
+            <RunpuyText accessibilityRole="alert" variant="caption" style={styles.serverError}>
               {error}
-            </Text>
+            </RunpuyText>
           ) : null}
 
           <AuthPrimaryButton
@@ -125,32 +130,32 @@ export default function LoginScreen() {
             <View style={styles.devOnlySection}>
               <View style={styles.dividerRow}>
                 <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or continue with</Text>
+                <RunpuyText variant="caption" tone="secondary" style={styles.dividerText}>or continue with</RunpuyText>
                 <View style={styles.dividerLine} />
               </View>
 
               <View style={styles.socialRow}>
                 <View style={styles.socialButton} accessible accessibilityRole="text">
-                  <Text style={styles.socialIcon}>G</Text>
-                  <Text style={styles.socialLabel}>Google</Text>
+                  <RunpuyText variant="display" style={styles.socialIcon}>G</RunpuyText>
+                  <RunpuyText variant="title" style={styles.socialLabel}>Google</RunpuyText>
                 </View>
                 <View style={styles.socialButton} accessible accessibilityRole="text">
-                  <Text style={styles.socialIcon}></Text>
-                  <Text style={styles.socialLabel}>Apple</Text>
+                  <RunpuyText variant="display" style={styles.socialIcon}></RunpuyText>
+                  <RunpuyText variant="title" style={styles.socialLabel}>Apple</RunpuyText>
                 </View>
               </View>
             </View>
           ) : null}
 
           <View style={styles.footerRow}>
-            <Text style={styles.footerText}>Don&apos;t have an account?</Text>
+            <RunpuyText variant="body" tone="secondary" style={styles.footerText}>Don&apos;t have an account?</RunpuyText>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Go to register"
               hitSlop={8}
               onPress={() => router.push("/(auth)/register")}
             >
-              <Text style={styles.footerLink}>Sign up</Text>
+              <RunpuyText variant="display" style={styles.footerLink}>Sign up</RunpuyText>
             </Pressable>
           </View>
         </View>
@@ -159,7 +164,7 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "light" | "dark") => StyleSheet.create({
   container: {
     gap: authTheme.spacing.sectionGap,
   },
@@ -210,7 +215,7 @@ const styles = StyleSheet.create({
     borderRadius: authTheme.radius.input,
     borderWidth: 1,
     borderColor: authTheme.colors.panelBorder,
-    backgroundColor: "rgba(5, 12, 22, 0.60)",
+    backgroundColor: scheme === "dark" ? "rgba(5, 12, 22, 0.60)" : authTheme.colors.panel,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -220,12 +225,10 @@ const styles = StyleSheet.create({
   socialIcon: {
     color: authTheme.colors.textPrimary,
     fontSize: 19,
-    fontWeight: "700",
   },
   socialLabel: {
     color: authTheme.colors.textPrimary,
     fontSize: 15,
-    fontWeight: "600",
   },
   footerRow: {
     flexDirection: "row",
@@ -242,6 +245,5 @@ const styles = StyleSheet.create({
   footerLink: {
     color: authTheme.colors.accent,
     fontSize: 15,
-    fontWeight: "700",
   },
 });
