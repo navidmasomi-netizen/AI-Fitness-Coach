@@ -106,7 +106,7 @@ function Footer({ isOverflowOpen, onToggleOverflow, onLogout }: { isOverflowOpen
 
 const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({
   frequencyGrid: { gap: spacing.md }, frequencyRow: { flexDirection: 'row', gap: spacing.md }, frequencyCard: { flex: 1 },
-  summaryCard: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md }, summaryCopy: { flex: 1, gap: spacing.xs }, errorMessage: { color: theme.colors.error },
+  summaryCard: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md }, summaryCopy: { flex: 1, gap: spacing.xs }, errorMessage: { color: theme.colors.textPrimary },
   footerContent: { alignItems: 'center', gap: spacing.sm }, overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget },
   logoutAction: { borderColor: theme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, minHeight: layout.minimumTouchTarget, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   privacyFooter: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }, privacyText: { textAlign: 'center' },

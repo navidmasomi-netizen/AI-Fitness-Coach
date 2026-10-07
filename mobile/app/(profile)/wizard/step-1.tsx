@@ -135,7 +135,7 @@ function Footer({
 
 const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({
   optionList: { gap: spacing.md },
-  errorMessage: { color: theme.colors.error },
+  errorMessage: { color: theme.colors.textPrimary },
   footerContent: { alignItems: 'center', gap: spacing.sm },
   overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget },
   logoutAction: { borderColor: theme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, minHeight: layout.minimumTouchTarget, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
