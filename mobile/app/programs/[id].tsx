@@ -1,4 +1,4 @@
-import { View, ScrollView, ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { View, ScrollView, ActivityIndicator, Pressable, StyleSheet, I18nManager } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -40,7 +40,7 @@ export default function ProgramDetailScreen() {
           style={styles.backButton}
         >
           <RunpuyText tone="secondary" variant="body">
-            {`\u2190 Back`}
+            {I18nManager.isRTL ? "Back \u2192" : "\u2190 Back"}
           </RunpuyText>
         </Pressable>
 
@@ -128,7 +128,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => Styl
     paddingTop: spacing.lg,
   },
   backButton: {
-    alignSelf: "flex-start",
+    alignSelf: I18nManager.isRTL ? "flex-end" : "flex-start",
     justifyContent: "center",
     minHeight: layout.minimumTouchTarget,
   },

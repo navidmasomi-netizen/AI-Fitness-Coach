@@ -1,4 +1,4 @@
-import { View, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { View, ScrollView, ActivityIndicator, Pressable, I18nManager } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -169,9 +169,13 @@ export default function WorkoutSummaryScreen() {
           accessibilityLabel="Return to Home"
           accessibilityRole="button"
           onPress={() => router.replace("/(tabs)")}
-          style={{ alignSelf: "flex-start", justifyContent: "center", minHeight: layout.minimumTouchTarget }}
+          style={{
+            alignSelf: I18nManager.isRTL ? "flex-end" : "flex-start",
+            justifyContent: "center",
+            minHeight: layout.minimumTouchTarget,
+          }}
         >
-          <RunpuyText variant="body">{`\u2190 Home`}</RunpuyText>
+          <RunpuyText variant="body">{I18nManager.isRTL ? "Home \u2192" : "\u2190 Home"}</RunpuyText>
         </Pressable>
 
         <View style={{ gap: spacing.xs }}>
@@ -258,7 +262,14 @@ export default function WorkoutSummaryScreen() {
                 : null;
             return (
               <RunpuyCard key={rec.id} style={{ gap: spacing.xs }}>
-                <View style={{ alignItems: "flex-start", flexDirection: "row", gap: spacing.sm, justifyContent: "space-between" }}>
+                <View
+                  style={{
+                    alignItems: "flex-start",
+                    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+                    gap: spacing.sm,
+                    justifyContent: "space-between",
+                  }}
+                >
                   <RunpuyText script="persianArabic" variant="title" style={{ flex: 1 }}>
                     {rec.exercise.nameFa}
                   </RunpuyText>

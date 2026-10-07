@@ -1,4 +1,4 @@
-import { View, Pressable, ScrollView, StyleSheet } from "react-native";
+import { View, Pressable, ScrollView, StyleSheet, I18nManager } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -48,7 +48,7 @@ export default function WorkoutPreviewScreen() {
           style={styles.backButton}
         >
           <RunpuyText tone="secondary" variant="body">
-            {`\u2190 Back`}
+            {I18nManager.isRTL ? "Back \u2192" : "\u2190 Back"}
           </RunpuyText>
         </Pressable>
 
@@ -111,7 +111,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => Styl
     paddingTop: spacing.lg,
   },
   backButton: {
-    alignSelf: "flex-start",
+    alignSelf: I18nManager.isRTL ? "flex-end" : "flex-start",
     justifyContent: "center",
     minHeight: layout.minimumTouchTarget,
   },
@@ -122,7 +122,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => Styl
     gap: spacing.sm,
   },
   exerciseCard: {
-    flexDirection: "row",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     gap: spacing.sm,
   },
   actionArea: {
