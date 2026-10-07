@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { Pressable, View, type ViewStyle } from 'react-native';
+import { I18nManager, Pressable, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { RunpuyButton } from '../../design-system/components/RunpuyButton';
@@ -88,7 +88,7 @@ export function WizardStepScreen({
                   ]}
                 >
                   <RunpuyText variant="body" tone="secondary">
-                    ‹
+                    {I18nManager.isRTL ? '›' : '‹'}
                   </RunpuyText>
                 </Pressable>
               ) : null}
@@ -142,7 +142,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({
   },
   progressHeader: {
     alignItems: 'flex-start',
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     justifyContent: 'space-between',
   },
   progressCopy: {
@@ -157,6 +157,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>['theme']) => ({
     overflow: 'hidden',
   },
   progressFill: {
+    alignSelf: I18nManager.isRTL ? 'flex-end' : 'flex-start',
     backgroundColor: theme.colors.actionPrimary,
     borderRadius: radii.control,
     height: '100%',

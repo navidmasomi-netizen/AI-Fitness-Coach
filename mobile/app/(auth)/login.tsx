@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { I18nManager, Pressable, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 
@@ -175,7 +175,7 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
     gap: authTheme.spacing.fieldGap,
   },
   futureActionRow: {
-    alignItems: "flex-end",
+    alignItems: I18nManager.isRTL ? "flex-start" : "flex-end",
     marginTop: -2,
   },
   futureActionText: {
@@ -218,7 +218,7 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
     backgroundColor: scheme === "dark" ? "rgba(5, 12, 22, 0.60)" : authTheme.colors.panel,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     gap: 10,
     paddingHorizontal: 16,
   },
@@ -231,7 +231,7 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
     fontSize: 15,
   },
   footerRow: {
-    flexDirection: "row",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     justifyContent: "center",
     alignItems: "center",
     gap: 6,
