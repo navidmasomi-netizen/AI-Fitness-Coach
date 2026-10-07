@@ -18,9 +18,9 @@ const registerHeroImage = require("../../assets/images/auth/auth-register-hero.p
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { scheme, theme } = useRunpuyTheme();
+  const { theme } = useRunpuyTheme();
   const authTheme = useMemo(() => createAuthTheme(theme), [theme]);
-  const styles = useMemo(() => createStyles(authTheme, scheme), [authTheme, scheme]);
+  const styles = useMemo(() => createStyles(authTheme), [authTheme]);
   const register = useAuthStore((s) => s.register);
   const error = useAuthStore((s) => s.error);
   const [name, setName] = useState("");
@@ -114,13 +114,9 @@ export default function RegisterScreen() {
           </View>
 
           {__DEV__ ? (
-            <View style={styles.legalRow} accessible accessibilityRole="text">
-              <View style={styles.legalCheckbox} />
-              <RunpuyText variant="body" tone="secondary" style={styles.legalText}>
-                I agree to the <RunpuyText variant="body" style={styles.legalLink}>Terms of Service</RunpuyText>{"\n"}
-                and <RunpuyText variant="body" style={styles.legalLink}>Privacy Policy</RunpuyText>
-              </RunpuyText>
-            </View>
+            <RunpuyText accessible accessibilityRole="text" variant="body" tone="secondary" style={styles.legalText}>
+              By creating an account, you agree to the Terms of Service and Privacy Policy.
+            </RunpuyText>
           ) : null}
 
           {error ? (
@@ -153,7 +149,7 @@ export default function RegisterScreen() {
   );
 }
 
-const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "light" | "dark") => StyleSheet.create({
+const createStyles = (authTheme: ReturnType<typeof createAuthTheme>) => StyleSheet.create({
   container: {
     gap: authTheme.spacing.sectionGap,
   },
@@ -173,28 +169,10 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
   formFields: {
     gap: authTheme.spacing.fieldGap,
   },
-  legalRow: {
-    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
-    alignItems: "flex-start",
-    gap: 10,
-  },
-  legalCheckbox: {
-    width: 26,
-    height: 26,
-    marginTop: 1,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: authTheme.colors.panelBorder,
-    backgroundColor: scheme === "dark" ? "rgba(5, 12, 22, 0.60)" : authTheme.colors.panel,
-  },
   legalText: {
-    flex: 1,
     color: authTheme.colors.textSecondary,
     fontSize: 15,
     lineHeight: 23,
-  },
-  legalLink: {
-    color: authTheme.colors.accent,
   },
   serverError: {
     color: authTheme.colors.error,
