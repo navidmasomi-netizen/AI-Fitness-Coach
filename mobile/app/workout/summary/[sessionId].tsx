@@ -243,7 +243,7 @@ export default function WorkoutSummaryScreen() {
             </RunpuyText>
           )}
           {isProgressionsError && (
-            <RunpuyText accessibilityRole="alert" variant="caption" style={{ color: theme.colors.error }}>
+            <RunpuyText accessibilityRole="alert" variant="caption" style={{ color: theme.colors.textPrimary }}>
               Could not load recommendations.
             </RunpuyText>
           )}
