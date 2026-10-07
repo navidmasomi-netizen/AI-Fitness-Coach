@@ -5,10 +5,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getProgramById } from "../../src/api/programs";
 import { activateProgram } from "../../src/api/userPrograms";
 import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
-import { darkTheme } from "../../src/design-system/themes";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, spacing } from "../../src/design-system/tokens";
 
 export default function ProgramDetailScreen() {
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -37,32 +39,32 @@ export default function ProgramDetailScreen() {
           accessibilityLabel="Go back"
           style={styles.backButton}
         >
-          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <RunpuyText tone="secondary" variant="body">
             {`\u2190 Back`}
           </RunpuyText>
         </Pressable>
 
         {isLoading && (
           <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading program">
-            <ActivityIndicator color={darkTheme.colors.actionPrimary} />
+            <ActivityIndicator color={theme.colors.actionPrimary} />
           </View>
         )}
         {isError && (
-          <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+          <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
             Error: {(error as Error)?.message}
           </RunpuyText>
         )}
 
         {program && (
           <View style={styles.programContent}>
-            <RunpuyCard theme={darkTheme} style={styles.programCard}>
-              <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+            <RunpuyCard style={styles.programCard}>
+              <RunpuyText accessibilityRole="header" variant="heading">
                 {program.name}
               </RunpuyText>
-              <RunpuyText theme={darkTheme} variant="body">
+              <RunpuyText variant="body">
                 Goal: {program.goal}
               </RunpuyText>
-              <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+              <RunpuyText tone="secondary" variant="body">
                 Split: {program.splitFamily}
               </RunpuyText>
             </RunpuyCard>
@@ -71,15 +73,14 @@ export default function ProgramDetailScreen() {
               label="Activate Program"
               loading={activateMutation.isPending}
               onPress={() => activateMutation.mutate()}
-              theme={darkTheme}
             />
             {activateMutation.isPending && (
-              <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} tone="secondary" variant="caption">
+              <RunpuyText accessibilityLiveRegion="polite" tone="secondary" variant="caption">
                 Activating...
               </RunpuyText>
             )}
             {activateMutation.isError && (
-              <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+              <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
                 {(activateMutation.error as Error)?.message}
               </RunpuyText>
             )}
@@ -87,18 +88,18 @@ export default function ProgramDetailScreen() {
             {program.days
               .sort((a, b) => a.dayIndex - b.dayIndex)
               .map((day) => (
-                <RunpuyCard key={day.id} theme={darkTheme} style={styles.dayCard}>
-                  <RunpuyText theme={darkTheme} variant="title">
+                <RunpuyCard key={day.id} style={styles.dayCard}>
+                  <RunpuyText variant="title">
                     {day.name}
                   </RunpuyText>
                   {day.exercises
                     .sort((a, b) => a.order - b.order)
                     .map((pde) => (
                       <View key={pde.id} style={styles.exercise}>
-                        <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
+                        <RunpuyText script="persianArabic" variant="body">
                           {pde.exercise.nameFa}
                         </RunpuyText>
-                        <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                        <RunpuyText tone="secondary" variant="caption">
                           {pde.sets} sets x {pde.repRangeLow}-{pde.repRangeHigh} reps · rest {pde.restSeconds}s
                         </RunpuyText>
                       </View>
@@ -112,9 +113,9 @@ export default function ProgramDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => StyleSheet.create({
   safeArea: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   scrollView: {
@@ -144,6 +145,6 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   errorText: {
-    color: darkTheme.colors.error,
+    color: theme.colors.error,
   },
 });

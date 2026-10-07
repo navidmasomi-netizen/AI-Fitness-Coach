@@ -4,10 +4,12 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { startFromActiveProgram } from "../../src/api/sessions";
 import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
-import { darkTheme } from "../../src/design-system/themes";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, spacing } from "../../src/design-system/tokens";
 
 export default function WorkoutPreviewScreen() {
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const { dayName, workoutName, exerciseNames } = useLocalSearchParams<{
     dayName: string;
     workoutName: string;
@@ -45,27 +47,27 @@ export default function WorkoutPreviewScreen() {
           accessibilityLabel="Go back"
           style={styles.backButton}
         >
-          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <RunpuyText tone="secondary" variant="body">
             {`\u2190 Back`}
           </RunpuyText>
         </Pressable>
 
         <View style={styles.header}>
-          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+          <RunpuyText accessibilityRole="header" variant="heading">
             Today's Workout
           </RunpuyText>
-          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <RunpuyText tone="secondary" variant="body">
             {dayName} — {workoutName}
           </RunpuyText>
         </View>
 
         <View style={styles.exercises}>
           {names.map((name, i) => (
-            <RunpuyCard key={i} theme={darkTheme} style={styles.exerciseCard}>
-              <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+            <RunpuyCard key={i} style={styles.exerciseCard}>
+              <RunpuyText tone="secondary" variant="caption">
                 {i + 1}.
               </RunpuyText>
-              <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
+              <RunpuyText script="persianArabic" variant="body">
                 {name}
               </RunpuyText>
             </RunpuyCard>
@@ -77,15 +79,14 @@ export default function WorkoutPreviewScreen() {
             label="Start Session"
             loading={startMutation.isPending}
             onPress={() => startMutation.mutate()}
-            theme={darkTheme}
           />
           {startMutation.isPending && (
-            <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} tone="secondary" variant="caption">
+            <RunpuyText accessibilityLiveRegion="polite" tone="secondary" variant="caption">
               Starting...
             </RunpuyText>
           )}
           {startMutation.isError && (
-            <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+            <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
               {(startMutation.error as Error)?.message}
             </RunpuyText>
           )}
@@ -95,9 +96,9 @@ export default function WorkoutPreviewScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => StyleSheet.create({
   safeArea: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   scrollView: {
@@ -128,6 +129,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   errorText: {
-    color: darkTheme.colors.error,
+    color: theme.colors.error,
   },
 });

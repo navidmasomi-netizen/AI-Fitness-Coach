@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { Redirect } from "expo-router";
 import { getFullProfile } from "../src/api/profile";
 import { useAuthStore } from "../src/store/authStore";
 import { hasSeenIntro } from "../src/store/onboardingStorage";
 import { hydrateWizardDraft, resetWizardDraft } from "../src/store/wizardHydrate";
 import { resolveWizardResumeRoute, type WizardRoute } from "../src/utils/wizardResume";
+import { RunpuyText } from "../src/design-system/components";
+import { useRunpuyTheme } from "../src/design-system/theme-context";
 
 export default function Index() {
+  const { theme } = useRunpuyTheme();
   const isLoading = useAuthStore((s) => s.isLoading);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
@@ -83,12 +86,13 @@ export default function Index() {
     return (
       <View
         style={{
+          backgroundColor: theme.colors.canvas,
           flex: 1,
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Text>Loading...</Text>
+        <RunpuyText variant="body">Loading...</RunpuyText>
       </View>
     );
   }

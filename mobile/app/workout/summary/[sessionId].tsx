@@ -10,7 +10,6 @@ import { useAuthStore } from "../../../src/store/authStore";
 import { getLastSetForExercise, getTrend, trendArrow, comparisonText, findPreviousSession } from "../../../src/utils/compareSets";
 import { buildWorkoutName } from "../../../src/utils/workoutMeta";
 import {
-  darkTheme,
   layout,
   RunpuyCard,
   RunpuyStatusChip,
@@ -18,6 +17,7 @@ import {
   spacing,
   type RunpuyStatus,
 } from "../../../src/design-system";
+import { useRunpuyTheme } from "../../../src/design-system/theme-context";
 
 function recommendationColor(type: RecommendationType): { label: string; status: RunpuyStatus } {
   if (type === "increase") return { label: "Increase", status: "success" };
@@ -70,6 +70,7 @@ function buildInsight(recommendations: ProgressionRecommendation[]): string {
 }
 
 export default function WorkoutSummaryScreen() {
+  const { theme } = useRunpuyTheme();
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -105,10 +106,10 @@ export default function WorkoutSummaryScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: darkTheme.colors.canvas }}>
+      <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.md }}>
-          <ActivityIndicator accessibilityLabel="Loading workout summary" color={darkTheme.colors.actionPrimary} />
-          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <ActivityIndicator accessibilityLabel="Loading workout summary" color={theme.colors.actionPrimary} />
+          <RunpuyText tone="secondary" variant="body">
             Loading workout summary
           </RunpuyText>
         </View>
@@ -118,9 +119,9 @@ export default function WorkoutSummaryScreen() {
 
   if (isError || !data) {
     return (
-      <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: darkTheme.colors.canvas }}>
+      <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: layout.pageMargin }}>
-          <RunpuyText accessibilityRole="alert" theme={darkTheme} variant="body" style={{ color: darkTheme.colors.error }}>
+          <RunpuyText accessibilityRole="alert" variant="body" style={{ color: theme.colors.error }}>
             {(error as Error)?.message || "Failed to load summary"}
           </RunpuyText>
         </View>
@@ -159,7 +160,7 @@ export default function WorkoutSummaryScreen() {
       : [];
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: darkTheme.colors.canvas }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
       <ScrollView
         contentContainerStyle={{ padding: layout.pageMargin, paddingTop: spacing.lg, paddingBottom: spacing.xl, gap: spacing.lg }}
         style={{ flex: 1 }}
@@ -170,59 +171,59 @@ export default function WorkoutSummaryScreen() {
           onPress={() => router.replace("/(tabs)")}
           style={{ alignSelf: "flex-start", justifyContent: "center", minHeight: layout.minimumTouchTarget }}
         >
-          <RunpuyText theme={darkTheme} variant="body">{`\u2190 Home`}</RunpuyText>
+          <RunpuyText variant="body">{`\u2190 Home`}</RunpuyText>
         </Pressable>
 
         <View style={{ gap: spacing.xs }}>
-          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+          <RunpuyText accessibilityRole="header" variant="heading">
             Workout Summary
           </RunpuyText>
-          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <RunpuyText tone="secondary" variant="body">
             {programDay?.name || ""} {programDay ? `\u2014` : ""} {buildWorkoutName(workoutNameExercises)}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+          <RunpuyText tone="secondary" variant="caption">
             Session #{session.id}
           </RunpuyText>
         </View>
 
-        <RunpuyCard theme={darkTheme} style={{ gap: spacing.xs }}>
-          <RunpuyText theme={darkTheme} variant="body">Status: {session.status}</RunpuyText>
+        <RunpuyCard style={{ gap: spacing.xs }}>
+          <RunpuyText variant="body">Status: {session.status}</RunpuyText>
           {session.completedAt && (
-            <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+            <RunpuyText tone="secondary" variant="caption">
               Completed at: {new Date(session.completedAt).toLocaleString()}
             </RunpuyText>
           )}
-          {program && <RunpuyText theme={darkTheme} tone="secondary" variant="caption">Program: {program.name}</RunpuyText>}
-          {programDay && <RunpuyText theme={darkTheme} tone="secondary" variant="caption">Day: {programDay.name}</RunpuyText>}
+          {program && <RunpuyText tone="secondary" variant="caption">Program: {program.name}</RunpuyText>}
+          {programDay && <RunpuyText tone="secondary" variant="caption">Day: {programDay.name}</RunpuyText>}
         </RunpuyCard>
 
         {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length > 0 && (
-          <RunpuyCard theme={darkTheme}>
-            <RunpuyText theme={darkTheme} variant="body">
+          <RunpuyCard>
+            <RunpuyText variant="body">
               {buildInsight(displayedProgressions)}
             </RunpuyText>
           </RunpuyCard>
         )}
 
-        <RunpuyCard theme={darkTheme} style={{ gap: spacing.xs }}>
-          <RunpuyText theme={darkTheme} variant="body">
+        <RunpuyCard style={{ gap: spacing.xs }}>
+          <RunpuyText variant="body">
             {buildReinforcement(numericSessionId)}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+          <RunpuyText tone="secondary" variant="caption">
             Try to train again within 48 hours.
           </RunpuyText>
         </RunpuyCard>
 
-        <RunpuyCard theme={darkTheme} style={{ gap: spacing.xs }}>
-          <RunpuyText theme={darkTheme} variant="body">Total exercises logged: {totalExercisesLogged}</RunpuyText>
-          <RunpuyText theme={darkTheme} variant="body">Total sets: {totalSets}</RunpuyText>
+        <RunpuyCard style={{ gap: spacing.xs }}>
+          <RunpuyText variant="body">Total exercises logged: {totalExercisesLogged}</RunpuyText>
+          <RunpuyText variant="body">Total sets: {totalSets}</RunpuyText>
         </RunpuyCard>
 
         {Object.entries(byExercise).map(([exId, group]) => (
-          <RunpuyCard key={exId} theme={darkTheme} style={{ gap: spacing.xs }}>
-            <RunpuyText theme={darkTheme} variant="title">{group.name}</RunpuyText>
+          <RunpuyCard key={exId} style={{ gap: spacing.xs }}>
+            <RunpuyText script="persianArabic" variant="title">{group.name}</RunpuyText>
             {group.sets.map((s) => (
-              <RunpuyText key={s.id} theme={darkTheme} tone="secondary" variant="body">
+              <RunpuyText key={s.id} tone="secondary" variant="body">
                 Set {s.setNumber}: {s.reps} reps{s.weightKg !== null ? ` @ ${s.weightKg}kg` : ""}
               </RunpuyText>
             ))}
@@ -230,20 +231,20 @@ export default function WorkoutSummaryScreen() {
         ))}
 
         <View style={{ gap: spacing.md }}>
-          <RunpuyText theme={darkTheme} variant="title">Next Session Recommendations</RunpuyText>
+          <RunpuyText variant="title">Next Session Recommendations</RunpuyText>
 
           {isProgressionsLoading && (
-            <RunpuyText accessibilityRole="progressbar" theme={darkTheme} tone="secondary" variant="caption">
+            <RunpuyText accessibilityRole="progressbar" tone="secondary" variant="caption">
               Loading recommendations...
             </RunpuyText>
           )}
           {isProgressionsError && (
-            <RunpuyText accessibilityRole="alert" theme={darkTheme} variant="caption" style={{ color: darkTheme.colors.error }}>
+            <RunpuyText accessibilityRole="alert" variant="caption" style={{ color: theme.colors.error }}>
               Could not load recommendations.
             </RunpuyText>
           )}
           {!isProgressionsLoading && !isProgressionsError && displayedProgressions.length === 0 && (
-            <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+            <RunpuyText tone="secondary" variant="caption">
               No recommendations yet
             </RunpuyText>
           )}
@@ -256,39 +257,39 @@ export default function WorkoutSummaryScreen() {
                 ? rec.explanation.userSummary
                 : null;
             return (
-              <RunpuyCard key={rec.id} theme={darkTheme} style={{ gap: spacing.xs }}>
+              <RunpuyCard key={rec.id} style={{ gap: spacing.xs }}>
                 <View style={{ alignItems: "flex-start", flexDirection: "row", gap: spacing.sm, justifyContent: "space-between" }}>
-                  <RunpuyText script="persianArabic" theme={darkTheme} variant="title" style={{ flex: 1 }}>
+                  <RunpuyText script="persianArabic" variant="title" style={{ flex: 1 }}>
                     {rec.exercise.nameFa}
                   </RunpuyText>
-                  <RunpuyStatusChip label={colors.label} status={colors.status} theme={darkTheme} />
+                  <RunpuyStatusChip label={colors.label} status={colors.status} />
                 </View>
                 {rec.previousWeightKg !== null && rec.recommendedWeightKg !== null && (
-                  <RunpuyText theme={darkTheme} variant="body">
+                  <RunpuyText variant="body">
                     {rec.previousWeightKg}kg → {rec.recommendedWeightKg}kg
                   </RunpuyText>
                 )}
                 {rec.recommendedTargetLow !== null && rec.recommendedTargetHigh !== null && (
-                  <RunpuyText theme={darkTheme} variant="body">
+                  <RunpuyText variant="body">
                     Target: {rec.recommendedTargetLow}-{rec.recommendedTargetHigh}
                   </RunpuyText>
                 )}
-                {context && <RunpuyText theme={darkTheme} tone="secondary" variant="caption">{context}</RunpuyText>}
+                {context && <RunpuyText tone="secondary" variant="caption">{context}</RunpuyText>}
                 {(() => {
                   const currentLastSet = getLastSetForExercise(session, rec.exerciseId);
                   const previousLastSet = getLastSetForExercise(previousSession, rec.exerciseId);
                   if (!currentLastSet || !previousLastSet) return null;
                   const trend = getTrend(currentLastSet, previousLastSet);
                   return (
-                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    <RunpuyText tone="secondary" variant="caption">
                       {trendArrow(trend)} {comparisonText(currentLastSet, previousLastSet)}
                     </RunpuyText>
                   );
                 })()}
                 {explanationText ? (
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">{explanationText}</RunpuyText>
+                  <RunpuyText tone="secondary" variant="caption">{explanationText}</RunpuyText>
                 ) : (
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">{rec.reason}</RunpuyText>
+                  <RunpuyText tone="secondary" variant="caption">{rec.reason}</RunpuyText>
                 )}
               </RunpuyCard>
             );
