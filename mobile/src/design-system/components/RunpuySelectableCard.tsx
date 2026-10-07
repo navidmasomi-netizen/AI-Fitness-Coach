@@ -1,5 +1,5 @@
 import { useState, type ComponentProps, type ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { I18nManager, Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useRunpuyTheme } from '../theme-context';
 import type { RunpuyTextScript } from '../fonts';
@@ -83,7 +83,7 @@ export function RunpuySelectableCard({
           // Border widths are structural focus geometry, not brand tokens.
           borderWidth: focused ? 2 : 1,
           borderRadius: radii.card,
-          flexDirection: 'row',
+          flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
           gap: spacing.md,
           minHeight: layout.minimumTouchTarget,
           padding: spacing.lg,

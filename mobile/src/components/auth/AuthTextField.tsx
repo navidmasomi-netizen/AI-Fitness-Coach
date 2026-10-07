@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import {
   NativeSyntheticEvent,
+  I18nManager,
   StyleSheet,
   TextInput,
   TextInputFocusEventData,
@@ -83,12 +84,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: radii.control,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     minHeight: layout.minimumTouchTarget,
     paddingHorizontal: spacing.md,
   },
   iconSlot: {
-    marginRight: spacing.sm,
+    marginEnd: spacing.sm,
   },
   input: {
     flex: 1,
@@ -98,6 +99,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   rightAccessory: {
-    marginLeft: spacing.sm,
+    marginStart: spacing.sm,
   },
 });

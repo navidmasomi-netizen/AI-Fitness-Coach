@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { I18nManager, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useRunpuyTheme } from '../theme-context';
 import type { RunpuyTheme } from '../themes';
@@ -50,12 +50,12 @@ export function RunpuyStatusChip({
       style={[
         {
           alignItems: 'center',
-          alignSelf: 'flex-start',
+          alignSelf: I18nManager.isRTL ? 'flex-end' : 'flex-start',
           backgroundColor: theme.colors.card,
           borderColor: status === 'neutral' ? theme.colors.borderSubtle : color,
           borderRadius: radii.control,
           borderWidth: 1,
-          flexDirection: 'row',
+          flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
           gap: spacing.xs,
           paddingHorizontal: spacing.sm,
           paddingVertical: spacing.xs,
