@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { View, ScrollView, Pressable, TextInput, Modal, ActivityIndicator, StyleSheet } from "react-native";
+import { View, ScrollView, Pressable, TextInput, Modal, ActivityIndicator, StyleSheet, I18nManager } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -1023,7 +1023,7 @@ export default function WorkoutSessionScreen() {
           style={styles.backButton}
         >
           <RunpuyText tone="secondary" variant="body">
-            {`\u2190 Back`}
+            {I18nManager.isRTL ? "Back \u2192" : "\u2190 Back"}
           </RunpuyText>
         </Pressable>
 
@@ -1183,7 +1183,7 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
     backgroundColor: theme.colors.card,
     borderBottomColor: theme.colors.borderSubtle,
     borderBottomWidth: 1,
-    flexDirection: "row",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     justifyContent: "space-between",
     left: 0,
     paddingBottom: spacing.md,
@@ -1195,7 +1195,7 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
     zIndex: 10,
   },
   restActions: {
-    flexDirection: "row",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     gap: spacing.sm,
   },
   restPrimaryAction: {
@@ -1231,7 +1231,7 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
     paddingTop: 96,
   },
   backButton: {
-    alignSelf: "flex-start",
+    alignSelf: I18nManager.isRTL ? "flex-end" : "flex-start",
     justifyContent: "center",
     minHeight: layout.minimumTouchTarget,
   },
@@ -1253,7 +1253,7 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
   },
   exerciseHeaderRow: {
     alignItems: "flex-start",
-    flexDirection: "row",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     gap: spacing.md,
     justifyContent: "space-between",
   },
@@ -1328,7 +1328,7 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
   },
   modalHeader: {
     alignItems: "center",
-    flexDirection: "row",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     gap: spacing.md,
     justifyContent: "space-between",
   },
