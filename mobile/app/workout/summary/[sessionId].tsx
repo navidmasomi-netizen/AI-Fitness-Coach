@@ -121,7 +121,7 @@ export default function WorkoutSummaryScreen() {
     return (
       <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: theme.colors.canvas }}>
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: layout.pageMargin }}>
-          <RunpuyText accessibilityRole="alert" variant="body" style={{ color: theme.colors.error }}>
+          <RunpuyText accessibilityRole="alert" variant="body" style={{ color: theme.colors.textPrimary }}>
             {(error as Error)?.message || "Failed to load summary"}
           </RunpuyText>
         </View>
