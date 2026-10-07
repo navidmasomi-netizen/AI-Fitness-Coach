@@ -95,7 +95,7 @@ export default function ProgramDetailScreen() {
                     .sort((a, b) => a.order - b.order)
                     .map((pde) => (
                       <View key={pde.id} style={styles.exercise}>
-                        <RunpuyText theme={darkTheme} variant="body">
+                        <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
                           {pde.exercise.nameFa}
                         </RunpuyText>
                         <RunpuyText theme={darkTheme} tone="secondary" variant="caption">

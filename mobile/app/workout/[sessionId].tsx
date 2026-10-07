@@ -7,6 +7,7 @@ import { ApiError } from "../../src/api/client";
 import { addSetLog, completeSession, getActiveSession } from "../../src/api/sessions";
 import { applyReplacementSelection, getReplacementRecommendations } from "../../src/api/replacements";
 import { buildWorkoutName } from "../../src/utils/workoutMeta";
+import { runpuyFontFamilies } from "../../src/design-system/fonts";
 import type { ProgramDayExercise } from "../../src/types/program";
 import type {
   CatalogEquipment,
@@ -693,7 +694,7 @@ export default function WorkoutSessionScreen() {
                   Replace Exercise
                 </RunpuyText>
                 {discoveryState.exercise && (
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                  <RunpuyText script="persianArabic" theme={darkTheme} tone="secondary" variant="body">
                     {getExerciseDisplayName(discoveryState.exercise.exercise)}
                   </RunpuyText>
                 )}
@@ -818,7 +819,7 @@ export default function WorkoutSessionScreen() {
                     </RunpuyText>
                     {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
                       <RunpuyCard key={candidate.exerciseId} theme={darkTheme} style={styles.candidateCard}>
-                        <RunpuyText theme={darkTheme} variant="body">
+                        <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
                           {candidate.nameFa}
                         </RunpuyText>
                         <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
@@ -879,6 +880,7 @@ export default function WorkoutSessionScreen() {
                       label={recommendedReplacement.nameFa}
                       onPress={() => selectReplacementCandidate(recommendedReplacement.exerciseId)}
                       selected={discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId}
+                      script="persianArabic"
                       selectionRole="radio"
                       theme={darkTheme}
                     />
@@ -909,6 +911,7 @@ export default function WorkoutSessionScreen() {
                           label={candidate.nameFa}
                           onPress={() => selectReplacementCandidate(candidate.exerciseId)}
                           selected={discoveryState.selectedCandidateExerciseId === candidate.exerciseId}
+                          script="persianArabic"
                           selectionRole="radio"
                           theme={darkTheme}
                         />
@@ -929,7 +932,7 @@ export default function WorkoutSessionScreen() {
                     </RunpuyText>
                     {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
                       <RunpuyCard key={candidate.exerciseId} theme={darkTheme} style={styles.candidateCard}>
-                        <RunpuyText theme={darkTheme} variant="body">
+                        <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
                           {candidate.nameFa}
                         </RunpuyText>
                         <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
@@ -979,7 +982,7 @@ export default function WorkoutSessionScreen() {
       {activeRestExerciseId !== null && (
         <View style={styles.restTimer}>
           <View>
-            <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+            <RunpuyText script="persianArabic" theme={darkTheme} tone="secondary" variant="caption">
               Resting · {activeRestExercise?.exercise?.nameFa}
             </RunpuyText>
             <RunpuyText theme={darkTheme} variant="heading">
@@ -1075,7 +1078,7 @@ export default function WorkoutSessionScreen() {
                     <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                       Suggested: {pde.sets} × {pde.repRangeLow}-{pde.repRangeHigh} reps
                     </RunpuyText>
-                    <RunpuyText theme={darkTheme} variant="title">
+                    <RunpuyText script="persianArabic" theme={darkTheme} variant="title">
                       {pde.exercise.nameFa}
                     </RunpuyText>
                     <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
@@ -1291,6 +1294,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.control,
     borderWidth: 1,
     color: darkTheme.colors.textPrimary,
+    fontFamily: runpuyFontFamilies.latin.body,
     minHeight: layout.minimumTouchTarget,
     paddingHorizontal: spacing.sm,
   },

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import { RunpuyText } from '../../design-system/components/RunpuyText';
+import { runpuyFontFamilies } from '../../design-system/fonts';
 import { darkTheme } from '../../design-system/themes';
 import { layout, radii, spacing } from '../../design-system/tokens';
 import { typography } from '../../design-system/typography';
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
   input: {
     color: darkTheme.colors.textPrimary,
     flex: 1,
+    fontFamily: runpuyFontFamilies.latin.body,
     fontSize: typography.body.fontSize,
     lineHeight: typography.body.lineHeight,
     paddingVertical: spacing.md,

@@ -2,6 +2,7 @@ import { useState, type ComponentProps, type ReactNode } from 'react';
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useRunpuyTheme } from '../theme-context';
+import type { RunpuyTextScript } from '../fonts';
 import type { RunpuyTheme } from '../themes';
 import { iconography, layout, radii, spacing } from '../tokens';
 import { RunpuyText } from './RunpuyText';
@@ -13,6 +14,7 @@ export type RunpuySelectableCardProps = Omit<
   'accessibilityRole' | 'children' | 'disabled' | 'onPress' | 'style'
 > & {
   label: string;
+  script?: RunpuyTextScript;
   description?: string;
   icon?: ReactNode;
   selected: boolean;
@@ -27,6 +29,7 @@ export type RunpuySelectableCardProps = Omit<
 
 export function RunpuySelectableCard({
   label,
+  script = 'latin',
   description,
   icon,
   selected,
@@ -89,7 +92,7 @@ export function RunpuySelectableCard({
     >
       {icon ? <View accessible={false}>{icon}</View> : null}
       <View style={styles.copy}>
-        <RunpuyText theme={theme} variant="title">
+        <RunpuyText script={script} theme={theme} variant="title">
           {label}
         </RunpuyText>
         {description ? (

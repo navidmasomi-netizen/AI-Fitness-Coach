@@ -65,7 +65,7 @@ export default function WorkoutPreviewScreen() {
               <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
                 {i + 1}.
               </RunpuyText>
-              <RunpuyText theme={darkTheme} variant="body">
+              <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
                 {name}
               </RunpuyText>
             </RunpuyCard>

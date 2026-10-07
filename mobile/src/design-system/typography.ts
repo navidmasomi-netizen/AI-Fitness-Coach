@@ -1,3 +1,4 @@
+import { runpuyFontFamilies, type RunpuyTextScript } from './fonts';
 import { runpuyTokens } from './tokens';
 
 /** Exact typography values from the canonical RUNPUY token source. */
@@ -35,3 +36,10 @@ export const typography = {
     weight: scale.caption.weight,
   },
 } as const;
+
+export function getRunpuyFontFamily(
+  variant: keyof typeof typography,
+  script: RunpuyTextScript,
+) {
+  return runpuyFontFamilies[script][variant];
+}

@@ -2,8 +2,9 @@ import type { ComponentProps, ReactNode } from 'react';
 import { Text, type StyleProp, type TextStyle } from 'react-native';
 
 import { useRunpuyTheme } from '../theme-context';
+import type { RunpuyTextScript } from '../fonts';
 import type { RunpuyTheme } from '../themes';
-import { typography } from '../typography';
+import { getRunpuyFontFamily, typography } from '../typography';
 
 export type RunpuyTextVariant = keyof typeof typography;
 export type RunpuyTextTone = 'primary' | 'secondary';
@@ -12,23 +13,16 @@ export type RunpuyTextProps = Omit<ComponentProps<typeof Text>, 'style' | 'child
   children: ReactNode;
   variant?: RunpuyTextVariant;
   tone?: RunpuyTextTone;
+  script?: RunpuyTextScript;
   theme?: RunpuyTheme;
   style?: StyleProp<TextStyle>;
 };
-
-function resolveFontWeight(weight: number): TextStyle['fontWeight'] | undefined {
-  // RUNPUY's exact 650 weight is deferred until its custom fonts are loaded.
-  if (weight === 650) {
-    return undefined;
-  }
-
-  return String(weight) as TextStyle['fontWeight'];
-}
 
 export function RunpuyText({
   children,
   variant = 'body',
   tone = 'primary',
+  script = 'latin',
   theme: themeOverride,
   style,
   ...textProps
@@ -43,9 +37,9 @@ export function RunpuyText({
       style={[
         {
           color: tone === 'secondary' ? theme.colors.textSecondary : theme.colors.textPrimary,
+          fontFamily: getRunpuyFontFamily(variant, script),
           fontSize: textStyle.fontSize,
           lineHeight: textStyle.lineHeight,
-          fontWeight: resolveFontWeight(textStyle.weight),
         },
         style,
       ]}

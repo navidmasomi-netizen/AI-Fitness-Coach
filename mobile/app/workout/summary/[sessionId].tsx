@@ -258,7 +258,7 @@ export default function WorkoutSummaryScreen() {
             return (
               <RunpuyCard key={rec.id} theme={darkTheme} style={{ gap: spacing.xs }}>
                 <View style={{ alignItems: "flex-start", flexDirection: "row", gap: spacing.sm, justifyContent: "space-between" }}>
-                  <RunpuyText theme={darkTheme} variant="title" style={{ flex: 1 }}>
+                  <RunpuyText script="persianArabic" theme={darkTheme} variant="title" style={{ flex: 1 }}>
                     {rec.exercise.nameFa}
                   </RunpuyText>
                   <RunpuyStatusChip label={colors.label} status={colors.status} theme={darkTheme} />

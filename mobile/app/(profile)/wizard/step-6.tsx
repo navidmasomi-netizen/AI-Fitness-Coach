@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { WizardStepScreen } from '../../../src/components/wizard/WizardStepScreen';
 import { getWizardTotalSteps } from '../../../src/constants/wizardLabels';
 import { RunpuyText } from '../../../src/design-system/components';
+import { runpuyFontFamilies } from '../../../src/design-system/fonts';
 import { darkTheme } from '../../../src/design-system/themes';
 import { layout, radii, spacing } from '../../../src/design-system/tokens';
 import { useWizardStepSave } from '../../../src/hooks/useWizardStepSave';
@@ -65,7 +66,7 @@ const styles = {
   inputScroll: { flex: 1 }, inputScrollContent: { gap: spacing.md },
   numericCard: { alignItems: 'center', backgroundColor: darkTheme.colors.card, borderColor: darkTheme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.xl, paddingVertical: spacing.xl },
   // 72/82 is local data-display geometry required for direct numeric entry, not a RUNPUY type scale.
-  numericInput: { color: darkTheme.colors.textPrimary, fontSize: 72, fontWeight: '700', letterSpacing: -2, lineHeight: 82, paddingHorizontal: 0, paddingVertical: 0, textAlign: 'center', width: '100%' },
+  numericInput: { color: darkTheme.colors.textPrimary, fontFamily: runpuyFontFamilies.latin.body, fontSize: 72, letterSpacing: -2, lineHeight: 82, paddingHorizontal: 0, paddingVertical: 0, textAlign: 'center', width: '100%' },
   divider: { backgroundColor: darkTheme.colors.borderSubtle, height: 1, marginBottom: spacing.md, marginTop: spacing.xl, width: '100%' }, hints: { alignItems: 'center', gap: spacing.xs }, errorMessage: { color: darkTheme.colors.error },
   footerContent: { alignItems: 'center', gap: spacing.sm }, overflowButton: { alignItems: 'center', justifyContent: 'center', minHeight: layout.minimumTouchTarget, minWidth: layout.minimumTouchTarget }, logoutAction: { borderColor: darkTheme.colors.borderSubtle, borderRadius: radii.control, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }, privacyFooter: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.sm, justifyContent: 'center' }, privacyText: { textAlign: 'center' },
 } as const;

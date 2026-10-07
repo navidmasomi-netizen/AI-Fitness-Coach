@@ -1,0 +1,83 @@
+{
+  "fontToolsVersion": "4.66.1",
+  "fonts": [
+    {
+      "alias": "RUNPUY-Manrope-400",
+      "family": "Manrope",
+      "generatedWeight": 400,
+      "instancingCommand": "fonttools varLib.instancer Manrope[wght].ttf wght=400 --static --no-recalc-timestamp --output RUNPUY-Manrope-400.ttf",
+      "license": "SIL Open Font License 1.1",
+      "outputPath": "mobile/assets/fonts/RUNPUY-Manrope-400.ttf",
+      "outputSha256": "e9e1400397ddf980ac722fa3963cbc649be0607c20800e183b20812eb9d27692",
+      "sourcePath": "ofl/manrope/Manrope[wght].ttf",
+      "sourcePin": "7085eb89a950e85db5b166b7a58d414544b4140c",
+      "sourceSha256": "3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6",
+      "sourceUrl": "https://github.com/google/fonts/blob/7085eb89a950e85db5b166b7a58d414544b4140c/ofl/manrope/Manrope%5Bwght%5D.ttf"
+    },
+    {
+      "alias": "RUNPUY-Manrope-650",
+      "family": "Manrope",
+      "generatedWeight": 650,
+      "instancingCommand": "fonttools varLib.instancer Manrope[wght].ttf wght=650 --static --no-recalc-timestamp --output RUNPUY-Manrope-650.ttf",
+      "license": "SIL Open Font License 1.1",
+      "outputPath": "mobile/assets/fonts/RUNPUY-Manrope-650.ttf",
+      "outputSha256": "e25a0f232fc8a9be26c593b82ed62aaae9cb82ae781893e51a975dfb8fabe22a",
+      "sourcePath": "ofl/manrope/Manrope[wght].ttf",
+      "sourcePin": "7085eb89a950e85db5b166b7a58d414544b4140c",
+      "sourceSha256": "3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6",
+      "sourceUrl": "https://github.com/google/fonts/blob/7085eb89a950e85db5b166b7a58d414544b4140c/ofl/manrope/Manrope%5Bwght%5D.ttf"
+    },
+    {
+      "alias": "RUNPUY-Manrope-700",
+      "family": "Manrope",
+      "generatedWeight": 700,
+      "instancingCommand": "fonttools varLib.instancer Manrope[wght].ttf wght=700 --static --no-recalc-timestamp --output RUNPUY-Manrope-700.ttf",
+      "license": "SIL Open Font License 1.1",
+      "outputPath": "mobile/assets/fonts/RUNPUY-Manrope-700.ttf",
+      "outputSha256": "5ae5c99a522733b5dfaf9064c2a68818ca32bcec5400c794bcdbd573b9518b90",
+      "sourcePath": "ofl/manrope/Manrope[wght].ttf",
+      "sourcePin": "7085eb89a950e85db5b166b7a58d414544b4140c",
+      "sourceSha256": "3ae11c49db0455a3cc33e37d380f20fdb8c7f8b41dc07625c177e3d87a9d6ae6",
+      "sourceUrl": "https://github.com/google/fonts/blob/7085eb89a950e85db5b166b7a58d414544b4140c/ofl/manrope/Manrope%5Bwght%5D.ttf"
+    },
+    {
+      "alias": "RUNPUY-Vazirmatn-400",
+      "family": "Vazirmatn",
+      "generatedWeight": 400,
+      "instancingCommand": "fonttools varLib.instancer Vazirmatn[wght].ttf wght=400 --static --no-recalc-timestamp --output RUNPUY-Vazirmatn-400.ttf",
+      "license": "SIL Open Font License 1.1",
+      "outputPath": "mobile/assets/fonts/RUNPUY-Vazirmatn-400.ttf",
+      "outputSha256": "158b368812e7af0a2fd40d53c38c65044bce27b3038f2d8ec84eaf2d81f6276f",
+      "sourcePath": "fonts/variable/Vazirmatn[wght].ttf",
+      "sourcePin": "83629f877e8f084cc07b47030b5d3a0ff06c76ec",
+      "sourceSha256": "696249a2c74b39ffdef55de4df2809c5b639d3ff80d618d8160a095d2fd49dca",
+      "sourceUrl": "https://github.com/rastikerdar/vazirmatn/blob/83629f877e8f084cc07b47030b5d3a0ff06c76ec/fonts/variable/Vazirmatn%5Bwght%5D.ttf"
+    },
+    {
+      "alias": "RUNPUY-Vazirmatn-650",
+      "family": "Vazirmatn",
+      "generatedWeight": 650,
+      "instancingCommand": "fonttools varLib.instancer Vazirmatn[wght].ttf wght=650 --static --no-recalc-timestamp --output RUNPUY-Vazirmatn-650.ttf",
+      "license": "SIL Open Font License 1.1",
+      "outputPath": "mobile/assets/fonts/RUNPUY-Vazirmatn-650.ttf",
+      "outputSha256": "1fee1f60cc6a7a11edbc283e921cddd0a424378efb1b46099456c0f32d64fcc9",
+      "sourcePath": "fonts/variable/Vazirmatn[wght].ttf",
+      "sourcePin": "83629f877e8f084cc07b47030b5d3a0ff06c76ec",
+      "sourceSha256": "696249a2c74b39ffdef55de4df2809c5b639d3ff80d618d8160a095d2fd49dca",
+      "sourceUrl": "https://github.com/rastikerdar/vazirmatn/blob/83629f877e8f084cc07b47030b5d3a0ff06c76ec/fonts/variable/Vazirmatn%5Bwght%5D.ttf"
+    },
+    {
+      "alias": "RUNPUY-Vazirmatn-700",
+      "family": "Vazirmatn",
+      "generatedWeight": 700,
+      "instancingCommand": "fonttools varLib.instancer Vazirmatn[wght].ttf wght=700 --static --no-recalc-timestamp --output RUNPUY-Vazirmatn-700.ttf",
+      "license": "SIL Open Font License 1.1",
+      "outputPath": "mobile/assets/fonts/RUNPUY-Vazirmatn-700.ttf",
+      "outputSha256": "6b44188745b6be72a6caa58fc1108ce592ead89425fc6e3185d0bc4837a0c026",
+      "sourcePath": "fonts/variable/Vazirmatn[wght].ttf",
+      "sourcePin": "83629f877e8f084cc07b47030b5d3a0ff06c76ec",
+      "sourceSha256": "696249a2c74b39ffdef55de4df2809c5b639d3ff80d618d8160a095d2fd49dca",
+      "sourceUrl": "https://github.com/rastikerdar/vazirmatn/blob/83629f877e8f084cc07b47030b5d3a0ff06c76ec/fonts/variable/Vazirmatn%5Bwght%5D.ttf"
+    }
+  ]
+}
