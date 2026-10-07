@@ -1,4 +1,4 @@
-import { View, Pressable, FlatList, ActivityIndicator, Alert } from "react-native";
+import { View, Pressable, FlatList, ActivityIndicator, Alert, I18nManager } from "react-native";
 import { useRouter } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -429,7 +429,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
     marginBottom: spacing.xs,
   },
   accountActions: {
-    flexDirection: "row" as const,
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     gap: spacing.sm,
     marginBottom: spacing.xl,
   },
