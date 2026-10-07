@@ -783,7 +783,7 @@ export default function WorkoutSessionScreen() {
                   <RunpuyText variant="title" style={styles.errorText}>
                     Couldn&apos;t load replacements
                   </RunpuyText>
-                  <RunpuyText variant="body" style={styles.errorText}>
+                  <RunpuyText variant="body" style={styles.errorDetailText}>
                     {discoveryState.errorMessage || "Something went wrong while loading replacements."}
                   </RunpuyText>
                 </RunpuyCard>
@@ -851,7 +851,7 @@ export default function WorkoutSessionScreen() {
                     <RunpuyText variant="title" style={styles.errorText}>
                       Couldn&apos;t apply replacement
                     </RunpuyText>
-                    <RunpuyText variant="body" style={styles.errorText}>
+                    <RunpuyText variant="body" style={styles.errorDetailText}>
                       {discoveryState.applyErrorMessage}
                     </RunpuyText>
                   </RunpuyCard>
@@ -1302,6 +1302,9 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
   },
   errorText: {
     color: theme.colors.error,
+  },
+  errorDetailText: {
+    color: theme.colors.textPrimary,
   },
   finishSection: {
     borderTopColor: theme.colors.borderSubtle,
