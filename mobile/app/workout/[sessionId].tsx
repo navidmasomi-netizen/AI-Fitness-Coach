@@ -39,7 +39,8 @@ import {
   RunpuyStatusChip,
   RunpuyText,
 } from "../../src/design-system/components";
-import { darkTheme } from "../../src/design-system/themes";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
+import type { RunpuyTheme } from "../../src/design-system/themes";
 import { layout, radii, spacing } from "../../src/design-system/tokens";
 
 interface LoggedSet {
@@ -138,7 +139,9 @@ export default function WorkoutSessionScreen() {
     existingSetLogsData?: string;
   }>();
   const router = useRouter();
+  const { theme } = useRunpuyTheme();
   const queryClient = useQueryClient();
+  const styles = createStyles(theme);
   const numericSessionId = Number(sessionId);
 
   const baseExercises = useMemo<ProgramDayExercise[]>(
@@ -690,11 +693,11 @@ export default function WorkoutSessionScreen() {
           <View accessibilityViewIsModal style={styles.modalSheet}>
             <View style={styles.modalHeader}>
               <View style={styles.modalHeaderCopy}>
-                <RunpuyText accessibilityRole="header" theme={darkTheme} variant="title">
+                <RunpuyText accessibilityRole="header" variant="title">
                   Replace Exercise
                 </RunpuyText>
                 {discoveryState.exercise && (
-                  <RunpuyText script="persianArabic" theme={darkTheme} tone="secondary" variant="body">
+                  <RunpuyText script="persianArabic" tone="secondary" variant="body">
                     {getExerciseDisplayName(discoveryState.exercise.exercise)}
                   </RunpuyText>
                 )}
@@ -707,7 +710,7 @@ export default function WorkoutSessionScreen() {
                 disabled={isApplyPending}
                 style={styles.modalCloseButton}
               >
-                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                <RunpuyText tone="secondary" variant="body">
                   Close
                 </RunpuyText>
               </Pressable>
@@ -715,7 +718,7 @@ export default function WorkoutSessionScreen() {
 
             {discoveryState.status === "COLLECTING_CONTEXT" && (
               <ScrollView contentContainerStyle={styles.modalScrollContent}>
-                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                <RunpuyText tone="secondary" variant="body">
                   Why do you want to replace this exercise?
                 </RunpuyText>
                 {REPLACEMENT_DISCOVERY_REASON_OPTIONS.map((option) => {
@@ -729,17 +732,16 @@ export default function WorkoutSessionScreen() {
                       onPress={() => setDiscoveryIntentType(option.intentType)}
                       selected={selected}
                       selectionRole="radio"
-                      theme={darkTheme}
                     />
                   );
                 })}
 
                 {discoveryState.intentType === "NO_EQUIPMENT" && (
-                  <RunpuyCard theme={darkTheme} style={styles.equipmentSection}>
-                    <RunpuyText theme={darkTheme} variant="title">
+                  <RunpuyCard style={styles.equipmentSection}>
+                    <RunpuyText variant="title">
                       Available equipment right now
                     </RunpuyText>
-                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    <RunpuyText tone="secondary" variant="caption">
                       Select only what is actually available in this session. Bodyweight is handled automatically.
                     </RunpuyText>
                     {REPLACEMENT_DISCOVERY_EQUIPMENT_OPTIONS.map((option) => {
@@ -752,7 +754,6 @@ export default function WorkoutSessionScreen() {
                           onPress={() => toggleDiscoveryEquipment(option.value)}
                           selected={selected}
                           selectionRole="checkbox"
-                          theme={darkTheme}
                         />
                       );
                     })}
@@ -763,15 +764,14 @@ export default function WorkoutSessionScreen() {
                   disabled={!discoveryState.intentType || isApplyPending}
                   label="Find replacements"
                   onPress={loadReplacementRecommendations}
-                  theme={darkTheme}
                 />
               </ScrollView>
             )}
 
             {discoveryState.status === "LOADING_RECOMMENDATIONS" && (
               <View accessible accessibilityRole="progressbar" accessibilityLabel="Loading replacement suggestions" style={styles.loadingState}>
-                <ActivityIndicator color={darkTheme.colors.actionPrimary} size="large" />
-                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                <ActivityIndicator color={theme.colors.actionPrimary} size="large" />
+                <RunpuyText tone="secondary" variant="body">
                   Loading replacement suggestions...
                 </RunpuyText>
               </View>
@@ -779,22 +779,22 @@ export default function WorkoutSessionScreen() {
 
             {discoveryState.status === "ERROR" && (
               <View style={styles.modalActionStack}>
-                <RunpuyCard theme={darkTheme} style={styles.errorSurface}>
-                  <RunpuyText theme={darkTheme} variant="title" style={styles.errorText}>
+                <RunpuyCard style={styles.errorSurface}>
+                  <RunpuyText variant="title" style={styles.errorText}>
                     Couldn&apos;t load replacements
                   </RunpuyText>
-                  <RunpuyText theme={darkTheme} variant="body" style={styles.errorText}>
+                  <RunpuyText variant="body" style={styles.errorText}>
                     {discoveryState.errorMessage || "Something went wrong while loading replacements."}
                   </RunpuyText>
                 </RunpuyCard>
-                <RunpuyButton label="Try again" onPress={reopenReplacementContext} theme={darkTheme} />
+                <RunpuyButton label="Try again" onPress={reopenReplacementContext} />
                 <Pressable
                   onPress={closeReplacementDiscovery}
                   accessibilityRole="button"
                   accessibilityLabel="Dismiss replacement discovery"
                   style={styles.secondaryAction}
                 >
-                  <RunpuyText theme={darkTheme} variant="body">
+                  <RunpuyText variant="body">
                     Dismiss
                   </RunpuyText>
                 </Pressable>
@@ -803,26 +803,26 @@ export default function WorkoutSessionScreen() {
 
             {discoveryState.status === "NO_REPLACEMENT" && (
               <ScrollView contentContainerStyle={styles.modalScrollContent}>
-                <RunpuyCard theme={darkTheme} style={styles.noReplacementSurface}>
-                  <RunpuyText theme={darkTheme} variant="title">
+                <RunpuyCard style={styles.noReplacementSurface}>
+                  <RunpuyText variant="title">
                     No replacement available
                   </RunpuyText>
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                  <RunpuyText tone="secondary" variant="body">
                     {getNoReplacementMessage()}
                   </RunpuyText>
                 </RunpuyCard>
 
                 {discoveryState.recommendations?.contextRejectedCandidates.length ? (
                   <View style={styles.candidateSection}>
-                    <RunpuyText theme={darkTheme} variant="title">
+                    <RunpuyText variant="title">
                       Not available right now
                     </RunpuyText>
                     {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
-                      <RunpuyCard key={candidate.exerciseId} theme={darkTheme} style={styles.candidateCard}>
-                        <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
+                      <RunpuyCard key={candidate.exerciseId} style={styles.candidateCard}>
+                        <RunpuyText script="persianArabic" variant="body">
                           {candidate.nameFa}
                         </RunpuyText>
-                        <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                        <RunpuyText tone="secondary" variant="caption">
                           {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
                         </RunpuyText>
                       </RunpuyCard>
@@ -830,14 +830,14 @@ export default function WorkoutSessionScreen() {
                   </View>
                 ) : null}
 
-                <RunpuyButton label="Change options" onPress={reopenReplacementContext} theme={darkTheme} />
+                <RunpuyButton label="Change options" onPress={reopenReplacementContext} />
                 <Pressable
                   onPress={closeReplacementDiscovery}
                   accessibilityRole="button"
                   accessibilityLabel="Done with replacement discovery"
                   style={styles.secondaryAction}
                 >
-                  <RunpuyText theme={darkTheme} variant="body">
+                  <RunpuyText variant="body">
                     Done
                   </RunpuyText>
                 </Pressable>
@@ -847,22 +847,22 @@ export default function WorkoutSessionScreen() {
             {discoveryState.status === "RESULTS" && discoveryState.recommendations && (
               <ScrollView contentContainerStyle={styles.modalScrollContent}>
                 {discoveryState.applyErrorMessage && (
-                  <RunpuyCard theme={darkTheme} style={styles.errorSurface}>
-                    <RunpuyText theme={darkTheme} variant="title" style={styles.errorText}>
+                  <RunpuyCard style={styles.errorSurface}>
+                    <RunpuyText variant="title" style={styles.errorText}>
                       Couldn&apos;t apply replacement
                     </RunpuyText>
-                    <RunpuyText theme={darkTheme} variant="body" style={styles.errorText}>
+                    <RunpuyText variant="body" style={styles.errorText}>
                       {discoveryState.applyErrorMessage}
                     </RunpuyText>
                   </RunpuyCard>
                 )}
 
                 {shouldShowReplacementWarning && (
-                  <RunpuyCard theme={darkTheme} style={styles.warningSurface}>
-                    <RunpuyText theme={darkTheme} variant="title" style={styles.warningText}>
+                  <RunpuyCard style={styles.warningSurface}>
+                    <RunpuyText variant="title" style={styles.warningText}>
                       Replacement warning
                     </RunpuyText>
-                    <RunpuyText theme={darkTheme} variant="body" style={styles.warningText}>
+                    <RunpuyText variant="body" style={styles.warningText}>
                       {getReplacementWarningMessage()}
                     </RunpuyText>
                   </RunpuyCard>
@@ -870,7 +870,7 @@ export default function WorkoutSessionScreen() {
 
                 {recommendedReplacement && (
                   <View style={styles.candidateSection}>
-                    <RunpuyText theme={darkTheme} variant="title">
+                    <RunpuyText variant="title">
                       Recommended
                     </RunpuyText>
                     <RunpuySelectableCard
@@ -882,15 +882,14 @@ export default function WorkoutSessionScreen() {
                       selected={discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId}
                       script="persianArabic"
                       selectionRole="radio"
-                      theme={darkTheme}
                     />
                     {recommendedReplacement.reasonCodes.includes("REPLACEMENT_INTEGRITY_WARNING") && (
-                      <RunpuyText theme={darkTheme} variant="caption" style={styles.warningText}>
+                      <RunpuyText variant="caption" style={styles.warningText}>
                         {getReplacementWarningMessage()}
                       </RunpuyText>
                     )}
                     {discoveryState.selectedCandidateExerciseId === recommendedReplacement.exerciseId && (
-                      <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                      <RunpuyText tone="secondary" variant="caption">
                         Selected locally only. Your workout has not changed.
                       </RunpuyText>
                     )}
@@ -899,7 +898,7 @@ export default function WorkoutSessionScreen() {
 
                 {discoveryState.recommendations.alternatives.length > 0 && (
                   <View style={styles.candidateSection}>
-                    <RunpuyText theme={darkTheme} variant="title">
+                    <RunpuyText variant="title">
                       Alternatives
                     </RunpuyText>
                     {discoveryState.recommendations.alternatives.map((candidate) => (
@@ -913,10 +912,9 @@ export default function WorkoutSessionScreen() {
                           selected={discoveryState.selectedCandidateExerciseId === candidate.exerciseId}
                           script="persianArabic"
                           selectionRole="radio"
-                          theme={darkTheme}
                         />
                         {discoveryState.selectedCandidateExerciseId === candidate.exerciseId && (
-                          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                          <RunpuyText tone="secondary" variant="caption">
                             Selected locally only. Your workout has not changed.
                           </RunpuyText>
                         )}
@@ -927,15 +925,15 @@ export default function WorkoutSessionScreen() {
 
                 {discoveryState.recommendations.contextRejectedCandidates.length > 0 && (
                   <View style={styles.candidateSection}>
-                    <RunpuyText theme={darkTheme} variant="title">
+                    <RunpuyText variant="title">
                       Not available right now
                     </RunpuyText>
                     {discoveryState.recommendations.contextRejectedCandidates.map((candidate) => (
-                      <RunpuyCard key={candidate.exerciseId} theme={darkTheme} style={styles.candidateCard}>
-                        <RunpuyText script="persianArabic" theme={darkTheme} variant="body">
+                      <RunpuyCard key={candidate.exerciseId} style={styles.candidateCard}>
+                        <RunpuyText script="persianArabic" variant="body">
                           {candidate.nameFa}
                         </RunpuyText>
-                        <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                        <RunpuyText tone="secondary" variant="caption">
                           {getCandidateEquipmentLabel(candidate.equipmentAvailabilityStatus)}
                         </RunpuyText>
                       </RunpuyCard>
@@ -943,7 +941,7 @@ export default function WorkoutSessionScreen() {
                   </View>
                 )}
 
-                <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+                <RunpuyText tone="secondary" variant="body">
                   Your workout only changes after you apply the selected replacement.
                 </RunpuyText>
 
@@ -952,13 +950,11 @@ export default function WorkoutSessionScreen() {
                   disabled={!discoveryState.selectedCandidateExerciseId || isApplyPending}
                   label={isApplyPending ? "Applying replacement..." : "Apply selected replacement"}
                   onPress={applySelectedReplacement}
-                  theme={darkTheme}
                 />
                 <RunpuyButton
                   disabled={isApplyPending}
                   label="Change options"
                   onPress={reopenReplacementContext}
-                  theme={darkTheme}
                 />
                 <Pressable
                   onPress={closeReplacementDiscovery}
@@ -968,7 +964,7 @@ export default function WorkoutSessionScreen() {
                   disabled={isApplyPending}
                   style={styles.secondaryAction}
                 >
-                  <RunpuyText theme={darkTheme} variant="body">
+                  <RunpuyText variant="body">
                     Done
                   </RunpuyText>
                 </Pressable>
@@ -982,10 +978,10 @@ export default function WorkoutSessionScreen() {
       {activeRestExerciseId !== null && (
         <View style={styles.restTimer}>
           <View>
-            <RunpuyText script="persianArabic" theme={darkTheme} tone="secondary" variant="caption">
+            <RunpuyText script="persianArabic" tone="secondary" variant="caption">
               Resting · {activeRestExercise?.exercise?.nameFa}
             </RunpuyText>
-            <RunpuyText theme={darkTheme} variant="heading">
+            <RunpuyText variant="heading">
               {restSecondsRemaining > 0 ? formatTime(restSecondsRemaining) : "Rest complete!"}
             </RunpuyText>
           </View>
@@ -997,7 +993,7 @@ export default function WorkoutSessionScreen() {
                 accessibilityLabel={isRestRunning ? "Pause rest timer" : "Start rest timer"}
                 style={styles.restPrimaryAction}
               >
-                <RunpuyText theme={darkTheme} variant="caption" style={styles.restPrimaryActionText}>
+                <RunpuyText variant="caption" style={styles.restPrimaryActionText}>
                   {isRestRunning ? "Pause" : "Start"}
                 </RunpuyText>
               </Pressable>
@@ -1008,7 +1004,7 @@ export default function WorkoutSessionScreen() {
               accessibilityLabel="Skip rest timer"
               style={styles.restSecondaryAction}
             >
-              <RunpuyText theme={darkTheme} variant="caption">
+              <RunpuyText variant="caption">
                 Skip
               </RunpuyText>
             </Pressable>
@@ -1026,30 +1022,30 @@ export default function WorkoutSessionScreen() {
           accessibilityLabel="Go back"
           style={styles.backButton}
         >
-          <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <RunpuyText tone="secondary" variant="body">
             {`\u2190 Back`}
           </RunpuyText>
         </Pressable>
 
         {/* Session header */}
         <View style={styles.sessionHeader}>
-          <RunpuyText accessibilityRole="header" theme={darkTheme} variant="heading">
+          <RunpuyText accessibilityRole="header" variant="heading">
             {dayName} {`\u2014`} {buildWorkoutName(exercises)}
           </RunpuyText>
-          <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+          <RunpuyText tone="secondary" variant="caption">
             {programName}
           </RunpuyText>
           {replacementSuccessMessage && (
-            <RunpuyStatusChip label={replacementSuccessMessage} status="success" theme={darkTheme} />
+            <RunpuyStatusChip label={replacementSuccessMessage} status="success" />
           )}
           {!activeReplacementTargetAvailable && (
-            <RunpuyStatusChip label={getReplacementUnavailableMessage()} status="warning" theme={darkTheme} />
+            <RunpuyStatusChip label={getReplacementUnavailableMessage()} status="warning" />
           )}
         </View>
 
         {totalLoggedSets === 0 && (
-          <RunpuyCard theme={darkTheme} style={styles.zeroLogPrompt}>
-            <RunpuyText theme={darkTheme} tone="secondary" variant="body">
+          <RunpuyCard style={styles.zeroLogPrompt}>
+            <RunpuyText tone="secondary" variant="body">
               Start by logging your first set
             </RunpuyText>
           </RunpuyCard>
@@ -1068,20 +1064,19 @@ export default function WorkoutSessionScreen() {
           return (
             <RunpuyCard
               key={pde.id}
-              theme={darkTheme}
               style={[styles.exerciseCard, isLast && styles.lastLoggedExerciseCard]}
             >
               {/* Exercise header */}
               <View style={styles.exerciseHeader}>
                 <View style={styles.exerciseHeaderRow}>
                   <View style={styles.exerciseDetails}>
-                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    <RunpuyText tone="secondary" variant="caption">
                       Suggested: {pde.sets} × {pde.repRangeLow}-{pde.repRangeHigh} reps
                     </RunpuyText>
-                    <RunpuyText script="persianArabic" theme={darkTheme} variant="title">
+                    <RunpuyText script="persianArabic" variant="title">
                       {pde.exercise.nameFa}
                     </RunpuyText>
-                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    <RunpuyText tone="secondary" variant="caption">
                       Target: {pde.sets} x {pde.repRangeLow}-{pde.repRangeHigh} · Rest: {pde.restSeconds}s
                     </RunpuyText>
                   </View>
@@ -1093,13 +1088,13 @@ export default function WorkoutSessionScreen() {
                     accessibilityState={{ disabled: pde.targetId === null }}
                     style={styles.replaceButton}
                   >
-                    <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                    <RunpuyText tone="secondary" variant="caption">
                       Replace
                     </RunpuyText>
                   </Pressable>
                 </View>
                 {pde.targetId === null && (
-                  <RunpuyText theme={darkTheme} tone="secondary" variant="caption">
+                  <RunpuyText tone="secondary" variant="caption">
                     Replacement suggestions are unavailable for this exercise in the current session view.
                   </RunpuyText>
                 )}
@@ -1109,7 +1104,7 @@ export default function WorkoutSessionScreen() {
               {sets.length > 0 && (
                 <View style={styles.loggedSets}>
                   {sets.map((s) => (
-                    <RunpuyText key={s.id} theme={darkTheme} tone="secondary" variant="caption">
+                    <RunpuyText key={s.id} tone="secondary" variant="caption">
                       Set {s.setNumber} — {s.reps} reps{s.weightKg !== null ? ` @ ${s.weightKg}kg` : ""}
                     </RunpuyText>
                   ))}
@@ -1120,7 +1115,7 @@ export default function WorkoutSessionScreen() {
               <View style={styles.inputRow}>
                 <TextInput
                   placeholder="Weight (kg)"
-                  placeholderTextColor={darkTheme.colors.textSecondary}
+                  placeholderTextColor={theme.colors.textSecondary}
                   keyboardType="numeric"
                   value={input.weightKg}
                   onChangeText={(v) => setInput(exerciseId, "weightKg", v)}
@@ -1129,7 +1124,7 @@ export default function WorkoutSessionScreen() {
                 />
                 <TextInput
                   placeholder="Reps"
-                  placeholderTextColor={darkTheme.colors.textSecondary}
+                  placeholderTextColor={theme.colors.textSecondary}
                   keyboardType="numeric"
                   value={input.reps}
                   onChangeText={(v) => setInput(exerciseId, "reps", v)}
@@ -1141,17 +1136,16 @@ export default function WorkoutSessionScreen() {
                   disabled={logSetMutation.isPending || !validForLog}
                   accessibilityState={{ busy: logSetMutation.isPending }}
                   label="Log Set"
-                  theme={darkTheme}
                 />
               </View>
 
               {showLoggedFeedback && (
-                <RunpuyText theme={darkTheme} variant="caption" style={styles.successText}>
+                <RunpuyText variant="caption" style={styles.successText}>
                   {"\u2713"} Logged
                 </RunpuyText>
               )}
               {error ? (
-                <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="caption" style={styles.errorText}>
+                <RunpuyText accessibilityLiveRegion="polite" variant="caption" style={styles.errorText}>
                   {error}
                 </RunpuyText>
               ) : null}
@@ -1167,10 +1161,9 @@ export default function WorkoutSessionScreen() {
             label={
               finishMutation.isPending ? "Finishing..." : finishArmed ? "Tap again to confirm" : "Finish Workout"
             }
-            theme={darkTheme}
           />
           {finishError ? (
-            <RunpuyText accessibilityLiveRegion="polite" theme={darkTheme} variant="body" style={styles.errorText}>
+            <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
               {finishError}
             </RunpuyText>
           ) : null}
@@ -1180,15 +1173,15 @@ export default function WorkoutSessionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
   safeArea: {
-    backgroundColor: darkTheme.colors.canvas,
+    backgroundColor: theme.colors.canvas,
     flex: 1,
   },
   restTimer: {
     alignItems: "center",
-    backgroundColor: darkTheme.colors.card,
-    borderBottomColor: darkTheme.colors.borderSubtle,
+    backgroundColor: theme.colors.card,
+    borderBottomColor: theme.colors.borderSubtle,
     borderBottomWidth: 1,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -1207,18 +1200,18 @@ const styles = StyleSheet.create({
   },
   restPrimaryAction: {
     alignItems: "center",
-    backgroundColor: darkTheme.colors.actionPrimary,
+    backgroundColor: theme.colors.actionPrimary,
     borderRadius: radii.control,
     justifyContent: "center",
     minHeight: layout.minimumTouchTarget,
     paddingHorizontal: spacing.md,
   },
   restPrimaryActionText: {
-    color: darkTheme.colors.actionPrimaryText,
+    color: theme.colors.actionPrimaryText,
   },
   restSecondaryAction: {
     alignItems: "center",
-    borderColor: darkTheme.colors.borderSubtle,
+    borderColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     borderWidth: 1,
     justifyContent: "center",
@@ -1252,7 +1245,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   lastLoggedExerciseCard: {
-    borderColor: darkTheme.colors.focus,
+    borderColor: theme.colors.focus,
     borderWidth: 2,
   },
   exerciseHeader: {
@@ -1270,7 +1263,7 @@ const styles = StyleSheet.create({
   },
   replaceButton: {
     alignItems: "center",
-    borderColor: darkTheme.colors.borderSubtle,
+    borderColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     borderWidth: 1,
     justifyContent: "center",
@@ -1278,7 +1271,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   loggedSets: {
-    borderColor: darkTheme.colors.borderSubtle,
+    borderColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     borderWidth: 1,
     gap: spacing.xs,
@@ -1290,10 +1283,10 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   input: {
-    borderColor: darkTheme.colors.borderSubtle,
+    borderColor: theme.colors.borderSubtle,
     borderRadius: radii.control,
     borderWidth: 1,
-    color: darkTheme.colors.textPrimary,
+    color: theme.colors.textPrimary,
     fontFamily: runpuyFontFamilies.latin.body,
     minHeight: layout.minimumTouchTarget,
     paddingHorizontal: spacing.sm,
@@ -1305,13 +1298,13 @@ const styles = StyleSheet.create({
     width: 70,
   },
   successText: {
-    color: darkTheme.colors.success,
+    color: theme.colors.success,
   },
   errorText: {
-    color: darkTheme.colors.error,
+    color: theme.colors.error,
   },
   finishSection: {
-    borderTopColor: darkTheme.colors.borderSubtle,
+    borderTopColor: theme.colors.borderSubtle,
     borderTopWidth: 1,
     gap: spacing.sm,
     paddingTop: spacing.lg,
@@ -1322,8 +1315,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   modalSheet: {
-    backgroundColor: darkTheme.colors.canvas,
-    borderColor: darkTheme.colors.borderSubtle,
+    backgroundColor: theme.colors.canvas,
+    borderColor: theme.colors.borderSubtle,
     borderTopLeftRadius: radii.insight,
     borderTopRightRadius: radii.insight,
     borderWidth: 1,
@@ -1366,7 +1359,7 @@ const styles = StyleSheet.create({
   },
   secondaryAction: {
     alignItems: "center",
-    borderColor: darkTheme.colors.borderSubtle,
+    borderColor: theme.colors.borderSubtle,
     borderRadius: radii.button,
     borderWidth: 1,
     justifyContent: "center",
@@ -1375,18 +1368,18 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   errorSurface: {
-    borderColor: darkTheme.colors.error,
+    borderColor: theme.colors.error,
     gap: spacing.sm,
   },
   noReplacementSurface: {
     gap: spacing.sm,
   },
   warningSurface: {
-    borderColor: darkTheme.colors.warning,
+    borderColor: theme.colors.warning,
     gap: spacing.sm,
   },
   warningText: {
-    color: darkTheme.colors.warning,
+    color: theme.colors.warning,
   },
   candidateSection: {
     gap: spacing.sm,
