@@ -1,7 +1,8 @@
 import type { ComponentProps, ReactNode } from 'react';
 import { Text, type StyleProp, type TextStyle } from 'react-native';
 
-import { lightTheme, type RunpuyTheme } from '../themes';
+import { useRunpuyTheme } from '../theme-context';
+import type { RunpuyTheme } from '../themes';
 import { typography } from '../typography';
 
 export type RunpuyTextVariant = keyof typeof typography;
@@ -28,10 +29,12 @@ export function RunpuyText({
   children,
   variant = 'body',
   tone = 'primary',
-  theme = lightTheme,
+  theme: themeOverride,
   style,
   ...textProps
 }: RunpuyTextProps) {
+  const { theme: contextTheme } = useRunpuyTheme();
+  const theme = themeOverride ?? contextTheme;
   const textStyle = typography[variant];
 
   return (

@@ -7,7 +7,8 @@ import {
   type ViewStyle,
 } from 'react-native';
 
-import { lightTheme, type RunpuyTheme } from '../themes';
+import { useRunpuyTheme } from '../theme-context';
+import type { RunpuyTheme } from '../themes';
 import { layout, radii, spacing } from '../tokens';
 import { RunpuyText } from './RunpuyText';
 
@@ -32,13 +33,15 @@ export function RunpuyButton({
   loading = false,
   accessibilityLabel,
   accessibilityState,
-  theme = lightTheme,
+  theme: themeOverride,
   style,
   textStyle,
   onFocus,
   onBlur,
   ...pressableProps
 }: RunpuyButtonProps) {
+  const { theme: contextTheme } = useRunpuyTheme();
+  const theme = themeOverride ?? contextTheme;
   const [focused, setFocused] = useState(false);
   const unavailable = disabled || loading;
 

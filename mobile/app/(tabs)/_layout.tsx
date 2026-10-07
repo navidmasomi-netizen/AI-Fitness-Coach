@@ -1,19 +1,21 @@
 import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
-import { darkTheme } from "../../src/design-system/themes";
+import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { iconography } from "../../src/design-system/tokens";
 
 export default function TabsLayout() {
+  const { theme } = useRunpuyTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: darkTheme.colors.canvas },
-        tabBarActiveTintColor: darkTheme.colors.actionPrimary,
-        tabBarInactiveTintColor: darkTheme.colors.textSecondary,
+        sceneStyle: { backgroundColor: theme.colors.canvas },
+        tabBarActiveTintColor: theme.colors.actionPrimary,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: darkTheme.colors.card,
-          borderTopColor: darkTheme.colors.borderSubtle,
+          backgroundColor: theme.colors.card,
+          borderTopColor: theme.colors.borderSubtle,
         },
       }}
     >

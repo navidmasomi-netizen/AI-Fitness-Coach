@@ -1,7 +1,8 @@
 import { useState, type ComponentProps, type ReactNode } from 'react';
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { lightTheme, type RunpuyTheme } from '../themes';
+import { useRunpuyTheme } from '../theme-context';
+import type { RunpuyTheme } from '../themes';
 import { iconography, layout, radii, spacing } from '../tokens';
 import { RunpuyText } from './RunpuyText';
 
@@ -35,12 +36,14 @@ export function RunpuySelectableCard({
   accessibilityLabel,
   accessibilityHint,
   accessibilityState,
-  theme = lightTheme,
+  theme: themeOverride,
   style,
   onFocus,
   onBlur,
   ...pressableProps
 }: RunpuySelectableCardProps) {
+  const { theme: contextTheme } = useRunpuyTheme();
+  const theme = themeOverride ?? contextTheme;
   const [focused, setFocused] = useState(false);
 
   return (

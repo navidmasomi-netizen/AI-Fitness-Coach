@@ -1,7 +1,8 @@
 import type { ComponentProps } from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { lightTheme, type RunpuyTheme } from '../themes';
+import { useRunpuyTheme } from '../theme-context';
+import type { RunpuyTheme } from '../themes';
 import { radii, spacing } from '../tokens';
 import { RunpuyText } from './RunpuyText';
 
@@ -17,10 +18,13 @@ export function RunpuyInsightCard({
   finding,
   evidence,
   recommendedNextStep,
-  theme = lightTheme,
+  theme: themeOverride,
   style,
   ...viewProps
 }: RunpuyInsightCardProps) {
+  const { theme: contextTheme } = useRunpuyTheme();
+  const theme = themeOverride ?? contextTheme;
+
   return (
     <View
       {...viewProps}
