@@ -64,7 +64,7 @@ export function RunpuyStatusChip({
       ]}
     >
       {icon}
-      <RunpuyText theme={theme} variant="caption" style={{ color }}>
+      <RunpuyText theme={theme} variant="caption" style={{ color: theme.colors.textPrimary }}>
         {label}
       </RunpuyText>
     </View>
