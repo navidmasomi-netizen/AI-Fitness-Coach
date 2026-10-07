@@ -862,7 +862,7 @@ export default function WorkoutSessionScreen() {
                     <RunpuyText variant="title" style={styles.warningText}>
                       Replacement warning
                     </RunpuyText>
-                    <RunpuyText variant="body" style={styles.warningText}>
+                    <RunpuyText variant="body" style={styles.warningDetailText}>
                       {getReplacementWarningMessage()}
                     </RunpuyText>
                   </RunpuyCard>
@@ -1383,6 +1383,9 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
   },
   warningText: {
     color: theme.colors.warning,
+  },
+  warningDetailText: {
+    color: theme.colors.textPrimary,
   },
   candidateSection: {
     gap: spacing.sm,
