@@ -26,6 +26,12 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "024efd93-a0e8-48aa-9395-2816c866d7cf"
+      }
+    },
+    "owner": "runpuy-app"
   }
 }
