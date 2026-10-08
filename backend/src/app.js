@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(attachRequestContext);
 
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", message: "IronFa API is running" });
+  res.json({ status: "ok", message: "Runpuy API is running" });
 });
 
 app.use("/api/users", usersRouter);
