@@ -884,7 +884,7 @@ export default function WorkoutSessionScreen() {
                       selectionRole="radio"
                     />
                     {recommendedReplacement.reasonCodes.includes("REPLACEMENT_INTEGRITY_WARNING") && (
-                      <RunpuyText variant="caption" style={styles.warningText}>
+                      <RunpuyText variant="caption" style={styles.warningCaptionText}>
                         {getReplacementWarningMessage()}
                       </RunpuyText>
                     )}
@@ -1145,7 +1145,7 @@ export default function WorkoutSessionScreen() {
                 </RunpuyText>
               )}
               {error ? (
-                <RunpuyText accessibilityLiveRegion="polite" variant="caption" style={styles.errorText}>
+                <RunpuyText accessibilityLiveRegion="polite" variant="caption" style={styles.errorMessageText}>
                   {error}
                 </RunpuyText>
               ) : null}
@@ -1163,7 +1163,7 @@ export default function WorkoutSessionScreen() {
             }
           />
           {finishError ? (
-            <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
+            <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorMessageText}>
               {finishError}
             </RunpuyText>
           ) : null}
@@ -1298,10 +1298,13 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
     width: 70,
   },
   successText: {
-    color: theme.colors.success,
+    color: theme.colors.textPrimary,
   },
   errorText: {
     color: theme.colors.error,
+  },
+  errorMessageText: {
+    color: theme.colors.textPrimary,
   },
   errorDetailText: {
     color: theme.colors.textPrimary,
@@ -1383,6 +1386,9 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
   },
   warningText: {
     color: theme.colors.warning,
+  },
+  warningCaptionText: {
+    color: theme.colors.textPrimary,
   },
   warningDetailText: {
     color: theme.colors.textPrimary,

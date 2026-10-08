@@ -465,7 +465,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
     marginTop: spacing.lg,
   },
   errorText: {
-    color: theme.colors.error,
+    color: theme.colors.textPrimary,
     marginTop: spacing.sm,
   },
   signals: {

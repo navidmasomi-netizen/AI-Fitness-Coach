@@ -110,6 +110,6 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
     gap: spacing.xs,
   },
   errorText: {
-    color: theme.colors.error,
+    color: theme.colors.textPrimary,
   },
 } as const);

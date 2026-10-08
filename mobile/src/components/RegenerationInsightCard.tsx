@@ -104,7 +104,7 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
     marginBottom: spacing.xl,
   },
   indicator: {
-    color: theme.colors.information,
+    color: theme.colors.textPrimary,
     textTransform: "uppercase" as const,
   },
 } as const);
