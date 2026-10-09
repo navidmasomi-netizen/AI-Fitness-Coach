@@ -2,6 +2,10 @@
   "build": {
     "production": {
       "distribution": "store"
+    },
+    "qa": {
+      "distribution": "internal",
+      "environment": "production"
     }
   },
   "submit": {
