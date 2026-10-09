@@ -37,6 +37,113 @@ Completed core areas:
 - guided workout start UX
 - first-time clarity intro screen
 
+## Phase 8 — Release Infrastructure Closure
+
+### Formal Status
+
+- **Phase 8 Release Infrastructure:** COMPLETE
+- **Phase 8 Mobile Release:** PAUSED / NOT RELEASE-READY
+
+The production infrastructure and mobile build delivery path are complete and
+verified. This does not make the mobile product release-ready: application-level
+physical-device QA has not passed, and the current mobile experience requires
+product and UX remediation before any store release.
+
+### Completed Infrastructure and Build Delivery
+
+- **Backend production deployment:** COMPLETE
+  - Backend: `https://runpuy-api.onrender.com`
+  - Production API: `https://runpuy-api.onrender.com/api`
+  - Health endpoint: VERIFIED
+  - Exercises endpoint: VERIFIED
+- **EAS project linkage:** COMPLETE
+  - Expo account: `runpuy`
+  - EAS project: `@runpuy-app/runpuy`
+  - EAS project ID: `024efd93-a0e8-48aa-9395-2816c866d7cf`
+- **Production mobile API environment:** CONFIGURED
+  - `EXPO_PUBLIC_API_BASE_URL=https://runpuy-api.onrender.com/api`
+- **Android signing:** EAS-MANAGED KEYSTORE CONFIGURED
+  - Android package: `com.runpuy.app`
+- **Android QA profile:** CONFIGURED
+  - `qa` distribution: `internal`
+  - `qa` environment: `production`
+- **Android QA build:** SUCCESS
+  - Build ID: `395b3fdb-f447-49c3-8e7b-73d6f020c736`
+  - Artifact: APK
+  - Physical Android installation: PASS
+  - Physical Android launch: PASS
+
+### Android Release Gate
+
+- **Android application-level physical-device QA:** NOT PASSED
+  - The APK installation and launch pipeline succeeded, but physical-device
+    testing exposed numerous product and UX issues. The current mobile
+    experience is not considered release-ready.
+  - This is not a build-system failure.
+- **Android production AAB:** NOT BUILT
+  - Intentionally blocked until a fresh QA build passes full physical-device QA
+    after remediation and onboarding replacement.
+- **Google Play registration/payment:** DEFERRED
+- **Google Play submission:** DEFERRED
+
+### iOS Deferred Gates
+
+- iOS bundle identifier: `com.runpuy.app`
+- Intended Runpuy Apple Account: `hello@runpuy.com`
+- **Apple Developer Program:** NOT ENROLLED / PAYMENT DEFERRED BY USER
+- **Apple credentials:** NOT CREATED
+- **Apple bundle ID registration:** NOT VERIFIED
+- **Distribution Certificate:** NOT CREATED / NOT VERIFIED
+- **Provisioning Profile:** NOT CREATED / NOT VERIFIED
+- **iOS production/QA build:** NOT BUILT
+- **iOS physical-device QA:** NOT PERFORMED
+- **App Store submission:** DEFERRED
+
+Resume iOS work only in this order:
+
+1. Enroll the intended Runpuy Apple Account in the Apple Developer Program.
+2. Complete Apple Developer login through EAS.
+3. Inspect or register `com.runpuy.app`.
+4. Create or validate the Apple Distribution Certificate.
+5. Create or validate the Provisioning Profile.
+6. Build the required iOS QA/release artifact.
+7. Perform physical-device iOS QA.
+8. Only after QA passes, prepare App Store submission.
+
+### Next Active Work
+
+**Mobile Onboarding Redesign + Mobile QA Remediation**
+
+The current onboarding is **NOT FINAL**. A redesign/rebuild is required before
+release. The existing onboarding remains in the codebase until a replacement is
+designed, approved, and implemented; it must not be treated as approved final
+UX.
+
+Scope of the next work:
+
+- redesign and implement approved onboarding
+- remediate the mobile product and UX defects found during physical QA
+- validate behavior on Android and iOS
+- generate fresh QA builds and perform fresh physical-device QA
+- resolve all critical and major release blockers before store release
+
+### Store Release Authorization Gate
+
+No production store build or submission is authorized until all of the
+following are true:
+
+- the new onboarding is approved and implemented
+- mobile remediation is complete
+- a fresh Android QA APK is built and passes physical-device QA
+- the Apple Developer Program and required iOS signing credentials are configured
+- an iOS QA/release build is completed and passes physical-device QA
+- no critical release blockers remain
+- no major release blockers remain
+
+Only after those conditions are met may the Android production AAB be finalized,
+Google Play submission proceed, the iOS production/store build be finalized, and
+App Store submission proceed.
+
 ## Explainable Progression — Current State
 
 Explainable Progression is now available end to end for fresh workout completion. When a workout is completed, each fresh persisted progression recommendation may include a public explanation DTO with:
