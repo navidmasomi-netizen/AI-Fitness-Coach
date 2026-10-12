@@ -82,7 +82,7 @@ product and UX remediation before any store release.
   - This is not a build-system failure.
 - **Android production AAB:** NOT BUILT
   - Intentionally blocked until a fresh QA build passes full physical-device QA
-    after remediation and onboarding replacement.
+    after mobile remediation.
 - **Google Play registration/payment:** DEFERRED
 - **Google Play submission:** DEFERRED
 
@@ -112,17 +112,20 @@ Resume iOS work only in this order:
 
 ### Next Active Work
 
-**Mobile Onboarding Redesign + Mobile QA Remediation**
+**Mobile QA Remediation**
 
-The current onboarding is **NOT FINAL**. A redesign/rebuild is required before
-release. The existing onboarding remains in the codebase until a replacement is
-designed, approved, and implemented; it must not be treated as approved final
-UX.
+The current onboarding is **RETAINED FOR THE CURRENT RELEASE PATH**. Onboarding
+redesign is **CANCELLED / DEFERRED** and is not a release blocker. The existing
+onboarding remains the active implementation; it must not be redesigned,
+replaced, removed, or restructured as part of current release work. Concrete
+onboarding bugs found during QA may be fixed. Any future onboarding redesign is
+post-release/deferred unless explicitly reopened.
 
 Scope of the next work:
 
-- redesign and implement approved onboarding
+- conduct a systematic mobile QA audit and classify current application defects
 - remediate the mobile product and UX defects found during physical QA
+- fix concrete onboarding defects only if they are discovered
 - validate behavior on Android and iOS
 - generate fresh QA builds and perform fresh physical-device QA
 - resolve all critical and major release blockers before store release
@@ -132,7 +135,6 @@ Scope of the next work:
 No production store build or submission is authorized until all of the
 following are true:
 
-- the new onboarding is approved and implemented
 - mobile remediation is complete
 - a fresh Android QA APK is built and passes physical-device QA
 - the Apple Developer Program and required iOS signing credentials are configured
