@@ -1,4 +1,5 @@
 import { View, ScrollView, ActivityIndicator, Pressable, StyleSheet, I18nManager } from "react-native";
+import { useMemo } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,6 +9,7 @@ import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/co
 import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, spacing } from "../../src/design-system/tokens";
 import { getPositiveRouteId } from "../../src/utils/routeParams";
+import { getOrderedProgramDays } from "../../src/utils/programOrdering";
 
 export default function ProgramDetailScreen() {
   const { id } = useLocalSearchParams<{ id?: string | string[] }>();
@@ -80,6 +82,7 @@ function ProgramDetailContent({ programId }: { programId: number }) {
       router.replace("/(tabs)");
     },
   });
+  const orderedDays = useMemo(() => (program ? getOrderedProgramDays(program.days) : []), [program]);
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
@@ -136,15 +139,13 @@ function ProgramDetailContent({ programId }: { programId: number }) {
               </RunpuyText>
             )}
 
-            {program.days
-              .sort((a, b) => a.dayIndex - b.dayIndex)
+            {orderedDays
               .map((day) => (
                 <RunpuyCard key={day.id} style={styles.dayCard}>
                   <RunpuyText variant="title">
                     {day.name}
                   </RunpuyText>
                   {day.exercises
-                    .sort((a, b) => a.order - b.order)
                     .map((pde) => (
                       <View key={pde.id} style={styles.exercise}>
                         <RunpuyText script="persianArabic" variant="body">
