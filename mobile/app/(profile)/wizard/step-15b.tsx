@@ -28,7 +28,7 @@ export default function WizardStepFifteenBScreen() {
   const { isSaving, errorMessage, saveStep } = useWizardStepSave();
   const [isOverflowOpen, setIsOverflowOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const onContinue = async () => { if (isSaving) return; const didSave = await saveStep({}, 16); if (didSave) router.push('/(profile)/wizard/step-16'); };
+  const onContinue = async () => { if (isSaving) return; const didSave = await saveStep({ supplementOther }, 16); if (didSave) router.push('/(profile)/wizard/step-16'); };
   const onLogout = async () => { await logout(); router.replace('/(auth)/login'); };
   const inputBorderColor = errorMessage ? theme.colors.error : isFocused ? theme.colors.focus : theme.colors.borderSubtle;
 

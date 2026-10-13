@@ -18,6 +18,7 @@ export interface UserProfile {
   nutritionHabits: string;
   mealFrequency: number;
   supplementUse: string[];
+  supplementOther: string | null;
   cardioPreference: string;
   injuryFlags: string[];
   injuryNotes: string | null;

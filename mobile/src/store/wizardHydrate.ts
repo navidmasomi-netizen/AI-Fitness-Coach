@@ -1,4 +1,5 @@
 import type { UserProfile } from "../api/profile";
+import { getHydratedSupplementOther } from "../utils/supplementOther";
 import { useWizardDraftStore } from "./wizardDraftStore";
 
 const EMPTY_WIZARD_DRAFT = {
@@ -48,7 +49,7 @@ export function hydrateWizardDraft(profile: UserProfile | null) {
     mealFrequency: profile.mealFrequency > 0 ? profile.mealFrequency : null,
     cardioPreference: profile.cardioPreference || null,
     supplementUse: profile.supplementUse || [],
-    supplementOther: null,
+    supplementOther: getHydratedSupplementOther(profile),
     injuryFlags: profile.injuryFlags || [],
     injuryNotes: profile.injuryNotes || null,
   });

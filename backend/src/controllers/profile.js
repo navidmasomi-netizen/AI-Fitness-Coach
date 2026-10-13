@@ -15,6 +15,7 @@ const editableFields = [
   "nutritionHabits",
   "mealFrequency",
   "supplementUse",
+  "supplementOther",
   "cardioPreference",
   "injuryFlags",
   "injuryNotes",
@@ -52,7 +53,13 @@ const defaultProfileMetadata = {
   units: "metric",
 };
 
-function validateProfileBounds(body) {
+export function validateProfileBounds(body) {
+  if (Object.prototype.hasOwnProperty.call(body, "supplementOther")) {
+    if (body.supplementOther !== null && typeof body.supplementOther !== "string") {
+      return "supplementOther must be a string or null";
+    }
+  }
+
   if (Object.prototype.hasOwnProperty.call(body, "age")) {
     if (!Number.isInteger(body.age) || body.age < 13 || body.age > 100) {
       return "age must be an integer between 13 and 100";
@@ -100,7 +107,7 @@ function validateProfileBounds(body) {
   return null;
 }
 
-function buildPatchData(body) {
+export function buildPatchData(body) {
   const data = {};
   for (const field of editableFields) {
     if (Object.prototype.hasOwnProperty.call(body, field)) {
@@ -110,7 +117,7 @@ function buildPatchData(body) {
   return data;
 }
 
-function buildProfileCreateData(userId, patchData) {
+export function buildProfileCreateData(userId, patchData) {
   return {
     userId,
     goal: "",
@@ -127,6 +134,7 @@ function buildProfileCreateData(userId, patchData) {
     nutritionHabits: "",
     mealFrequency: 0,
     supplementUse: [],
+    supplementOther: null,
     cardioPreference: "",
     injuryFlags: [],
     injuryNotes: null,

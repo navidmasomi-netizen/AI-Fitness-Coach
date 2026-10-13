@@ -155,6 +155,7 @@ model UserProfile {
   nutritionHabits     String
   mealFrequency       Int
   supplementUse       String[]
+  supplementOther     String?
   cardioPreference    String
   injuryFlags         String[]
   injuryNotes         String?
