@@ -27,6 +27,10 @@ function hasOwn(input, key) {
   return Object.prototype.hasOwnProperty.call(input, key);
 }
 
+export function isValidSetLogWeightKg(value) {
+  return value === null || (Number.isFinite(value) && value >= 0);
+}
+
 function resolveStartIdempotencyKey(req) {
   return (
     req.body?.idempotencyKey ??
@@ -110,7 +114,7 @@ export const addSetLog = async (req, res) => {
     return res.status(400).json({ success: false, message: "reps must be a positive integer" });
   }
 
-  if (normalizedWeightKg !== null && (Number.isNaN(normalizedWeightKg) || normalizedWeightKg < 0)) {
+  if (!isValidSetLogWeightKg(normalizedWeightKg)) {
     return res.status(400).json({ success: false, message: "weightKg must be a non-negative number" });
   }
 

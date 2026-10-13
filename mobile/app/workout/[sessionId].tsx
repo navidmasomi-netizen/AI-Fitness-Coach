@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { View, ScrollView, Pressable, TextInput, Modal, ActivityIndicator, StyleSheet, I18nManager } from "react-native";
+import { AppState, View, ScrollView, Pressable, TextInput, Modal, ActivityIndicator, StyleSheet, I18nManager } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -51,6 +51,8 @@ import {
   parseRequiredRouteArray,
   type RouteParam,
 } from "../../src/utils/routeParams";
+import { createRestDeadline, getRestSecondsRemaining, resumeRestDeadline } from "../../src/utils/restTimer";
+import { validateWorkoutSetInput } from "../../src/utils/workoutSetValidation";
 
 interface LoggedSet {
   id: number;
@@ -311,40 +313,88 @@ function WorkoutSessionContent({ route }: { route: WorkoutRoute }) {
   // --- Rest timer state ---
   const [activeRestExerciseId, setActiveRestExerciseId] = useState<number | null>(null);
   const [restSecondsRemaining, setRestSecondsRemaining] = useState(0);
-  const [isRestRunning, setIsRestRunning] = useState(false);
+  const [restDeadlineMs, setRestDeadlineMs] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const restDeadlineRef = useRef<number | null>(null);
   const discoveryRequestVersionRef = useRef(0);
 
   useEffect(() => {
-    if (isRestRunning) {
-      intervalRef.current = setInterval(() => {
-        setRestSecondsRemaining((prev) => {
-          if (prev <= 1) {
-            setIsRestRunning(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
+    if (restDeadlineMs === null) return;
+
+    const synchronizeRestTimer = () => {
+      const deadline = restDeadlineRef.current;
+      if (deadline === null) return;
+
+      const remaining = getRestSecondsRemaining(deadline, Date.now());
+      setRestSecondsRemaining(remaining);
+
+      if (remaining === 0) {
+        restDeadlineRef.current = null;
+        setRestDeadlineMs(null);
+      }
+    };
+
+    synchronizeRestTimer();
+    intervalRef.current = setInterval(synchronizeRestTimer, 1000);
+
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [isRestRunning]);
+  }, [restDeadlineMs]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState !== "active") return;
+
+      const deadline = restDeadlineRef.current;
+      if (deadline === null) return;
+
+      const remaining = getRestSecondsRemaining(deadline, Date.now());
+      setRestSecondsRemaining(remaining);
+
+      if (remaining === 0) {
+        restDeadlineRef.current = null;
+        setRestDeadlineMs(null);
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  const isRestRunning = restDeadlineMs !== null;
 
   const clearRestTimer = () => {
-    setIsRestRunning(false);
+    restDeadlineRef.current = null;
+    setRestDeadlineMs(null);
     setRestSecondsRemaining(0);
     setActiveRestExerciseId(null);
   };
 
   const startRestTimer = (exerciseId: number, restSeconds: number) => {
+    const deadline = createRestDeadline(restSeconds, Date.now());
+    restDeadlineRef.current = deadline;
     setActiveRestExerciseId(exerciseId);
-    setRestSecondsRemaining(restSeconds > 0 ? restSeconds : 60);
-    setIsRestRunning(true);
+    setRestSecondsRemaining(getRestSecondsRemaining(deadline, Date.now()));
+    setRestDeadlineMs(deadline);
+  };
+
+  const toggleRestTimer = () => {
+    if (restDeadlineRef.current !== null) {
+      const remaining = getRestSecondsRemaining(restDeadlineRef.current, Date.now());
+      restDeadlineRef.current = null;
+      setRestDeadlineMs(null);
+      setRestSecondsRemaining(remaining);
+      return;
+    }
+
+    const deadline = resumeRestDeadline(restSecondsRemaining, Date.now());
+    if (deadline === null) return;
+
+    restDeadlineRef.current = deadline;
+    setRestDeadlineMs(deadline);
   };
 
   useEffect(() => {
@@ -548,30 +598,14 @@ function WorkoutSessionContent({ route }: { route: WorkoutRoute }) {
     }));
   };
 
-  const validate = (repsStr: string, weightStr: string, isBodyweight: boolean): string | null => {
-    if (repsStr.trim() === "") return "Reps is required";
-    const reps = Number(repsStr);
-    if (!Number.isInteger(reps) || reps <= 0) return "Reps must be a positive whole number";
-
-    if (!isBodyweight && weightStr.trim() === "") {
-      return "Weight is required for this exercise";
-    }
-
-    if (weightStr.trim() !== "") {
-      const weight = Number(weightStr);
-      if (Number.isNaN(weight) || weight < 0) return "Weight must be a non-negative number";
-    }
-    return null;
-  };
-
   const isInputValid = (exerciseId: number, isBodyweight: boolean) => {
     const { reps, weightKg } = getInput(exerciseId);
-    return validate(reps, weightKg, isBodyweight) === null;
+    return validateWorkoutSetInput(reps, weightKg, isBodyweight) === null;
   };
 
   const onLogSet = async (exerciseId: number, restSeconds: number, isBodyweight: boolean) => {
     const { reps: repsStr, weightKg: weightStr } = getInput(exerciseId);
-    const validationError = validate(repsStr, weightStr, isBodyweight);
+    const validationError = validateWorkoutSetInput(repsStr, weightStr, isBodyweight);
     if (validationError) {
       setErrors((prev) => ({ ...prev, [exerciseId]: validationError }));
       return;
@@ -1117,7 +1151,7 @@ function WorkoutSessionContent({ route }: { route: WorkoutRoute }) {
           <View style={styles.restActions}>
             {restSecondsRemaining > 0 && (
               <Pressable
-                onPress={() => setIsRestRunning((prev) => !prev)}
+                onPress={toggleRestTimer}
                 accessibilityRole="button"
                 accessibilityLabel={isRestRunning ? "Pause rest timer" : "Start rest timer"}
                 style={styles.restPrimaryAction}
