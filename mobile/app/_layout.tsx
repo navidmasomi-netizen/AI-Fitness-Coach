@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from "react";
-import { Stack } from "expo-router";
+import { useEffect, useMemo, useRef } from "react";
+import { Stack, useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from "@react-navigation/native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useAuthStore } from "../src/store/authStore";
 import { RunpuyThemeProvider, useRunpuyTheme } from "../src/design-system/theme-context";
@@ -45,11 +45,38 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AuthInvalidationRedirect />
       <RunpuyThemeProvider>
         <ThemedRootStack />
       </RunpuyThemeProvider>
     </QueryClientProvider>
   );
+}
+
+function AuthInvalidationRedirect() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const isLoading = useAuthStore((s) => s.isLoading);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const wasAuthenticated = useRef(false);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (wasAuthenticated.current && !isAuthenticated) {
+      queryClient.removeQueries({ queryKey: ["myProgram"] });
+      queryClient.removeQueries({ queryKey: ["activeSession"] });
+      queryClient.removeQueries({ queryKey: ["completedSessions"] });
+      queryClient.removeQueries({ queryKey: ["lastSessionProgressions"] });
+      queryClient.removeQueries({ queryKey: ["sessionExerciseTargets"] });
+      queryClient.removeQueries({ queryKey: ["regenerationRecommendation"] });
+      router.replace("/(auth)/login");
+    }
+
+    wasAuthenticated.current = isAuthenticated;
+  }, [isAuthenticated, isLoading, queryClient, router]);
+
+  return null;
 }
 
 function ThemedRootStack() {

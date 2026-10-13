@@ -6,6 +6,8 @@ import { spacing } from "../design-system/tokens";
 interface RegenerationInsightCardProps {
   recommendation: RegenerationRecommendation | null | undefined;
   isLoading: boolean;
+  error: Error | null;
+  onRetry: () => void;
   onRegenerate: () => void;
   isRegenerating: boolean;
 }
@@ -25,15 +27,30 @@ function getHeadline(urgency: RegenerationRecommendation["urgency"]) {
 export function RegenerationInsightCard({
   recommendation,
   isLoading,
+  error,
+  onRetry,
   onRegenerate,
   isRegenerating,
 }: RegenerationInsightCardProps) {
   const { theme } = useRunpuyTheme();
   const styles = createStyles(theme);
 
-  if (isLoading || !recommendation) {
+  if (isLoading) {
     return null;
   }
+
+  if (error) {
+    return (
+      <RunpuyCard style={styles.card}>
+        <RunpuyText accessibilityLiveRegion="polite" variant="body">
+          We couldn't load your program insights. Please try again.
+        </RunpuyText>
+        <RunpuyButton label="Try Again" onPress={onRetry} />
+      </RunpuyCard>
+    );
+  }
+
+  if (!recommendation) return null;
 
   const isHealthyState =
     recommendation.regenerationRecommended === false || recommendation.urgency === "none";

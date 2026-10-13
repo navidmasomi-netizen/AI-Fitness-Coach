@@ -6,7 +6,8 @@ import { useAuthStore } from "../src/store/authStore";
 import { hasSeenIntro } from "../src/store/onboardingStorage";
 import { hydrateWizardDraft, resetWizardDraft } from "../src/store/wizardHydrate";
 import { resolveWizardResumeRoute, type WizardRoute } from "../src/utils/wizardResume";
-import { RunpuyText } from "../src/design-system/components";
+import { getProfileLoadErrorMessage, isUnauthorizedError } from "../src/utils/authRecovery";
+import { RunpuyButton, RunpuyText } from "../src/design-system/components";
 import { useRunpuyTheme } from "../src/design-system/theme-context";
 
 export default function Index() {
@@ -17,6 +18,8 @@ export default function Index() {
   const [introChecked, setIntroChecked] = useState(false);
   const [introSeen, setIntroSeen] = useState(false);
   const [profileChecked, setProfileChecked] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileRetry, setProfileRetry] = useState(0);
   const [wizardCompleted, setWizardCompleted] = useState(false);
   const [resumeRoute, setResumeRoute] = useState<WizardRoute>("/(profile)/wizard/step-1");
 
@@ -49,6 +52,7 @@ export default function Index() {
     if (!isAuthenticated) {
       resetWizardDraft();
       setProfileChecked(false);
+      setProfileError(null);
       return;
     }
 
@@ -60,6 +64,7 @@ export default function Index() {
     let cancelled = false;
 
     setProfileChecked(false);
+    setProfileError(null);
 
     getFullProfile()
       .then((profile) => {
@@ -69,18 +74,17 @@ export default function Index() {
         setResumeRoute(resolveWizardResumeRoute(profile));
         setProfileChecked(true);
       })
-      .catch(() => {
+      .catch((error) => {
         if (cancelled) return;
-        resetWizardDraft();
-        setWizardCompleted(false);
-        setResumeRoute("/(profile)/wizard/step-1");
+        if (isUnauthorizedError(error)) return;
+        setProfileError(getProfileLoadErrorMessage(error));
         setProfileChecked(true);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [isLoading, isAuthenticated, introChecked, introSeen]);
+  }, [isLoading, isAuthenticated, introChecked, introSeen, profileRetry]);
 
   if (isLoading || !introChecked || (isAuthenticated && introSeen && !profileChecked)) {
     return (
@@ -103,6 +107,26 @@ export default function Index() {
 
   if (!introSeen) {
     return <Redirect href="/(onboarding)/intro" />;
+  }
+
+  if (profileError) {
+    return (
+      <View
+        style={{
+          backgroundColor: theme.colors.canvas,
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+          gap: 16,
+        }}
+      >
+        <RunpuyText accessibilityLiveRegion="polite" variant="body" style={{ textAlign: "center" }}>
+          {profileError}
+        </RunpuyText>
+        <RunpuyButton label="Try Again" onPress={() => setProfileRetry((attempt) => attempt + 1)} />
+      </View>
+    );
   }
 
   if (!wizardCompleted) {

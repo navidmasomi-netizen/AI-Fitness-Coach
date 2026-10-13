@@ -73,7 +73,7 @@ export function regenerateProgram(): Promise<GeneratedProgram> {
 }
 
 export function getRegenerationRecommendation(): Promise<RegenerationRecommendation | null> {
-  return apiRequest<RegenerationRecommendation>("/programs/regeneration-recommendation", {
+  return apiRequest<RegenerationRecommendation | null>("/programs/regeneration-recommendation", {
     method: "GET",
-  }).catch(() => null);
+  });
 }

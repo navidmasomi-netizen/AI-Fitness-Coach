@@ -77,7 +77,7 @@ export default function HomeScreen() {
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
 
-  const { data: programs, isLoading, isError, error } = useQuery({
+  const { data: programs, isLoading, isError, error, refetch: refetchPrograms } = useQuery({
     queryKey: ["programs"],
     queryFn: getPrograms,
   });
@@ -87,7 +87,13 @@ export default function HomeScreen() {
     queryFn: getMyProgram,
   });
 
-  const { data: regenerationRecommendation, isLoading: isRegenerationLoading } = useQuery({
+  const {
+    data: regenerationRecommendation,
+    isLoading: isRegenerationLoading,
+    isError: isRegenerationError,
+    error: regenerationError,
+    refetch: refetchRegenerationRecommendation,
+  } = useQuery({
     queryKey: ["regenerationRecommendation"],
     queryFn: getRegenerationRecommendation,
     staleTime: 60 * 60 * 1000,
@@ -384,6 +390,10 @@ export default function HomeScreen() {
         <RegenerationInsightCard
           recommendation={regenerationRecommendation}
           isLoading={isRegenerationLoading}
+          error={isRegenerationError ? (regenerationError as Error) : null}
+          onRetry={() => {
+            void refetchRegenerationRecommendation();
+          }}
           onRegenerate={onConfirmRegenerate}
           isRegenerating={regenerateMutation.isPending}
         />
@@ -398,9 +408,17 @@ export default function HomeScreen() {
           </View>
         )}
         {isError && (
-          <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
-            Error loading programs: {(error as Error)?.message}
-          </RunpuyText>
+          <View style={styles.errorState}>
+            <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
+              Error loading programs: {(error as Error)?.message}
+            </RunpuyText>
+            <RunpuyButton
+              label="Try Again"
+              onPress={() => {
+                void refetchPrograms();
+              }}
+            />
+          </View>
         )}
 
         {programs && (
@@ -467,6 +485,9 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
   errorText: {
     color: theme.colors.textPrimary,
     marginTop: spacing.sm,
+  },
+  errorState: {
+    gap: spacing.sm,
   },
   signals: {
     gap: spacing.xs,

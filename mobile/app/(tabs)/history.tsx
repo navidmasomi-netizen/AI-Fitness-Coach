@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "../../src/store/authStore";
 import { getMyCompletedSessions } from "../../src/api/sessions";
 import { WorkoutSession } from "../../src/types/session";
-import { RunpuyCard, RunpuyText } from "../../src/design-system/components";
+import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
 import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, spacing } from "../../src/design-system/tokens";
 
@@ -15,7 +15,7 @@ export default function HistoryScreen() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
 
-  const { data: sessions, isLoading, isError, error } = useQuery({
+  const { data: sessions, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["completedSessions"],
     queryFn: () => getMyCompletedSessions(user!.id),
     enabled: !!user,
@@ -67,9 +67,17 @@ export default function HistoryScreen() {
           </View>
         )}
         {isError && (
-          <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
-            {(error as Error)?.message}
-          </RunpuyText>
+          <View style={styles.errorState}>
+            <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
+              {(error as Error)?.message}
+            </RunpuyText>
+            <RunpuyButton
+              label="Try Again"
+              onPress={() => {
+                void refetch();
+              }}
+            />
+          </View>
         )}
         {sessions && sessions.length === 0 && (
           <RunpuyText tone="secondary" variant="body">
@@ -111,5 +119,8 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => ({
   },
   errorText: {
     color: theme.colors.textPrimary,
+  },
+  errorState: {
+    gap: spacing.sm,
   },
 } as const);

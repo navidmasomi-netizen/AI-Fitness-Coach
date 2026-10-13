@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { User } from "../types/user";
 import { loginUser, registerUser } from "../api/auth";
-import { setAuthToken } from "../api/client";
+import { setAuthToken, setUnauthorizedHandler } from "../api/client";
 import { saveToken, getToken, removeToken, saveUser, getUser, removeUser } from "./authStorage";
 
 interface AuthState {
@@ -53,9 +53,11 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
   logout: async () => {
     setAuthToken(null);
-    await removeToken();
-    await removeUser();
-    set({ user: null, accessToken: null, isAuthenticated: false });
+    try {
+      await Promise.all([removeToken(), removeUser()]);
+    } finally {
+      set({ user: null, accessToken: null, isAuthenticated: false, error: null });
+    }
   },
 
   restoreSession: async () => {
@@ -74,3 +76,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
     }
   },
 }));
+
+setUnauthorizedHandler(async () => {
+  const { accessToken, isAuthenticated, logout } = useAuthStore.getState();
+  if (!accessToken && !isAuthenticated) return;
+  await logout();
+});

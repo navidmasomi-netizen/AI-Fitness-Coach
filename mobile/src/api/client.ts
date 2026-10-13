@@ -11,9 +11,33 @@ export class ApiError extends Error {
 }
 
 let authToken: string | null = null;
+type UnauthorizedHandler = () => void | Promise<void>;
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+let unauthorizedInvalidation: Promise<void> | null = null;
 
 export function setAuthToken(token: string | null) {
   authToken = token;
+}
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null) {
+  unauthorizedHandler = handler;
+}
+
+async function invalidateUnauthorizedAuth(requestToken: string | null) {
+  if (!requestToken || requestToken !== authToken || !unauthorizedHandler) return;
+
+  if (!unauthorizedInvalidation) {
+    unauthorizedInvalidation = Promise.resolve(unauthorizedHandler()).finally(() => {
+      unauthorizedInvalidation = null;
+    });
+  }
+
+  try {
+    await unauthorizedInvalidation;
+  } catch {
+    // The auth store clears in-memory state before secure-storage cleanup, so a
+    // storage cleanup failure must not turn a definitive 401 into a retry loop.
+  }
 }
 
 type RequestOptions = {
@@ -24,13 +48,14 @@ type RequestOptions = {
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = "GET", body, headers: extraHeaders = {} } = options;
+  const requestToken = authToken;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...extraHeaders,
   };
-  if (authToken) {
-    headers["Authorization"] = `Bearer ${authToken}`;
+  if (requestToken) {
+    headers["Authorization"] = `Bearer ${requestToken}`;
   }
 
   let response: Response;
@@ -42,6 +67,10 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     });
   } catch (networkError) {
     throw new ApiError("Network request failed. Is the backend reachable?", 0);
+  }
+
+  if (response.status === 401) {
+    await invalidateUnauthorizedAuth(requestToken);
   }
 
   let json: any;
