@@ -6,19 +6,23 @@ import { startFromActiveProgram } from "../../src/api/sessions";
 import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
 import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, spacing } from "../../src/design-system/tokens";
+import { getRequiredRouteString, parseRequiredRouteArray } from "../../src/utils/routeParams";
 
 export default function WorkoutPreviewScreen() {
   const { theme } = useRunpuyTheme();
   const styles = createStyles(theme);
   const { dayName, workoutName, exerciseNames } = useLocalSearchParams<{
-    dayName: string;
-    workoutName: string;
-    exerciseNames: string;
+    dayName?: string | string[];
+    workoutName?: string | string[];
+    exerciseNames?: string | string[];
   }>();
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const names: string[] = exerciseNames ? JSON.parse(exerciseNames) : [];
+  const validDayName = getRequiredRouteString(dayName);
+  const validWorkoutName = getRequiredRouteString(workoutName);
+  const names = parseRequiredRouteArray(exerciseNames, (value): value is string => typeof value === "string");
+  const isValidRoute = !!validDayName && !!validWorkoutName && !!names && names.length > 0;
 
   const startMutation = useMutation({
     mutationFn: startFromActiveProgram,
@@ -37,6 +41,30 @@ export default function WorkoutPreviewScreen() {
       });
     },
   });
+
+  const returnToHome = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace("/(tabs)");
+  };
+
+  if (!isValidRoute) {
+    return (
+      <SafeAreaView edges={["top"]} style={styles.safeArea}>
+        <View style={styles.invalidRoute}>
+          <RunpuyText accessibilityRole="header" variant="heading">
+            Workout preview unavailable
+          </RunpuyText>
+          <RunpuyText accessibilityLiveRegion="polite" tone="secondary" variant="body">
+            This workout link is incomplete or invalid. Return to Home and start the workout again.
+          </RunpuyText>
+          <RunpuyButton label="Go Back" onPress={returnToHome} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
@@ -57,7 +85,7 @@ export default function WorkoutPreviewScreen() {
             Today's Workout
           </RunpuyText>
           <RunpuyText tone="secondary" variant="body">
-            {dayName} — {workoutName}
+            {validDayName} — {validWorkoutName}
           </RunpuyText>
         </View>
 
@@ -130,5 +158,11 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => Styl
   },
   errorText: {
     color: theme.colors.textPrimary,
+  },
+  invalidRoute: {
+    flex: 1,
+    gap: spacing.md,
+    justifyContent: "center",
+    padding: layout.pageMargin,
   },
 });

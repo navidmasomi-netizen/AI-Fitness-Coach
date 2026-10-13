@@ -7,19 +7,70 @@ import { activateProgram } from "../../src/api/userPrograms";
 import { RunpuyButton, RunpuyCard, RunpuyText } from "../../src/design-system/components";
 import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import { layout, spacing } from "../../src/design-system/tokens";
+import { getPositiveRouteId } from "../../src/utils/routeParams";
 
 export default function ProgramDetailScreen() {
+  const { id } = useLocalSearchParams<{ id?: string | string[] }>();
+  const programId = getPositiveRouteId(id);
+
+  if (programId === null) return <InvalidProgramRoute />;
+
+  return <ProgramDetailContent programId={programId} />;
+}
+
+function InvalidProgramRoute() {
   const { theme } = useRunpuyTheme();
   const styles = createStyles(theme);
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+
+  return (
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.content} style={styles.scrollView}>
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+              return;
+            }
+            router.replace("/(tabs)");
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          style={styles.backButton}
+        >
+          <RunpuyText tone="secondary" variant="body">
+            {I18nManager.isRTL ? "Back \u2192" : "\u2190 Back"}
+          </RunpuyText>
+        </Pressable>
+        <View style={styles.invalidRoute}>
+          <RunpuyText accessibilityLiveRegion="polite" variant="body" style={styles.errorText}>
+            This program link is invalid. Return to Home and select a program again.
+          </RunpuyText>
+          <RunpuyButton
+            label="Go Back"
+            onPress={() => {
+              if (router.canGoBack()) {
+                router.back();
+                return;
+              }
+              router.replace("/(tabs)");
+            }}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+function ProgramDetailContent({ programId }: { programId: number }) {
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
   const router = useRouter();
   const queryClient = useQueryClient();
-  const programId = Number(id);
 
   const { data: program, isLoading, isError, error } = useQuery({
     queryKey: ["program", programId],
     queryFn: () => getProgramById(programId),
-    enabled: !Number.isNaN(programId),
   });
 
   const activateMutation = useMutation({
@@ -146,5 +197,8 @@ const createStyles = (theme: ReturnType<typeof useRunpuyTheme>["theme"]) => Styl
   },
   errorText: {
     color: theme.colors.textPrimary,
+  },
+  invalidRoute: {
+    gap: spacing.md,
   },
 });

@@ -42,12 +42,25 @@ import {
 import { useRunpuyTheme } from "../../src/design-system/theme-context";
 import type { RunpuyTheme } from "../../src/design-system/themes";
 import { layout, radii, spacing } from "../../src/design-system/tokens";
+import {
+  getPositiveRouteId,
+  getRequiredRouteString,
+  isPositiveInteger,
+  isRecord,
+  parseOptionalRouteArray,
+  parseRequiredRouteArray,
+  type RouteParam,
+} from "../../src/utils/routeParams";
 
 interface LoggedSet {
   id: number;
   setNumber: number;
   reps: number;
   weightKg: number | null;
+}
+
+interface RouteLoggedSet extends LoggedSet {
+  exerciseId: number;
 }
 
 interface ActiveWorkoutSnapshot {
@@ -122,6 +135,84 @@ function formatTime(totalSeconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
+interface WorkoutRoute {
+  sessionId: number;
+  sessionIdParam: string;
+  programName: string;
+  dayName: string;
+  exercises: ProgramDayExercise[];
+  exerciseTargets: WorkoutSessionExerciseTarget[];
+  existingSetLogs: RouteLoggedSet[];
+}
+
+function isRouteExercise(value: unknown): value is ProgramDayExercise {
+  if (!isRecord(value) || !isPositiveInteger(value.id) || !isRecord(value.exercise)) return false;
+
+  return isPositiveInteger(value.exercise.id) && typeof value.exercise.nameFa === "string";
+}
+
+function isRouteExerciseTarget(value: unknown): value is WorkoutSessionExerciseTarget {
+  return (
+    isRecord(value) &&
+    isPositiveInteger(value.id) &&
+    isPositiveInteger(value.exerciseId) &&
+    isPositiveInteger(value.programDayExerciseId)
+  );
+}
+
+function isRouteLoggedSet(value: unknown): value is RouteLoggedSet {
+  return (
+    isRecord(value) &&
+    isPositiveInteger(value.id) &&
+    isPositiveInteger(value.exerciseId) &&
+    isPositiveInteger(value.setNumber) &&
+    typeof value.reps === "number" &&
+    Number.isFinite(value.reps) &&
+    value.reps > 0 &&
+    (value.weightKg === null || (typeof value.weightKg === "number" && Number.isFinite(value.weightKg)))
+  );
+}
+
+function parseWorkoutRoute(params: {
+  sessionId?: RouteParam;
+  programName?: RouteParam;
+  dayName?: RouteParam;
+  exercisesData?: RouteParam;
+  exerciseTargetsData?: RouteParam;
+  existingSetLogsData?: RouteParam;
+}): WorkoutRoute | null {
+  const sessionId = getPositiveRouteId(params.sessionId);
+  const sessionIdParam = getRequiredRouteString(params.sessionId);
+  const programName = getRequiredRouteString(params.programName);
+  const dayName = getRequiredRouteString(params.dayName);
+  const exercises = parseRequiredRouteArray(params.exercisesData, isRouteExercise);
+  const exerciseTargets = parseOptionalRouteArray(params.exerciseTargetsData, isRouteExerciseTarget);
+  const existingSetLogs = parseOptionalRouteArray(params.existingSetLogsData, isRouteLoggedSet);
+
+  if (
+    sessionId === null ||
+    !sessionIdParam ||
+    !programName ||
+    !dayName ||
+    !exercises ||
+    exercises.length === 0 ||
+    !exerciseTargets ||
+    !existingSetLogs
+  ) {
+    return null;
+  }
+
+  return {
+    sessionId,
+    sessionIdParam,
+    programName,
+    dayName,
+    exercises,
+    exerciseTargets,
+    existingSetLogs,
+  };
+}
+
 export default function WorkoutSessionScreen() {
   const {
     sessionId,
@@ -131,27 +222,72 @@ export default function WorkoutSessionScreen() {
     exerciseTargetsData,
     existingSetLogsData,
   } = useLocalSearchParams<{
-    sessionId: string;
-    programName: string;
-    dayName: string;
-    exercisesData: string;
-    exerciseTargetsData?: string;
-    existingSetLogsData?: string;
+    sessionId?: RouteParam;
+    programName?: RouteParam;
+    dayName?: RouteParam;
+    exercisesData?: RouteParam;
+    exerciseTargetsData?: RouteParam;
+    existingSetLogsData?: RouteParam;
   }>();
+
+  const route = parseWorkoutRoute({
+    sessionId,
+    programName,
+    dayName,
+    exercisesData,
+    exerciseTargetsData,
+    existingSetLogsData,
+  });
+
+  if (!route) return <InvalidWorkoutRoute />;
+
+  return <WorkoutSessionContent route={route} />;
+}
+
+function InvalidWorkoutRoute() {
+  const router = useRouter();
+  const { theme } = useRunpuyTheme();
+  const styles = createStyles(theme);
+
+  return (
+    <SafeAreaView edges={["top"]} style={styles.safeArea}>
+      <View style={styles.invalidRoute}>
+        <RunpuyText accessibilityRole="header" variant="heading">
+          Workout unavailable
+        </RunpuyText>
+        <RunpuyText accessibilityLiveRegion="polite" tone="secondary" variant="body">
+          This workout link is incomplete or invalid. Return to Home and resume or start a workout again.
+        </RunpuyText>
+        <RunpuyButton
+          label="Go Back"
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+              return;
+            }
+            router.replace("/(tabs)");
+          }}
+        />
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function WorkoutSessionContent({ route }: { route: WorkoutRoute }) {
   const router = useRouter();
   const { theme } = useRunpuyTheme();
   const queryClient = useQueryClient();
   const styles = createStyles(theme);
-  const numericSessionId = Number(sessionId);
+  const {
+    sessionId: numericSessionId,
+    sessionIdParam,
+    programName,
+    dayName,
+    exercises: baseExercises,
+    exerciseTargets: routeExerciseTargets,
+    existingSetLogs: routeExistingSetLogs,
+  } = route;
 
-  const baseExercises = useMemo<ProgramDayExercise[]>(
-    () => (exercisesData ? JSON.parse(exercisesData) : []),
-    [exercisesData]
-  );
-  const routeExerciseTargets = useMemo<WorkoutSessionExerciseTarget[]>(
-    () => (exerciseTargetsData ? JSON.parse(exerciseTargetsData) : []),
-    [exerciseTargetsData]
-  );
   const cachedExerciseTargets =
     queryClient.getQueryData<WorkoutSessionExerciseTarget[]>(["sessionExerciseTargets", numericSessionId]) ?? [];
   const [workoutExerciseTargets, setWorkoutExerciseTargets] = useState<WorkoutSessionExerciseTarget[]>(
@@ -229,17 +365,10 @@ export default function WorkoutSessionScreen() {
   }, [cachedExerciseTargets, routeExerciseTargets]);
 
   useEffect(() => {
-    if (!existingSetLogsData) return;
-    let parsed: any[] = [];
-    try {
-      parsed = JSON.parse(existingSetLogsData);
-    } catch {
-      return;
-    }
-    if (!Array.isArray(parsed) || parsed.length === 0) return;
+    if (routeExistingSetLogs.length === 0) return;
 
-    setLoggedSets(groupLoggedSetsByExercise(parsed));
-  }, []);
+    setLoggedSets(groupLoggedSetsByExercise(routeExistingSetLogs));
+  }, [routeExistingSetLogs]);
 
   const logSetMutation = useMutation({
     mutationFn: (vars: { exerciseId: number; setNumber: number; reps: number; weightKg?: number }) =>
@@ -255,7 +384,7 @@ export default function WorkoutSessionScreen() {
       queryClient.invalidateQueries({ queryKey: ["myProgram"] });
       queryClient.invalidateQueries({ queryKey: ["activeSession"] });
       queryClient.invalidateQueries({ queryKey: ["regenerationRecommendation"] });
-      router.replace(`/workout/summary/${sessionId}`);
+      router.replace(`/workout/summary/${sessionIdParam}`);
     },
     onError: (err: any) => {
       setFinishError(err.message || "Failed to finish workout");
@@ -1229,6 +1358,12 @@ const createStyles = (theme: RunpuyTheme) => StyleSheet.create({
   },
   contentWithRestTimer: {
     paddingTop: 96,
+  },
+  invalidRoute: {
+    flex: 1,
+    gap: spacing.md,
+    justifyContent: "center",
+    padding: layout.pageMargin,
   },
   backButton: {
     alignSelf: I18nManager.isRTL ? "flex-end" : "flex-start",
