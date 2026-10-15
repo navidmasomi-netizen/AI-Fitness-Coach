@@ -6,6 +6,11 @@
     "qa": {
       "distribution": "internal",
       "environment": "production"
+    },
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "production"
     }
   },
   "submit": {
