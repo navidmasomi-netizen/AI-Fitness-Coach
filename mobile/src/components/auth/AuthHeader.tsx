@@ -1,8 +1,9 @@
-import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
+import { Image, StyleProp, StyleSheet, TextStyle, View } from 'react-native';
 
 import { RunpuyText } from '../../design-system/components/RunpuyText';
-import { useRunpuyTheme } from '../../design-system/theme-context';
-import { spacing } from '../../design-system/tokens';
+import { colorPrimitives, spacing } from '../../design-system/tokens';
+
+const runpuyLogo = require('../../../assets/brand/logo-horizontal-reverse.png');
 
 type AuthHeaderProps = {
   title: string;
@@ -12,33 +13,25 @@ type AuthHeaderProps = {
 };
 
 export function AuthHeader({ title, subtitle, titleStyle, subtitleStyle }: AuthHeaderProps) {
-  const { theme } = useRunpuyTheme();
-
   return (
     <View style={styles.root}>
-      <View style={styles.brandRow}>
-        <RunpuyText variant="heading" style={{ color: theme.colors.actionPrimary }}>
-          A
-        </RunpuyText>
-        <View style={styles.brandText}>
-          <RunpuyText variant="title" style={styles.brandName}>
-            AI COACH
-          </RunpuyText>
-          <RunpuyText variant="caption" tone="secondary" style={styles.brandTagline}>
-            YOUR TRAINING PARTNER
-          </RunpuyText>
-        </View>
-      </View>
+      <Image
+        accessible
+        accessibilityLabel="RUNPUY"
+        resizeMode="contain"
+        source={runpuyLogo}
+        style={styles.brandLogo}
+      />
 
       <View style={styles.heroCopy}>
         <RunpuyText
           accessibilityRole="header"
           variant="heading"
-          style={titleStyle}
+          style={[styles.title, titleStyle]}
         >
           {title}
         </RunpuyText>
-        <RunpuyText variant="body" tone="secondary" style={subtitleStyle}>
+        <RunpuyText variant="body" style={[styles.subtitle, subtitleStyle]}>
           {subtitle}
         </RunpuyText>
       </View>
@@ -50,21 +43,17 @@ const styles = StyleSheet.create({
   root: {
     gap: spacing.xl,
   },
-  brandRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  brandText: {
-    gap: spacing.xs,
-  },
-  brandName: {
-    letterSpacing: 0.3,
-  },
-  brandTagline: {
-    letterSpacing: 0.8,
+  brandLogo: {
+    height: 24,
+    width: 132,
   },
   heroCopy: {
     gap: spacing.sm,
+  },
+  title: {
+    color: colorPrimitives.warmWhite,
+  },
+  subtitle: {
+    color: colorPrimitives.warmWhite,
   },
 });

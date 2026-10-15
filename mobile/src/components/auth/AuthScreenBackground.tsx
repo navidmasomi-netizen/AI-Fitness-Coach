@@ -14,7 +14,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useRunpuyTheme } from '../../design-system/theme-context';
-import { layout, spacing } from '../../design-system/tokens';
+import { colorPrimitives, layout, spacing } from '../../design-system/tokens';
 
 const authHeroImage = require('../../../assets/images/auth/auth-hero.png');
 
@@ -29,17 +29,16 @@ export function AuthScreenBackground({
   backgroundImageSource = authHeroImage,
   backgroundImageStyle,
 }: AuthScreenBackgroundProps) {
-  const { scheme, theme } = useRunpuyTheme();
-  const overlayStyle = (darkColor: string, opacity: number): ViewStyle =>
-    scheme === 'dark'
-      ? { backgroundColor: darkColor }
-      : { backgroundColor: theme.colors.canvas, opacity };
+  const { theme } = useRunpuyTheme();
+  const overlayStyle = (opacity: number): ViewStyle => ({
+    backgroundColor: colorPrimitives.nightInk,
+    opacity,
+  });
 
   const content = (
     <>
-      <View style={[styles.baseTone, overlayStyle('rgba(1, 5, 12, 0.32)', 0.32)]} />
-      <View style={[styles.leftReadabilityShade, overlayStyle('rgba(1, 5, 12, 0.42)', 0.42)]} />
-      <View style={[styles.bottomShade, overlayStyle('rgba(1, 5, 12, 0.36)', 0.36)]} />
+      <View style={[styles.baseTone, overlayStyle(0.42)]} />
+      <View style={[styles.bottomShade, overlayStyle(0.36)]} />
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <KeyboardAvoidingView
           style={styles.keyboard}
@@ -89,13 +88,6 @@ const styles = StyleSheet.create({
   },
   baseTone: {
     ...StyleSheet.absoluteFillObject,
-  },
-  leftReadabilityShade: {
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: '78%',
   },
   bottomShade: {
     bottom: 0,
