@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { I18nManager, Pressable, StyleSheet, View } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import { Feather, FontAwesome } from "@expo/vector-icons";
 
 import { AuthHeader } from "../../src/components/auth/AuthHeader";
 import { AuthPasswordField } from "../../src/components/auth/AuthPasswordField";
@@ -11,6 +12,7 @@ import { AuthTextField } from "../../src/components/auth/AuthTextField";
 import { createAuthTheme } from "../../src/components/auth/authTheme";
 import { RunpuyText } from "../../src/design-system/components/RunpuyText";
 import { useRunpuyTheme } from "../../src/design-system/theme-context";
+import { colorPrimitives, spacing } from "../../src/design-system/tokens";
 import { useAuthStore } from "../../src/store/authStore";
 
 function validateEmail(value: string): string | null {
@@ -74,6 +76,7 @@ export default function LoginScreen() {
 
   return (
     <AuthScreenBackground>
+      <StatusBar style="light" translucent backgroundColor="transparent" />
       <View style={styles.container}>
         <AuthHeader
           title="Welcome Back"
@@ -94,6 +97,7 @@ export default function LoginScreen() {
               returnKeyType="next"
               placeholder="Email address"
               error={emailError}
+              labelStyle={styles.heroFieldLabel}
               isFocused={emailFocused}
               onFocus={() => setEmailFocused(true)}
               onBlur={() => setEmailFocused(false)}
@@ -104,6 +108,7 @@ export default function LoginScreen() {
               value={password}
               onChangeText={setPassword}
               error={passwordError}
+              labelStyle={styles.heroFieldLabel}
             />
           </View>
 
@@ -130,17 +135,17 @@ export default function LoginScreen() {
             <View style={styles.devOnlySection}>
               <View style={styles.dividerRow}>
                 <View style={styles.dividerLine} />
-                <RunpuyText variant="caption" tone="secondary" style={styles.dividerText}>or continue with</RunpuyText>
+                <RunpuyText variant="caption" style={styles.dividerText}>or continue with</RunpuyText>
                 <View style={styles.dividerLine} />
               </View>
 
               <View style={styles.socialRow}>
                 <View style={styles.socialButton} accessible accessibilityRole="text">
-                  <RunpuyText variant="display" style={styles.socialIcon}>G</RunpuyText>
+                  <FontAwesome name="google" size={18} color={authTheme.colors.textPrimary} />
                   <RunpuyText variant="title" style={styles.socialLabel}>Google</RunpuyText>
                 </View>
                 <View style={styles.socialButton} accessible accessibilityRole="text">
-                  <RunpuyText variant="display" style={styles.socialIcon}></RunpuyText>
+                  <FontAwesome name="apple" size={20} color={authTheme.colors.textPrimary} />
                   <RunpuyText variant="title" style={styles.socialLabel}>Apple</RunpuyText>
                 </View>
               </View>
@@ -175,11 +180,13 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
     gap: authTheme.spacing.fieldGap,
   },
   futureActionRow: {
-    alignItems: I18nManager.isRTL ? "flex-start" : "flex-end",
+    alignSelf: I18nManager.isRTL ? "flex-start" : "flex-end",
+    maxWidth: "100%",
     marginTop: -2,
+    paddingHorizontal: spacing.xs,
   },
   futureActionText: {
-    color: authTheme.colors.devOnly,
+    color: authTheme.colors.accent,
     fontSize: 14,
     fontWeight: "500",
   },
@@ -187,6 +194,9 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
     color: authTheme.colors.error,
     fontSize: 14,
     lineHeight: 20,
+  },
+  heroFieldLabel: {
+    color: colorPrimitives.warmWhite,
   },
   devOnlySection: {
     gap: 16,
@@ -197,13 +207,15 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
     gap: 12,
   },
   dividerLine: {
+    backgroundColor: colorPrimitives.warmWhite,
     flex: 1,
     height: 1,
-    backgroundColor: authTheme.colors.subtleDivider,
+    opacity: 0.56,
   },
   dividerText: {
-    color: authTheme.colors.textMuted,
+    color: colorPrimitives.warmWhite,
     fontSize: 14,
+    opacity: 0.82,
   },
   socialRow: {
     flexDirection: "row",
@@ -221,10 +233,6 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "li
     flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
     gap: 10,
     paddingHorizontal: 16,
-  },
-  socialIcon: {
-    color: authTheme.colors.textPrimary,
-    fontSize: 19,
   },
   socialLabel: {
     color: authTheme.colors.textPrimary,

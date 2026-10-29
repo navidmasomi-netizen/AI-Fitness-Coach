@@ -6,6 +6,7 @@ import {
   TextInput,
   TextInputFocusEventData,
   TextInputProps,
+  TextStyle,
   View,
 } from 'react-native';
 
@@ -20,6 +21,7 @@ type AuthTextFieldProps = TextInputProps & {
   icon?: ReactNode;
   error?: string | null;
   helperText?: string | null;
+  labelStyle?: TextStyle;
   rightAccessory?: ReactNode;
   isFocused?: boolean;
   onFocus?: (event: NativeSyntheticEvent<TextInputFocusEventData>) => void;
@@ -31,6 +33,7 @@ export function AuthTextField({
   icon,
   error = null,
   helperText = null,
+  labelStyle,
   rightAccessory,
   isFocused = false,
   onFocus,
@@ -46,7 +49,7 @@ export function AuthTextField({
 
   return (
     <View style={styles.root}>
-      <RunpuyText variant="caption">
+      <RunpuyText variant="caption" style={labelStyle}>
         {label}
       </RunpuyText>
       <View style={[styles.fieldShell, { backgroundColor: theme.colors.card, borderColor }]}>

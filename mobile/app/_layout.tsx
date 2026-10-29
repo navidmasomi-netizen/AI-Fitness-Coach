@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useRef } from "react";
-import { Stack, useRouter } from "expo-router";
+import { Platform } from "react-native";
+import { Stack, usePathname, useRouter } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import * as NavigationBar from "expo-navigation-bar";
 import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useAuthStore } from "../src/store/authStore";
 import { RunpuyThemeProvider, useRunpuyTheme } from "../src/design-system/theme-context";
 import { runpuyFontSources } from "../src/design-system/fonts";
+import { colorPrimitives } from "../src/design-system/tokens";
 
 void SplashScreen.preventAutoHideAsync().catch((error: unknown) => {
   console.warn("Unable to prevent splash auto-hide for font bootstrap.", error);
@@ -80,7 +83,26 @@ function AuthInvalidationRedirect() {
 }
 
 function ThemedRootStack() {
+  const pathname = usePathname();
   const { scheme, theme } = useRunpuyTheme();
+  const usesAuthHero = pathname === "/login";
+  const navigationBarBackground = usesAuthHero ? colorPrimitives.nightInk : theme.colors.canvas;
+  const navigationBarButtonStyle = usesAuthHero || scheme === "dark" ? "light" : "dark";
+
+  useEffect(() => {
+    if (Platform.OS !== "android") {
+      return;
+    }
+
+    void Promise.all([
+      NavigationBar.setBackgroundColorAsync(navigationBarBackground),
+      NavigationBar.setBorderColorAsync(navigationBarBackground),
+      NavigationBar.setButtonStyleAsync(navigationBarButtonStyle),
+    ]).catch((error: unknown) => {
+      console.warn("Unable to update Android navigation bar appearance.", error);
+    });
+  }, [navigationBarBackground, navigationBarButtonStyle]);
+
   const navigationTheme = useMemo(() => {
     const baseTheme = scheme === "dark" ? DarkTheme : DefaultTheme;
 

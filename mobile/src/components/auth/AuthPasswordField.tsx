@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, TextStyle } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { useRunpuyTheme } from '../../design-system/theme-context';
@@ -11,6 +11,7 @@ type AuthPasswordFieldProps = {
   onChangeText: (text: string) => void;
   error?: string | null;
   helperText?: string | null;
+  labelStyle?: TextStyle;
 };
 
 export function AuthPasswordField({
@@ -18,6 +19,7 @@ export function AuthPasswordField({
   onChangeText,
   error = null,
   helperText = null,
+  labelStyle,
 }: AuthPasswordFieldProps) {
   const [visible, setVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -34,6 +36,7 @@ export function AuthPasswordField({
       secureTextEntry={!visible}
       error={error}
       helperText={helperText}
+      labelStyle={labelStyle}
       isFocused={isFocused}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
