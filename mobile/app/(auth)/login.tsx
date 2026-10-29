@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 
 import { AuthHeader } from "../../src/components/auth/AuthHeader";
+import { AuthContentFrame } from "../../src/components/auth/AuthContentFrame";
 import { AuthPasswordField } from "../../src/components/auth/AuthPasswordField";
 import { AuthPrimaryButton } from "../../src/components/auth/AuthPrimaryButton";
 import { AuthScreenBackground } from "../../src/components/auth/AuthScreenBackground";
@@ -77,11 +78,12 @@ export default function LoginScreen() {
   return (
     <AuthScreenBackground>
       <StatusBar style="light" translucent backgroundColor="transparent" />
-      <View style={styles.container}>
-        <AuthHeader
+      <AuthContentFrame
+        header={<AuthHeader
           title="Welcome Back"
           subtitle="Your next workout is waiting."
-        />
+        />}
+      >
 
         <View style={styles.form}>
           <View style={styles.formFields}>
@@ -164,15 +166,12 @@ export default function LoginScreen() {
             </Pressable>
           </View>
         </View>
-      </View>
+      </AuthContentFrame>
     </AuthScreenBackground>
   );
 }
 
 const createStyles = (authTheme: ReturnType<typeof createAuthTheme>, scheme: "light" | "dark") => StyleSheet.create({
-  container: {
-    gap: authTheme.spacing.sectionGap,
-  },
   form: {
     gap: 16,
   },

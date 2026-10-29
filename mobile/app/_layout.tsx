@@ -85,7 +85,7 @@ function AuthInvalidationRedirect() {
 function ThemedRootStack() {
   const pathname = usePathname();
   const { scheme, theme } = useRunpuyTheme();
-  const usesAuthHero = pathname === "/login";
+  const usesAuthHero = pathname === "/login" || pathname === "/register";
   const navigationBarBackground = usesAuthHero ? colorPrimitives.nightInk : theme.colors.canvas;
   const navigationBarButtonStyle = usesAuthHero || scheme === "dark" ? "light" : "dark";
 
@@ -123,8 +123,11 @@ function ThemedRootStack() {
 
   return (
     <NavigationThemeProvider value={navigationTheme}>
-      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-      <Stack screenOptions={{ headerShown: false }} />
+      <StatusBar style={usesAuthHero || scheme === "dark" ? "light" : "dark"} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)/login" options={{ animation: "none" }} />
+        <Stack.Screen name="(auth)/register" options={{ animation: "none" }} />
+      </Stack>
     </NavigationThemeProvider>
   );
 }

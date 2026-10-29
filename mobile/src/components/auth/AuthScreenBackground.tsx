@@ -107,13 +107,14 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingBottom: layout.pageMargin,
     paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
+    paddingTop: spacing['2xl'],
   },
   content: {
     alignSelf: 'center',
+    flexGrow: 1,
     maxWidth: 440,
     width: '100%',
   },

@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 
 import { AuthHeader } from "../../src/components/auth/AuthHeader";
+import { AuthContentFrame } from "../../src/components/auth/AuthContentFrame";
 import { AuthPasswordField } from "../../src/components/auth/AuthPasswordField";
 import { AuthPrimaryButton } from "../../src/components/auth/AuthPrimaryButton";
 import { AuthScreenBackground } from "../../src/components/auth/AuthScreenBackground";
@@ -11,6 +12,7 @@ import { AuthTextField } from "../../src/components/auth/AuthTextField";
 import { createAuthTheme } from "../../src/components/auth/authTheme";
 import { RunpuyText } from "../../src/design-system/components/RunpuyText";
 import { useRunpuyTheme } from "../../src/design-system/theme-context";
+import { colorPrimitives } from "../../src/design-system/tokens";
 import { useAuthStore } from "../../src/store/authStore";
 import { validateEmail, validateName, validatePassword } from "../../src/utils/registerValidation";
 
@@ -59,15 +61,15 @@ export default function RegisterScreen() {
   return (
     <AuthScreenBackground
       backgroundImageSource={registerHeroImage}
-      backgroundImageStyle={styles.registerBackgroundImage}
     >
-      <View style={styles.container}>
-        <AuthHeader
+      <AuthContentFrame
+        header={<AuthHeader
           title="Create your account"
           subtitle="Your personalized training starts here."
           titleStyle={styles.registerTitle}
           subtitleStyle={styles.registerSubtitle}
-        />
+        />}
+      >
 
         <View style={styles.form}>
           <View style={styles.formFields}>
@@ -82,6 +84,7 @@ export default function RegisterScreen() {
               returnKeyType="next"
               placeholder="Full name"
               error={nameError}
+              labelStyle={styles.heroFieldLabel}
               isFocused={nameFocused}
               onFocus={() => setNameFocused(true)}
               onBlur={() => setNameFocused(false)}
@@ -100,6 +103,7 @@ export default function RegisterScreen() {
               returnKeyType="next"
               placeholder="Email address"
               error={emailError}
+              labelStyle={styles.heroFieldLabel}
               isFocused={emailFocused}
               onFocus={() => setEmailFocused(true)}
               onBlur={() => setEmailFocused(false)}
@@ -110,12 +114,13 @@ export default function RegisterScreen() {
               value={password}
               onChangeText={setPassword}
               error={passwordError}
+              labelStyle={styles.heroFieldLabel}
             />
           </View>
 
           {__DEV__ ? (
             <RunpuyText accessible accessibilityRole="text" variant="body" tone="secondary" style={styles.legalText}>
-              By creating an account, you agree to the Terms of Service and Privacy Policy.
+              By creating an account, you agree to the <RunpuyText variant="body" style={styles.legalLink}>Terms of Service</RunpuyText> and <RunpuyText variant="body" style={styles.legalLink}>Privacy Policy</RunpuyText>.
             </RunpuyText>
           ) : null}
 
@@ -144,18 +149,12 @@ export default function RegisterScreen() {
             </Pressable>
           </View>
         </View>
-      </View>
+      </AuthContentFrame>
     </AuthScreenBackground>
   );
 }
 
 const createStyles = (authTheme: ReturnType<typeof createAuthTheme>) => StyleSheet.create({
-  container: {
-    gap: authTheme.spacing.sectionGap,
-  },
-  registerBackgroundImage: {
-    transform: [{ scale: 1.035 }, { translateX: 10 }, { translateY: -11 }],
-  },
   registerTitle: {
     fontSize: 31,
     lineHeight: 37,
@@ -170,9 +169,16 @@ const createStyles = (authTheme: ReturnType<typeof createAuthTheme>) => StyleShe
     gap: authTheme.spacing.fieldGap,
   },
   legalText: {
-    color: authTheme.colors.textSecondary,
+    color: colorPrimitives.warmWhite,
     fontSize: 15,
     lineHeight: 23,
+    opacity: 0.82,
+  },
+  legalLink: {
+    color: authTheme.colors.accent,
+  },
+  heroFieldLabel: {
+    color: colorPrimitives.warmWhite,
   },
   serverError: {
     color: authTheme.colors.error,
